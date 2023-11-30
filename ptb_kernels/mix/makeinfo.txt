@@ -1,0 +1,1121 @@
+nvcc -o cp_cutcp_mix -I../ --ptxas-options=-v ../file_t/readatom.o -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca cp_cutcp.cu
+cp_cutcp.cu(70): warning #177-D: variable "cp_blks" was declared but never referenced
+    int cp_blks = 4;
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cp_cutcp.cu(192): warning #550-D: variable "host_cutcp_ptb_regionZeroCuda" was set but never used
+          float *cutcp_ptb_regionZeroCuda, *host_cutcp_ptb_regionZeroCuda;
+                                            ^
+
+cp_cutcp.cu(204): warning #177-D: variable "zRegionDim" was declared but never referenced
+          int zRegionDim = 26;
+              ^
+
+ptxas info    : 0 bytes gmem, 17000 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z21mixed_cp_cutcp_kernelifPfiiiiiiiiiiiP6float4fffS_iiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z21mixed_cp_cutcp_kernelifPfiiiiiiiiiiiP6float4fffS_iiiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 488 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z10ptb2_cutcpiiP6float4fffPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_cutcpiiP6float4fffPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 4096 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_cutcpiiP6float4fffPfiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_cutcpiiP6float4fffPfiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 424 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_cutcpiiP6float4fffPfii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_cutcpiiP6float4fffPfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, 4096 bytes smem, 400 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ptb2_cpifPfiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb2_cpifPfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ptb_cpifPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z6ptb_cpifPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 388 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ori_cpifPfi' for 'sm_75'
+ptxas info    : Function properties for _Z6ori_cpifPfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 372 bytes cmem[0]
+nvcc -o cp_fft_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread cp_fft.cu
+cp_fft.cu(67): warning #177-D: variable "cp_blks" was declared but never referenced
+    int cp_blks = 4;
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+ptxas info    : 24 bytes gmem, 1024 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z19mixed_cp_fft_kernelifPfiiiiiiiiiP6float2iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z19mixed_cp_fft_kernelifPfiiiiiiiiiP6float2iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 2048 bytes smem, 452 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ptb_fftP6float2iii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_fftP6float2iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, 2048 bytes smem, 372 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ori_fftP6float2i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_fftP6float2i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 2048 bytes smem, 364 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ptb2_cpifPfiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb2_cpifPfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ptb_cpifPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z6ptb_cpifPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 388 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ori_cpifPfi' for 'sm_75'
+ptxas info    : Function properties for _Z6ori_cpifPfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 372 bytes cmem[0]
+nvcc -o cp_lbm_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca cp_lbm.cu
+cp_lbm.cu(67): warning #177-D: variable "cp_blks" was declared but never referenced
+    int cp_blks = 4;
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cp_lbm.cu(166): warning #550-D: variable "host_lbm_ptb_dst" was set but never used
+          float *host_lbm_ptb_dst;
+                 ^
+
+ptxas info    : 0 bytes gmem, 1024 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z19mixed_cp_lbm_kernelifPfiiiiiiiiiS_S_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z19mixed_cp_lbm_kernelifPfiiiiiiiiiS_S_iiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, 460 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_lbmPfS_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_lbmPfS_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ori_lbmPfS_i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_lbmPfS_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 372 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb2_cpifPfiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb2_cpifPfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ptb_cpifPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z6ptb_cpifPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 388 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ori_cpifPfi' for 'sm_75'
+ptxas info    : Function properties for _Z6ori_cpifPfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 372 bytes cmem[0]
+nvcc -o cp_mrif_mix -I../ -lm --ptxas-options=-v -arch=sm_75 -lpthread cp_mrif.cu
+cp_mrif.cu(67): warning #177-D: variable "cp_blks" was declared but never referenced
+    int cp_blks = 4;
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cp_mrif.cu(194): warning #550-D: variable "host_ptb_outI" was set but never used
+          float *host_ptb_outI;
+                 ^
+
+ptxas info    : 24 bytes gmem, 6144 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z20mixed_cp_mrif_kernelifPfiiiiiiiiiiiS_S_S_S_S_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z20mixed_cp_mrif_kernelifPfiiiiiiiiiiiS_S_S_S_S_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 492 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mrifiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mrifiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, 412 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mrifiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mrifiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 37 registers, 404 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z16ComputeRhoPhiGPUiPfS_S_S_S_S_' for 'sm_75'
+ptxas info    : Function properties for _Z16ComputeRhoPhiGPUiPfS_S_S_S_S_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb2_cpifPfiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb2_cpifPfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ptb_cpifPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z6ptb_cpifPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 388 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ori_cpifPfi' for 'sm_75'
+ptxas info    : Function properties for _Z6ori_cpifPfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 372 bytes cmem[0]
+nvcc -o cp_mriq_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca cp_mriq.cu
+cp_mriq.cu(67): warning #177-D: variable "cp_blks" was declared but never referenced
+    int cp_blks = 4;
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cp_mriq.cu(180): warning #550-D: variable "host_mriq_ptb_Qi" was set but never used
+          float *mriq_ptb_Qr, *mriq_ptb_Qi, *host_mriq_ptb_Qi;
+                                             ^
+
+ptxas info    : 24 bytes gmem, 17408 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z20mixed_cp_mriq_kernelifPfiiiiiiiiiiiS_S_S_S_S_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z20mixed_cp_mriq_kernelifPfiiiiiiiiiiiS_S_S_S_S_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 492 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb2_mriqiiPfS_S_S_S_ii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb2_mriqiiPfS_S_S_S_ii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 408 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mriqiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mriqiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 412 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mriqiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mriqiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 36 registers, 404 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z17ori_ComputePhiMagPfS_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z17ori_ComputePhiMagPfS_S_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb2_cpifPfiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb2_cpifPfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ptb_cpifPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z6ptb_cpifPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 388 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ori_cpifPfi' for 'sm_75'
+ptxas info    : Function properties for _Z6ori_cpifPfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 372 bytes cmem[0]
+nvcc -o cp_sgemm_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca cp_sgemm.cu
+cp_sgemm.cu(67): warning #177-D: variable "cp_blks" was declared but never referenced
+    int cp_blks = 4;
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cp_sgemm.cu(169): warning #550-D: variable "host_sgemm_ptb_c" was set but never used
+          float *host_sgemm_ptb_c;
+                 ^
+
+ptxas info    : 0 bytes gmem, 1024 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z21mixed_cp_sgemm_kernelifPfiiiiiiiiiS_S_S_iiiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z21mixed_cp_sgemm_kernelifPfiiiiiiiiiS_S_S_iiiiiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 480 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z10ptb2_sgemmPfS_S_iiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_sgemmPfS_S_iiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 400 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_sgemmPfS_S_iiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_sgemmPfS_S_iiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_sgemmPfS_S_iiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_sgemmPfS_S_iiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, 512 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb2_cpifPfiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb2_cpifPfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ptb_cpifPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z6ptb_cpifPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 388 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ori_cpifPfi' for 'sm_75'
+ptxas info    : Function properties for _Z6ori_cpifPfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 372 bytes cmem[0]
+nvcc -o cp_tpacf_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca cp_tpacf.cu
+cp_tpacf.cu(67): warning #177-D: variable "cp_blks" was declared but never referenced
+    int cp_blks = 4;
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cp_tpacf.cu(185): warning #550-D: variable "host_tpacf_ptb_hists" was set but never used
+          hist_t *host_tpacf_ptb_hists;
+                  ^
+
+ptxas info    : 0 bytes gmem, 1108 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z21mixed_cp_tpacf_kernelifPfiiiiiiiiiPmS_S_S_iiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z21mixed_cp_tpacf_kernelifPfiiiiiiiiiPmS_S_S_iiiiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, 13312 bytes smem, 484 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_tpacfPmPfS0_S0_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_tpacfPmPfS0_S0_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 47 registers, 13312 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_tpacfPmPfS0_S0_iii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_tpacfPmPfS0_S0_iii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, 13312 bytes smem, 396 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ptb2_cpifPfiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb2_cpifPfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ptb_cpifPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z6ptb_cpifPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, 388 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z6ori_cpifPfi' for 'sm_75'
+ptxas info    : Function properties for _Z6ori_cpifPfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 372 bytes cmem[0]
+nvcc -o cutcp_fft_mix -I../ --ptxas-options=-v ../file_t/readatom.o -lcublas -lm -lpthread -arch=sm_75 -lcurand -Xptxas -dlcm=ca cutcp_fft.cu
+cutcp_fft.cu(102): warning #550-D: variable "host_cutcp_ptb_regionZeroCuda" was set but never used
+          float *cutcp_ptb_regionZeroCuda, *host_cutcp_ptb_regionZeroCuda;
+                                            ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cutcp_fft.cu(114): warning #177-D: variable "zRegionDim" was declared but never referenced
+          int zRegionDim = 26;
+              ^
+
+ptxas info    : 24 bytes gmem, 15976 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z22mixed_cutcp_fft_kerneliiP6float4fffPfiiiiiiiiiiP6float2iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z22mixed_cutcp_fft_kerneliiP6float4fffPfiiiiiiiiiiP6float2iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 6144 bytes smem, 476 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ptb_fftP6float2iii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_fftP6float2iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, 2048 bytes smem, 372 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ori_fftP6float2i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_fftP6float2i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 2048 bytes smem, 364 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z10ptb2_cutcpiiP6float4fffPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_cutcpiiP6float4fffPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 4096 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_cutcpiiP6float4fffPfiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_cutcpiiP6float4fffPfiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 424 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_cutcpiiP6float4fffPfii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_cutcpiiP6float4fffPfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, 4096 bytes smem, 400 bytes cmem[0], 8 bytes cmem[2]
+nvcc -o cutcp_lbm_mix -I../ --ptxas-options=-v ../file_t/readatom.o -lcublas -lm -arch=sm_75 -lcurand -Xptxas -dlcm=ca cutcp_lbm.cu
+cutcp_lbm.cu(102): warning #550-D: variable "host_cutcp_ptb_regionZeroCuda" was set but never used
+          float *cutcp_ptb_regionZeroCuda, *host_cutcp_ptb_regionZeroCuda;
+                                            ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cutcp_lbm.cu(114): warning #177-D: variable "zRegionDim" was declared but never referenced
+          int zRegionDim = 26;
+              ^
+
+cutcp_lbm.cu(213): warning #550-D: variable "host_lbm_ptb_dst" was set but never used
+          float *host_lbm_ptb_dst;
+                 ^
+
+ptxas info    : 0 bytes gmem, 15976 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z22mixed_cutcp_lbm_kerneliiP6float4fffPfiiiiiiiiiiS1_S1_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z22mixed_cutcp_lbm_kerneliiP6float4fffPfiiiiiiiiiiS1_S1_iiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 51 registers, 4096 bytes smem, 484 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ptb_lbmPfS_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_lbmPfS_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ori_lbmPfS_i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_lbmPfS_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 372 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z10ptb2_cutcpiiP6float4fffPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_cutcpiiP6float4fffPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 4096 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_cutcpiiP6float4fffPfiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_cutcpiiP6float4fffPfiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 424 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_cutcpiiP6float4fffPfii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_cutcpiiP6float4fffPfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, 4096 bytes smem, 400 bytes cmem[0], 8 bytes cmem[2]
+nvcc -o cutcp_mrif_mix -I../ --ptxas-options=-v ../file_t/readatom.o -lcublas -lm -lpthread -arch=sm_75 -lcurand -Xptxas -dlcm=ca cutcp_mrif.cu
+cutcp_mrif.cu(102): warning #550-D: variable "host_cutcp_ptb_regionZeroCuda" was set but never used
+          float *cutcp_ptb_regionZeroCuda, *host_cutcp_ptb_regionZeroCuda;
+                                            ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cutcp_mrif.cu(114): warning #177-D: variable "zRegionDim" was declared but never referenced
+          int zRegionDim = 26;
+              ^
+
+cutcp_mrif.cu(241): warning #550-D: variable "host_ptb_outI" was set but never used
+          float *host_ptb_outI;
+                 ^
+
+ptxas info    : 24 bytes gmem, 21096 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z23mixed_cutcp_mrif_kerneliiP6float4fffPfiiiiiiiiiiiiS1_S1_S1_S1_S1_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z23mixed_cutcp_mrif_kerneliiP6float4fffPfiiiiiiiiiiiiS1_S1_S1_S1_S1_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 516 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mrifiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mrifiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, 412 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mrifiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mrifiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 37 registers, 404 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z16ComputeRhoPhiGPUiPfS_S_S_S_S_' for 'sm_75'
+ptxas info    : Function properties for _Z16ComputeRhoPhiGPUiPfS_S_S_S_S_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z10ptb2_cutcpiiP6float4fffPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_cutcpiiP6float4fffPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 4096 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_cutcpiiP6float4fffPfiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_cutcpiiP6float4fffPfiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 424 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_cutcpiiP6float4fffPfii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_cutcpiiP6float4fffPfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, 4096 bytes smem, 400 bytes cmem[0], 8 bytes cmem[2]
+nvcc -o cutcp_mriq_mix -I../ --ptxas-options=-v ../file_t/readatom.o -lcublas -lm -arch=sm_75 -lcurand -Xptxas -dlcm=ca cutcp_mriq.cu
+cutcp_mriq.cu(102): warning #550-D: variable "host_cutcp_ptb_regionZeroCuda" was set but never used
+          float *cutcp_ptb_regionZeroCuda, *host_cutcp_ptb_regionZeroCuda;
+                                            ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cutcp_mriq.cu(114): warning #177-D: variable "zRegionDim" was declared but never referenced
+          int zRegionDim = 26;
+              ^
+
+cutcp_mriq.cu(227): warning #550-D: variable "host_mriq_ptb_Qi" was set but never used
+          float *mriq_ptb_Qr, *mriq_ptb_Qi, *host_mriq_ptb_Qi;
+                                             ^
+
+ptxas info    : 24 bytes gmem, 32360 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z23mixed_cutcp_mriq_kerneliiP6float4fffPfiiiiiiiiiiiiS1_S1_S1_S1_S1_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z23mixed_cutcp_mriq_kerneliiP6float4fffPfiiiiiiiiiiiiS1_S1_S1_S1_S1_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 516 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb2_mriqiiPfS_S_S_S_ii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb2_mriqiiPfS_S_S_S_ii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 408 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mriqiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mriqiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 412 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mriqiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mriqiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 36 registers, 404 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z17ori_ComputePhiMagPfS_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z17ori_ComputePhiMagPfS_S_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z10ptb2_cutcpiiP6float4fffPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_cutcpiiP6float4fffPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 4096 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_cutcpiiP6float4fffPfiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_cutcpiiP6float4fffPfiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 424 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_cutcpiiP6float4fffPfii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_cutcpiiP6float4fffPfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, 4096 bytes smem, 400 bytes cmem[0], 8 bytes cmem[2]
+nvcc -o cutcp_sgemm_mix -I../ --ptxas-options=-v ../file_t/readatom.o -lcublas -lm -arch=sm_75 -lcurand -Xptxas -dlcm=ca cutcp_sgemm.cu
+cutcp_sgemm.cu(102): warning #550-D: variable "host_cutcp_ptb_regionZeroCuda" was set but never used
+          float *cutcp_ptb_regionZeroCuda, *host_cutcp_ptb_regionZeroCuda;
+                                            ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cutcp_sgemm.cu(114): warning #177-D: variable "zRegionDim" was declared but never referenced
+          int zRegionDim = 26;
+              ^
+
+cutcp_sgemm.cu(216): warning #550-D: variable "host_sgemm_ptb_c" was set but never used
+          float *host_sgemm_ptb_c;
+                 ^
+
+ptxas info    : 0 bytes gmem, 15976 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z24mixed_cutcp_sgemm_kerneliiP6float4fffPfiiiiiiiiiiS1_S1_S1_iiiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z24mixed_cutcp_sgemm_kerneliiP6float4fffPfiiiiiiiiiiS1_S1_S1_iiiiiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 4608 bytes smem, 504 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z10ptb2_sgemmPfS_S_iiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_sgemmPfS_S_iiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 400 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_sgemmPfS_S_iiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_sgemmPfS_S_iiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_sgemmPfS_S_iiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_sgemmPfS_S_iiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, 512 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z10ptb2_cutcpiiP6float4fffPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_cutcpiiP6float4fffPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 4096 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_cutcpiiP6float4fffPfiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_cutcpiiP6float4fffPfiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 424 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_cutcpiiP6float4fffPfii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_cutcpiiP6float4fffPfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, 4096 bytes smem, 400 bytes cmem[0], 8 bytes cmem[2]
+nvcc -o cutcp_tpacf_mix -I../ --ptxas-options=-v ../file_t/readatom.o -lcublas -lm -arch=sm_75 -lcurand -Xptxas -dlcm=ca cutcp_tpacf.cu
+cutcp_tpacf.cu(102): warning #550-D: variable "host_cutcp_ptb_regionZeroCuda" was set but never used
+          float *cutcp_ptb_regionZeroCuda, *host_cutcp_ptb_regionZeroCuda;
+                                            ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+cutcp_tpacf.cu(114): warning #177-D: variable "zRegionDim" was declared but never referenced
+          int zRegionDim = 26;
+              ^
+
+cutcp_tpacf.cu(232): warning #550-D: variable "host_tpacf_ptb_hists" was set but never used
+          hist_t *host_tpacf_ptb_hists;
+                  ^
+
+ptxas info    : 0 bytes gmem, 16060 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z24mixed_cutcp_tpacf_kerneliiP6float4fffPfiiiiiiiiiiPmS1_S1_S1_iiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z24mixed_cutcp_tpacf_kerneliiP6float4fffPfiiiiiiiiiiPmS1_S1_S1_iiiiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, 17408 bytes smem, 508 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_tpacfPmPfS0_S0_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_tpacfPmPfS0_S0_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 47 registers, 13312 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_tpacfPmPfS0_S0_iii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_tpacfPmPfS0_S0_iii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, 13312 bytes smem, 396 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z10ptb2_cutcpiiP6float4fffPfiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_cutcpiiP6float4fffPfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 4096 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_cutcpiiP6float4fffPfiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_cutcpiiP6float4fffPfiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, 4096 bytes smem, 424 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_cutcpiiP6float4fffPfii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_cutcpiiP6float4fffPfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, 4096 bytes smem, 400 bytes cmem[0], 8 bytes cmem[2]
+nvcc -o fft_lbm_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca fft_lbm.cu
+fft_lbm.cu(168): warning #550-D: variable "host_lbm_ptb_dst" was set but never used
+          float *host_lbm_ptb_dst;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+ptxas info    : 24 bytes gmem
+ptxas info    : Compiling entry function '_Z20mixed_fft_lbm_kernelP6float2iiiiiiiiiPfS1_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z20mixed_fft_lbm_kernelP6float2iiiiiiiiiPfS1_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, 2048 bytes smem, 452 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ptb_lbmPfS_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_lbmPfS_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ori_lbmPfS_i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_lbmPfS_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 372 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_fftP6float2iii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_fftP6float2iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, 2048 bytes smem, 372 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ori_fftP6float2i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_fftP6float2i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 2048 bytes smem, 364 bytes cmem[0], 16 bytes cmem[2]
+nvcc -o fft_mrif_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread fft_mrif.cu
+fft_mrif.cu(196): warning #550-D: variable "host_ptb_outI" was set but never used
+          float *host_ptb_outI;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+ptxas info    : 24 bytes gmem, 5120 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z21mixed_fft_mrif_kernelP6float2iiiiiiiiiiiPfS1_S1_S1_S1_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z21mixed_fft_mrif_kernelP6float2iiiiiiiiiiiPfS1_S1_S1_S1_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, 2048 bytes smem, 484 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mrifiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mrifiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, 412 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mrifiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mrifiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 37 registers, 404 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z16ComputeRhoPhiGPUiPfS_S_S_S_S_' for 'sm_75'
+ptxas info    : Function properties for _Z16ComputeRhoPhiGPUiPfS_S_S_S_S_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_fftP6float2iii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_fftP6float2iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, 2048 bytes smem, 372 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ori_fftP6float2i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_fftP6float2i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 2048 bytes smem, 364 bytes cmem[0], 16 bytes cmem[2]
+nvcc -o fft_mriq_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca fft_mriq.cu
+fft_mriq.cu(182): warning #550-D: variable "host_mriq_ptb_Qi" was set but never used
+          float *mriq_ptb_Qr, *mriq_ptb_Qi, *host_mriq_ptb_Qi;
+                                             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+ptxas info    : 24 bytes gmem, 16384 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z21mixed_fft_mriq_kernelP6float2iiiiiiiiiiiPfS1_S1_S1_S1_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z21mixed_fft_mriq_kernelP6float2iiiiiiiiiiiPfS1_S1_S1_S1_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 2048 bytes smem, 484 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb2_mriqiiPfS_S_S_S_ii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb2_mriqiiPfS_S_S_S_ii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 408 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mriqiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mriqiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mriqiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mriqiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 36 registers, 404 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z17ori_ComputePhiMagPfS_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z17ori_ComputePhiMagPfS_S_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_fftP6float2iii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_fftP6float2iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, 2048 bytes smem, 372 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ori_fftP6float2i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_fftP6float2i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 2048 bytes smem, 364 bytes cmem[0], 16 bytes cmem[2]
+nvcc -o fft_sgemm_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca fft_sgemm.cu
+fft_sgemm.cu(171): warning #550-D: variable "host_sgemm_ptb_c" was set but never used
+          float *host_sgemm_ptb_c;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+ptxas info    : 24 bytes gmem
+ptxas info    : Compiling entry function '_Z22mixed_fft_sgemm_kernelP6float2iiiiiiiiiPfS1_S1_iiiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z22mixed_fft_sgemm_kernelP6float2iiiiiiiiiPfS1_S1_iiiiiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 2560 bytes smem, 472 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z10ptb2_sgemmPfS_S_iiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_sgemmPfS_S_iiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 400 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_sgemmPfS_S_iiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_sgemmPfS_S_iiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_sgemmPfS_S_iiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_sgemmPfS_S_iiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, 512 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_fftP6float2iii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_fftP6float2iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, 2048 bytes smem, 372 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ori_fftP6float2i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_fftP6float2i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 2048 bytes smem, 364 bytes cmem[0], 16 bytes cmem[2]
+nvcc -o fft_tpacf_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca fft_tpacf.cu
+fft_tpacf.cu(187): warning #550-D: variable "host_tpacf_ptb_hists" was set but never used
+          hist_t *host_tpacf_ptb_hists;
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+ptxas info    : 24 bytes gmem, 84 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z22mixed_fft_tpacf_kernelP6float2iiiiiiiiiPmPfS2_S2_iiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z22mixed_fft_tpacf_kernelP6float2iiiiiiiiiPmPfS2_S2_iiiiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 55 registers, 15360 bytes smem, 476 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_tpacfPmPfS0_S0_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_tpacfPmPfS0_S0_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 45 registers, 13312 bytes smem, 412 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_tpacfPmPfS0_S0_iii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_tpacfPmPfS0_S0_iii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, 13312 bytes smem, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_fftP6float2iii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_fftP6float2iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, 2048 bytes smem, 372 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7ori_fftP6float2i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_fftP6float2i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 2048 bytes smem, 364 bytes cmem[0], 16 bytes cmem[2]
+nvcc -o lbm_mrif_mix -I../ --ptxas-options=-v -lcublas -lm -lpthread -arch=sm_75 -lcurand -Xptxas -dlcm=ca lbm_mrif.cu
+lbm_mrif.cu(76): warning #550-D: variable "host_lbm_ptb_dst" was set but never used
+          float *host_lbm_ptb_dst;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+lbm_mrif.cu(197): warning #550-D: variable "host_ptb_outI" was set but never used
+          float *host_ptb_outI;
+                 ^
+
+ptxas info    : 24 bytes gmem, 5120 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z21mixed_lbm_mrif_kernelPfS_iiiiiiiiiiiS_S_S_S_S_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z21mixed_lbm_mrif_kernelPfS_iiiiiiiiiiiS_S_S_S_S_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, 492 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mrifiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mrifiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, 412 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mrifiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mrifiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 37 registers, 404 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z16ComputeRhoPhiGPUiPfS_S_S_S_S_' for 'sm_75'
+ptxas info    : Function properties for _Z16ComputeRhoPhiGPUiPfS_S_S_S_S_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_lbmPfS_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_lbmPfS_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ori_lbmPfS_i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_lbmPfS_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 372 bytes cmem[0]
+nvcc -o lbm_mriq_mix -I../ --ptxas-options=-v -lcublas -arch=sm_75 -lcurand -Xptxas -dlcm=ca lbm_mriq.cu
+lbm_mriq.cu(76): warning #550-D: variable "host_lbm_ptb_dst" was set but never used
+          float *host_lbm_ptb_dst;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+lbm_mriq.cu(183): warning #550-D: variable "host_mriq_ptb_Qi" was set but never used
+          float *mriq_ptb_Qr, *mriq_ptb_Qi, *host_mriq_ptb_Qi;
+                                             ^
+
+ptxas info    : 24 bytes gmem, 16384 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z21mixed_lbm_mriq_kernelPfS_iiiiiiiiiiiS_S_S_S_S_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z21mixed_lbm_mriq_kernelPfS_iiiiiiiiiiiS_S_S_S_S_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, 492 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb2_mriqiiPfS_S_S_S_ii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb2_mriqiiPfS_S_S_S_ii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 408 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mriqiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mriqiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mriqiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mriqiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 36 registers, 404 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z17ori_ComputePhiMagPfS_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z17ori_ComputePhiMagPfS_S_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_lbmPfS_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_lbmPfS_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ori_lbmPfS_i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_lbmPfS_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 372 bytes cmem[0]
+nvcc -o lbm_sgemm_mix -I../ --ptxas-options=-v -lcublas -arch=sm_75 -lcurand -Xptxas -dlcm=ca lbm_sgemm.cu
+lbm_sgemm.cu(76): warning #550-D: variable "host_lbm_ptb_dst" was set but never used
+          float *host_lbm_ptb_dst;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+lbm_sgemm.cu(172): warning #550-D: variable "host_sgemm_ptb_c" was set but never used
+          float *host_sgemm_ptb_c;
+                 ^
+
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z22mixed_lbm_sgemm_kernelPfS_iiiiiiiiiS_S_S_iiiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z22mixed_lbm_sgemm_kernelPfS_iiiiiiiiiS_S_S_iiiiiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 480 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z10ptb2_sgemmPfS_S_iiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_sgemmPfS_S_iiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 400 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_sgemmPfS_S_iiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_sgemmPfS_S_iiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_sgemmPfS_S_iiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_sgemmPfS_S_iiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, 512 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_lbmPfS_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_lbmPfS_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ori_lbmPfS_i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_lbmPfS_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 372 bytes cmem[0]
+nvcc -o lbm_tpacf_mix -I../ --ptxas-options=-v -lcublas -arch=sm_75 -lcurand -Xptxas -dlcm=ca lbm_tpacf.cu
+In file included from lbm_tpacf.cu:48:0:
+../header/tpacf_header.h:18:0: warning: "BLOCK_SIZE" redefined
+ #define BLOCK_SIZE 256
+ 
+In file included from lbm_tpacf.cu:45:0:
+../header/lbm_header.h:53:0: note: this is the location of the previous definition
+ #define BLOCK_SIZE SIZE_X
+ 
+In file included from lbm_tpacf.cu:48:0:
+../header/tpacf_header.h:18:0: warning: "BLOCK_SIZE" redefined
+ #define BLOCK_SIZE 256
+ 
+In file included from lbm_tpacf.cu:45:0:
+../header/lbm_header.h:53:0: note: this is the location of the previous definition
+ #define BLOCK_SIZE SIZE_X
+ 
+lbm_tpacf.cu(76): warning #550-D: variable "host_lbm_ptb_dst" was set but never used
+          float *host_lbm_ptb_dst;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+lbm_tpacf.cu(188): warning #550-D: variable "host_tpacf_ptb_hists" was set but never used
+          hist_t *host_tpacf_ptb_hists;
+                  ^
+
+ptxas info    : 0 bytes gmem, 84 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z22mixed_lbm_tpacf_kernelPfS_iiiiiiiiiPmS_S_S_iiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z22mixed_lbm_tpacf_kernelPfS_iiiiiiiiiPmS_S_S_iiiiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, 13312 bytes smem, 484 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_tpacfPmPfS0_S0_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_tpacfPmPfS0_S0_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 45 registers, 13312 bytes smem, 412 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_tpacfPmPfS0_S0_iii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_tpacfPmPfS0_S0_iii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, 13312 bytes smem, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ptb_lbmPfS_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z7ptb_lbmPfS_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z7ori_lbmPfS_i' for 'sm_75'
+ptxas info    : Function properties for _Z7ori_lbmPfS_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, 372 bytes cmem[0]
+nvcc -o mrif_mriq_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca mrif_mriq.cu
+In file included from mrif_mriq.cu:48:0:
+../header/mriq_header.h:1:0: warning: "PI" redefined
+ #define PI   3.1415926535897932384626433832795029f
+ 
+In file included from mrif_mriq.cu:45:0:
+../header/mrif_header.h:5:0: note: this is the location of the previous definition
+ #define PI   3.1415926535897932384626433832795029
+ 
+In file included from mrif_mriq.cu:48:0:
+../header/mriq_header.h:2:0: warning: "PIx2" redefined
+ #define PIx2 6.2831853071795864769252867665590058f
+ 
+In file included from mrif_mriq.cu:45:0:
+../header/mrif_header.h:6:0: note: this is the location of the previous definition
+ #define PIx2 6.2831853071795864769252867665590058
+ 
+In file included from mrif_mriq.cu:48:0:
+../header/mriq_header.h:1:0: warning: "PI" redefined
+ #define PI   3.1415926535897932384626433832795029f
+ 
+In file included from mrif_mriq.cu:45:0:
+../header/mrif_header.h:5:0: note: this is the location of the previous definition
+ #define PI   3.1415926535897932384626433832795029
+ 
+In file included from mrif_mriq.cu:48:0:
+../header/mriq_header.h:2:0: warning: "PIx2" redefined
+ #define PIx2 6.2831853071795864769252867665590058f
+ 
+In file included from mrif_mriq.cu:45:0:
+../header/mrif_header.h:6:0: note: this is the location of the previous definition
+ #define PIx2 6.2831853071795864769252867665590058
+ 
+mrif_mriq.cu(104): warning #550-D: variable "host_ptb_outI" was set but never used
+          float *host_ptb_outI;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+mrif_mriq.cu(257): warning #550-D: variable "host_mriq_ptb_Qi" was set but never used
+          float *mriq_ptb_Qr, *mriq_ptb_Qi, *host_mriq_ptb_Qi;
+                                             ^
+
+ptxas info    : 24 bytes gmem, 21504 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z22mixed_mrif_mriq_kerneliiPfS_S_S_S_iiiiiiiiiiiS_S_S_S_S_iiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z22mixed_mrif_mriq_kerneliiPfS_S_S_S_iiiiiiiiiiiS_S_S_S_S_iiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, 524 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb2_mriqiiPfS_S_S_S_ii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb2_mriqiiPfS_S_S_S_ii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 408 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mriqiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mriqiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 412 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mriqiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mriqiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 36 registers, 404 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z17ori_ComputePhiMagPfS_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z17ori_ComputePhiMagPfS_S_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 380 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z8ptb_mrifiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mrifiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, 412 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mrifiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mrifiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 37 registers, 404 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z16ComputeRhoPhiGPUiPfS_S_S_S_S_' for 'sm_75'
+ptxas info    : Function properties for _Z16ComputeRhoPhiGPUiPfS_S_S_S_S_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, 408 bytes cmem[0]
+nvcc -o mrif_sgemm_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca mrif_sgemm.cu
+mrif_sgemm.cu(104): warning #550-D: variable "host_ptb_outI" was set but never used
+          float *host_ptb_outI;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+mrif_sgemm.cu(246): warning #550-D: variable "host_sgemm_ptb_c" was set but never used
+          float *host_sgemm_ptb_c;
+                 ^
+
+ptxas info    : 24 bytes gmem, 5120 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z23mixed_mrif_sgemm_kerneliiPfS_S_S_S_iiiiiiiiiS_S_S_iiiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z23mixed_mrif_sgemm_kerneliiPfS_S_S_S_iiiiiiiiiS_S_S_iiiiiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 512 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z10ptb2_sgemmPfS_S_iiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_sgemmPfS_S_iiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 400 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_sgemmPfS_S_iiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_sgemmPfS_S_iiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_sgemmPfS_S_iiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_sgemmPfS_S_iiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, 512 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z8ptb_mrifiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mrifiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, 412 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mrifiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mrifiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 37 registers, 404 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z16ComputeRhoPhiGPUiPfS_S_S_S_S_' for 'sm_75'
+ptxas info    : Function properties for _Z16ComputeRhoPhiGPUiPfS_S_S_S_S_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, 408 bytes cmem[0]
+nvcc -o mrif_tpacf_mix -I../ --ptxas-options=-v -lcublas -lcurand -lm -arch=sm_75 -lpthread -Xptxas -dlcm=ca mrif_tpacf.cu
+mrif_tpacf.cu(104): warning #550-D: variable "host_ptb_outI" was set but never used
+          float *host_ptb_outI;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+mrif_tpacf.cu(262): warning #550-D: variable "host_tpacf_ptb_hists" was set but never used
+          hist_t *host_tpacf_ptb_hists;
+                  ^
+
+ptxas info    : 24 bytes gmem, 5204 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z23mixed_mrif_tpacf_kerneliiPfS_S_S_S_iiiiiiiiiPmS_S_S_iiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z23mixed_mrif_tpacf_kerneliiPfS_S_S_S_iiiiiiiiiPmS_S_S_iiiiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, 13312 bytes smem, 516 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_tpacfPmPfS0_S0_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_tpacfPmPfS0_S0_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 47 registers, 13312 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_tpacfPmPfS0_S0_iii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_tpacfPmPfS0_S0_iii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, 13312 bytes smem, 396 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mrifiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mrifiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, 412 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mrifiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mrifiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 37 registers, 404 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z16ComputeRhoPhiGPUiPfS_S_S_S_S_' for 'sm_75'
+ptxas info    : Function properties for _Z16ComputeRhoPhiGPUiPfS_S_S_S_S_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, 408 bytes cmem[0]
+nvcc -o mriq_sgemm_mix -I../ --ptxas-options=-v -lcublas -arch=sm_75 -lcurand -Xptxas -dlcm=ca mriq_sgemm.cu
+mriq_sgemm.cu(90): warning #550-D: variable "host_mriq_ptb_Qi" was set but never used
+          float *mriq_ptb_Qr, *mriq_ptb_Qi, *host_mriq_ptb_Qi;
+                                             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+mriq_sgemm.cu(248): warning #550-D: variable "host_sgemm_ptb_c" was set but never used
+          float *host_sgemm_ptb_c;
+                 ^
+
+ptxas info    : 24 bytes gmem, 16384 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z23mixed_mriq_sgemm_kerneliiPfS_S_S_S_iiiiiiiiiS_S_S_iiiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z23mixed_mriq_sgemm_kerneliiPfS_S_S_S_iiiiiiiiiS_S_S_iiiiiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 512 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z10ptb2_sgemmPfS_S_iiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_sgemmPfS_S_iiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 400 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_sgemmPfS_S_iiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_sgemmPfS_S_iiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_sgemmPfS_S_iiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_sgemmPfS_S_iiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, 512 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb2_mriqiiPfS_S_S_S_ii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb2_mriqiiPfS_S_S_S_ii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 408 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mriqiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mriqiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mriqiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mriqiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 36 registers, 404 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z17ori_ComputePhiMagPfS_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z17ori_ComputePhiMagPfS_S_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 380 bytes cmem[0]
+nvcc -o mriq_tpacf_mix -I../ --ptxas-options=-v -lcublas -arch=sm_75 -lcurand -Xptxas -dlcm=ca mriq_tpacf.cu
+mriq_tpacf.cu(90): warning #550-D: variable "host_mriq_ptb_Qi" was set but never used
+          float *mriq_ptb_Qr, *mriq_ptb_Qi, *host_mriq_ptb_Qi;
+                                             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+mriq_tpacf.cu(264): warning #550-D: variable "host_tpacf_ptb_hists" was set but never used
+          hist_t *host_tpacf_ptb_hists;
+                  ^
+
+ptxas info    : 24 bytes gmem, 16468 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z23mixed_mriq_tpacf_kerneliiPfS_S_S_S_iiiiiiiiiPmS_S_S_iiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z23mixed_mriq_tpacf_kerneliiPfS_S_S_S_iiiiiiiiiPmS_S_S_iiiiiiiiiii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, 13312 bytes smem, 516 bytes cmem[0], 16 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb_tpacfPmPfS0_S0_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_tpacfPmPfS0_S0_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 47 registers, 13312 bytes smem, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ori_tpacfPmPfS0_S0_iii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_tpacfPmPfS0_S0_iii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, 13312 bytes smem, 396 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z9ptb2_mriqiiPfS_S_S_S_ii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb2_mriqiiPfS_S_S_S_ii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 408 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ptb_mriqiiPfS_S_S_S_iii' for 'sm_75'
+ptxas info    : Function properties for _Z8ptb_mriqiiPfS_S_S_S_iii
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, 412 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z8ori_mriqiiPfS_S_S_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z8ori_mriqiiPfS_S_S_S_i
+    32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 36 registers, 404 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z17ori_ComputePhiMagPfS_S_i' for 'sm_75'
+ptxas info    : Function properties for _Z17ori_ComputePhiMagPfS_S_i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 380 bytes cmem[0]
+nvcc -o sgemm_tpacf_mix -I../ --ptxas-options=-v -lcublas -arch=sm_75 -lcurand -Xptxas -dlcm=ca sgemm_tpacf.cu
+sgemm_tpacf.cu(78): warning #550-D: variable "host_sgemm_ori_c" was set but never used
+          float *host_sgemm_ori_c;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+sgemm_tpacf.cu(79): warning #550-D: variable "host_sgemm_ptb_c" was set but never used
+          float *host_sgemm_ptb_c;
+                 ^
+
+sgemm_tpacf.cu(80): warning #550-D: variable "host_sgemm_gptb_c" was set but never used
+          float *host_sgemm_gptb_c;
+                 ^
+
+sgemm_tpacf.cu(199): warning #550-D: variable "host_tpacf_ptb_hists" was set but never used
+          hist_t *host_tpacf_ptb_hists;
+                  ^
+
+ptxas info    : 0 bytes gmem, 84 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z24mixed_sgemm_tpacf_kernelPfS_S_iiiiiiiiiiiiPmS_S_S_iiiiiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z24mixed_sgemm_tpacf_kernelPfS_S_iiiiiiiiiiiiPmS_S_S_iiiiiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 13824 bytes smem, 500 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_tpacfPmPfS0_S0_iiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_tpacfPmPfS0_S0_iiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 45 registers, 13312 bytes smem, 412 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_tpacfPmPfS0_S0_iii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_tpacfPmPfS0_S0_iii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, 13312 bytes smem, 396 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z10ptb2_sgemmPfS_S_iiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z10ptb2_sgemmPfS_S_iiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 400 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ptb_sgemmPfS_S_iiiiiiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ptb_sgemmPfS_S_iiiiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 512 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z9ori_sgemmPfS_S_iiii' for 'sm_75'
+ptxas info    : Function properties for _Z9ori_sgemmPfS_S_iiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, 512 bytes smem, 392 bytes cmem[0]
+All finished

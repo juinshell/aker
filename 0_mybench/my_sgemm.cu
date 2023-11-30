@@ -1,0 +1,185 @@
+#include <stdio.h>
+#include <curand.h>
+#include <cublas_v2.h>
+
+// Define some error checking macros.
+#define cudaErrCheck(stat) { cudaErrCheck_((stat), __FILE__, __LINE__); }
+void cudaErrCheck_(cudaError_t stat, const char *file, int line) {
+   if (stat != cudaSuccess) {
+      fprintf(stderr, "CUDA Error: %s %s %d\n", cudaGetErrorString(stat), file, line);
+   }
+}
+
+#define curandErrCheck(stat) { curandErrCheck_((stat), __FILE__, __LINE__); }
+void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
+   if (stat != CURAND_STATUS_SUCCESS) {
+      fprintf(stderr, "cuRand Error: %d %s %d\n", stat, file, line);
+   }
+}
+
+#define checkKernelErrors(expr)                             \
+  do {                                                      \
+    expr;                                                   \
+                                                            \
+    cudaError_t __err = cudaGetLastError();                 \
+    if (__err != cudaSuccess) {                             \
+      printf("Line %d: '%s' failed: %s\n", __LINE__, #expr, \
+             cudaGetErrorString(__err));                    \
+      abort();                                              \
+    }                                                       \
+  } while (0)
+
+
+#include <mma.h>
+using namespace nvcuda; 
+
+#include "header/sgemm_header.h"
+#include "file_t/sgemm_kernel.cu"
+
+
+int main(int argc, char* argv[]) {
+    int sgemm_blks = 4;
+    int sgemm_iter = 1;
+    if (argc == 3) {
+        sgemm_blks = atoi(argv[1]);
+        sgemm_iter = atoi(argv[2]);
+    }
+
+    // variables
+    // ---------------------------------------------------------------------------------------
+        float kernel_time;
+        cudaEvent_t startKERNEL;
+        cudaEvent_t stopKERNEL;
+        cudaErrCheck(cudaEventCreate(&startKERNEL));
+        cudaErrCheck(cudaEventCreate(&stopKERNEL));
+    // ---------------------------------------------------------------------------------------
+
+    // sgemm variables
+    // ---------------------------------------------------------------------------------------
+        float *sgemm_ori_a;
+        float *sgemm_ori_b;
+        float *sgemm_ori_c;
+        float *sgemm_ptb_a;
+        float *sgemm_ptb_b;
+        float *sgemm_ptb_c;
+        float *host_sgemm_ori_c;
+        float *host_sgemm_ptb_c;
+
+        // parallel experiment
+        int NORMAL_M = 4096;
+        int NORMAL_N = 4128;
+        int NORMAL_K = 4064;
+
+        NORMAL_M = (NORMAL_M / 10) * sgemm_iter;
+
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ori_a, NORMAL_M * NORMAL_K * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ori_b, NORMAL_K * NORMAL_N * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ori_c, NORMAL_M * NORMAL_N * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ptb_a, NORMAL_M * NORMAL_K * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ptb_b, NORMAL_K * NORMAL_N * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ptb_c, NORMAL_M * NORMAL_N * sizeof(float)));
+
+        host_sgemm_ori_c = (float *)malloc(NORMAL_M * NORMAL_N * sizeof(float));
+        host_sgemm_ptb_c = (float *)malloc(NORMAL_M * NORMAL_N * sizeof(float));
+
+        curandGenerator_t gen;
+        curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
+        curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
+        curandErrCheck(curandGenerateUniform(gen, sgemm_ori_a, NORMAL_M * NORMAL_K));
+        curandErrCheck(curandGenerateUniform(gen, sgemm_ori_b, NORMAL_K * NORMAL_N));
+        cudaErrCheck(cudaMemcpy(sgemm_ptb_a, sgemm_ori_a, NORMAL_M * NORMAL_K * sizeof(float), cudaMemcpyDeviceToDevice));
+        cudaErrCheck(cudaMemcpy(sgemm_ptb_b, sgemm_ori_b, NORMAL_K * NORMAL_N * sizeof(float), cudaMemcpyDeviceToDevice));
+        curandErrCheck(curandDestroyGenerator(gen));
+    // ---------------------------------------------------------------------------------------
+
+
+    // SOLO running
+    // ---------------------------------------------------------------------------------------
+        dim3 sgemm_grid;
+        dim3 sgemm_block;
+        sgemm_block.x = TILE_N;
+        sgemm_block.y = TILE_TB_HEIGHT;
+        sgemm_grid.x = NORMAL_M/TILE_M;
+        sgemm_grid.y = NORMAL_N/TILE_N;
+        printf("[ORI] Running with sgemm...\n");
+        printf("[ORI] sgemm_grid -- %d * %d sgemm_block -- %d * %d \n", 
+            sgemm_grid.x, sgemm_grid.y, sgemm_block.x, sgemm_block.y);
+
+        cudaErrCheck(cudaEventRecord(startKERNEL));
+        checkKernelErrors((ori_sgemm <<< sgemm_grid, sgemm_block >>> (
+                    sgemm_ori_a, sgemm_ori_b, sgemm_ori_c, 
+                    NORMAL_M, NORMAL_N, NORMAL_K, 1)));
+        cudaErrCheck(cudaEventRecord(stopKERNEL));
+        cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+        cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        printf("[ORI] sgemm took %f ms\n\n", kernel_time);
+    // ---------------------------------------------------------------------------------------
+
+
+    // PTB running
+    // ---------------------------------------------------------------------------------------
+        int sgemm_grid_dim_x = sgemm_grid.x;
+        int sgemm_grid_dim_y = sgemm_grid.y;
+        // int sgemm_block_dim_x = sgemm_block.x;
+        // int sgemm_block_dim_y = sgemm_block.y;
+        sgemm_grid.x = sgemm_grid_dim_x * sgemm_grid_dim_y;
+        sgemm_grid.x = sgemm_blks == 0 ? sgemm_grid_dim_x * sgemm_grid_dim_y : 68 * sgemm_blks;
+        sgemm_grid.y = 1;
+        // sgemm_block.x = sgemm_block_dim_x * sgemm_block_dim_y;
+        // sgemm_block.y = 1;
+        printf("[PTB] Running with sgemm...\n");
+        printf("[PTB] sgemm_grid -- %d * %d sgemm_block -- %d * %d \n", 
+            sgemm_grid.x, sgemm_grid.y, sgemm_block.x, sgemm_block.y);
+
+        cudaErrCheck(cudaEventRecord(startKERNEL));
+        checkKernelErrors((ptb2_sgemm <<< sgemm_grid, sgemm_block >>> (
+                    sgemm_ptb_a, sgemm_ptb_b, sgemm_ptb_c, 
+                    NORMAL_M, NORMAL_N, NORMAL_K,
+                    sgemm_grid_dim_x, sgemm_grid_dim_y, 
+                    1)));
+        cudaErrCheck(cudaEventRecord(stopKERNEL));
+        cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+        cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        printf("[PTB] sgemm took %f ms\n\n", kernel_time);
+    // ---------------------------------------------------------------------------------------
+    
+
+    // Checking results
+    // ---------------------------------------------------------------------------------------
+        printf("Checking results...\n");
+        cudaErrCheck(cudaMemcpy(host_sgemm_ori_c, sgemm_ori_c, NORMAL_M * NORMAL_N * sizeof(float), cudaMemcpyDeviceToHost));
+        cudaErrCheck(cudaMemcpy(host_sgemm_ptb_c, sgemm_ptb_c, NORMAL_M * NORMAL_N * sizeof(float), cudaMemcpyDeviceToHost));
+
+        int errors = 0;
+        for (int i = 0; i < NORMAL_M * NORMAL_N; i++) {
+            float v1 = host_sgemm_ori_c[i];
+            float v2 = host_sgemm_ptb_c[i];
+            if (fabs(v1 - v2) > 0.001f) {
+            errors++;
+            if (errors < 10) printf("%f %f\n", v1, v2);
+            }
+        }
+        if (errors > 0) {
+            printf("ORIGIN VERSION does not agree with MY VERSION! %d errors!\n", errors);
+        }
+        else {
+            printf("Results verified: ORIGIN VERSION and MY VERSION agree.\n");
+        }
+    // ---------------------------------------------------------------------------------------
+
+    cudaErrCheck(cudaEventDestroy(startKERNEL));
+    cudaErrCheck(cudaEventDestroy(stopKERNEL));
+
+    cudaErrCheck(cudaFree(sgemm_ori_a));
+    cudaErrCheck(cudaFree(sgemm_ori_b));
+    cudaErrCheck(cudaFree(sgemm_ori_c));
+    cudaErrCheck(cudaFree(sgemm_ptb_a));
+    cudaErrCheck(cudaFree(sgemm_ptb_b));
+    cudaErrCheck(cudaFree(sgemm_ptb_c));
+
+    free(host_sgemm_ori_c);
+    free(host_sgemm_ptb_c);
+
+    cudaErrCheck(cudaDeviceReset());
+    return 0;
+}
