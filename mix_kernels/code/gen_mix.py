@@ -129,52 +129,101 @@ kernel_signatures = {
 }
 
 # 从kernel_signatures生成所有的[kernel1, kernel2]可能的pair
-kernel_pairs = []
-for i, kernel1 in enumerate(kernel_signatures):
-    for j, kernel2 in enumerate(kernel_signatures):
-        if i < j:
-            kernel_pairs.append([kernel1, kernel2])
+# kernel_pairs = []
+# for i, kernel1 in enumerate(kernel_signatures):
+#     for j, kernel2 in enumerate(kernel_signatures):
+#         if i < j:
+#             kernel_pairs.append([kernel1, kernel2])
 
-print('len(kernel_pairs): ', len(kernel_pairs))
-print('kernel_pairs: ', kernel_pairs)
+# print('len(kernel_pairs): ', len(kernel_pairs))
+# print('kernel_pairs: ', kernel_pairs)
 
-for kernel1, kernel2 in kernel_pairs:
+# for kernel1, kernel2 in kernel_pairs:
+#     # 判断文件是否存在
+#     file_path = f"/home/jxdeng/workspace/tacker/ptb_kernels/mix_kernel/{kernel1}-{kernel2}.cu"
+#     f = open(file_path, 'w')
+
+#     print("kernel pair: ", kernel1, kernel2)
+ 
+#     generated_list = [] # 去重
+
+#     candidates = fuse_kernel_info(kernel1, kernel2)
+#     for candidate in candidates:
+#         blks_per_sm, ratio_1, ratio_2 = candidate[0], candidate[1], candidate[2]
+#         print(f"// {kernel1}-{kernel2}-{ratio_1}-{ratio_2}", file=f)
+#         mixed_kernel_code = generate_mixed_kernel([kernel_signatures[kernel1], kernel_signatures[kernel2]], blks_per_sm, [ratio_1, ratio_2])
+#         print(mixed_kernel_code, file=f)
+#         generated_list.append((ratio_1, ratio_2))
+    
+#     print("-", kernel1, "as main kernel:")
+#     for candidate in candidates:
+#         reg_per_thread = max(get_kernel_info(kernel1)["register"], get_kernel_info(kernel2)["register"])
+#         print(f"-- {kernel1}_num:", candidate[1], f"{kernel2}_num:", candidate[2], "blks_per_sm:", candidate[0], "reg used:", candidate[1] * reg_per_thread * candidate[0] * get_kernel_info(kernel1)["blocksize"] + candidate[2] * reg_per_thread * candidate[0] * get_kernel_info(kernel2)["blocksize"], "smem used:", candidate[1] * get_kernel_info(kernel1)["shared_memory"] * candidate[0] + candidate[2] * get_kernel_info(kernel2)["shared_memory"] * candidate[0], "thread used:", candidate[1] * get_kernel_info(kernel1)["blocksize"] * candidate[0] + candidate[2] * get_kernel_info(kernel2)["blocksize"] * candidate[0])
+    
+#     print("-", kernel2, "as main kernel:")
+#     candidates_ = fuse_kernel_info(kernel2, kernel1)
+#     for candidate in candidates_:
+#         if (candidate[2], candidate[1]) in generated_list: 
+#             continue
+#         blks_per_sm, ratio_2, ratio_1 = candidate[0], candidate[1], candidate[2]
+#         print(f"// {kernel1}-{kernel2}-{ratio_1}-{ratio_2}", file=f)
+#         mixed_kernel_code = generate_mixed_kernel([kernel_signatures[kernel1], kernel_signatures[kernel2]], blks_per_sm, [ratio_1, ratio_2])
+#         print(mixed_kernel_code, file=f)
+
+#     for candidate in candidates_:
+#         if (candidate[2], candidate[1]) in generated_list:
+#             continue
+#         reg_per_thread = max(get_kernel_info(kernel1)["register"], get_kernel_info(kernel2)["register"])
+#         print(f"-- {kernel1}_num:", candidate[2], f"{kernel2}_num:", candidate[1], "blks_per_sm:", candidate[0], "reg used:", candidate[2] * reg_per_thread * candidate[0] * get_kernel_info(kernel1)["blocksize"] + candidate[1] * reg_per_thread * candidate[0] * get_kernel_info(kernel2)["blocksize"], "smem used:", candidate[2] * get_kernel_info(kernel1)["shared_memory"] * candidate[0] + candidate[1] * get_kernel_info(kernel2)["shared_memory"] * candidate[0], "thread used:", candidate[2] * get_kernel_info(kernel1)["blocksize"] * candidate[0] + candidate[1] * get_kernel_info(kernel2)["blocksize"] * candidate[0])
+    
+#     f.close()
+#     print('\n')
+
+def gen_pair_code_iter(kernel1, kernel2)->list:
     # 判断文件是否存在
-    file_path = f"/home/jxdeng/workspace/tacker/ptb_kernels/mix_kernel/{kernel1}-{kernel2}.cu"
-    f = open(file_path, 'w')
+    # file_path = f"/home/jxdeng/workspace/tacker/ptb_kernels/mix_kernel/{kernel1}-{kernel2}.cu"
+    # f = open(file_path, 'w')
 
     print("kernel pair: ", kernel1, kernel2)
- 
+
     generated_list = [] # 去重
 
     candidates = fuse_kernel_info(kernel1, kernel2)
     for candidate in candidates:
+        ret_code = ""
         blks_per_sm, ratio_1, ratio_2 = candidate[0], candidate[1], candidate[2]
-        print(f"// {kernel1}-{kernel2}-{ratio_1}-{ratio_2}", file=f)
+        ret_code += f"// {kernel1}-{kernel2}-{ratio_1}-{ratio_2}\n"
+        # print(f"// {kernel1}-{kernel2}-{ratio_1}-{ratio_2}", file=f)
         mixed_kernel_code = generate_mixed_kernel([kernel_signatures[kernel1], kernel_signatures[kernel2]], blks_per_sm, [ratio_1, ratio_2])
-        print(mixed_kernel_code, file=f)
+        ret_code += mixed_kernel_code
+        # print(mixed_kernel_code, file=f)
         generated_list.append((ratio_1, ratio_2))
-    
+        yield ret_code, ratio_1, ratio_2, blks_per_sm
+
     print("-", kernel1, "as main kernel:")
     for candidate in candidates:
         reg_per_thread = max(get_kernel_info(kernel1)["register"], get_kernel_info(kernel2)["register"])
         print(f"-- {kernel1}_num:", candidate[1], f"{kernel2}_num:", candidate[2], "blks_per_sm:", candidate[0], "reg used:", candidate[1] * reg_per_thread * candidate[0] * get_kernel_info(kernel1)["blocksize"] + candidate[2] * reg_per_thread * candidate[0] * get_kernel_info(kernel2)["blocksize"], "smem used:", candidate[1] * get_kernel_info(kernel1)["shared_memory"] * candidate[0] + candidate[2] * get_kernel_info(kernel2)["shared_memory"] * candidate[0], "thread used:", candidate[1] * get_kernel_info(kernel1)["blocksize"] * candidate[0] + candidate[2] * get_kernel_info(kernel2)["blocksize"] * candidate[0])
-    
-    print("-", kernel2, "as main kernel:")
+
     candidates_ = fuse_kernel_info(kernel2, kernel1)
     for candidate in candidates_:
         if (candidate[2], candidate[1]) in generated_list: 
             continue
+        ret_code = ""
         blks_per_sm, ratio_2, ratio_1 = candidate[0], candidate[1], candidate[2]
-        print(f"// {kernel1}-{kernel2}-{ratio_1}-{ratio_2}", file=f)
+        # print(f"// {kernel1}-{kernel2}-{ratio_1}-{ratio_2}", file=f)
+        ret_code += f"// {kernel1}-{kernel2}-{ratio_1}-{ratio_2}\n"
         mixed_kernel_code = generate_mixed_kernel([kernel_signatures[kernel1], kernel_signatures[kernel2]], blks_per_sm, [ratio_1, ratio_2])
-        print(mixed_kernel_code, file=f)
+        # print(mixed_kernel_code, file=f)
+        ret_code += mixed_kernel_code
+        yield ret_code, ratio_1, ratio_2, blks_per_sm
 
+    print("-", kernel2, "as main kernel:")
     for candidate in candidates_:
         if (candidate[2], candidate[1]) in generated_list:
             continue
         reg_per_thread = max(get_kernel_info(kernel1)["register"], get_kernel_info(kernel2)["register"])
         print(f"-- {kernel1}_num:", candidate[2], f"{kernel2}_num:", candidate[1], "blks_per_sm:", candidate[0], "reg used:", candidate[2] * reg_per_thread * candidate[0] * get_kernel_info(kernel1)["blocksize"] + candidate[1] * reg_per_thread * candidate[0] * get_kernel_info(kernel2)["blocksize"], "smem used:", candidate[2] * get_kernel_info(kernel1)["shared_memory"] * candidate[0] + candidate[1] * get_kernel_info(kernel2)["shared_memory"] * candidate[0], "thread used:", candidate[2] * get_kernel_info(kernel1)["blocksize"] * candidate[0] + candidate[1] * get_kernel_info(kernel2)["blocksize"] * candidate[0])
-    
-    f.close()
+
+    # f.close()
     print('\n')

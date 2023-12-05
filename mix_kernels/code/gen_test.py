@@ -60,7 +60,7 @@ def gen_fused_code(kernel1, kernel2, kernel_grid_size, kernel_block_size, ratio)
     full_code = ""
     full_code += common_header
     full_code += func_dict[kernel1]["header"]() + func_dict[kernel2]["header"]()
-    full_code += f"\n#include \"mix_kernel/{kernel1}-{kernel2}.cu\" \n"
+    full_code += f"\n#include \"mix_kernel/{kernel1}-{kernel2}-{ratio[0]}-{ratio[1]}.cu\" \n"
     full_code += main_func_begin_code
     full_code += time_event_create_code
     full_code += func_dict[kernel1]["before"]()

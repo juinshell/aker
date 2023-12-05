@@ -36,6 +36,12 @@ kernel_info = {
 def get_kernel_info(kernel_name):
     return kernel_info[kernel_name]
 
+def gcd(a, b):
+    if a < b:
+        a, b = b, a
+    while b != 0:
+        a, b = b, a%b
+    return a
 
 
 def fuse_kernel_info(kernel1_name, kernel2_name)->list:
@@ -49,7 +55,11 @@ def fuse_kernel_info(kernel1_name, kernel2_name)->list:
             if kernel1_num * kernel1_info["blocksize"] * blks_per_sm == kernel1_thread_num:
                 for kernel2_num in range(1, 9):
                     if (kernel2_num * kernel2_info["blocksize"] * blks_per_sm <= SM_THREAD_SLOT_NUM - kernel1_thread_num) and (kernel1_info["register"] * kernel1_num * blks_per_sm * kernel1_info["blocksize"] + kernel2_info["register"] * kernel2_num * blks_per_sm * kernel2_info["blocksize"] <= SM_REGISTER_NUM) and (kernel1_info["shared_memory"] * kernel1_num * blks_per_sm + kernel2_info["shared_memory"] * kernel2_num * blks_per_sm <= SM_SHARED_MEMORY_NUM):
-                        candidates.append((blks_per_sm, kernel1_num, kernel2_num))
+                        # 如果可化简，就化简
+                        kernel1_num_ = int(kernel1_num / gcd(kernel1_num, kernel2_num))
+                        kernel2_num_ = int(kernel2_num / gcd(kernel1_num, kernel2_num))
+                        if ((blks_per_sm * gcd(kernel1_num, kernel2_num)), kernel1_num_, kernel2_num_) not in candidates:
+                            candidates.append(((blks_per_sm * gcd(kernel1_num, kernel2_num)), kernel1_num_, kernel2_num_))
     
     # show candidates
     # print(f"candidates for {kernel1_name}_{kernel2_name}:")

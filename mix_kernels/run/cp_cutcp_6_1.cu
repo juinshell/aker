@@ -2,14 +2,31 @@
 #include <cuda.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "header/atom.h"
-
-#include "code/mix_kernel.cu"
+#include <curand.h>
+#include <cublas_v2.h>
+#include <mma.h>
+#include <malloc.h>
+#include <sys/time.h>
+using namespace nvcuda; 
 
 #define cudaErrCheck(stat) { cudaErrCheck_((stat), __FILE__, __LINE__); }
 void cudaErrCheck_(cudaError_t stat, const char *file, int line) {
    if (stat != cudaSuccess) {
       fprintf(stderr, "CUDA Error: %s %s %d\n", cudaGetErrorString(stat), file, line);
+   }
+}
+
+#define cublasErrCheck(stat) { cublasErrCheck_((stat), __FILE__, __LINE__); }
+void cublasErrCheck_(cublasStatus_t stat, const char *file, int line) {
+   if (stat != CUBLAS_STATUS_SUCCESS) {
+      fprintf(stderr, "cuBLAS Error: %d %s %d\n", stat, file, line);
+   }
+}
+
+#define curandErrCheck(stat) { curandErrCheck_((stat), __FILE__, __LINE__); }
+void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
+   if (stat != CURAND_STATUS_SUCCESS) {
+      fprintf(stderr, "cuRand Error: %d %s %d\n", stat, file, line);
    }
 }
 
@@ -30,12 +47,16 @@ void cudaErrCheck_(cudaError_t stat, const char *file, int line) {
 
 #include <mma.h>
 using namespace nvcuda; 
+#include "header/atom.h"
 #include "header/cutcp_header.h"
 #include "kernel/cutcp_kernel.cu"
 
-int main(int argc, char* argv[]) {
+#include "mix_kernel/cp-cutcp-6-1.cu" 
 
-	// variables
+int main(int argc, char* argv[]) {
+    int errors = 0;
+
+	  // variables
     // ---------------------------------------------------------------------------------------
 		float kernel_time;
 		cudaEvent_t startKERNEL;
@@ -46,7 +67,7 @@ int main(int argc, char* argv[]) {
 
     // cp variables
     // ---------------------------------------------------------------------------------------
-		int cp_blks = 4;
+		int cp_blks = 8;
 	    int cp_iter = 1;
         float *atoms = NULL;
 		int atomcount = ATOMCOUNT;
@@ -75,7 +96,7 @@ int main(int argc, char* argv[]) {
 		int runatoms = MAXATOMS;
     // ---------------------------------------------------------------------------------------
 
-// SOLO running
+    // SOLO running
     // ---------------------------------------------------------------------------------------
 		cp_block.x = BLOCKSIZEX;						// each thread does multiple Xs
 		cp_block.y = BLOCKSIZEY;
@@ -104,8 +125,8 @@ int main(int argc, char* argv[]) {
 
 	// PTB running
     // ---------------------------------------------------------------------------------------
-        int solo_ptb_cp_blks = 4;
-	    int cp_iter = 1;
+        int solo_ptb_cp_blks = 6;
+	    cp_iter = 1;
 		int cp_grid_dim_x = cp_grid.x;
 		int cp_grid_dim_y = cp_grid.y;
 		cp_grid.x = solo_ptb_cp_blks == 0 ? cp_grid_dim_x * cp_grid_dim_y : SM_NUM * solo_ptb_cp_blks;
@@ -136,7 +157,7 @@ int main(int argc, char* argv[]) {
 
     // cutcp variables
     // ---------------------------------------------------------------------------------------
-        int cutcp_blks = 4;
+        int cutcp_blks = 6;
         int cutcp_iter = 1;
         Atoms *atom;
         LatticeDim lattice_dim;
@@ -270,11 +291,10 @@ int main(int argc, char* argv[]) {
 
   // MIX
   // ---------------------------------------------------------------------------------------
-
-        dim3 mix_kernel_grid = dim3(272, 1, 1);
-        dim3 mix_kernel_block = dim3(256, 1, 1);
+        dim3 mix_kernel_grid = dim3(68, 1, 1);
+        dim3 mix_kernel_block = dim3(896, 1, 1);
         cudaErrCheck(cudaEventRecord(startKERNEL));
-        checkKernelErrors((mixed_cp_cutcp_kernel <<<mix_kernel_grid, mix_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
+        checkKernelErrors((mixed_cp_cutcp_kernel_6_1 <<<mix_kernel_grid, mix_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
     0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_cp_grid.x * ori_cp_grid.y * ori_cp_grid.z, binDim_x, binDim_y, cutcp_gptb_binZeroCuda,
     h, cutoff2, inv_cutoff2, cutcp_gptb_regionZeroCuda, 25, 
     ori_cutcp_grid.x, ori_cutcp_grid.y, ori_cutcp_grid.z, ori_cutcp_block.x, ori_cutcp_block.y, ori_cutcp_block.z,
@@ -282,9 +302,53 @@ int main(int argc, char* argv[]) {
         cudaErrCheck(cudaEventRecord(stopKERNEL));
         cudaErrCheck(cudaEventSynchronize(stopKERNEL));
         cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[MIX] cp_cutcp took %f ms\n\n", kernel_time);
+        printf("[MIX] cp_cutcp 6_1 took %f ms\n\n", kernel_time);
   // ---------------------------------------------------------------------------------------
 
 
-}
+	// Checking results
+    // ---------------------------------------------------------------------------------------
+    	cudaMemcpy(host_ori_energy, ori_output, volmemsz,  cudaMemcpyDeviceToHost);
+	    cudaMemcpy(host_gptb_energy, gptb_output, volmemsz,  cudaMemcpyDeviceToHost);
+            
+        errors = 0;
+        for (int i = 0; i < volsize.x * volsize.y * volsize.z; i++) {
+            float v1 = host_ori_energy[i];
+            float v2 = host_gptb_energy[i];
+            if (fabs(v1 - v2) > 0.001f) {
+                errors++;
+                if (errors < 10) printf("%f %f\n", v1, v2);
+            }
+        }
+        if (errors > 0) {
+            printf("ORI VERSION does not agree with GPTB VERSION! %d errors!\n", errors);
+        }
+        else {
+            printf("Results verified: ORIG VERSION and GPTB VERSION agree.\n");
+        }
+	// ---------------------------------------------------------------------------------------
 
+    // Checking results
+    // ---------------------------------------------------------------------------------------
+        cudaErrCheck(cudaMemcpy(host_cutcp_ori_regionZeroCuda, cutcp_ori_regionZeroCuda, lnall * sizeof(float), cudaMemcpyDeviceToHost));
+        cudaErrCheck(cudaMemcpy(host_cutcp_gptb_regionZeroCuda, cutcp_gptb_regionZeroCuda, lnall * sizeof(float), cudaMemcpyDeviceToHost));
+        
+        errors = 0;
+        for (int i = 0; i < lnall; i++) {
+            float v1 = host_cutcp_ori_regionZeroCuda[i];
+            float v2 = host_cutcp_gptb_regionZeroCuda[i];
+            if (fabs(v1 - v2) > 0.001f) {
+                errors++;
+                if (errors < 10) printf("%f %f\n", v1, v2);
+            }
+            if (i < 3) printf("%f %f\n", v1, v2);
+        }
+        if (errors > 0) {
+            printf("ORIGIN VERSION does not agree with GPTB VERSION! %d errors!\n", errors);
+        }
+        else {
+            printf("Results verified: ORIGIN VERSION and GPTB VERSION agree.\n");
+        }
+
+
+}
