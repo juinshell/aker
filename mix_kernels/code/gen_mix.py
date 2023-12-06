@@ -2,7 +2,7 @@
 Author: diagonal
 Date: 2023-11-15 22:45:42
 LastEditors: diagonal
-LastEditTime: 2023-11-30 16:01:53
+LastEditTime: 2023-12-05 23:28:24
 FilePath: /tacker/mix_kernels/code/gen_mix.py
 Description: 
 happy coding, happy life!
@@ -200,11 +200,6 @@ def gen_pair_code_iter(kernel1, kernel2)->list:
         generated_list.append((ratio_1, ratio_2))
         yield ret_code, ratio_1, ratio_2, blks_per_sm
 
-    print("-", kernel1, "as main kernel:")
-    for candidate in candidates:
-        reg_per_thread = max(get_kernel_info(kernel1)["register"], get_kernel_info(kernel2)["register"])
-        print(f"-- {kernel1}_num:", candidate[1], f"{kernel2}_num:", candidate[2], "blks_per_sm:", candidate[0], "reg used:", candidate[1] * reg_per_thread * candidate[0] * get_kernel_info(kernel1)["blocksize"] + candidate[2] * reg_per_thread * candidate[0] * get_kernel_info(kernel2)["blocksize"], "smem used:", candidate[1] * get_kernel_info(kernel1)["shared_memory"] * candidate[0] + candidate[2] * get_kernel_info(kernel2)["shared_memory"] * candidate[0], "thread used:", candidate[1] * get_kernel_info(kernel1)["blocksize"] * candidate[0] + candidate[2] * get_kernel_info(kernel2)["blocksize"] * candidate[0])
-
     candidates_ = fuse_kernel_info(kernel2, kernel1)
     for candidate in candidates_:
         if (candidate[2], candidate[1]) in generated_list: 
@@ -217,6 +212,12 @@ def gen_pair_code_iter(kernel1, kernel2)->list:
         # print(mixed_kernel_code, file=f)
         ret_code += mixed_kernel_code
         yield ret_code, ratio_1, ratio_2, blks_per_sm
+
+
+    print("-", kernel1, "as main kernel:")
+    for candidate in candidates:
+        reg_per_thread = max(get_kernel_info(kernel1)["register"], get_kernel_info(kernel2)["register"])
+        print(f"-- {kernel1}_num:", candidate[1], f"{kernel2}_num:", candidate[2], "blks_per_sm:", candidate[0], "reg used:", candidate[1] * reg_per_thread * candidate[0] * get_kernel_info(kernel1)["blocksize"] + candidate[2] * reg_per_thread * candidate[0] * get_kernel_info(kernel2)["blocksize"], "smem used:", candidate[1] * get_kernel_info(kernel1)["shared_memory"] * candidate[0] + candidate[2] * get_kernel_info(kernel2)["shared_memory"] * candidate[0], "thread used:", candidate[1] * get_kernel_info(kernel1)["blocksize"] * candidate[0] + candidate[2] * get_kernel_info(kernel2)["blocksize"] * candidate[0])
 
     print("-", kernel2, "as main kernel:")
     for candidate in candidates_:

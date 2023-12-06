@@ -2,7 +2,7 @@
 Author: diagonal
 Date: 2023-11-19 13:04:17
 LastEditors: diagonal
-LastEditTime: 2023-11-30 20:27:49
+LastEditTime: 2023-12-06 13:46:40
 FilePath: /tacker/ptb_kernels/mix/run.py
 Description: 
 happy coding, happy life!
@@ -18,7 +18,7 @@ k_list = ["cp", "cutcp", "fft", "lbm", "mrif", "mriq", "sgemm"]
 
 data = {'pair':[], 'fusion_info': [], 'ori1': [], 'ptb1': [], 'ori2': [], 'ptb2': [], 'mix': []}
 
-num_repetitions = 100
+num_repetitions = 50
 
 def find_mix_executables(kernel1, kernel2):
     pattern = f'{kernel1}_{kernel2}_[0-9]_[0-9]_mix'  # 匹配数字_数字_mix
@@ -52,12 +52,14 @@ def run_and_collect_info(kernel1, kernel2):
         try:
             # warmup
             exit_flag = False
-            for i_ in range(10):
-                print(f"warmup {i_}/10")
+            for i_ in range(5):
+                print(f"warmup {i_}/5")
                 output = subprocess.check_output(command, shell=True, text=True, stderr=subprocess.STDOUT, timeout=5)
-                if "Error" in output or "errors" in output:
+                if "Error" in output or "errors" in output or "too many resources" in output:
                     print(f"Error running {executable_name}, Error: ---\n{output}\n---\n", file=sys.stderr)
                     exit_flag = True
+                    # 使用kill命令杀死进程
+                    subprocess.run(f"pkill -f {executable_name}", shell=True)
                     break
             
             if exit_flag:

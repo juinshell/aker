@@ -188,7 +188,7 @@ __device__ void mix_sgemm(float *A, float *B, float *C, int NORMAL_M, int NORMAL
                 float a;
                 b_s[thread_id_y][thread_id_x] = B[n + (i + thread_id_y) * ldb];
                 // __syncthreads();
-                asm volatile("bar.sync %0, %1;" : : "r"(2), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(1), "r"(128) : "memory");
                 for (int j = 0; j < TILE_TB_HEIGHT; j++)
                 {
                     a = A[m + (i + j) * lda];
@@ -196,7 +196,7 @@ __device__ void mix_sgemm(float *A, float *B, float *C, int NORMAL_M, int NORMAL
                         c[kk] += a * b_s[j][kk];
                 }
                 // __syncthreads();
-                asm volatile("bar.sync %0, %1;" : : "r"(2), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(1), "r"(128) : "memory");
             }
             int t = ldc * block_id_y * TILE_N + m;
             for (int i = 0; i < TILE_N; i++)
@@ -254,7 +254,7 @@ __device__ void general_ptb_sgemm0(float *A, float *B, float *C, int NORMAL_M, i
             float a;
             b_s[thread_id_y][thread_id_x] = B[n + (i + thread_id_y) * ldb];
             // __syncthreads();
-            asm volatile("bar.sync %0, %1;" : : "r"(15), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(1), "r"(128) : "memory");
             for (int j = 0; j < TILE_TB_HEIGHT; j++)
             {
                 a = A[m + (i + j) * lda];
@@ -262,7 +262,7 @@ __device__ void general_ptb_sgemm0(float *A, float *B, float *C, int NORMAL_M, i
                     c[kk] += a * b_s[j][kk];
             }
             // __syncthreads();
-            asm volatile("bar.sync %0, %1;" : : "r"(15), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(1), "r"(128) : "memory");
         }
         int t = ldc * block_id_y * TILE_N + m;
         for (int i = 0; i < TILE_N; i++)
@@ -319,7 +319,7 @@ __device__ void general_ptb_sgemm1(float *A, float *B, float *C, int NORMAL_M, i
             float a;
             b_s[thread_id_y][thread_id_x] = B[n + (i + thread_id_y) * ldb];
             // __syncthreads();
-            asm volatile("bar.sync %0, %1;" : : "r"(14), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(2), "r"(128) : "memory");
             for (int j = 0; j < TILE_TB_HEIGHT; j++)
             {
                 a = A[m + (i + j) * lda];
@@ -327,7 +327,7 @@ __device__ void general_ptb_sgemm1(float *A, float *B, float *C, int NORMAL_M, i
                     c[kk] += a * b_s[j][kk];
             }
             // __syncthreads();
-            asm volatile("bar.sync %0, %1;" : : "r"(14), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(2), "r"(128) : "memory");
         }
         int t = ldc * block_id_y * TILE_N + m;
         for (int i = 0; i < TILE_N; i++)
@@ -384,7 +384,7 @@ __device__ void general_ptb_sgemm2(float *A, float *B, float *C, int NORMAL_M, i
             float a;
             b_s[thread_id_y][thread_id_x] = B[n + (i + thread_id_y) * ldb];
             // __syncthreads();
-            asm volatile("bar.sync %0, %1;" : : "r"(13), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(3), "r"(128) : "memory");
             for (int j = 0; j < TILE_TB_HEIGHT; j++)
             {
                 a = A[m + (i + j) * lda];
@@ -392,7 +392,7 @@ __device__ void general_ptb_sgemm2(float *A, float *B, float *C, int NORMAL_M, i
                     c[kk] += a * b_s[j][kk];
             }
             // __syncthreads();
-            asm volatile("bar.sync %0, %1;" : : "r"(13), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(3), "r"(128) : "memory");
         }
         int t = ldc * block_id_y * TILE_N + m;
         for (int i = 0; i < TILE_N; i++)
@@ -449,7 +449,7 @@ __device__ void general_ptb_sgemm3(float *A, float *B, float *C, int NORMAL_M, i
             float a;
             b_s[thread_id_y][thread_id_x] = B[n + (i + thread_id_y) * ldb];
             // __syncthreads();
-            asm volatile("bar.sync %0, %1;" : : "r"(7), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(4), "r"(128) : "memory");
             for (int j = 0; j < TILE_TB_HEIGHT; j++)
             {
                 a = A[m + (i + j) * lda];
@@ -457,7 +457,7 @@ __device__ void general_ptb_sgemm3(float *A, float *B, float *C, int NORMAL_M, i
                     c[kk] += a * b_s[j][kk];
             }
             // __syncthreads();
-            asm volatile("bar.sync %0, %1;" : : "r"(7), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(4), "r"(128) : "memory");
         }
         int t = ldc * block_id_y * TILE_N + m;
         for (int i = 0; i < TILE_N; i++)
