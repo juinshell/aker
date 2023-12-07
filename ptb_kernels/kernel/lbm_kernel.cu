@@ -665,7 +665,6 @@ __device__ void general_ptb_lbm0( float* srcGrid, float* dstGrid,
     }
 }
 
-
 __device__ void general_ptb_lbm1( float* srcGrid, float* dstGrid,
     int grid_dimension_x, int grid_dimension_y, int grid_dimension_z,
     int block_dimension_x, int block_dimension_y, int block_dimension_z,

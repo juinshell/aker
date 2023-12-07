@@ -2,8 +2,8 @@
 Author: diagonal
 Date: 2023-11-19 13:04:17
 LastEditors: diagonal
-LastEditTime: 2023-12-06 13:46:40
-FilePath: /tacker/ptb_kernels/mix/run.py
+LastEditTime: 2023-12-07 11:48:23
+FilePath: /tacker/mix_kernels/run/run.py
 Description: 
 happy coding, happy life!
 Copyright (c) 2023 by jxdeng, All Rights Reserved. 
@@ -55,12 +55,15 @@ def run_and_collect_info(kernel1, kernel2):
             for i_ in range(5):
                 print(f"warmup {i_}/5")
                 output = subprocess.check_output(command, shell=True, text=True, stderr=subprocess.STDOUT, timeout=5)
-                if "Error" in output or "errors" in output or "too many resources" in output:
-                    print(f"Error running {executable_name}, Error: ---\n{output}\n---\n", file=sys.stderr)
+                if "too many resources" in output:
+                    print(f"Error running {executable_name}, Error: ---\n{output}\n---\n, Exit!", file=sys.stderr)
                     exit_flag = True
                     # 使用kill命令杀死进程
                     subprocess.run(f"pkill -f {executable_name}", shell=True)
                     break
+                # elif "error" in output or "Error" in output:
+                #     print(f"Error running {executable_name}, Error: ---\n{output}\n---\n", file=sys.stderr)
+                #     input("Press Enter to continue...")
             
             if exit_flag:
                 data['ori1'].append(0)
@@ -80,9 +83,9 @@ def run_and_collect_info(kernel1, kernel2):
                 if i_ % 10 == 0:
                     print(f"run {i_}/{num_repetitions}")
                 output = subprocess.check_output(command, shell=True, text=True, stderr=subprocess.STDOUT)
-                if "Error" in output:
-                    print(f"Error running {executable_name}, Error: ---\n{output}\n---\n, Exit!", file=sys.stderr)
-                    exit(1)
+                # if "Error" in output:
+                #     print(f"Error running {executable_name}, Error: ---\n{output}\n---\n, Exit!", file=sys.stderr)
+                #     exit(1)
                 # 提取运行时间的数字部分
                 pattern = re.compile(r'\[(\w+)\] (.+?) took (\d+\.\d+) ms')
                 runtime_matches = pattern.findall(output)

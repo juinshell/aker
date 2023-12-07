@@ -407,14 +407,14 @@ __device__ void G_GPU_exchange3( float2* v, int stride, int idxD, int incD,
 	float* sr = work;
 	float* si = work+FFT_T*FFT_R;  
 	// __syncthreads(); 
-	asm volatile("bar.sync %0, %1;" : : "r"(11), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(4), "r"(128) : "memory");
 	for( int r=0; r<FFT_R; r++ ) { 
 		int i = (idxD + r*incD)*stride; 
 		sr[i] = v[r].x;
 		si[i] = v[r].y;  
 	}   
 	// __syncthreads(); 
-	asm volatile("bar.sync %0, %1;" : : "r"(11), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(4), "r"(128) : "memory");
 
 	for( int r=0; r<FFT_R; r++ ) { 
 		int i = (idxS + r*incS)*stride;     
@@ -482,14 +482,14 @@ __device__ void G_GPU_exchange4( float2* v, int stride, int idxD, int incD,
 	float* sr = work;
 	float* si = work+FFT_T*FFT_R;  
 	// __syncthreads(); 
-	asm volatile("bar.sync %0, %1;" : : "r"(12), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(5), "r"(128) : "memory");
 	for( int r=0; r<FFT_R; r++ ) { 
 		int i = (idxD + r*incD)*stride; 
 		sr[i] = v[r].x;
 		si[i] = v[r].y;  
 	}   
 	// __syncthreads(); 
-	asm volatile("bar.sync %0, %1;" : : "r"(12), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(5), "r"(128) : "memory");
 
 	for( int r=0; r<FFT_R; r++ ) { 
 		int i = (idxS + r*incS)*stride;     
@@ -557,14 +557,14 @@ __device__ void G_GPU_exchange5( float2* v, int stride, int idxD, int incD,
 	float* sr = work;
 	float* si = work+FFT_T*FFT_R;  
 	// __syncthreads(); 
-	asm volatile("bar.sync %0, %1;" : : "r"(13), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(6), "r"(128) : "memory");
 	for( int r=0; r<FFT_R; r++ ) { 
 		int i = (idxD + r*incD)*stride; 
 		sr[i] = v[r].x;
 		si[i] = v[r].y;  
 	}   
 	// __syncthreads(); 
-	asm volatile("bar.sync %0, %1;" : : "r"(13), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(6), "r"(128) : "memory");
 
 	for( int r=0; r<FFT_R; r++ ) { 
 		int i = (idxS + r*incS)*stride;     
@@ -632,14 +632,14 @@ __device__ void G_GPU_exchange6( float2* v, int stride, int idxD, int incD,
 	float* sr = work;
 	float* si = work+FFT_T*FFT_R;  
 	// __syncthreads(); 
-	asm volatile("bar.sync %0, %1;" : : "r"(14), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(7), "r"(128) : "memory");
 	for( int r=0; r<FFT_R; r++ ) { 
 		int i = (idxD + r*incD)*stride; 
 		sr[i] = v[r].x;
 		si[i] = v[r].y;  
 	}   
 	// __syncthreads(); 
-	asm volatile("bar.sync %0, %1;" : : "r"(14), "r"(128) : "memory");
+asm volatile("bar.sync %0, %1;" : : "r"(7), "r"(128) : "memory");
 
 	for( int r=0; r<FFT_R; r++ ) { 
 		int i = (idxS + r*incS)*stride;     

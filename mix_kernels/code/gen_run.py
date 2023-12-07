@@ -2,7 +2,7 @@
 Author: diagonal
 Date: 2023-12-05 21:43:33
 LastEditors: diagonal
-LastEditTime: 2023-12-06 13:51:18
+LastEditTime: 2023-12-07 11:30:27
 FilePath: /tacker/mix_kernels/code/gen_run.py
 Description: 
 happy coding, happy life!
@@ -179,14 +179,14 @@ def gen_code_file(kernel1, kernel2):
         try:
             output = subprocess.check_output(cmd, shell=True, text=True, stderr=subprocess.STDOUT, cwd=run_file_dir, timeout=5)
         except subprocess.TimeoutExpired:
-            print(f"Error running {cmd}, timout!", file=sys.stderr)
+            print(f"Error TimeoutExpired running {cmd}, timout!", file=sys.stderr)
             # 使用杀死进程
             subprocess.run(f"pkill -f {cmd}", shell=True)
             exit_flag = True
         except subprocess.CalledProcessError as e:
             # too many resources
-            print(f"Error running {cmd}, Error: ---\n{e.output}\n---\n", file=sys.stderr)
-            if "too many resources" in e.output:
+            print(f"Error CalledProcessError running {cmd}, Error: ---\n{e.output + str(e.stderr) + str(e.stdout)}\n---\n")
+            if "Aborted" in e.output:
                 input("[WARNING]check file and press Enter to continue...")
                 # 使用kill命令杀死进程
                 subprocess.run(f"pkill -f {cmd}", shell=True)
@@ -195,7 +195,7 @@ def gen_code_file(kernel1, kernel2):
                 # 使用kill命令杀死进程
                 subprocess.run(f"pkill -f {cmd}", shell=True)
         except Exception as e:
-            print(f"Error running {cmd}, Error: ---\n{e}\n---\n", file=sys.stderr)
+            print(f"Error Exception running {cmd}, Error: ---\n{e}\n---\n", file=sys.stderr)
             # 使用kill命令杀死进程
             subprocess.run(f"pkill -f {cmd}", shell=True)
             exit_flag = True

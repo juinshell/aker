@@ -45,13 +45,14 @@ void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
 #include "header/cp_header.h"
 #include "kernel/cp_kernel.cu"
 
-#include "header/lbm_header.h"
-#include "kernel/lbm_kernel.cu"
+#include "header/sgemm_header.h"
+#include "kernel/sgemm_kernel.cu"
 
-#include "mix_kernel/cp_lbm_3_1.cu" 
+#include "mix_kernel/cp_sgemm_1_1.cu" 
 
 int main(int argc, char* argv[]) {
     int errors = 0;
+    float ori_sum_time = 0.0f;
 
 	  // variables
     // ---------------------------------------------------------------------------------------
@@ -115,6 +116,7 @@ int main(int argc, char* argv[]) {
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));
 		cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
 		printf("[ORI] cp took %f ms\n\n", kernel_time);
+        ori_sum_time += kernel_time;
 
         cudaMemcpy(host_ori_energy, ori_output, volmemsz,  cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();
@@ -148,118 +150,157 @@ int main(int argc, char* argv[]) {
         cudaDeviceSynchronize();
     // ---------------------------------------------------------------------------------------
 
-		atomstart = 1;
-		runatoms = MAXATOMS;
-		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
-
-    // lbm variables
+    // sgemm variables
     // ---------------------------------------------------------------------------------------
-        int lbm_blks = 1;
-        int lbm_iter = 1;
-        float *lbm_ori_src;
-        float *lbm_ori_dst;
-        float *lbm_ptb_src;
-        float *lbm_ptb_dst;
-        float *lbm_gptb_src;
-        float *lbm_gptb_dst;
-        float *host_lbm_ori_dst;
-        float *host_lbm_ptb_dst;
-        float *host_lbm_gptb_dst;
+        int sgemm_blks = 4;
+        int sgemm_iter = 1;
+        float *sgemm_ori_a;
+        float *sgemm_ori_b;
+        float *sgemm_ori_c;
+        float *sgemm_ptb_a;
+        float *sgemm_ptb_b;
+        float *sgemm_ptb_c;
+        float *sgemm_gptb_a;
+        float *sgemm_gptb_b;
+        float *sgemm_gptb_c;
+        float *host_sgemm_ori_c;
+        float *host_sgemm_ptb_c;
+        float *host_sgemm_gptb_c;
+        
 
-        const size_t size = TOTAL_PADDED_CELLS * N_CELL_ENTRIES * sizeof(float) + 2 * TOTAL_MARGIN * sizeof(float);
+        // parallel experiment
+        int NORMAL_M = 4096;
+        int NORMAL_N = 4128;
+        int NORMAL_K = 4064;
 
-        host_lbm_ori_dst = (float *)malloc(size);
-        host_lbm_ptb_dst = (float *)malloc(size);
-        host_lbm_gptb_dst = (float *)malloc(size);
-        cudaErrCheck(cudaMalloc((void **)&lbm_ori_src, size));
-        cudaErrCheck(cudaMalloc((void **)&lbm_ori_dst, size));
-        cudaErrCheck(cudaMalloc((void **)&lbm_ptb_src, size));
-        cudaErrCheck(cudaMalloc((void **)&lbm_ptb_dst, size));
-        cudaErrCheck(cudaMalloc((void **)&lbm_gptb_src, size));
-        cudaErrCheck(cudaMalloc((void **)&lbm_gptb_dst, size));
+        NORMAL_M = (NORMAL_M / 10) * sgemm_iter;
 
-        curandGenerator_t lbm_gen;
-        curandErrCheck(curandCreateGenerator(&lbm_gen, CURAND_RNG_PSEUDO_DEFAULT));
-        curandErrCheck(curandSetPseudoRandomGeneratorSeed(lbm_gen, 1337ULL));
-        curandErrCheck(curandGenerateUniform(lbm_gen, lbm_ori_src, TOTAL_PADDED_CELLS * N_CELL_ENTRIES + 2 * TOTAL_MARGIN));
-        curandErrCheck(curandGenerateUniform(lbm_gen, lbm_ori_dst, TOTAL_PADDED_CELLS * N_CELL_ENTRIES + 2 * TOTAL_MARGIN));
-        cudaErrCheck(cudaMemcpy(lbm_ptb_src, lbm_ori_src, size, cudaMemcpyDeviceToDevice));
-        cudaErrCheck(cudaMemcpy(lbm_ptb_dst, lbm_ori_dst, size, cudaMemcpyDeviceToDevice));
-        cudaErrCheck(cudaMemcpy(lbm_gptb_src, lbm_ori_src, size, cudaMemcpyDeviceToDevice));
-        cudaErrCheck(cudaMemcpy(lbm_gptb_dst, lbm_ori_dst, size, cudaMemcpyDeviceToDevice));
-        lbm_ori_src += REAL_MARGIN;
-        lbm_ori_dst += REAL_MARGIN;
-        lbm_ptb_src += REAL_MARGIN;
-        lbm_ptb_dst += REAL_MARGIN;
-        lbm_gptb_src += REAL_MARGIN;
-        lbm_gptb_dst += REAL_MARGIN;
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ori_a, NORMAL_M * NORMAL_K * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ori_b, NORMAL_K * NORMAL_N * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ori_c, NORMAL_M * NORMAL_N * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ptb_a, NORMAL_M * NORMAL_K * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ptb_b, NORMAL_K * NORMAL_N * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_ptb_c, NORMAL_M * NORMAL_N * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_gptb_a, NORMAL_M * NORMAL_K * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_gptb_b, NORMAL_K * NORMAL_N * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&sgemm_gptb_c, NORMAL_M * NORMAL_N * sizeof(float)));
 
+        host_sgemm_ori_c = (float *)malloc(NORMAL_M * NORMAL_N * sizeof(float));
+        host_sgemm_ptb_c = (float *)malloc(NORMAL_M * NORMAL_N * sizeof(float));
+        host_sgemm_gptb_c = (float *)malloc(NORMAL_M * NORMAL_N * sizeof(float));
+
+        curandGenerator_t sgemm_gen;
+        curandErrCheck(curandCreateGenerator(&sgemm_gen, CURAND_RNG_PSEUDO_DEFAULT));
+        curandErrCheck(curandSetPseudoRandomGeneratorSeed(sgemm_gen, 1337ULL));
+        curandErrCheck(curandGenerateUniform(sgemm_gen, sgemm_ori_a, NORMAL_M * NORMAL_K));
+        curandErrCheck(curandGenerateUniform(sgemm_gen, sgemm_ori_b, NORMAL_K * NORMAL_N));
+        cudaErrCheck(cudaMemcpy(sgemm_ptb_a, sgemm_ori_a, NORMAL_M * NORMAL_K * sizeof(float), cudaMemcpyDeviceToDevice));
+        cudaErrCheck(cudaMemcpy(sgemm_ptb_b, sgemm_ori_b, NORMAL_K * NORMAL_N * sizeof(float), cudaMemcpyDeviceToDevice));
+        cudaErrCheck(cudaMemcpy(sgemm_gptb_a, sgemm_ori_a, NORMAL_M * NORMAL_K * sizeof(float), cudaMemcpyDeviceToDevice));
+        cudaErrCheck(cudaMemcpy(sgemm_gptb_b, sgemm_ori_b, NORMAL_K * NORMAL_N * sizeof(float), cudaMemcpyDeviceToDevice));
+        curandErrCheck(curandDestroyGenerator(sgemm_gen));
     // ---------------------------------------------------------------------------------------
 
     // SOLO running
     // ---------------------------------------------------------------------------------------
-        dim3 lbm_block, lbm_grid, ori_lbm_block, ori_lbm_grid;
-        lbm_block.x = SIZE_X;
-        lbm_grid.x = SIZE_Y;
-        lbm_grid.y = SIZE_Z;
-        lbm_block.y = lbm_block.z = lbm_grid.z = 1;
-        ori_lbm_block = lbm_block;
-        ori_lbm_grid = lbm_grid;
-        printf("[ORI] Running with lbm...\n");
-        printf("[ORI] lbm_grid -- %d * %d * %d lbm_block -- %d * %d * %d \n", 
-            lbm_grid.x, lbm_grid.y, lbm_grid.z, lbm_block.x, lbm_block.y, lbm_block.z);
-        
+        dim3 sgemm_grid, ori_sgemm_grid;
+        dim3 sgemm_block, ori_sgemm_block;
+        sgemm_block.x = TILE_N;
+        sgemm_block.y = TILE_TB_HEIGHT;
+        sgemm_grid.x = NORMAL_M/TILE_M;
+        sgemm_grid.y = NORMAL_N/TILE_N;
+        ori_sgemm_grid = sgemm_grid;
+        ori_sgemm_block = sgemm_block;
+        printf("[ORI] Running with sgemm...\n");
+        printf("[ORI] sgemm_grid -- %d * %d sgemm_block -- %d * %d \n", 
+            sgemm_grid.x, sgemm_grid.y, sgemm_block.x, sgemm_block.y);
+
         cudaErrCheck(cudaEventRecord(startKERNEL));
-        checkKernelErrors((ori_lbm<<<lbm_grid, lbm_block>>>(lbm_ori_src, lbm_ori_dst, lbm_iter)));
+        checkKernelErrors((ori_sgemm <<< sgemm_grid, sgemm_block >>> (
+                    sgemm_ori_a, sgemm_ori_b, sgemm_ori_c, 
+                    NORMAL_M, NORMAL_N, NORMAL_K, 1)));
         cudaErrCheck(cudaEventRecord(stopKERNEL));
         cudaErrCheck(cudaEventSynchronize(stopKERNEL));
         cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[ORI] lbm took %f ms\n\n", kernel_time);
+        printf("[ORI] sgemm took %f ms\n\n", kernel_time);
+        ori_sum_time += kernel_time;
     // ---------------------------------------------------------------------------------------
+
 
     // PTB running
     // ---------------------------------------------------------------------------------------
-        int lbm_block_dim_x = lbm_block.x;
-        int lbm_block_dim_y = lbm_block.y;
-        int lbm_block_dim_z = lbm_block.z;
-        int lbm_grid_dim_x = lbm_grid.x;
-        int lbm_grid_dim_y = lbm_grid.y;
-        int lbm_grid_dim_z = lbm_grid.z;
+        int sgemm_grid_dim_x = sgemm_grid.x;
+        int sgemm_grid_dim_y = sgemm_grid.y;
+        // int sgemm_block_dim_x = sgemm_block.x;
+        // int sgemm_block_dim_y = sgemm_block.y;
+        sgemm_grid.x = sgemm_grid_dim_x * sgemm_grid_dim_y;
+        sgemm_grid.x = sgemm_blks == 0 ? sgemm_grid_dim_x * sgemm_grid_dim_y : 68 * sgemm_blks;
+        sgemm_grid.y = 1;
+        // sgemm_block.x = sgemm_block_dim_x * sgemm_block_dim_y;
+        // sgemm_block.y = 1;
+        printf("[PTB] Running with sgemm...\n");
+        printf("[PTB] sgemm_grid -- %d * %d sgemm_block -- %d * %d \n", 
+            sgemm_grid.x, sgemm_grid.y, sgemm_block.x, sgemm_block.y);
 
-        lbm_grid.x = lbm_blks == 0 ? lbm_grid_dim_x * lbm_grid_dim_y : SM_NUM * lbm_blks;
-        lbm_grid.y = lbm_grid.z = 1;
-        lbm_block.x = lbm_block_dim_x * lbm_block_dim_y * lbm_block_dim_z;
-        lbm_block.y = lbm_block.z = 1;
-        printf("[PTB] Running with lbm...\n");
-        printf("[PTB] lbm_grid -- %d * %d * %d lbm_block -- %d * %d * %d \n", 
-            lbm_grid.x, lbm_grid.y, lbm_grid.z, lbm_block.x, lbm_block.y, lbm_block.z);
-        
         cudaErrCheck(cudaEventRecord(startKERNEL));
-        checkKernelErrors((ptb_lbm<<<lbm_grid, lbm_block>>>(lbm_ptb_src, lbm_ptb_dst,
-            lbm_grid_dim_x, lbm_grid_dim_y, lbm_grid_dim_z,
-            lbm_block_dim_x, lbm_block_dim_y, lbm_block_dim_z, lbm_iter)));
+        checkKernelErrors((ptb2_sgemm <<< sgemm_grid, sgemm_block >>> (
+                    sgemm_ptb_a, sgemm_ptb_b, sgemm_ptb_c, 
+                    NORMAL_M, NORMAL_N, NORMAL_K,
+                    sgemm_grid_dim_x, sgemm_grid_dim_y, 
+                    1)));
         cudaErrCheck(cudaEventRecord(stopKERNEL));
         cudaErrCheck(cudaEventSynchronize(stopKERNEL));
         cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[PTB] lbm took %f ms\n\n", kernel_time);
+        printf("[PTB] sgemm took %f ms\n\n", kernel_time);
     // ---------------------------------------------------------------------------------------
 
-
+    int mix_cp_task_blk_num = int(cp_grid_dim_x * cp_grid_dim_y / 2);
+    int solo_cp_task_blk_num = cp_grid_dim_x * cp_grid_dim_y - mix_cp_task_blk_num;
+    printf("mix_cp_task_blk_num: %d\n", mix_cp_task_blk_num);
+    printf("solo_cp_task_blk_num: %d\n", solo_cp_task_blk_num);
   // MIX
   // ---------------------------------------------------------------------------------------
-        dim3 mix_kernel_grid = dim3(68*2, 1, 1);
-        dim3 mix_kernel_block = dim3(512, 1, 1);
+
+        atomstart = 1;
+		runatoms = MAXATOMS;
+		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
+
+        dim3 mix_kernel_grid = dim3(272, 1, 1);
+        dim3 mix_kernel_block = dim3(256, 1, 1);
         cudaErrCheck(cudaEventRecord(startKERNEL));
-        checkKernelErrors((mixed_cp_lbm_kernel_3_1 <<<mix_kernel_grid, mix_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
-    0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_cp_grid.x * ori_cp_grid.y * ori_cp_grid.z, lbm_gptb_src, lbm_gptb_dst,
-            ori_lbm_grid.x, ori_lbm_grid.y, ori_lbm_grid.z, ori_lbm_block.x, ori_lbm_block.y, ori_lbm_block.z,
-            0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_lbm_grid.x * ori_lbm_grid.y * ori_lbm_grid.z)));
+        checkKernelErrors((mixed_cp_sgemm_kernel_1_1 <<<mix_kernel_grid, mix_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
+    0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, mix_cp_task_blk_num, 
+    sgemm_gptb_a, sgemm_gptb_b, sgemm_gptb_c, NORMAL_M, NORMAL_N, NORMAL_K,
+            ori_sgemm_grid.x, ori_sgemm_grid.y, ori_sgemm_grid.z, ori_sgemm_block.x, ori_sgemm_block.y, ori_sgemm_block.z,
+            0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_sgemm_grid.x * ori_sgemm_grid.y * ori_sgemm_grid.z)));
         cudaErrCheck(cudaEventRecord(stopKERNEL));
         cudaErrCheck(cudaEventSynchronize(stopKERNEL));
         cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[MIX] cp_lbm 3_1 took %f ms\n\n", kernel_time);
+        printf("[MIX] cp_sgemm 1_1 took %f ms\n\n", kernel_time);
   // ---------------------------------------------------------------------------------------
 
+    float sum_kernel_time = 0.0f;
+    sum_kernel_time += kernel_time;
+
+
+	// copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
+
+    // 补充cp solo
+    dim3 solo_kernel_grid = dim3(SM_NUM * cp_blks, 1, 1);
+    dim3 solo_kernel_block = cp_block;
+    cudaErrCheck(cudaEventRecord(startKERNEL));
+    checkKernelErrors((g_general_ptb_cp <<<solo_kernel_grid, solo_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z,
+    mix_cp_task_blk_num, solo_kernel_grid.x * solo_kernel_grid.y * solo_kernel_grid.z, ori_cp_grid.x * ori_cp_grid.y * ori_cp_grid.z, 0)));
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    printf("[SOLO] cp took %f ms\n\n", kernel_time);
+
+    sum_kernel_time += kernel_time;
+    printf("[EVAL] ori sum time: %f ms\n", ori_sum_time);
+    printf("[EVAL] fused + solo time: %f ms\n\n", sum_kernel_time);
+
+    printf("[EVAL] improvement: %f%\n\n", ((ori_sum_time - sum_kernel_time) * 100 / ori_sum_time));
 
 	// Checking results
     // ---------------------------------------------------------------------------------------
@@ -283,19 +324,15 @@ int main(int argc, char* argv[]) {
         }
 	// ---------------------------------------------------------------------------------------
 
+    // Checking results
     // ---------------------------------------------------------------------------------------
-        lbm_ori_src -= REAL_MARGIN;
-        lbm_ori_dst -= REAL_MARGIN;
-        lbm_ptb_src -= REAL_MARGIN;
-        lbm_ptb_dst -= REAL_MARGIN;
-        lbm_gptb_src -= REAL_MARGIN;
-        lbm_gptb_dst -= REAL_MARGIN;
-        cudaErrCheck(cudaMemcpy(host_lbm_ori_dst, lbm_ori_dst, size, cudaMemcpyDeviceToHost));
-        cudaErrCheck(cudaMemcpy(host_lbm_gptb_dst, lbm_gptb_dst, size, cudaMemcpyDeviceToHost));
+        cudaErrCheck(cudaMemcpy(host_sgemm_ori_c, sgemm_ori_c, NORMAL_M * NORMAL_N * sizeof(float), cudaMemcpyDeviceToHost));
+        cudaErrCheck(cudaMemcpy(host_sgemm_gptb_c, sgemm_gptb_c, NORMAL_M * NORMAL_N * sizeof(float), cudaMemcpyDeviceToHost));
+
         errors = 0;
-        for (int i = 0; i < TOTAL_PADDED_CELLS * N_CELL_ENTRIES + 2 * TOTAL_MARGIN; i++) {
-            float v1 = host_lbm_ori_dst[i];
-            float v2 = host_lbm_gptb_dst[i];
+        for (int i = 0; i < NORMAL_M * NORMAL_N; i++) {
+            float v1 = host_sgemm_ori_c[i];
+            float v2 = host_sgemm_gptb_c[i];
             if (fabs(v1 - v2) > 0.001f) {
             errors++;
             if (errors < 10) printf("%f %f\n", v1, v2);
@@ -308,5 +345,6 @@ int main(int argc, char* argv[]) {
             printf("Results verified: ORIGIN VERSION and GPTB VERSION agree.\n");
         }
     // ---------------------------------------------------------------------------------------
+
 
 }
