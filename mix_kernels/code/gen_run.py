@@ -183,16 +183,28 @@ def gen_code_file(kernel1, kernel2):
             # 使用杀死进程
             subprocess.run(f"pkill -f {cmd}", shell=True)
             exit_flag = True
+        except subprocess.CalledProcessError as e:
+            # too many resources
+            print(f"Error running {cmd}, Error: ---\n{e.output}\n---\n", file=sys.stderr)
+            if "too many resources" in e.output:
+                input("[WARNING]check file and press Enter to continue...")
+                # 使用kill命令杀死进程
+                subprocess.run(f"pkill -f {cmd}", shell=True)
+            else:
+                exit_flag = True
+                # 使用kill命令杀死进程
+                subprocess.run(f"pkill -f {cmd}", shell=True)
+        except Exception as e:
+            print(f"Error running {cmd}, Error: ---\n{e}\n---\n", file=sys.stderr)
+            # 使用kill命令杀死进程
+            subprocess.run(f"pkill -f {cmd}", shell=True)
+            exit_flag = True
+        
         if "Error" in output or "errors" in output:
             print(f"Error running {cmd}, Error: ---\n{output}\n---\n", file=sys.stderr)
             # 使用kill命令杀死进程
             subprocess.run(f"pkill -f {cmd}", shell=True)
             exit_flag = True
-        elif "too many resources" in output:
-            print(f"Error running {cmd}, Error: ---\n{output}\n---\n", file=sys.stderr)
-            input("[WARNING]check file and press Enter to continue...")
-            # 使用kill命令杀死进程
-            subprocess.run(f"pkill -f {cmd}", shell=True)
         
         if exit_flag:
             print("Exit because of running error!")
