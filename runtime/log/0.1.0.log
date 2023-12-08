@@ -1,0 +1,76 @@
+2023-12-08 13:02:16 - [INFO] This is an info message
+2023-12-08 13:02:16 - [WARNING] This is a warning message
+2023-12-08 13:02:16 - [ERROR] This is an error message
+2023-12-08 13:58:46 - [INFO] This is an info message
+2023-12-08 13:58:46 - [WARNING] This is a warning message
+2023-12-08 13:58:46 - [ERROR] This is an error message
+2023-12-08 14:36:20 - [INFO] |-----------------------------------|
+2023-12-08 14:36:20 - [INFO] Tacker Version: 0.1.0
+2023-12-08 14:36:20 - [INFO] Compile Timestamp: 20231208-143606
+2023-12-08 14:36:20 - [INFO] |-----------------------------------|
+2023-12-08 14:36:20 - [INFO] SM num	108
+2023-12-08 14:36:20 - [INFO] block/SM	32
+2023-12-08 14:36:20 - [INFO] threads/block	1024
+2023-12-08 14:36:20 - [INFO] warp size	32
+2023-12-08 14:36:20 - [INFO] shared memory	49152
+2023-12-08 14:36:20 - [INFO] kernel parallel	1
+2023-12-08 14:36:20 - [INFO] copy compute overlap	1
+2023-12-08 14:36:20 - [INFO] This is an info message
+2023-12-08 14:36:20 - [WARNING] This is a warning message
+2023-12-08 14:36:20 - [ERROR] This is an error message
+2023-12-08 14:45:26 - [INFO] exec kernel -- name: KernelA, id: 1
+2023-12-08 14:45:26 - [INFO] exec kernel -- name: KernelB, id: 2
+2023-12-08 14:45:26 - [INFO] exec kernel -- name: KernelC, id: 3
+2023-12-08 14:45:26 - [INFO] exec kernel -- name: KernelD, id: 4
+2023-12-08 14:45:26 - [INFO] This is an info message
+2023-12-08 14:45:26 - [WARNING] This is a warning message
+2023-12-08 14:45:26 - [ERROR] This is an error message
+2023-12-08 14:46:14 - [INFO] exec kernel -- name: KernelA, id: 1
+2023-12-08 14:46:14 - [INFO] exec kernel -- name: KernelB, id: 2
+2023-12-08 14:46:14 - [INFO] exec kernel -- name: KernelC, id: 3
+2023-12-08 14:46:14 - [INFO] exec kernel -- name: KernelD, id: 4
+2023-12-08 14:46:14 - [INFO] This is an info message
+2023-12-08 14:46:14 - [WARNING] This is a warning message
+2023-12-08 14:46:14 - [ERROR] This is an error message
+2023-12-08 14:46:55 - [INFO] exec kernel -- name: KernelA, id: 1
+2023-12-08 14:46:55 - [INFO] exec kernel -- name: KernelB, id: 2
+2023-12-08 14:46:55 - [INFO] exec kernel -- name: KernelC, id: 3
+2023-12-08 14:46:55 - [INFO] exec kernel -- name: KernelD, id: 4
+2023-12-08 14:46:55 - [INFO] This is an info message
+2023-12-08 14:46:55 - [WARNING] This is a warning message
+2023-12-08 14:46:55 - [ERROR] This is an error message
+2023-12-08 18:41:02 - [INFO] kernel name: Task1 CP 1, id: 1 is executing ...
+2023-12-08 18:41:02 - [INFO] numatoms: 64
+2023-12-08 18:41:02 - [INFO] gridspacing: 0.100000
+2023-12-08 18:41:02 - [INFO] energygrid: 140457409511424
+2023-12-08 18:41:02 - [INFO] iteration: 1
+2023-12-08 18:42:37 - [INFO] kernel name: Task1 CP 1, id: 1 is executing ...
+2023-12-08 18:42:37 - [INFO] numatoms: 64
+2023-12-08 18:42:37 - [INFO] gridspacing: 0.100000
+2023-12-08 18:42:37 - [INFO] energygrid: 139791823798272
+2023-12-08 18:42:37 - [INFO] iteration: 1
+2023-12-08 18:42:37 - [INFO] kernel name: Task1 CP 2, id: 2 is executing ...
+2023-12-08 18:42:37 - [INFO] numatoms: 64
+2023-12-08 18:42:37 - [INFO] gridspacing: 0.100000
+2023-12-08 18:42:37 - [INFO] energygrid: 139791656026112
+2023-12-08 18:42:37 - [INFO] iteration: 1
+2023-12-08 18:42:37 - [INFO] kernel name: Task1 CP 3, id: 3 is executing ...
+2023-12-08 18:42:37 - [INFO] numatoms: 64
+2023-12-08 18:42:37 - [INFO] gridspacing: 0.100000
+2023-12-08 18:42:37 - [INFO] energygrid: 139791488253952
+2023-12-08 18:42:37 - [INFO] iteration: 1
+2023-12-08 18:42:37 - [INFO] kernel name: Task2 CP 1, id: 1 is executing ...
+2023-12-08 18:42:37 - [INFO] numatoms: 64
+2023-12-08 18:42:37 - [INFO] gridspacing: 0.100000
+2023-12-08 18:42:37 - [INFO] energygrid: 139791320481792
+2023-12-08 18:42:37 - [INFO] iteration: 1
+2023-12-08 18:42:37 - [INFO] kernel name: Task2 CP 2, id: 2 is executing ...
+2023-12-08 18:42:37 - [INFO] numatoms: 64
+2023-12-08 18:42:37 - [INFO] gridspacing: 0.100000
+2023-12-08 18:42:37 - [INFO] energygrid: 139791152709632
+2023-12-08 18:42:37 - [INFO] iteration: 1
+2023-12-08 18:42:37 - [INFO] kernel name: Task2 CP 3, id: 3 is executing ...
+2023-12-08 18:42:37 - [INFO] numatoms: 64
+2023-12-08 18:42:37 - [INFO] gridspacing: 0.100000
+2023-12-08 18:42:37 - [INFO] energygrid: 139790984937472
+2023-12-08 18:42:37 - [INFO] iteration: 1

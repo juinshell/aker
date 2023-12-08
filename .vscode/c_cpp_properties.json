@@ -3,8 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/ptb_kernels"
+                "${workspaceFolder}/runtime",
+                "${workspaceFolder}/runtime/build",
+                "/usr/local/cuda/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

@@ -7,3 +7,4 @@
 *.xlsx
 *_mix
 *_out*
+build/
