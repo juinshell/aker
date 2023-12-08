@@ -110,6 +110,8 @@ int main(int argc, char* argv[]) {
 
 		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
 
+        printf("runatoms: %d\n", runatoms);
+
 		cudaErrCheck(cudaEventRecord(startKERNEL));
 		checkKernelErrors((ori_cp<<<cp_grid, cp_block, 0>>>(runatoms, 0.1, ori_output, cp_iter)));
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
@@ -137,6 +139,8 @@ int main(int argc, char* argv[]) {
 		atomstart = 1;
 		runatoms = MAXATOMS;
 		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
+
+        printf("runatoms: %d\n", runatoms);
 
 		cudaErrCheck(cudaEventRecord(startKERNEL));
 		checkKernelErrors((ptb2_cp<<<cp_grid, cp_block, 0>>>(runatoms, 0.1, ptb_output, 
@@ -264,6 +268,7 @@ int main(int argc, char* argv[]) {
         atomstart = 1;
 		runatoms = MAXATOMS;
 		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
+        printf("runatoms: %d\n", runatoms);
 
         dim3 mix_kernel_grid = dim3(272, 1, 1);
         dim3 mix_kernel_block = dim3(256, 1, 1);
@@ -286,8 +291,12 @@ int main(int argc, char* argv[]) {
 	// copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
 
     // 补充cp solo
+    printf("[SOLO] Running with cp...\n");
     dim3 solo_kernel_grid = dim3(SM_NUM * cp_blks, 1, 1);
-    dim3 solo_kernel_block = cp_block;
+    dim3 solo_kernel_block = dim3(128, 1, 1);
+    printf("[SOLO] cp_grid -- %d * %d * %d cp_block -- %d * %d * %d\n", 
+                solo_kernel_grid.x, solo_kernel_grid.y, solo_kernel_grid.z, solo_kernel_block.x, solo_kernel_block.y, solo_kernel_block.z);
+    printf("runatoms: %d\n", runatoms);
     cudaErrCheck(cudaEventRecord(startKERNEL));
     checkKernelErrors((g_general_ptb_cp <<<solo_kernel_grid, solo_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z,
     mix_cp_task_blk_num, solo_kernel_grid.x * solo_kernel_grid.y * solo_kernel_grid.z, ori_cp_grid.x * ori_cp_grid.y * ori_cp_grid.z, 0)));

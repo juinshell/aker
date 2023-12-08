@@ -9,6 +9,10 @@ public:
     virtual void initParams() = 0;
     virtual void loadKernel() = 0;
 
+    int getKernelId() { return kernelId; }
+    std::string& getKernelName() { return kernelName; }
+
+
 protected:
     int kernelId;
     std::string kernelName;

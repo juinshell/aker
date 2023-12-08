@@ -4,6 +4,9 @@
 #include "header/cp_header.h"
 #include "util.h"
 #include "TackerConfig.h"
+#include <cuda.h>
+#include "cuda.h"
+#include <cuda_runtime.h>
 
 extern Logger logger;
 
@@ -83,12 +86,12 @@ OriCPKernel::~OriCPKernel() {
 
 void OriCPKernel::execute() {
     // Implementation of CP kernel execution logic here
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(kernelId) + " is executing ...");
-    // print CPParamsStruct parameters by this->kernelParams
-    logger.INFO("numatoms: " + std::to_string(this->kernelParams->numatoms));
-    logger.INFO("gridspacing: " + std::to_string(this->kernelParams->gridspacing));
-    logger.INFO("energygrid: " + std::to_string((uint64_t)this->kernelParams->energygrid));
-    logger.INFO("iteration: " + std::to_string(this->kernelParams->iteration));
+    // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(kernelId) + " is executing ...");
+    // // print CPParamsStruct parameters by this->kernelParams
+    // logger.INFO("numatoms: " + std::to_string(this->kernelParams->numatoms));
+    // logger.INFO("gridspacing: " + std::to_string(this->kernelParams->gridspacing));
+    // logger.INFO("energygrid: " + std::to_string((uint64_t)this->kernelParams->energygrid));
+    // logger.INFO("iteration: " + std::to_string(this->kernelParams->iteration));
 
     void *launchargs[] = {(void *)&this->kernelParams->numatoms, (void *)&this->kernelParams->gridspacing, (void *)&this->kernelParams->energygrid, (void *)&this->kernelParams->iteration};
     CU_SAFE_CALL(cuLaunchKernel(this->function, 
@@ -104,13 +107,14 @@ void OriCPKernel::loadKernel() {
     // Implementation of CP kernel load logic here
     logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(kernelId) + " is loading ...");
 
-    const char *module_file = (std::string(CMAKELISTS_PATH) + std::string("/cubins/ori_cp.cubin")).c_str();
-	char *cdkernel_name;
+    std::string module_file = std::string(CMAKELISTS_PATH) + std::string("/cubins/ori_cp.cubin");
+    // logger.INFO("module_file: " + std::string(module_file));
+
 	dim3 block, grid;
 
-    CU_SAFE_CALL(cuModuleLoad(&this->module, module_file));
+    CU_SAFE_CALL(cuModuleLoad(&this->module, module_file.c_str()));
 
-	cdkernel_name = (char *)"ori_cp";
+	const char* cdkernel_name = "_Z6ori_cpifPfi";
 	CU_SAFE_CALL(cuModuleGetFunction(&this->function, this->module, cdkernel_name));
 
     return ;
