@@ -9,7 +9,7 @@ public:
     TaskManager() {};
     void addTask(Task& task);
     void executeAllTasks();
-    ~TaskManager() {};
+    ~TaskManager();
 
 private:
     std::vector<Task*> tasks;

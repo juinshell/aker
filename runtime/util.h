@@ -2,7 +2,7 @@
  * @Author: diagonal
  * @Date: 2023-12-08 21:52:35
  * @LastEditors: diagonal
- * @LastEditTime: 2023-12-08 22:30:43
+ * @LastEditTime: 2023-12-09 11:56:49
  * @FilePath: /tacker/runtime/util.h
  * @Description: 
  * @happy coding, happy life!
@@ -18,6 +18,11 @@
 #include <sstream>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <cublas_v2.h>
+#include <curand.h>
+#include <mma.h>
+#include <malloc.h>
+using namespace nvcuda; 
 
 #define CU_SAFE_CALL(err) __checkCudaErrors(err, __FILE__, __LINE__)
 // These are the inline versions for all of the SDK helper functions
@@ -57,3 +62,25 @@ inline void __checkCudaErrors(CUresult err, const char *file, const int line) \
       throw std::runtime_error(safe_call_ss.str());                                         \
     }                                                                                       \
   } while (0)
+
+
+#define cudaErrCheck(stat) { cudaErrCheck_((stat), __FILE__, __LINE__); }
+inline void cudaErrCheck_(cudaError_t stat, const char *file, int line) {
+   if (stat != cudaSuccess) {
+      fprintf(stderr, "CUDA Error: %s %s %d\\n", cudaGetErrorString(stat), file, line);
+   }
+}
+
+#define cublasErrCheck(stat) { cublasErrCheck_((stat), __FILE__, __LINE__); }
+inline void cublasErrCheck_(cublasStatus_t stat, const char *file, int line) {
+   if (stat != CUBLAS_STATUS_SUCCESS) {
+      fprintf(stderr, "cuBLAS Error: %d %s %d\\n", stat, file, line);
+   }
+}
+
+#define curandErrCheck(stat) { curandErrCheck_((stat), __FILE__, __LINE__); }
+inline void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
+   if (stat != CURAND_STATUS_SUCCESS) {
+      fprintf(stderr, "cuRand Error: %d %s %d\\n", stat, file, line);
+   }
+}

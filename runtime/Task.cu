@@ -11,13 +11,14 @@ void Task::addKernel(std::unique_ptr<Kernel> kernel) {
 }
 
 void Task::executeTask() {
-    float kernel_time;
+    float kernel_time = 0.0f;
     cudaEvent_t startKERNEL;
     cudaEvent_t stopKERNEL;
     CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
     CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
 
     while (!kernels.empty()) {
+        kernel_time = 0.0f;
         std::unique_ptr<Kernel> kernel = std::move(kernels.front());
         kernels.pop();
 
@@ -28,10 +29,13 @@ void Task::executeTask() {
 		CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
 		CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
         logger.INFO("kernel name: " + kernel->getKernelName() + ", kernel time: " + std::to_string(kernel_time) + " ms");
+        // 函数结束，kernel析构
     }
 }
 
-void Task::preLaunch() {
-    printf("preLaunch task -- taskId: %d, taskName:%s\n", taskId, taskName.c_str());
-    return ;
+Task::~Task() {
+    while (!kernels.empty()) {
+        kernels.pop();
+    }
+    logger.INFO("task name: " + taskName + ", id: " + std::to_string(taskId) + " is destroyed!");
 }

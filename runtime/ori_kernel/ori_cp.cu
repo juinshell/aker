@@ -1,6 +1,6 @@
 #include "header/cp_header.h"
 
-__global__ void ori_cp(int numatoms, float gridspacing, float * energygrid, int iteration) {
+extern "C" __global__ void ori_cp(int numatoms, float gridspacing, float * energygrid) {
 		unsigned int xindex  = __umul24(blockIdx.x, blockDim.x) * UNROLLX
 								+ threadIdx.x;
 		unsigned int yindex  = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;

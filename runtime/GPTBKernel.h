@@ -1,0 +1,85 @@
+#pragma once
+#include "Kernel.h"
+#include "Logger.h"
+#include "ModuleCenter.h"
+#include <unordered_map>
+
+extern Logger logger;
+extern ModuleCenter moduleCenter;
+extern std::unordered_map<std::string, void*> fmap;
+
+class GPTBKernel : public Kernel {
+private:
+    std::unique_ptr<Kernel> kernel_;
+public:
+    GPTBKernel(int id, const std::string& funcKey, std::unique_ptr<Kernel> kernel, dim3 gridDim, dim3 blockDim, int ptb_start_block_pos, int ptb_end_block_pos) 
+    : kernel_(std::move(kernel)), funcKey(funcKey){ // kernel不能再被使用
+        this->kernelName = funcKey;
+        this->launchGridDim = gridDim;
+        this->launchBlockDim = blockDim;
+        this->Id = id;
+        // kernel
+        gptbParams.grid_dimension_x = kernel_->launchGridDim.x;
+        gptbParams.grid_dimension_y = kernel_->launchGridDim.y;
+        gptbParams.grid_dimension_z = kernel_->launchGridDim.z;
+        gptbParams.block_dimension_x = kernel_->launchBlockDim.x;
+        gptbParams.block_dimension_y = kernel_->launchBlockDim.y;
+        gptbParams.block_dimension_z = kernel_->launchBlockDim.z;
+
+        // ptb
+        gptbParams.ptb_iter_block_step = gridDim.x * gridDim.y * gridDim.z;
+        gptbParams.ptb_start_block_pos = ptb_start_block_pos;
+        gptbParams.ptb_end_block_pos = ptb_end_block_pos;
+
+        this->kernelParams = kernel_->kernelParams;
+
+        this->smem = kernel_->smem;
+        // logger.INFO("kernelParams size: " + std::to_string(kernelParams.size()));
+        loadKernel();
+        initParams();
+    }
+
+    ~GPTBKernel() {
+        logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
+    }
+
+    GPTBParams gptbParams;
+    const std::string funcKey;
+
+    void initParams() override{
+        kernelParams.push_back(&gptbParams.grid_dimension_x);
+        kernelParams.push_back(&gptbParams.grid_dimension_y);
+        kernelParams.push_back(&gptbParams.grid_dimension_z);
+        kernelParams.push_back(&gptbParams.block_dimension_x);
+        kernelParams.push_back(&gptbParams.block_dimension_y);
+        kernelParams.push_back(&gptbParams.block_dimension_z);
+        // 方便跟mix kernel统一，不提前push后续ptb args
+    }
+
+    void loadKernel() override{
+        if (fmap.find(funcKey) != fmap.end()) {
+            this->kernelFunc = (void*)fmap[funcKey];
+        } else {
+            logger.ERROR("load kernel {" + funcKey + "} failed!");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    void execute() override{
+        logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
+
+        kernelParams.push_back(&gptbParams.ptb_start_block_pos);
+        kernelParams.push_back(&gptbParams.ptb_iter_block_step);
+        kernelParams.push_back(&gptbParams.ptb_end_block_pos);
+        int thread_base = 0;
+        kernelParams.push_back(&thread_base); // for gptb only, no offset for thread
+        // logger.INFO("kernelParams size: " + std::to_string(kernelParams.size()));
+        // logger.INFO("smem: " + std::to_string(smem));
+        // launch kernel
+        CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
+            launchGridDim, launchBlockDim,
+            (void **)kernelParams.data(), (size_t)this->smem, 0));
+        
+        // CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    }
+};

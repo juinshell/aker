@@ -6,12 +6,12 @@
 class Task {
 public:
     Task(int taskId, std::string taskName);
+    ~Task();
     void addKernel(std::unique_ptr<Kernel> kernel);
-    void preLaunch();
     void executeTask();
 
 private:
     int taskId;
     std::string taskName;
-    std::queue<std::unique_ptr<Kernel>> kernels;
+    std::queue<std::unique_ptr<Kernel>> kernels; // 容器一般不能存放引用
 };

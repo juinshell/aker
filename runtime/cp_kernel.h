@@ -1,3 +1,13 @@
+/*** 
+ * @Author: diagonal
+ * @Date: 2023-12-08 21:52:35
+ * @LastEditors: diagonal
+ * @LastEditTime: 2023-12-09 12:37:13
+ * @FilePath: /tacker/runtime/cp_kernel.h
+ * @Description: 
+ * @happy coding, happy life!
+ * @Copyright (c) 2023 by jxdeng, All Rights Reserved. 
+ */
 // cp_kernel.h
 #pragma once
 #include "Kernel.h"
@@ -7,14 +17,13 @@ struct OriCPParamsStruct {
     int numatoms;
     float gridspacing;
     float * energygrid;
-    int iteration;
 };
 
 class OriCPKernel : public Kernel {
 public:
     // 构造函数
-    OriCPKernel(int id, const std::string& name);
-    OriCPKernel(int id, const std::string& name, OriCPParamsStruct& params);
+    OriCPKernel(int id);
+    OriCPKernel(int id, const std::string& moduleName, const std::string& kernelName);
 
     // 析构函数
     ~OriCPKernel();
@@ -25,6 +34,7 @@ public:
 
 private:
     void loadKernel();  
-    OriCPParamsStruct* kernelParams;
+    OriCPParamsStruct* CPKernelParams;
     
 };
+

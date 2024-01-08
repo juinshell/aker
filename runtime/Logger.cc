@@ -1,4 +1,3 @@
-// Logger.cc
 #include "Logger.h"
 
 Logger::Logger(const std::string& filePath, bool log2Console, bool log2File)

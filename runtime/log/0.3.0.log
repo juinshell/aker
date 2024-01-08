@@ -1,0 +1,242 @@
+2024-01-07 21:04:32 - [INFO] CUDA init complete
+2024-01-07 21:04:33 - [INFO] kernel name: ori_cp, id: 1 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: ori_cp, kernel time: 2.999136 ms
+2024-01-07 21:04:33 - [INFO] id: 1 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: ori_cutcp, id: 2 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: ori_cutcp, kernel time: 0.859136 ms
+2024-01-07 21:04:33 - [INFO] kernel name: ori_cutcp, id: 2 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: ori_fft, id: 3 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: ori_fft, kernel time: 1.523744 ms
+2024-01-07 21:04:33 - [INFO] id: 3 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: ori_lbm, id: 4 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: ori_lbm, kernel time: 0.711104 ms
+2024-01-07 21:04:33 - [INFO] id: 4 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: ori_mrif, id: 5 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: ori_mrif, kernel time: 1.344768 ms
+2024-01-07 21:04:33 - [INFO] id: 5 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: ori_mriq, id: 6 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: ori_mriq, kernel time: 1.525472 ms
+2024-01-07 21:04:33 - [INFO] id: 6 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: ori_sgemm, id: 7 is executing ...
+2024-01-07 21:04:33 - [INFO] -- launchGridDim: 3, 258, 1
+2024-01-07 21:04:33 - [INFO] -- launchBlockDim: 16, 8, 1
+2024-01-07 21:04:33 - [INFO] kernel name: ori_sgemm, kernel time: 2.944928 ms
+2024-01-07 21:04:33 - [INFO] id: 7 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: cp_fft, kernel time: 3.912512 ms
+2024-01-07 21:04:33 - [INFO] id: 14 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_fft, id: 14 is destroyed!
+2024-01-07 21:04:33 - [INFO] id: 9 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_cp, id: 12 is destroyed!
+2024-01-07 21:04:33 - [INFO] id: 10 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: cutcp_fft, kernel time: 1.634304 ms
+2024-01-07 21:04:33 - [INFO] id: 15 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_fft, id: 15 is destroyed!
+2024-01-07 21:04:33 - [INFO] id: 11 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_cutcp, id: 13 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: ori_cutcp, id: 8 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_lbm, id: 16 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_lbm, kernel time: 0.779232 ms
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_lbm, id: 16 is destroyed!
+2024-01-07 21:04:33 - [INFO] id: 16 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_mrif, id: 17 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_mrif, kernel time: 1.435808 ms
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_mrif, id: 17 is destroyed!
+2024-01-07 21:04:33 - [INFO] id: 17 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_mriq, id: 18 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_mriq, kernel time: 1.789952 ms
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_mriq, id: 18 is destroyed!
+2024-01-07 21:04:33 - [INFO] id: 18 is destroyed!
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_sgemm, id: 19 is executing ...
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_sgemm, kernel time: 3.282848 ms
+2024-01-07 21:04:33 - [INFO] kernel name: gptb_sgemm, id: 19 is destroyed!
+2024-01-07 21:04:33 - [INFO] id: 19 is destroyed!
+2024-01-07 21:04:33 - [INFO] task name: Task5, id: 5 is destroyed!
+2024-01-07 21:04:33 - [INFO] task name: Task4, id: 4 is destroyed!
+2024-01-07 21:04:33 - [INFO] task name: Task1, id: 1 is destroyed!
+2024-01-07 21:04:33 - [INFO] Tacker exit
+2024-01-07 23:37:05 - [INFO] CUDA init complete
+2024-01-07 23:37:06 - [INFO] kernel name: ori_cp, id: 1 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: ori_cp, kernel time: 2.994656 ms
+2024-01-07 23:37:06 - [INFO] id: 1 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: ori_cutcp, id: 2 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: ori_cutcp, kernel time: 0.879552 ms
+2024-01-07 23:37:06 - [INFO] kernel name: ori_cutcp, id: 2 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: ori_fft, id: 3 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: ori_fft, kernel time: 1.524768 ms
+2024-01-07 23:37:06 - [INFO] id: 3 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: ori_lbm, id: 4 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: ori_lbm, kernel time: 5.991616 ms
+2024-01-07 23:37:06 - [INFO] id: 4 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: ori_mrif, id: 5 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: ori_mrif, kernel time: 1.385408 ms
+2024-01-07 23:37:06 - [INFO] id: 5 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: ori_mriq, id: 6 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: ori_mriq, kernel time: 1.532608 ms
+2024-01-07 23:37:06 - [INFO] id: 6 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: ori_sgemm, id: 7 is executing ...
+2024-01-07 23:37:06 - [INFO] -- launchGridDim: 3, 258, 1
+2024-01-07 23:37:06 - [INFO] -- launchBlockDim: 16, 8, 1
+2024-01-07 23:37:06 - [INFO] kernel name: ori_sgemm, kernel time: 2.951072 ms
+2024-01-07 23:37:06 - [INFO] id: 7 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_lbm, id: 16 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_lbm, kernel time: 0.900480 ms
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_lbm, id: 16 is destroyed!
+2024-01-07 23:37:06 - [INFO] id: 16 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_mrif, id: 17 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_mrif, kernel time: 1.439392 ms
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_mrif, id: 17 is destroyed!
+2024-01-07 23:37:06 - [INFO] id: 17 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_mriq, id: 18 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_mriq, kernel time: 1.782688 ms
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_mriq, id: 18 is destroyed!
+2024-01-07 23:37:06 - [INFO] id: 18 is destroyed!
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_sgemm, id: 19 is executing ...
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_sgemm, kernel time: 3.289824 ms
+2024-01-07 23:37:06 - [INFO] kernel name: gptb_sgemm, id: 19 is destroyed!
+2024-01-07 23:37:06 - [INFO] id: 19 is destroyed!
+2024-01-07 23:37:06 - [INFO] task name: Task5, id: 5 is destroyed!
+2024-01-07 23:37:06 - [INFO] task name: Task4, id: 4 is destroyed!
+2024-01-07 23:37:06 - [INFO] task name: Task1, id: 1 is destroyed!
+2024-01-07 23:37:06 - [INFO] Tacker exit
+2024-01-08 10:33:49 - [INFO] CUDA init complete
+2024-01-08 10:33:50 - [INFO] kernel name: ori_cp, id: 1 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: ori_cp, kernel time: 2.996704 ms
+2024-01-08 10:33:50 - [INFO] id: 1 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: ori_cutcp, id: 2 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: ori_cutcp, kernel time: 0.957248 ms
+2024-01-08 10:33:50 - [INFO] kernel name: ori_cutcp, id: 2 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: ori_fft, id: 3 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: ori_fft, kernel time: 1.532512 ms
+2024-01-08 10:33:50 - [INFO] id: 3 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: ori_lbm, id: 4 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: ori_lbm, kernel time: 0.743776 ms
+2024-01-08 10:33:50 - [INFO] id: 4 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: ori_mrif, id: 5 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: ori_mrif, kernel time: 1.351680 ms
+2024-01-08 10:33:50 - [INFO] id: 5 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: ori_mriq, id: 6 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: ori_mriq, kernel time: 1.534592 ms
+2024-01-08 10:33:50 - [INFO] id: 6 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: ori_sgemm, id: 7 is executing ...
+2024-01-08 10:33:50 - [INFO] -- launchGridDim: 3, 258, 1
+2024-01-08 10:33:50 - [INFO] -- launchBlockDim: 16, 8, 1
+2024-01-08 10:33:50 - [INFO] kernel name: ori_sgemm, kernel time: 2.953760 ms
+2024-01-08 10:33:50 - [INFO] id: 7 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_lbm, id: 16 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_lbm, kernel time: 0.877728 ms
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_lbm, id: 16 is destroyed!
+2024-01-08 10:33:50 - [INFO] id: 16 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_mrif, id: 17 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_mrif, kernel time: 1.433824 ms
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_mrif, id: 17 is destroyed!
+2024-01-08 10:33:50 - [INFO] id: 17 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_mriq, id: 18 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_mriq, kernel time: 1.765792 ms
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_mriq, id: 18 is destroyed!
+2024-01-08 10:33:50 - [INFO] id: 18 is destroyed!
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_sgemm, id: 19 is executing ...
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_sgemm, kernel time: 3.215904 ms
+2024-01-08 10:33:50 - [INFO] kernel name: gptb_sgemm, id: 19 is destroyed!
+2024-01-08 10:33:50 - [INFO] id: 19 is destroyed!
+2024-01-08 10:33:50 - [INFO] task name: Task5, id: 5 is destroyed!
+2024-01-08 10:33:50 - [INFO] task name: Task4, id: 4 is destroyed!
+2024-01-08 10:33:50 - [INFO] task name: Task1, id: 1 is destroyed!
+2024-01-08 10:33:50 - [INFO] Tacker exit
+2024-01-08 12:41:20 - [INFO] CUDA init complete
+2024-01-08 12:41:21 - [INFO] kernel name: ori_cp, id: 1 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: ori_cp, kernel time: 3.026752 ms
+2024-01-08 12:41:21 - [INFO] id: 1 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: ori_cutcp, id: 2 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: ori_cutcp, kernel time: 0.874336 ms
+2024-01-08 12:41:21 - [INFO] kernel name: ori_cutcp, id: 2 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: ori_fft, id: 3 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: ori_fft, kernel time: 1.533024 ms
+2024-01-08 12:41:21 - [INFO] id: 3 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: ori_lbm, id: 4 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: ori_lbm, kernel time: 0.731808 ms
+2024-01-08 12:41:21 - [INFO] id: 4 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: ori_mrif, id: 5 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: ori_mrif, kernel time: 1.350592 ms
+2024-01-08 12:41:21 - [INFO] id: 5 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: ori_mriq, id: 6 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: ori_mriq, kernel time: 1.531168 ms
+2024-01-08 12:41:21 - [INFO] id: 6 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: ori_sgemm, id: 7 is executing ...
+2024-01-08 12:41:21 - [INFO] -- launchGridDim: 3, 258, 1
+2024-01-08 12:41:21 - [INFO] -- launchBlockDim: 16, 8, 1
+2024-01-08 12:41:21 - [INFO] kernel name: ori_sgemm, kernel time: 2.952096 ms
+2024-01-08 12:41:21 - [INFO] id: 7 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_lbm, id: 16 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_lbm, kernel time: 0.814624 ms
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_lbm, id: 16 is destroyed!
+2024-01-08 12:41:21 - [INFO] id: 16 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_mrif, id: 17 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_mrif, kernel time: 1.431584 ms
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_mrif, id: 17 is destroyed!
+2024-01-08 12:41:21 - [INFO] id: 17 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_mriq, id: 18 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_mriq, kernel time: 1.765632 ms
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_mriq, id: 18 is destroyed!
+2024-01-08 12:41:21 - [INFO] id: 18 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_sgemm, id: 19 is executing ...
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_sgemm, kernel time: 3.184128 ms
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_sgemm, id: 19 is destroyed!
+2024-01-08 12:41:21 - [INFO] id: 19 is destroyed!
+2024-01-08 12:41:21 - [INFO] task name: Task5, id: 5 is destroyed!
+2024-01-08 12:41:21 - [INFO] task name: Task4, id: 4 is destroyed!
+2024-01-08 12:41:21 - [INFO] kernel name: gptb_cp, id: 8 is destroyed!
+2024-01-08 12:41:21 - [INFO] id: 8 is destroyed!
+2024-01-08 12:41:21 - [INFO] task name: Task2, id: 2 is destroyed!
+2024-01-08 12:41:21 - [INFO] task name: Task1, id: 1 is destroyed!
+2024-01-08 12:41:21 - [INFO] Tacker exit
+2024-01-08 13:19:19 - [INFO] CUDA init complete
+2024-01-08 13:19:20 - [INFO] kernel name: ori_cp, id: 1 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: ori_cp, kernel time: 3.008736 ms
+2024-01-08 13:19:20 - [INFO] id: 1 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: ori_cutcp, id: 2 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: ori_cutcp, kernel time: 0.871680 ms
+2024-01-08 13:19:20 - [INFO] kernel name: ori_cutcp, id: 2 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: ori_fft, id: 3 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: ori_fft, kernel time: 1.534336 ms
+2024-01-08 13:19:20 - [INFO] id: 3 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: ori_lbm, id: 4 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: ori_lbm, kernel time: 0.724288 ms
+2024-01-08 13:19:20 - [INFO] id: 4 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: ori_mrif, id: 5 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: ori_mrif, kernel time: 1.350272 ms
+2024-01-08 13:19:20 - [INFO] id: 5 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: ori_mriq, id: 6 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: ori_mriq, kernel time: 1.531328 ms
+2024-01-08 13:19:20 - [INFO] id: 6 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: ori_sgemm, id: 7 is executing ...
+2024-01-08 13:19:20 - [INFO] -- launchGridDim: 3, 258, 1
+2024-01-08 13:19:20 - [INFO] -- launchBlockDim: 16, 8, 1
+2024-01-08 13:19:20 - [INFO] kernel name: ori_sgemm, kernel time: 2.942400 ms
+2024-01-08 13:19:20 - [INFO] id: 7 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: cp_fft, kernel time: 3.951360 ms
+2024-01-08 13:19:20 - [INFO] id: 9 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_fft, id: 9 is destroyed!
+2024-01-08 13:19:20 - [INFO] id: 0 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_cp, id: 8 is destroyed!
+2024-01-08 13:19:20 - [INFO] id: 0 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_lbm, id: 16 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_lbm, kernel time: 0.858624 ms
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_lbm, id: 16 is destroyed!
+2024-01-08 13:19:20 - [INFO] id: 16 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_mrif, id: 17 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_mrif, kernel time: 1.428032 ms
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_mrif, id: 17 is destroyed!
+2024-01-08 13:19:20 - [INFO] id: 17 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_mriq, id: 18 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_mriq, kernel time: 1.767968 ms
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_mriq, id: 18 is destroyed!
+2024-01-08 13:19:20 - [INFO] id: 18 is destroyed!
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_sgemm, id: 19 is executing ...
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_sgemm, kernel time: 3.162560 ms
+2024-01-08 13:19:20 - [INFO] kernel name: gptb_sgemm, id: 19 is destroyed!
+2024-01-08 13:19:20 - [INFO] id: 19 is destroyed!
+2024-01-08 13:19:20 - [INFO] task name: Task5, id: 5 is destroyed!
+2024-01-08 13:19:20 - [INFO] task name: Task4, id: 4 is destroyed!
+2024-01-08 13:19:20 - [INFO] task name: Task2, id: 2 is destroyed!
+2024-01-08 13:19:20 - [INFO] task name: Task1, id: 1 is destroyed!
+2024-01-08 13:19:20 - [INFO] Tacker exit

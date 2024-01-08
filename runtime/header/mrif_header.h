@@ -1,3 +1,4 @@
+#pragma once
 #include <endian.h>
 #include <malloc.h>
 #include <inttypes.h>
@@ -27,8 +28,6 @@ struct mrif_kValues {
   float RhoPhiR;
   float RhoPhiI;
 };
-
-__constant__ __device__ mrif_kValues c[KERNEL_FH_K_ELEMS_PER_GRID];
 
 #include "pets_common.h"
 #define MRIF_GRID_DIM (SM_NUM * 1)

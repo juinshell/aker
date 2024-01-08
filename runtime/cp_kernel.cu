@@ -1,26 +1,150 @@
+/*** 
+ * @Author: diagonal
+ * @Date: 2023-12-08 21:52:35
+ * @LastEditors: diagonal
+ * @LastEditTime: 2023-12-09 12:40:59
+ * @FilePath: /tacker/runtime/cp_kernel.cu
+ * @Description: 
+ * @happy coding, happy life!
+ * @Copyright (c) 2023 by jxdeng, All Rights Reserved. 
+ */
 // cp_kernel.cu
 #include "cp_kernel.h"
 #include "Logger.h"
 #include "header/cp_header.h"
 #include "util.h"
 #include "TackerConfig.h"
-#include <cuda.h>
-#include "cuda.h"
-#include <cuda_runtime.h>
+#include "ModuleCenter.h"
 
 extern Logger logger;
+extern ModuleCenter moduleCenter;
 
-// 构造函数
-OriCPKernel::OriCPKernel(int id, const std::string& name, OriCPParamsStruct& params) {
-    kernelId = id;
-    kernelName = name;
-    initParams();
+__constant__ float4 atominfo[MAXATOMS];
+
+extern "C" __global__ void ori_cp(int numatoms, float gridspacing, float * energygrid) {
+		unsigned int xindex  = __umul24(blockIdx.x, blockDim.x) * UNROLLX
+								+ threadIdx.x;
+		unsigned int yindex  = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+		unsigned int outaddr = (__umul24(gridDim.x, blockDim.x) * UNROLLX) * yindex
+								+ xindex;
+
+		float coory = gridspacing * yindex;
+		float coorx = gridspacing * xindex;
+
+		float energyvalx1=0.0f;
+		float energyvalx2=0.0f;
+		float energyvalx3=0.0f;
+		float energyvalx4=0.0f;
+		float energyvalx5=0.0f;
+		float energyvalx6=0.0f;
+		float energyvalx7=0.0f;
+		float energyvalx8=0.0f;
+
+		float gridspacing_u = gridspacing * BLOCKSIZEX;
+
+		int atomid;
+		for (atomid=0; atomid<numatoms; atomid++) {
+			float dy = coory - atominfo[atomid].y;
+			float dyz2 = (dy * dy) + atominfo[atomid].z;
+
+			float dx1 = coorx - atominfo[atomid].x;
+			float dx2 = dx1 + gridspacing_u;
+			float dx3 = dx2 + gridspacing_u;
+			float dx4 = dx3 + gridspacing_u;
+			float dx5 = dx4 + gridspacing_u;
+			float dx6 = dx5 + gridspacing_u;
+			float dx7 = dx6 + gridspacing_u;
+			float dx8 = dx7 + gridspacing_u;
+
+			energyvalx1 += atominfo[atomid].w * (1.0f / sqrtf(dx1*dx1 + dyz2));
+			energyvalx2 += atominfo[atomid].w * (1.0f / sqrtf(dx2*dx2 + dyz2));
+			energyvalx3 += atominfo[atomid].w * (1.0f / sqrtf(dx3*dx3 + dyz2));
+			energyvalx4 += atominfo[atomid].w * (1.0f / sqrtf(dx4*dx4 + dyz2));
+			energyvalx5 += atominfo[atomid].w * (1.0f / sqrtf(dx5*dx5 + dyz2));
+			energyvalx6 += atominfo[atomid].w * (1.0f / sqrtf(dx6*dx6 + dyz2));
+			energyvalx7 += atominfo[atomid].w * (1.0f / sqrtf(dx7*dx7 + dyz2));
+			energyvalx8 += atominfo[atomid].w * (1.0f / sqrtf(dx8*dx8 + dyz2));
+		}
+
+		energygrid[outaddr]   += energyvalx1;
+		energygrid[outaddr+1*BLOCKSIZEX] += energyvalx2;
+		energygrid[outaddr+2*BLOCKSIZEX] += energyvalx3;
+		energygrid[outaddr+3*BLOCKSIZEX] += energyvalx4;
+		energygrid[outaddr+4*BLOCKSIZEX] += energyvalx5;
+		energygrid[outaddr+5*BLOCKSIZEX] += energyvalx6;
+		energygrid[outaddr+6*BLOCKSIZEX] += energyvalx7;
+		energygrid[outaddr+7*BLOCKSIZEX] += energyvalx8;
 }
 
-OriCPKernel::OriCPKernel(int id, const std::string& name){
-    kernelId = id;
-    kernelName = name;
+// 构造函数
+OriCPKernel::OriCPKernel(int id, const std::string& moduleName, const std::string& kernelName) {
+    Id = id;
+    this->kernelName = kernelName;
+    this->moduleName = moduleName;
     initParams();
+    // loadKernel();
+}
+
+OriCPKernel::OriCPKernel(int id){
+    Id = id;
+    kernelName = "ori_cp";
+    moduleName = "ori_cp";
+    initParams();
+    // loadKernel();
+}
+
+// This function copies atoms from the CPU to the GPU and
+// precalculates (z^2) for each atom.
+int copyatomstoconstbuf(float *atoms, int count, float zplane) {
+	if (count > MAXATOMS) {
+		printf("Atom count exceeds constant buffer storage capacity\n");
+		return -1;
+	}
+
+	float atompre[4*MAXATOMS];
+	int i;
+	for (i=0; i<count*4; i+=4) {
+		atompre[i    ] = atoms[i    ];
+		atompre[i + 1] = atoms[i + 1];
+		float dz = zplane - atoms[i + 2];
+		atompre[i + 2]  = dz*dz;
+		atompre[i + 3] = atoms[i + 3];
+	}
+
+	cudaMemcpyToSymbol(atominfo, atompre, count * 4 * sizeof(float), 0);
+	CUERR // check and clear any existing errors
+
+	return 0;
+}
+
+
+/* initatoms()
+ * Store a pseudorandom arrangement of point charges in *atombuf.
+ */
+static int initatoms(float **atombuf, int count, dim3 volsize, float gridspacing) {
+	dim3 size;
+	int i;
+	float *atoms;
+
+	srand(54321);			// Ensure that atom placement is repeatable
+
+	atoms = (float *) malloc(count * 4 * sizeof(float));
+	*atombuf = atoms;
+
+	// compute grid dimensions in angstroms
+	size.x = gridspacing * volsize.x;
+	size.y = gridspacing * volsize.y;
+	size.z = gridspacing * volsize.z;
+
+	for (i=0; i<count; i++) {
+		int addr = i * 4;
+		atoms[addr    ] = (rand() / (float) RAND_MAX) * size.x; 
+		atoms[addr + 1] = (rand() / (float) RAND_MAX) * size.y; 
+		atoms[addr + 2] = (rand() / (float) RAND_MAX) * size.z; 
+		atoms[addr + 3] = ((rand() / (float) RAND_MAX) * 2.0) - 1.0;  // charge
+	}  
+
+	return 0;
 }
 
 // 初始化参数default
@@ -65,57 +189,52 @@ void OriCPKernel::initParams() {
 
     copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
 
-    this->kernelParams = new OriCPParamsStruct();
-    this->kernelParams->numatoms = runatoms;
-    this->kernelParams->gridspacing = 0.1;
-    this->kernelParams->energygrid = ori_output;
-    this->kernelParams->iteration = 1;
+    this->CPKernelParams = new OriCPParamsStruct();
+    this->CPKernelParams->numatoms = runatoms;
+    this->CPKernelParams->gridspacing = 0.1;
+    this->CPKernelParams->energygrid = ori_output;
     this->launchGridDim = cp_grid;
     this->launchBlockDim = cp_block;
-    this->loadKernel();
+
+    this->kernelParams.push_back(&this->CPKernelParams->numatoms);
+    this->kernelParams.push_back(&this->CPKernelParams->gridspacing);
+    this->kernelParams.push_back(&this->CPKernelParams->energygrid);
+
+    this->kernelFunc = (void*)ori_cp;
+	this->smem = 0;
 }
 
 // 虚析构函数实现
 OriCPKernel::~OriCPKernel() {
-    CU_SAFE_CALL(cuModuleUnload(this->module));
-    CUDA_SAFE_CALL(cudaFree(this->kernelParams->energygrid));
-    delete this->kernelParams;
+    // free gpu memory
+    CUDA_SAFE_CALL(cudaFree(this->CPKernelParams->energygrid));
 
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(kernelId) + " is destroyed!");
+    logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
 }
 
 void OriCPKernel::execute() {
-    // Implementation of CP kernel execution logic here
-    // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(kernelId) + " is executing ...");
-    // // print CPParamsStruct parameters by this->kernelParams
-    // logger.INFO("numatoms: " + std::to_string(this->kernelParams->numatoms));
-    // logger.INFO("gridspacing: " + std::to_string(this->kernelParams->gridspacing));
-    // logger.INFO("energygrid: " + std::to_string((uint64_t)this->kernelParams->energygrid));
-    // logger.INFO("iteration: " + std::to_string(this->kernelParams->iteration));
-
-    void *launchargs[] = {(void *)&this->kernelParams->numatoms, (void *)&this->kernelParams->gridspacing, (void *)&this->kernelParams->energygrid, (void *)&this->kernelParams->iteration};
-    CU_SAFE_CALL(cuLaunchKernel(this->function, 
-    launchGridDim.x, launchGridDim.y, launchGridDim.z, 
-    launchBlockDim.x, launchBlockDim.y, launchBlockDim.z, 
-    0, NULL, launchargs, NULL));
+    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
+    // // print dim
+    // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
+    // logger.INFO("-- launchBlockDim: " + std::to_string(this->launchBlockDim.x) + ", " + std::to_string(this->launchBlockDim.y) + ", " + std::to_string(this->launchBlockDim.z));
+    
+    CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
+    launchGridDim, launchBlockDim,
+    (void**)this->kernelParams.data(), 0, 0));
 
     CUDA_SAFE_CALL(cudaDeviceSynchronize());
     
 }
 
 void OriCPKernel::loadKernel() {
-    // Implementation of CP kernel load logic here
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(kernelId) + " is loading ...");
+    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is loading ...");
 
-    std::string module_file = std::string(CMAKELISTS_PATH) + std::string("/cubins/ori_cp.cubin");
-    // logger.INFO("module_file: " + std::string(module_file));
+    this->function = moduleCenter.getFunction(moduleName, kernelName);
 
-	dim3 block, grid;
-
-    CU_SAFE_CALL(cuModuleLoad(&this->module, module_file.c_str()));
-
-	const char* cdkernel_name = "_Z6ori_cpifPfi";
-	CU_SAFE_CALL(cuModuleGetFunction(&this->function, this->module, cdkernel_name));
+    if (this->function == nullptr) {
+        logger.ERROR("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " load failed!");
+        exit(EXIT_FAILURE);
+    }
 
     return ;
 }

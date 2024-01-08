@@ -1,4 +1,4 @@
-
+#pragma once
 #define BIN_DEPTH         8  /* max number of atoms per bin */
 #define BIN_SIZE         32  /* size of bin in floats */
 #define BIN_SHIFT         5  /* # of bits to shift for mul/div by BIN_SIZE */
@@ -13,8 +13,8 @@
 #define NBRLIST_DIM  11
 #define NBRLIST_MAXLEN (NBRLIST_DIM * NBRLIST_DIM * NBRLIST_DIM)
 
-__constant__ int NbrListLen;
-__constant__ int3 NbrList[NBRLIST_MAXLEN];
+// __constant__ int NbrListLen;
+// __constant__ int3 NbrList[NBRLIST_MAXLEN];
 
 #include "pets_common.h"
 #define CUTCP_GRID_DIM (SM_NUM * 4)
@@ -44,7 +44,7 @@ typedef struct Lattice_t {
 #define CUTOFF6OVERLAP       64
 #define CUTOFFCPU         16384
 
-int appenddata(const char *filename, int size, double time) {
+inline int appenddata(const char *filename, int size, double time) {
 	FILE *fp;
 	fp=fopen(filename, "a");
 	if (fp == NULL) {
@@ -57,7 +57,7 @@ int appenddata(const char *filename, int size, double time) {
 }
 
 
-LatticeDim lattice_from_bounding_box(Vec3 lo, Vec3 hi, float h) {
+inline LatticeDim lattice_from_bounding_box(Vec3 lo, Vec3 hi, float h) {
 	LatticeDim ret;
 
 	ret.nx = (int) floorf((hi.x-lo.x)/h) + 1;
@@ -70,7 +70,7 @@ LatticeDim lattice_from_bounding_box(Vec3 lo, Vec3 hi, float h) {
 }
 
 
-Lattice *create_lattice(LatticeDim dim) {
+inline Lattice *create_lattice(LatticeDim dim) {
 	int size;
 	Lattice *lat = (Lattice *)malloc(sizeof(Lattice));
 
@@ -94,7 +94,7 @@ Lattice *create_lattice(LatticeDim dim) {
 }
 
 
-void destroy_lattice(Lattice *lat) {
+inline void destroy_lattice(Lattice *lat) {
 	if (lat) {
 		free(lat->lattice);
 		free(lat);
@@ -102,7 +102,7 @@ void destroy_lattice(Lattice *lat) {
 }
 
 
-int prepare_input(Lattice *lattice,
+inline int prepare_input(Lattice *lattice,
     float cutoff,                      /* cutoff distance */
     Atoms *atoms,                      /* array of atoms */
     float4 *binBaseAddr,

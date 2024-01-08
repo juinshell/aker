@@ -64,9 +64,8 @@ __device__ void GPU_DoFft(float2* v, int j, int stride=1) {
 	}      
 }
 
-__global__ void ori_fft(float2* data, int iteration) {
+extern "C" __global__ void ori_fft(float2* data) {
 	float2 *ori_data = data + blockIdx.x*FFT_N;
-	for (int loop = 0; loop < iteration; loop++) {
 		float2 v[FFT_R];
 		data = ori_data;
 
@@ -78,5 +77,4 @@ __global__ void ori_fft(float2* data, int iteration) {
 		for (int r=0; r<FFT_R; r++) {
 			data[idxG + r*FFT_T] = v[r];
 		} 
-	}
 }
