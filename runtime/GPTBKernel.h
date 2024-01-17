@@ -40,7 +40,7 @@ public:
     }
 
     ~GPTBKernel() {
-        logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
+        // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
     }
 
     GPTBParams gptbParams;
@@ -66,7 +66,7 @@ public:
     }
 
     void execute() override{
-        logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
+        // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
 
         kernelParams.push_back(&gptbParams.ptb_start_block_pos);
         kernelParams.push_back(&gptbParams.ptb_iter_block_step);

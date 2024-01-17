@@ -1,6 +1,6 @@
 # CMakeLists.txt
 cmake_minimum_required (VERSION 3.8)
-project (tacker VERSION 0.3.0 LANGUAGES C CXX CUDA)
+project (tacker VERSION 0.3.1 LANGUAGES C CXX CUDA)
 add_compile_options(-std=c++11)
 
 find_package(CUDA REQUIRED)
@@ -35,7 +35,7 @@ set(LOG_FILE_PATH ${PROJECT_SOURCE_DIR}/log/${PROJECT_VERSION}.log)
 # add_library(readatom OBJECT ${PROJECT_SOURCE_DIR}/file_t/readatom.c)    
 # target_include_directories(readatom PUBLIC ${PROJECT_SOURCE_DIR}/file_t/header)
 
-set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c)
+set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c Recorder.cu)
 
 string(TIMESTAMP COMPILE_TIME %Y%m%d-%H%M%S)
 configure_file(TackerConfig.h.in TackerConfig.h)

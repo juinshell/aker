@@ -346,7 +346,7 @@ OriCUTCPKernel::~OriCUTCPKernel() {
     // free cpu heap memory
     free(this->CUTCPKernelParams);
     
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
+    // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
 }
 
 void OriCUTCPKernel::loadKernel() {
@@ -362,7 +362,7 @@ void OriCUTCPKernel::loadKernel() {
 }
 
 void OriCUTCPKernel::execute() {
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
+    // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     //logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
     //logger.INFO("-- launchBlockDim: " + std::to_string(this->launchBlockDim.x) + ", " + std::to_string(this->launchBlockDim.y) + ", " + std::to_string(this->launchBlockDim.z));

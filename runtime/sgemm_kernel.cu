@@ -59,7 +59,7 @@ OriSGEMMKernel::~OriSGEMMKernel(){
     // free cpu heap memory
     free(this->SGEMMKernelParams);
     
-    logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
+    // logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
 }
 
 void OriSGEMMKernel::initParams(){
@@ -143,10 +143,10 @@ void OriSGEMMKernel::initParams(){
 }
 
 void OriSGEMMKernel::execute() {
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
+    // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
-    logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
-    logger.INFO("-- launchBlockDim: " + std::to_string(this->launchBlockDim.x) + ", " + std::to_string(this->launchBlockDim.y) + ", " + std::to_string(this->launchBlockDim.z));
+    // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
+    // logger.INFO("-- launchBlockDim: " + std::to_string(this->launchBlockDim.x) + ", " + std::to_string(this->launchBlockDim.y) + ", " + std::to_string(this->launchBlockDim.z));
     
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,

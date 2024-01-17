@@ -6,6 +6,7 @@
 #include "Kernel.h"
 #include "Logger.h"
 #include "ModuleCenter.h"
+#include "Recorder.h"
 #include <stdlib.h>
 
 
@@ -16,6 +17,7 @@
 #include "mrif_kernel.cu"
 #include "mriq_kernel.cu"
 #include "sgemm_kernel.cu"
+#include "stencil_kernel.cu"
 
 #include "GPTBKernel.h"
 #include "MixKernel.h"
@@ -28,6 +30,7 @@
 #include "gptb_kernel/mrif_kernel.cu"
 #include "gptb_kernel/mriq_kernel.cu"
 #include "gptb_kernel/sgemm_kernel.cu"
+#include "gptb_kernel/stencil_kernel.cu"
 
 #include "mix_kernel/cp_fft_3_1.cu"
 #include "mix_kernel/cp_sgemm_1_1.cu"
@@ -56,6 +59,8 @@ TaskManager taskManager;
 
 ModuleCenter moduleCenter;
 
+Recorder recorder;
+
 std::unordered_map<std::string, void*> fmap = {
     {"gptb_cp", (void*)g_general_ptb_cp},
     {"gptb_cutcp", (void*)general_ptb_cutcp},
@@ -64,6 +69,7 @@ std::unordered_map<std::string, void*> fmap = {
     {"gptb_mrif", (void*)g_general_ptb_mrif},
     {"gptb_mriq", (void*)g_general_ptb_mriq},
     {"gptb_sgemm", (void*)general_ptb_sgemm},
+    {"gptb_stencil", (void*)general_ptb_stencil},
     {"cp_fft", (void*)mixed_cp_fft_kernel_3_1},
     {"cp_sgemm", (void*)mixed_cp_sgemm_kernel_1_1},
     {"fft_lbm", (void*)mixed_fft_lbm_kernel_6_1},
@@ -124,6 +130,7 @@ void printDeviceProp() {
 }
 
 void my_exit() {
+    recorder.text();
     system("nvidia-smi >> nvidia-smi.log");
     logger.INFO("Tacker exit");
 }
@@ -167,6 +174,7 @@ int main(int argc, char* argv[]) {
     task1.addKernel(std::make_unique<OriMRIFKernel>(5));
     task1.addKernel(std::make_unique<OriMRIQKernel>(6));
     task1.addKernel(std::make_unique<OriSGEMMKernel>(7));
+    task1.addKernel(std::make_unique<OriSTENCILKernel>(8));
 
     taskManager.addTask(task1);
 
@@ -377,6 +385,16 @@ int main(int argc, char* argv[]) {
         dim3(128, 1, 1), 
         0, 
         774));
+
+    auto oriSTENCILKernel = std::make_unique<OriSTENCILKernel>(20);
+    task5.addKernel(std::make_unique<GPTBKernel>(
+        20, 
+        "gptb_stencil", 
+        std::move(oriSTENCILKernel), 
+        dim3(SM_NUM * 3, 1, 1), 
+        dim3(128, 1, 1), 
+        0, 
+        1024));
     taskManager.addTask(task5);
 
 

@@ -31,7 +31,7 @@ public:
     }
 
     ~MixKernel() {
-        logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
+        // logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
     }
 
     const std::string funcKey;

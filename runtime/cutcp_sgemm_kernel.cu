@@ -147,7 +147,7 @@ CUTCP_SGEMM_Kernel::~CUTCP_SGEMM_Kernel() {
     
     delete this->kernelParams;
 
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
+    // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
 }
 
 void CUTCP_SGEMM_Kernel::execute() {

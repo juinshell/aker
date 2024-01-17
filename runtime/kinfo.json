@@ -40,5 +40,11 @@
         "shared_memory": 512, 
         "blocksize": 128, 
         "ori_blks": 774
+    },
+    "stencil": {
+        "register": 38, 
+        "shared_memory": 1024, 
+        "blocksize": 128, 
+        "ori_blks": 1024
     }
 }

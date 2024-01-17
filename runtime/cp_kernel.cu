@@ -209,11 +209,11 @@ OriCPKernel::~OriCPKernel() {
     // free gpu memory
     CUDA_SAFE_CALL(cudaFree(this->CPKernelParams->energygrid));
 
-    logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
+    // logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
 }
 
 void OriCPKernel::execute() {
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
+    // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
     // logger.INFO("-- launchBlockDim: " + std::to_string(this->launchBlockDim.x) + ", " + std::to_string(this->launchBlockDim.y) + ", " + std::to_string(this->launchBlockDim.z));
