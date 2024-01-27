@@ -38,6 +38,9 @@ void Logger::log(LogLevel level, const std::string& message) {
         case LogLevel::ERROR:
             formattedMessage += "[ERROR] ";
             break;
+        default:
+            formattedMessage += "[DEBUG] ";
+            break;
     }
 
     if (log2Console) {

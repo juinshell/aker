@@ -22,7 +22,7 @@ public:
     ~OriSGEMMKernel();
 
     // 实现纯虚函数
-    void execute();
+    void executeImpl();
     void initParams();
 
 private:

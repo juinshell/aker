@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
         // float exclcutoff = 1.f;	    /* Radius for exclusion */
         float padding = 0.5f;		/* Bounding box padding distance */
         
-        const char *pqrfilename = "/home/hzhao/projects/pets/gpgpu-sim/mixkernels/0_mybench/file_t/cutcp_input.pqr";
+        const char *pqrfilename = "/home/jxdeng/workspace/tacker/0_mybench/file_t/cutcp_input.pqr";
         if (!(atom = read_atom_file(pqrfilename))) {
             fprintf(stderr, "read_atom_file() failed\n");
             exit(1);
@@ -174,7 +174,7 @@ int main(int argc, char* argv[]) {
         int xRegionDim = 26;
         int yRegionDim = 26;
         int zRegionDim = 26;
-        int binDim_x = 32;
+        int binDim_x = 64;
         int binDim_y = 32;
         float cutoff2 = 144.0;
         float inv_cutoff2 = 0.006944;

@@ -142,7 +142,7 @@ void OriSGEMMKernel::initParams(){
         this->kernelFunc = (void*) ori_sgemm;
 }
 
-void OriSGEMMKernel::execute() {
+void OriSGEMMKernel::executeImpl() {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));

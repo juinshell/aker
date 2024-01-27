@@ -65,7 +65,7 @@ public:
         }
     }
 
-    void execute() override{
+    void executeImpl() override{
         // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
 
         kernelParams.push_back(&gptbParams.ptb_start_block_pos);

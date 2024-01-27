@@ -47,8 +47,8 @@ tpacf:
 mrig:
 	nvcc -o mrig_out mrig_t/mrig_sort.cu mrig_t/mrig_scanarray.cu mrig_t/mrig_cpu_kernels.c my_mrig.cu
 im2col:
-	nvcc -o im2col_out -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_im2col.cu
-	nvcc -o im2col_mix -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca mix_im2col.cu
+	nvcc -o  im2col_out -I../ -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_im2col.cu
+	nvcc -o im2col_test_out -I../ -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_im2col_test.cu
 relu:
 	nvcc -o relu_out -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_relu.cu
 	nvcc -o relu_mix -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca mix_relu.cu

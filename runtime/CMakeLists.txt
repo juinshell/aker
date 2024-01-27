@@ -1,6 +1,6 @@
 # CMakeLists.txt
 cmake_minimum_required (VERSION 3.8)
-project (tacker VERSION 0.3.1 LANGUAGES C CXX CUDA)
+project (tacker VERSION 0.4.0 LANGUAGES C CXX CUDA)
 add_compile_options(-std=c++11)
 
 find_package(CUDA REQUIRED)
@@ -10,7 +10,7 @@ message(STATUS "CUDA_LIBRARIES: " ${CUDA_LIBRARIES})
 
 SET(CMAKE_CXX_COMPILER "/usr/local/cuda/bin/nvcc")
 
-set(CUDA_NVCC_FLAGS "-arch=sm_75 -Xptxas -dlcm=ca --ptxas-options=-v ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75
+set(CUDA_NVCC_FLAGS "-arch=sm_75 -Xptxas -dlcm=ca --ptxas-options=-v -cudart shared ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
   set(CMAKE_CUDA_ARCHITECTURES 75)
@@ -25,17 +25,22 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
 set(CMAKE_CXX_FLAGS "-O3  -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}") # must have -lcuda, linker is /usr/bin/c++, not nvcc
 message(STATUS "${PROJECT_NAME} compile cuda code in [RELEASE] mode")
 else()
-set(CMAKE_CXX_FLAGS "-G -O0 -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-g -O0 -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}")
 message(STATUS "${PROJECT_NAME} compile cuda code in [DEBUG] mode")
 endif()
 
 set(LOG_FILE_PATH ${PROJECT_SOURCE_DIR}/log/${PROJECT_VERSION}.log)
 
-# # compile library
-# add_library(readatom OBJECT ${PROJECT_SOURCE_DIR}/file_t/readatom.c)    
-# target_include_directories(readatom PUBLIC ${PROJECT_SOURCE_DIR}/file_t/header)
+# cudnn
+find_path(CUDNN_INCLUDE_DIR cudnn.h
+    HINTS ${CUDA_TOOLKIT_ROOT_DIR}
+    PATH_SUFFIXES cuda/include include)
+include_directories(${CUDNN_INCLUDE_DIR} ${CUDA_INCLUDE_DIRS})
+find_library(CUDNN_LIBRARY cudnn
+    HINTS ${CUDA_TOOLKIT_ROOT_DIR}
+    PATH_SUFFIXES lib lib64 cuda/lib cuda/lib64 lib/x64)
 
-set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c Recorder.cu)
+set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c Recorder.cc ./dnn/resnet50/resnet50.cu)
 
 string(TIMESTAMP COMPILE_TIME %Y%m%d-%H%M%S)
 configure_file(TackerConfig.h.in TackerConfig.h)
@@ -50,7 +55,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
                            ${PROJECT_BINARY_DIR}
                            ${CUDA_INCLUDE_DIRS}
                            ${PROJECT_SOURCE_DIR}
+                           ${CUDNN_LIBRARIES}
                           #  ../mix_kernels
                           #  ../mix_kernels/file_t/header
                            )  
-add_definitions(-w)
+target_link_libraries(${PROJECT_NAME} cudnn) 

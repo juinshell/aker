@@ -2,7 +2,7 @@
 // This kernel calculates coulombic potential at each grid point and
 // stores the results in the output array.
 
-__global__ void ori_cp(int numatoms, float gridspacing, float * energygrid, int iteration) {
+__global__ void ori_cp(int numatoms, float gridspacing, float * energygrid) {
 		unsigned int xindex  = __umul24(blockIdx.x, blockDim.x) * UNROLLX
 								+ threadIdx.x;
 		unsigned int yindex  = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -1311,7 +1311,7 @@ __device__ void general_ptb_cp9(int numatoms, float gridspacing, float * energyg
     }
 }
 
-__global__ void g_general_ptb_cp(int numatoms, float gridspacing, float * energygrid, 
+extern "C" __global__ void g_general_ptb_cp(int numatoms, float gridspacing, float * energygrid, 
 	int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
 		int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base){
 	// unsigned int block_pos = blockIdx.x + 68 * 2;   // TODO: why 68 * 2?

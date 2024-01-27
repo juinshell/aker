@@ -8,9 +8,9 @@ void TaskManager::addTask(Task& task) {
     tasks.push_back(&task);
 }
 
-void TaskManager::executeAllTasks() {
+void TaskManager::executeAllTasks(ExecutionMode mode) {
     for (auto& task : tasks) {
-        task->executeTask();
+        task->executeTask(mode);
     }
 }
 

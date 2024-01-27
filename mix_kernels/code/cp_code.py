@@ -55,7 +55,7 @@ cp_solo_running_code = """
 		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
 
 		cudaErrCheck(cudaEventRecord(startKERNEL));
-		checkKernelErrors((ori_cp<<<cp_grid, cp_block, 0>>>(runatoms, 0.1, ori_output, cp_iter)));
+		checkKernelErrors((ori_cp<<<cp_grid, cp_block, 0>>>(runatoms, 0.1, ori_output)));
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));
 		cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
@@ -126,8 +126,13 @@ cp_gptb_variables_code = f"""
 		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
 """
 
-cp_gptb_params_list = """runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
+cp_gptb_params_list = """runatoms, 0.1, gptb_output, 
+    ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
     0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_cp_grid.x * ori_cp_grid.y * ori_cp_grid.z"""
+
+cp_gptb_params_list_new = """runatoms, 0.1, gptb_output,
+    ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
+    start_blk_no, gptb_kernel_grid.x * gptb_kernel_grid.y * gptb_kernel_grid.z, end_blk_no, 0"""
 
 cp_gptb_kernel_def_code = """
 __global__ void general_ptb_cp(int numatoms, float gridspacing, float * energygrid, 

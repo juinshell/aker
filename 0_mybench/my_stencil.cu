@@ -38,7 +38,7 @@ void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
 
 
 #include <mma.h>
-using namespace nvcuda; // ??? 여기서 에러가 발생합니다. 
+using namespace nvcuda; 
 
 #include "header/stencil_header.h"
 #include "file_t/stencil_kernel.cu"

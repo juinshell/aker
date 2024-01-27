@@ -35,7 +35,7 @@ def generate_makefile(source_makefile):
 
     # 提取每个命令对应的编译参数
     command_flags = {}
-    pattern = re.compile(r'(\b(?:cp|cutcp|fft|lbm|mrif|mriq|sgemm|tpacf)\b):\s*([\s\S]+?)(?=\w+:|$)')
+    pattern = re.compile(r'(\b(?:cp|cutcp|fft|lbm|mrif|mriq|sgemm|stencil)\b):\s*([\s\S]+?)(?=\w+:|$)')
     matches = pattern.findall(makefile_content)
     for target, command in matches:
         print(f"Extracting flags from {target}")
@@ -51,7 +51,7 @@ def generate_makefile(source_makefile):
         new_content += f"{cmd1}_{cmd2}_mix: \n\t{new_command}\n\n"
 
     # 输出合并后的Makefile
-    with open('Makefile_merged', 'w') as file:
+    with open('Makefile_merged_new', 'w') as file:
         file.write(new_content)
 
 if __name__ == "__main__":

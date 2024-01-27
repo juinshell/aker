@@ -69,7 +69,7 @@ public:
         return ;
     }
 
-    void execute() override {
+    void executeImpl() override {
         CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
             launchGridDim, launchBlockDim,
             (void **)kernelParams.data(), (size_t)this->smem, 0));

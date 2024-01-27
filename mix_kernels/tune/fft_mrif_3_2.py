@@ -54,7 +54,7 @@ def run():
             
 
 if __name__ == "__main__":
-    for i in range(1, 1024):
+    for i in [0, 256, 512, 1024]:
         compile(i)
         cur_improve = run()
         print(f"i: {i}  best:{best_improve}%  current:{cur_improve}%")

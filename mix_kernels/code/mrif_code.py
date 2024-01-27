@@ -216,6 +216,11 @@ mrif_gptb_params_list = """mrif_numK, FHGridBase, gptb_x, gptb_y, gptb_z, gptb_o
             ori_mrif_grid2.x, ori_mrif_grid2.y, ori_mrif_grid2.z, ori_mrif_block2.x, ori_mrif_block2.y, ori_mrif_block2.z,
             0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_mrif_grid2.x * ori_mrif_grid2.y * ori_mrif_grid2.z"""
 
+mrif_gptb_params_list_new = """mrif_numK, FHGridBase, gptb_x, gptb_y, gptb_z, gptb_outR, gptb_outI, 
+    ori_mrif_grid2.x, ori_mrif_grid2.y, ori_mrif_grid2.z, ori_mrif_block2.x, ori_mrif_block2.y, ori_mrif_block2.z,
+    start_blk_no, gptb_kernel_grid.x * gptb_kernel_grid.y * gptb_kernel_grid.z, end_blk_no, 0"""
+
+
 def get_mrif_code_before_mix_kernel():
     return mrif_variables_code + mrif_solo_running_code + mrif_ptb_running_code + mrif_gptb_variables_code
 

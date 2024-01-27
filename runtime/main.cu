@@ -45,6 +45,9 @@
 #include "mix_kernel/mrif_sgemm_1_4.cu"
 #include "mix_kernel/mriq_sgemm_1_2.cu"
 
+// dnn
+#include "dnn/resnet50/resnet50.h"
+
 
 
 
@@ -145,26 +148,6 @@ int main(int argc, char* argv[]) {
     printDeviceProp();
     system("nvidia-smi > nvidia-smi.log");
 
-    // if (moduleCenter.registerModule("ori_cp", std::string(CMAKELISTS_PATH) + std::string("/cubins/ori_cp.cubin")) != true){
-    //     logger.ERROR("Register module failed");
-    //     exit(EXIT_FAILURE);
-    // }
-
-    // if (moduleCenter.registerModule("cp_fft", std::string(CMAKELISTS_PATH) + std::string("/cubins/cp_fft.cubin")) != true){
-    //     logger.ERROR("Register module failed");
-    //     exit(EXIT_FAILURE);
-    // }
-
-    // if (moduleCenter.registerModule("ori_cutcp", std::string(CMAKELISTS_PATH) + std::string("/cubins/ori_cutcp.cubin")) != true){
-    //     logger.ERROR("Register module failed");
-    //     exit(EXIT_FAILURE);
-    // }
-
-    // if (moduleCenter.registerModule("ori_fft", std::string(CMAKELISTS_PATH) + std::string("/cubins/ori_fft.cubin")) != true){
-    //     logger.ERROR("Register module failed");
-    //     exit(EXIT_FAILURE);
-    // }
-
     // Create Task 1
     Task task1(1, "Task1");
     task1.addKernel(std::make_unique<OriCPKernel>(1));
@@ -178,62 +161,56 @@ int main(int argc, char* argv[]) {
 
     taskManager.addTask(task1);
 
-    Task task2(2, "Task2");
-    auto cp_fft_3_1 = std::make_unique<MixKernel>(
-        9,
-        "cp_fft",
-        std::make_unique<GPTBKernel>(
-            8, 
-            "gptb_cp", 
-            std::make_unique<OriCPKernel>(0), 
-            dim3(SM_NUM * 6, 1, 1), 
-            dim3(128, 1, 1), 
-            0, 
-            32 * 512),
-        std::make_unique<GPTBKernel>(
-            9, 
-            "gptb_fft", 
-            std::make_unique<OriFFTKernel>(0), 
-            dim3(SM_NUM * 3, 1, 1), 
-            dim3(128, 1, 1), 
-            0, 
-            10240),
-        dim3(SM_NUM * 2, 1, 1),
-        dim3(128 * 4, 1, 1),
-        0,
-        32 * 512,
-        0,
-        10240
-    );
+    Task task2(2, "task2");
+    auto oriLBMKernel = std::make_unique<OriLBMKernel>(16);
+    task2.addKernel(std::make_unique<GPTBKernel>(
+        16, 
+        "gptb_lbm", 
+        std::move(oriLBMKernel), 
+        dim3(SM_NUM * 1, 1, 1), 
+        dim3(128, 1, 1), 
+        0, 
+        16384));
 
-    auto cp_sgemm_1_1 = std::make_unique<MixKernel>(
-        10,
-        "cp_sgemm",
-        std::make_unique<GPTBKernel>(
-            10, 
-            "gptb_cp", 
-            std::make_unique<OriCPKernel>(0), 
-            dim3(SM_NUM * 6, 1, 1), 
-            dim3(128, 1, 1), 
-            0, 
-            32 * 512),
-        std::make_unique<GPTBKernel>(
-            11, 
-            "gptb_sgemm", 
-            std::make_unique<OriSGEMMKernel>(0), 
-            dim3(SM_NUM * 4, 1, 1), 
-            dim3(128, 1, 1), 
-            0, 
-            774),
-        dim3(SM_NUM * 4, 1, 1),
-        dim3((128 + 128)* 4, 1, 1),
-        0,
-        32 * 512,
-        0,
-        774
-    );
-    cp_sgemm_1_1->execute();
+    auto oriMRIFKernel = std::make_unique<OriMRIFKernel>(17);
+    task2.addKernel(std::make_unique<GPTBKernel>(
+        17, 
+        "gptb_mrif", 
+        std::move(oriMRIFKernel), 
+        dim3(SM_NUM * 3, 1, 1), 
+        dim3(256, 1, 1), 
+        0, 
+        1024));
 
+    auto oriMRIQKernel = std::make_unique<OriMRIQKernel>(18);
+    task2.addKernel(std::make_unique<GPTBKernel>(
+        18, 
+        "gptb_mriq", 
+        std::move(oriMRIQKernel), 
+        dim3(SM_NUM * 4, 1, 1), 
+        dim3(256, 1, 1), 
+        0, 
+        819));
+
+    auto oriSGEMMKernel = std::make_unique<OriSGEMMKernel>(19);
+    task2.addKernel(std::make_unique<GPTBKernel>(
+        19, 
+        "gptb_sgemm", 
+        std::move(oriSGEMMKernel), 
+        dim3(SM_NUM * 4, 1, 1), 
+        dim3(128, 1, 1), 
+        0, 
+        774));
+
+    auto oriSTENCILKernel = std::make_unique<OriSTENCILKernel>(20);
+    task2.addKernel(std::make_unique<GPTBKernel>(
+        20, 
+        "gptb_stencil", 
+        std::move(oriSTENCILKernel), 
+        dim3(SM_NUM * 3, 1, 1), 
+        dim3(128, 1, 1), 
+        0, 
+        1024));
     taskManager.addTask(task2);
 
     // Task task3(3, "Task3");
@@ -270,136 +247,18 @@ int main(int argc, char* argv[]) {
     //     0, 
     //     32 * 512));
 
-    Task task4(4, "Task4");
-
-    // std::unique_ptr<OriCUTCPKernel> oriCUTCPKernel_2 = std::make_unique<OriCUTCPKernel>(8);
-    // std::unique_ptr<OriFFTKernel> oriFFTKernel_2 = std::make_unique<OriFFTKernel>(9);
-    // std::unique_ptr<OriCPKernel> oriCpKernel_2 = std::make_unique<OriCPKernel>(10);
-    // std::unique_ptr<OriFFTKernel> oriFFTKernel_3 = std::make_unique<OriFFTKernel>(11);
-    // // gptb
-    // std::unique_ptr<GPTBKernel> gptbCPKernel = std::make_unique<GPTBKernel>(
-    //     12, 
-    //     "gptb_cp", // "g_general_ptb_cp
-    //     std::move(oriCpKernel_2), 
-    //     dim3(SM_NUM * 6, 1, 1),
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     32 * 512);
-    // std::unique_ptr<GPTBKernel> gptbCUTCPKernel = std::make_unique<GPTBKernel>(
-    //     13, 
-    //     "gptb_cutcp",
-    //     std::move(oriCUTCPKernel_2),
-    //     dim3(SM_NUM * 6, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     26*26*2);
-    // std::unique_ptr<GPTBKernel> gptbFFTKernel = std::make_unique<GPTBKernel>(
-    //     14, 
-    //     "gptb_fft",
-    //     std::move(oriFFTKernel_2), 
-    //     dim3(SM_NUM * 3, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     10240);
+    Resnet50 resnet50(2);
     
-    // std::unique_ptr<GPTBKernel> gptbFFTKernel_ = std::make_unique<GPTBKernel>(
-    //     15, 
-    //     "gptb_fft",
-    //     std::move(oriFFTKernel_3), 
-    //     dim3(SM_NUM * 3, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     10240);
+    for (int i = 0; i < 10; i++) {
+        resnet50.executeTask(ExecutionMode::WARMUP);
+    }
 
-    
+    resnet50.executeTask(ExecutionMode::WARMUP);
 
-    // task4.addKernel(std::move(gptbCPKernel));
-    // task4.addKernel(std::move(gptbFFTKernel));
-    
-    // task4.addKernel(std::make_unique<MixKernel>(
-    //     14,
-    //     "cp_fft",
-    //     std::move(gptbCPKernel),
-    //     std::move(gptbFFTKernel),
-    //     dim3(SM_NUM * 2, 1, 1),
-    //     dim3(128 * 4, 1, 1),
-    //     0,
-    //     32 * 512,
-    //     0,
-    //     10240
-    // ));
-
-    // task4.addKernel(std::make_unique<MixKernel>(
-    //     15,
-    //     "cutcp_fft",
-    //     std::move(gptbCUTCPKernel),
-    //     std::move(gptbFFTKernel_),
-    //     dim3(SM_NUM * 3, 1, 1),
-    //     dim3(128 * 2, 1, 1),
-    //     0,
-    //     26*26*2,
-    //     0,
-    //     10240
-    // ));
-
-
-    taskManager.addTask(task4);
-
-    Task task5(5, "Task5");
-    auto oriLBMKernel = std::make_unique<OriLBMKernel>(16);
-    task5.addKernel(std::make_unique<GPTBKernel>(
-        16, 
-        "gptb_lbm", 
-        std::move(oriLBMKernel), 
-        dim3(SM_NUM * 1, 1, 1), 
-        dim3(128, 1, 1), 
-        0, 
-        16384));
-
-    auto oriMRIFKernel = std::make_unique<OriMRIFKernel>(17);
-    task5.addKernel(std::make_unique<GPTBKernel>(
-        17, 
-        "gptb_mrif", 
-        std::move(oriMRIFKernel), 
-        dim3(SM_NUM * 3, 1, 1), 
-        dim3(256, 1, 1), 
-        0, 
-        1024));
-
-    auto oriMRIQKernel = std::make_unique<OriMRIQKernel>(18);
-    task5.addKernel(std::make_unique<GPTBKernel>(
-        18, 
-        "gptb_mriq", 
-        std::move(oriMRIQKernel), 
-        dim3(SM_NUM * 4, 1, 1), 
-        dim3(256, 1, 1), 
-        0, 
-        819));
-
-    auto oriSGEMMKernel = std::make_unique<OriSGEMMKernel>(19);
-    task5.addKernel(std::make_unique<GPTBKernel>(
-        19, 
-        "gptb_sgemm", 
-        std::move(oriSGEMMKernel), 
-        dim3(SM_NUM * 4, 1, 1), 
-        dim3(128, 1, 1), 
-        0, 
-        774));
-
-    auto oriSTENCILKernel = std::make_unique<OriSTENCILKernel>(20);
-    task5.addKernel(std::make_unique<GPTBKernel>(
-        20, 
-        "gptb_stencil", 
-        std::move(oriSTENCILKernel), 
-        dim3(SM_NUM * 3, 1, 1), 
-        dim3(128, 1, 1), 
-        0, 
-        1024));
-    taskManager.addTask(task5);
-
+    taskManager.addTask(resnet50);
 
     // Execute all tasks
-    taskManager.executeAllTasks();
+    taskManager.executeAllTasks(ExecutionMode::PROFILE);
 
     system("nvidia-smi >> nvidia-smi.log");
 

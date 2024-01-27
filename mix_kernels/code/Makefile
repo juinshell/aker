@@ -12,11 +12,10 @@ mriq:
 	nvcc -o mriq_out -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_mriq.cu
 sgemm:
 	nvcc -o sgemm_out -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_sgemm.cu
-tpacf:
-	nvcc -o tpacf_out -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_tpacf.cu
+stencil:
+	nvcc -o stencil_out -arch=sm_75 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_stencil.cu
 
 all: cp cutcp fft lbm mrif mriq sgemm tpacf
 	@echo "All finished"
-
 clean:
 	rm *_out

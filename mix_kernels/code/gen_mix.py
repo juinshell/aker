@@ -126,6 +126,7 @@ kernel_signatures = {
     "mriq": "__global__ void general_ptb_mriq(int numK, int kGlobalIndex, float* x, float* y, float* z, float* Qr , float* Qi, int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z, int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base)",
     "sgemm": "__global__ void general_ptb_sgemm(float* A, float* B, float* C, int NORMAL_M, int NORMAL_N, int NORMAL_K, int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z, int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base)",
     # "tpacf": "__global__ void general_ptb_tpacf(hist_t* histograms, float* all_x_data, float* all_y_data, float* all_z_data, int NUM_SETS, int NUM_ELEMENTS, int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z, int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base)"
+    "stencil": "__global__ void general_ptb_stencil(float c0, float c1, float* A0, float* Anext, int nx, int ny, int nz, int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z, int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base)"
 }
 
 # 从kernel_signatures生成所有的[kernel1, kernel2]可能的pair

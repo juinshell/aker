@@ -8,3 +8,8 @@
 *_mix
 *_out*
 build/
+*.so
+*.zip
+*.log
+/modelsWithCudnn
+Constant/

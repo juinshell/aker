@@ -9,7 +9,8 @@
  * @Copyright (c) 2023 by jxdeng, All Rights Reserved. 
  */
 // #define B 1024
-#define FFT_B 10240
+// Aker
+#define FFT_B (10240 * 2) 
 
 #define FFT_N 4*4*4*4
 #define FFT_R 2

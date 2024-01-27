@@ -338,7 +338,7 @@ void OriMRIFKernel::initParams() {
 }
 
 
-void OriMRIFKernel::execute() {
+void OriMRIFKernel::executeImpl() {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));

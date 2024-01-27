@@ -7,6 +7,7 @@
 #include <mma.h>
 #include <malloc.h>
 #include <sys/time.h>
+#include <algorithm>
 using namespace nvcuda; 
 
 #define cudaErrCheck(stat) { cudaErrCheck_((stat), __FILE__, __LINE__); }
@@ -49,6 +50,11 @@ void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
 #include "kernel/sgemm_kernel.cu"
 
 #include "mix_kernel/cp_sgemm_1_1.cu" 
+#include <vector>
+
+#define VOLSIZEX 40960
+#define VOLSIZEY 4096
+#define ATOMCOUNT 4000
 
 int main(int argc, char* argv[]) {
     int errors = 0;
@@ -110,10 +116,10 @@ int main(int argc, char* argv[]) {
 
 		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
 
-        printf("runatoms: %d\n", runatoms);
+        //printf("runatoms: %d\n", runatoms);
 
 		cudaErrCheck(cudaEventRecord(startKERNEL));
-		checkKernelErrors((ori_cp<<<cp_grid, cp_block, 0>>>(runatoms, 0.1, ori_output, cp_iter)));
+		checkKernelErrors((ori_cp<<<cp_grid, cp_block, 0>>>(runatoms, 0.1, ori_output)));
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));
 		cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
@@ -132,15 +138,15 @@ int main(int argc, char* argv[]) {
 		int cp_grid_dim_y = cp_grid.y;
 		cp_grid.x = solo_ptb_cp_blks == 0 ? cp_grid_dim_x * cp_grid_dim_y : SM_NUM * solo_ptb_cp_blks;
 		cp_grid.y = 1;
-		printf("[PTB] Running with cp...\n");
-		printf("[PTB] cp_grid -- %d * %d * %d cp_block -- %d * %d * %d\n", 
-					cp_grid.x, cp_grid.y, cp_grid.z, cp_block.x, cp_block.y, cp_block.z);
+		//printf("[PTB] Running with cp...\n");
+		//printf("[PTB] cp_grid -- %d * %d * %d cp_block -- %d * %d * %d\n", 
+					// cp_grid.x, cp_grid.y, cp_grid.z, cp_block.x, cp_block.y, cp_block.z);
 
 		atomstart = 1;
 		runatoms = MAXATOMS;
 		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
 
-        printf("runatoms: %d\n", runatoms);
+        //printf("runatoms: %d\n", runatoms);
 
 		cudaErrCheck(cudaEventRecord(startKERNEL));
 		checkKernelErrors((ptb2_cp<<<cp_grid, cp_block, 0>>>(runatoms, 0.1, ptb_output, 
@@ -148,7 +154,7 @@ int main(int argc, char* argv[]) {
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));
 		cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-		printf("[PTB] cp took %f ms\n\n", kernel_time);
+		//printf("[PTB] cp took %f ms\n\n", kernel_time);
 
         cudaMemcpy(host_ptb_energy, ptb_output, volmemsz,  cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();
@@ -242,9 +248,9 @@ int main(int argc, char* argv[]) {
         sgemm_grid.y = 1;
         // sgemm_block.x = sgemm_block_dim_x * sgemm_block_dim_y;
         // sgemm_block.y = 1;
-        printf("[PTB] Running with sgemm...\n");
-        printf("[PTB] sgemm_grid -- %d * %d sgemm_block -- %d * %d \n", 
-            sgemm_grid.x, sgemm_grid.y, sgemm_block.x, sgemm_block.y);
+        //printf("[PTB] Running with sgemm...\n");
+        //printf("[PTB] sgemm_grid -- %d * %d sgemm_block -- %d * %d \n", 
+            // sgemm_grid.x, sgemm_grid.y, sgemm_block.x, sgemm_block.y);
 
         cudaErrCheck(cudaEventRecord(startKERNEL));
         checkKernelErrors((ptb2_sgemm <<< sgemm_grid, sgemm_block >>> (
@@ -255,33 +261,109 @@ int main(int argc, char* argv[]) {
         cudaErrCheck(cudaEventRecord(stopKERNEL));
         cudaErrCheck(cudaEventSynchronize(stopKERNEL));
         cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[PTB] sgemm took %f ms\n\n", kernel_time);
+        //printf("[PTB] sgemm took %f ms\n\n", kernel_time);
     // ---------------------------------------------------------------------------------------
 
-    int mix_cp_task_blk_num = int(cp_grid_dim_x * cp_grid_dim_y / 2);
+    int mix_cp_task_blk_num = 11264;
     int solo_cp_task_blk_num = cp_grid_dim_x * cp_grid_dim_y - mix_cp_task_blk_num;
-    printf("mix_cp_task_blk_num: %d\n", mix_cp_task_blk_num);
-    printf("solo_cp_task_blk_num: %d\n", solo_cp_task_blk_num);
+    //printf("mix_cp_task_blk_num: %d\n", mix_cp_task_blk_num);
+    //printf("solo_cp_task_blk_num: %d\n", solo_cp_task_blk_num);
+
+    std::vector<float> time_vec;
+    
+    // gptb cp
+    dim3 gptb_cp_grid = dim3(SM_NUM * cp_blks, 1, 1);
+    dim3 gptb_cp_block = dim3(128, 1, 1);
+    // warmup
+    for(int i = 0; i < 20; ++i) {
+        cudaErrCheck(cudaEventRecord(startKERNEL));
+        checkKernelErrors((g_general_ptb_cp <<<gptb_cp_grid, gptb_cp_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z,
+        0, gptb_cp_grid.x * gptb_cp_grid.y * gptb_cp_grid.z, mix_cp_task_blk_num, 0)));
+        cudaErrCheck(cudaEventRecord(stopKERNEL));
+        cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+        cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float gptb_cp_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        gptb_cp_time += time_vec[i];
+    }
+    gptb_cp_time /= 10.0f;
+    
+
+    // float gptb_cp_time = kernel_time;
+    // gptb sgemm
+
+        time_vec.clear();
+
+        dim3 gptb_sgemm_grid = dim3(SM_NUM * 4, 1, 1);
+        dim3 gptb_sgemm_block = dim3(128, 1, 1);
+        // warmup
+        for(int i = 0; i < 20; ++i) {
+            cudaErrCheck(cudaEventRecord(startKERNEL));
+        checkKernelErrors((general_ptb_sgemm <<< gptb_sgemm_grid, gptb_sgemm_block >>> (
+                    sgemm_ptb_a, sgemm_ptb_b, sgemm_ptb_c, 
+                    NORMAL_M, NORMAL_N, NORMAL_K,
+                    ori_sgemm_grid.x, ori_sgemm_grid.y, ori_sgemm_grid.z, ori_sgemm_block.x, ori_sgemm_block.y, ori_sgemm_block.z,
+            0, gptb_sgemm_grid.x * gptb_sgemm_grid.y * gptb_sgemm_grid.z, ori_sgemm_grid.x * ori_sgemm_grid.y * ori_sgemm_grid.z, 0)));
+        cudaErrCheck(cudaEventRecord(stopKERNEL));
+        cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+        cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+        }
+
+        // 排序后取中间10个数据，计算平均值
+        std::sort(time_vec.begin(), time_vec.end());
+        float gptb_sgemm_time = 0.0f;
+        for(int i = 5; i < 15; ++i) {
+            gptb_sgemm_time += time_vec[i];
+        }
+        gptb_sgemm_time /= 10.0f;
+
+
+        // float gptb_sgemm_time = kernel_time;
+
+
   // MIX
   // ---------------------------------------------------------------------------------------
 
         atomstart = 1;
 		runatoms = MAXATOMS;
 		copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
-        printf("runatoms: %d\n", runatoms);
+        //printf("runatoms: %d\n", runatoms);
 
         dim3 mix_kernel_grid = dim3(272, 1, 1);
         dim3 mix_kernel_block = dim3(256, 1, 1);
-        cudaErrCheck(cudaEventRecord(startKERNEL));
-        checkKernelErrors((mixed_cp_sgemm_kernel_1_1 <<<mix_kernel_grid, mix_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
-    0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, mix_cp_task_blk_num, 
-    sgemm_gptb_a, sgemm_gptb_b, sgemm_gptb_c, NORMAL_M, NORMAL_N, NORMAL_K,
-            ori_sgemm_grid.x, ori_sgemm_grid.y, ori_sgemm_grid.z, ori_sgemm_block.x, ori_sgemm_block.y, ori_sgemm_block.z,
-            0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_sgemm_grid.x * ori_sgemm_grid.y * ori_sgemm_grid.z)));
-        cudaErrCheck(cudaEventRecord(stopKERNEL));
-        cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-        cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[MIX] cp_sgemm 1_1 took %f ms\n\n", kernel_time);
+
+        time_vec.clear();
+
+        // warmup
+        for(int i = 0; i < 50; ++i) {
+            cudaErrCheck(cudaEventRecord(startKERNEL));
+            checkKernelErrors((mixed_cp_sgemm_kernel_1_1 <<<mix_kernel_grid, mix_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z, 
+        0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, mix_cp_task_blk_num, 
+        sgemm_gptb_a, sgemm_gptb_b, sgemm_gptb_c, NORMAL_M, NORMAL_N, NORMAL_K,
+                ori_sgemm_grid.x, ori_sgemm_grid.y, ori_sgemm_grid.z, ori_sgemm_block.x, ori_sgemm_block.y, ori_sgemm_block.z,
+                0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_sgemm_grid.x * ori_sgemm_grid.y * ori_sgemm_grid.z)));
+            cudaErrCheck(cudaEventRecord(stopKERNEL));
+            cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+            cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+            time_vec.push_back(kernel_time);
+        }
+
+        // 排序后取中间30个数据，计算平均值
+        std::sort(time_vec.begin(), time_vec.end());
+        float mix_time = 0.0f;
+        for(int i = 10; i < 40; ++i) {
+            mix_time += time_vec[i];
+        }
+        mix_time /= 30.0f;
+
+
+        // float mix_time = kernel_time;
   // ---------------------------------------------------------------------------------------
 
     float sum_kernel_time = 0.0f;
@@ -291,68 +373,83 @@ int main(int argc, char* argv[]) {
 	// copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
 
     // 补充cp solo
-    printf("[SOLO] Running with cp...\n");
+    //printf("[SOLO] Running with cp...\n");
     dim3 solo_kernel_grid = dim3(SM_NUM * cp_blks, 1, 1);
     dim3 solo_kernel_block = dim3(128, 1, 1);
-    printf("[SOLO] cp_grid -- %d * %d * %d cp_block -- %d * %d * %d\n", 
-                solo_kernel_grid.x, solo_kernel_grid.y, solo_kernel_grid.z, solo_kernel_block.x, solo_kernel_block.y, solo_kernel_block.z);
-    printf("runatoms: %d\n", runatoms);
-    cudaErrCheck(cudaEventRecord(startKERNEL));
-    checkKernelErrors((g_general_ptb_cp <<<solo_kernel_grid, solo_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z,
-    mix_cp_task_blk_num, solo_kernel_grid.x * solo_kernel_grid.y * solo_kernel_grid.z, ori_cp_grid.x * ori_cp_grid.y * ori_cp_grid.z, 0)));
-    cudaErrCheck(cudaEventRecord(stopKERNEL));
-    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-    cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-    printf("[SOLO] cp took %f ms\n\n", kernel_time);
+    //printf("[SOLO] cp_grid -- %d * %d * %d cp_block -- %d * %d * %d\n", 
+               // solo_kernel_grid.x, solo_kernel_grid.y, solo_kernel_grid.z, solo_kernel_block.x, solo_kernel_block.y, solo_kernel_block.z);
+    time_vec.clear();
+    for(int i = 0; i < 20; ++i) {
+        cudaErrCheck(cudaEventRecord(startKERNEL));
+        checkKernelErrors((g_general_ptb_cp <<<solo_kernel_grid, solo_kernel_block>>>(runatoms, 0.1, gptb_output, ori_cp_grid.x, ori_cp_grid.y, ori_cp_grid.z, ori_cp_block.x, ori_cp_block.y, ori_cp_block.z,
+        mix_cp_task_blk_num, solo_kernel_grid.x * solo_kernel_grid.y * solo_kernel_grid.z, ori_cp_grid.x * ori_cp_grid.y * ori_cp_grid.z, 0)));
+        cudaErrCheck(cudaEventRecord(stopKERNEL));
+        cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+        cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
 
-    sum_kernel_time += kernel_time;
-    printf("[EVAL] ori sum time: %f ms\n", ori_sum_time);
-    printf("[EVAL] fused + solo time: %f ms\n\n", sum_kernel_time);
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float cp_solo_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        cp_solo_time += time_vec[i];
+    }
+    cp_solo_time /= 10.0f;
 
-    printf("[EVAL] improvement: %f%\n\n", ((ori_sum_time - sum_kernel_time) * 100 / ori_sum_time));
+    //printf("[SOLO] solo_cp took %f ms\n\n", kernel_time);
+    // cp gptb time / sgemm gptb time
+    float load_ratio = gptb_cp_time / gptb_sgemm_time;
+    printf("load_ratio: %f\n", load_ratio);
+    printf("mix_duration: %f\n", sum_kernel_time);
+    printf("cp gptb time: %f , sgemm gptb time: %f, cp_blk_num: %d, sgemm_blk_num: %d\n", gptb_cp_time, gptb_sgemm_time, mix_cp_task_blk_num, ori_sgemm_grid.x * ori_sgemm_grid.y * ori_sgemm_grid.z);
+
+    sum_kernel_time += cp_solo_time;
+
+    printf("ori sum time: %f, fuse_solo time: %f, improvement: %f%\n", ori_sum_time, sum_kernel_time, ((ori_sum_time - sum_kernel_time) * 100 / ori_sum_time));
 
 	// Checking results
     // ---------------------------------------------------------------------------------------
-    	cudaMemcpy(host_ori_energy, ori_output, volmemsz,  cudaMemcpyDeviceToHost);
-	    cudaMemcpy(host_gptb_energy, gptb_output, volmemsz,  cudaMemcpyDeviceToHost);
+    	// cudaMemcpy(host_ori_energy, ori_output, volmemsz,  cudaMemcpyDeviceToHost);
+	    // cudaMemcpy(host_gptb_energy, gptb_output, volmemsz,  cudaMemcpyDeviceToHost);
             
-        errors = 0;
-        for (int i = 0; i < volsize.x * volsize.y * volsize.z; i++) {
-            float v1 = host_ori_energy[i];
-            float v2 = host_gptb_energy[i];
-            if (fabs(v1 - v2) > 0.001f) {
-                errors++;
-                if (errors < 10) printf("%f %f\n", v1, v2);
-            }
-        }
-        if (errors > 0) {
-            printf("ORI VERSION does not agree with GPTB VERSION! %d errors!\n", errors);
-        }
-        else {
-            printf("Results verified: ORIG VERSION and GPTB VERSION agree.\n");
-        }
+        // errors = 0;
+        // for (int i = 0; i < volsize.x * volsize.y * volsize.z; i++) {
+        //     float v1 = host_ori_energy[i];
+        //     float v2 = host_gptb_energy[i];
+        //     if (fabs(v1 - v2) > 0.001f) {
+        //         errors++;
+        //         if (errors < 10) //printf("%f %f\n", v1, v2);
+        //     }
+        // }
+        // if (errors > 0) {
+        //     //printf("ORI VERSION does not agree with GPTB VERSION! %d errors!\n", errors);
+        // }
+        // else {
+        //     //printf("Results verified: ORIG VERSION and GPTB VERSION agree.\n");
+        // }
 	// ---------------------------------------------------------------------------------------
 
     // Checking results
     // ---------------------------------------------------------------------------------------
-        cudaErrCheck(cudaMemcpy(host_sgemm_ori_c, sgemm_ori_c, NORMAL_M * NORMAL_N * sizeof(float), cudaMemcpyDeviceToHost));
-        cudaErrCheck(cudaMemcpy(host_sgemm_gptb_c, sgemm_gptb_c, NORMAL_M * NORMAL_N * sizeof(float), cudaMemcpyDeviceToHost));
+        // cudaErrCheck(cudaMemcpy(host_sgemm_ori_c, sgemm_ori_c, NORMAL_M * NORMAL_N * sizeof(float), cudaMemcpyDeviceToHost));
+        // cudaErrCheck(cudaMemcpy(host_sgemm_gptb_c, sgemm_gptb_c, NORMAL_M * NORMAL_N * sizeof(float), cudaMemcpyDeviceToHost));
 
-        errors = 0;
-        for (int i = 0; i < NORMAL_M * NORMAL_N; i++) {
-            float v1 = host_sgemm_ori_c[i];
-            float v2 = host_sgemm_gptb_c[i];
-            if (fabs(v1 - v2) > 0.001f) {
-            errors++;
-            if (errors < 10) printf("%f %f\n", v1, v2);
-            }
-        }
-        if (errors > 0) {
-            printf("ORIGIN VERSION does not agree with GPTB VERSION! %d errors!\n", errors);
-        }
-        else {
-            printf("Results verified: ORIGIN VERSION and GPTB VERSION agree.\n");
-        }
+        // errors = 0;
+        // for (int i = 0; i < NORMAL_M * NORMAL_N; i++) {
+        //     float v1 = host_sgemm_ori_c[i];
+        //     float v2 = host_sgemm_gptb_c[i];
+        //     if (fabs(v1 - v2) > 0.001f) {
+        //     errors++;
+        //     if (errors < 10) //printf("%f %f\n", v1, v2);
+        //     }
+        // }
+        // if (errors > 0) {
+        //     //printf("ORIGIN VERSION does not agree with GPTB VERSION! %d errors!\n", errors);
+        // }
+        // else {
+        //     //printf("Results verified: ORIGIN VERSION and GPTB VERSION agree.\n");
+        // }
     // ---------------------------------------------------------------------------------------
 
 

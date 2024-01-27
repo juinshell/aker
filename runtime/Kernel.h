@@ -11,7 +11,10 @@ enum lmode {
 
 class Kernel {
 public:
-    virtual void execute() = 0;
+    template <typename... Args>
+    void execute(Args&&... args) {
+        executeImpl(std::forward<Args>(args)...);
+    }
     virtual void initParams() = 0;
     virtual void loadKernel() = 0;
 
@@ -33,6 +36,8 @@ public:
     lmode launchMode;
 
     void* kernelFunc;
+protected:
+    virtual void executeImpl() = 0; // 纯虚函数，由子类实现
 };
 
 struct GPTBParams {

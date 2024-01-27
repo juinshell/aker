@@ -165,6 +165,11 @@ cutcp_gptb_params_list = """binDim_x, binDim_y, cutcp_gptb_binZeroCuda,
     ori_cutcp_grid.x, ori_cutcp_grid.y, ori_cutcp_grid.z, ori_cutcp_block.x, ori_cutcp_block.y, ori_cutcp_block.z,
     0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_cutcp_grid.x * ori_cutcp_grid.y * ori_cutcp_grid.z"""
 
+cutcp_gptb_params_list_new = """binDim_x, binDim_y, cutcp_gptb_binZeroCuda, h, cutoff2, inv_cutoff2, cutcp_gptb_regionZeroCuda, 25, 
+    ori_cutcp_grid.x, ori_cutcp_grid.y, ori_cutcp_grid.z, ori_cutcp_block.x, ori_cutcp_block.y, ori_cutcp_block.z,
+    start_blk_no, gptb_kernel_grid.x * gptb_kernel_grid.y * gptb_kernel_grid.z, end_blk_no, 0"""
+
+
 cutcp_verify_code = """
     // Checking results
     // ---------------------------------------------------------------------------------------

@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/runtime",
                 "${workspaceFolder}/runtime/build",
-                "/usr/local/cuda/include"
+                "/usr/local/cuda/include",
+                "${workspaceFolder}/runtime"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

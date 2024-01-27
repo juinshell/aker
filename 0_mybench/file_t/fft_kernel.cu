@@ -136,35 +136,6 @@ __global__ void ptb_fft(float2* data,
 	}
 }
 
-__global__ void ptb_fft(float2* data, 
-	int grid_dimension_x, int block_dimension_x, int iteration){
-
-	unsigned int block_pos = blockIdx.x;
-    int thread_id_x = threadIdx.x;
-
-	for (;; block_pos += gridDim.x) {
-        if (block_pos >= grid_dimension_x) {
-            return;
-        }
-		int block_id_x = block_pos;
-
-		float2 *ori_data = data + block_id_x * N;
-		for (int loop = 0; loop < iteration; loop++) {
-			float2 v[R];
-			// data = ori_data;
-
-			int idxG = thread_id_x; 
-			for (int r=0; r<R; r++) {  
-				v[r] = ori_data[idxG + r*T];
-			} 
-			GPU_DoFft( v, thread_id_x );  
-			for (int r=0; r<R; r++) {
-				ori_data[idxG + r*T] = v[r];
-			}
-		}
-	}
-}
-
 __device__ void mix_GPU_exchange( float2* v, int stride, int idxD, int incD, 
 	int idxS, int incS ){ 
 	__shared__ float work[T*R*2];//T*R*2

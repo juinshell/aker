@@ -110,6 +110,10 @@ lbm_gptb_params_list = """lbm_gptb_src, lbm_gptb_dst,
             ori_lbm_grid.x, ori_lbm_grid.y, ori_lbm_grid.z, ori_lbm_block.x, ori_lbm_block.y, ori_lbm_block.z,
             0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_lbm_grid.x * ori_lbm_grid.y * ori_lbm_grid.z"""
 
+lbm_gptb_params_list_new = """lbm_gptb_src, lbm_gptb_dst,
+    ori_lbm_grid.x, ori_lbm_grid.y, ori_lbm_grid.z, ori_lbm_block.x, ori_lbm_block.y, ori_lbm_block.z,
+    start_blk_no, gptb_kernel_grid.x * gptb_kernel_grid.y * gptb_kernel_grid.z, end_blk_no, 0"""
+
 lbm_verify_code = """
     // ---------------------------------------------------------------------------------------
         lbm_ori_src -= REAL_MARGIN;

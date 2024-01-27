@@ -338,8 +338,9 @@ int main(int argc, char* argv[]) {
 
 
 
-    int mix_mrif_task_blk_num = 7;
+    int mix_mrif_task_blk_num = 512;
     int solo_mrif_task_blk_num = mrif_grid2_dim_x - mix_mrif_task_blk_num;
+    printf("[MIX] mrif task block %d/%d\n\n", mix_mrif_task_blk_num, mrif_grid2_dim_x);
 
 
   // MIX

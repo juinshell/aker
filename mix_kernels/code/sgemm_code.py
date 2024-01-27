@@ -142,6 +142,10 @@ sgemm_gptb_params_list = """sgemm_gptb_a, sgemm_gptb_b, sgemm_gptb_c, NORMAL_M, 
             ori_sgemm_grid.x, ori_sgemm_grid.y, ori_sgemm_grid.z, ori_sgemm_block.x, ori_sgemm_block.y, ori_sgemm_block.z,
             0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_sgemm_grid.x * ori_sgemm_grid.y * ori_sgemm_grid.z"""
 
+sgemm_gptb_params_list_new = """sgemm_gptb_a, sgemm_gptb_b, sgemm_gptb_c, NORMAL_M, NORMAL_N, NORMAL_K,
+            ori_sgemm_grid.x, ori_sgemm_grid.y, ori_sgemm_grid.z, ori_sgemm_block.x, ori_sgemm_block.y, ori_sgemm_block.z,
+            start_blk_no, gptb_kernel_grid.x * gptb_kernel_grid.y * gptb_kernel_grid.z, end_blk_no, 0"""
+
 def get_sgemm_code_before_mix_kernel():
     return sgemm_variables_code + sgemm_solo_running_code + sgemm_ptb_running_code
 

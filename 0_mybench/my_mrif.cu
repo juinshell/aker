@@ -177,6 +177,7 @@ int main (int argc, char *argv[]) {
 
     // PTB running
     // ---------------------------------------------------------------------------------------
+        // cudaMemcpyToSymbol(c, kValsTile, numElems * sizeof(kValues), 0);
         int mrif_grid2_dim_x = mrif_grid2.x;
         int mrif_block2_dim_x = mrif_block2.x;
         mrif_grid2.x = mrif_blks == 0 ? mrif_grid2_dim_x : SM_NUM * mrif_blks;

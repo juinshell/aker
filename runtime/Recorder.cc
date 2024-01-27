@@ -1,7 +1,13 @@
 #include "Recorder.h"
+#include "TackerConfig.h"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <algorithm>
+
+bool cmp(const std::pair<int, std::vector<float>>& a, const std::pair<int, std::vector<float>>& b) {
+    return a.first < b.first;
+}
 
 void Recorder::text() {
     std::string filename = "recorder_output.txt";

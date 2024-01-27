@@ -4,7 +4,7 @@ void inputData(int* _numK, int* _numX,
                float** x, float** y, float** z,
                float** phiR, float** phiI) {
     int numK, numX;
-    FILE* fid = fopen("/home/hzhao/projects/pets/gpgpu-sim/mixkernels/0_mybench/file_t/mriq_input.bin", "r");
+    FILE* fid = fopen("/home/jxdeng/workspace/tacker/0_mybench/file_t/mriq_input.bin", "r");
     if (fid == NULL) {
         fprintf(stderr, "Cannot open input file\n");
         exit(-1);

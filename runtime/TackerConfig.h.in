@@ -11,3 +11,6 @@
 
 // CMakelists path
 #define CMAKELISTS_PATH "@CMAKE_CURRENT_SOURCE_DIR@"
+
+// build type
+#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"

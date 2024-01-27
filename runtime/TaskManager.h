@@ -8,7 +8,7 @@ class TaskManager {
 public:
     TaskManager() {};
     void addTask(Task& task);
-    void executeAllTasks();
+    void executeAllTasks(ExecutionMode mode);
     ~TaskManager();
 
 private:

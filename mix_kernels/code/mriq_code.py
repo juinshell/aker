@@ -208,6 +208,10 @@ mriq_gptb_params_list = """numK, QGridBase,
             ori_mriq_grid2.x, ori_mriq_grid2.y, ori_mriq_grid2.z, ori_mriq_block2.x, ori_mriq_block2.y, ori_mriq_block2.z,
             0, mix_kernel_grid.x * mix_kernel_grid.y * mix_kernel_grid.z, ori_mriq_grid2.x * ori_mriq_grid2.y * ori_mriq_grid2.z"""
 
+mriq_gptb_params_list_new = """numK, QGridBase, mriq_gptb_x, mriq_gptb_y, mriq_gptb_z, mriq_gptb_Qr, mriq_gptb_Qi, 
+    ori_mriq_grid2.x, ori_mriq_grid2.y, ori_mriq_grid2.z, ori_mriq_block2.x, ori_mriq_block2.y, ori_mriq_block2.z,
+    start_blk_no, gptb_kernel_grid.x * gptb_kernel_grid.y * gptb_kernel_grid.z, end_blk_no, 0"""
+
 def get_mriq_code_before_mix_kernel():
     return mriq_variables_code + mriq_solo_running_code + mriq_ptb_running_code + mriq_gptb_variables_code
 

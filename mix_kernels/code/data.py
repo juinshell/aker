@@ -23,14 +23,15 @@ SM_REGISTER_NUM = 65536
 SM_THREAD_SLOT_NUM = 1024
 SM_SHARED_MEMORY_NUM = 65536
 kernel_info = {
-    "cp" : {"register": 39, "shared_memory": 0, "blocksize": 128, "solo_ptb_blks": 6}, # 4 default, 8 close to ori
+    "cp" : {"register": 39, "shared_memory": 0, "blocksize": 128, "solo_ptb_blks": 8}, # 4 default, 8 close to ori(use for solo gptb), 6 for mix
     "cutcp": {"register": 42, "shared_memory": 4096, "blocksize": 128, "solo_ptb_blks": 6}, # 4 default, 6 close to ori
     "fft": {"register": 33, "shared_memory": 2048, "blocksize": 128, "solo_ptb_blks": 3},
     "lbm": {"register": 61, "shared_memory": 0, "blocksize": 128, "solo_ptb_blks": 1},
     "mrif": {"register": 32, "shared_memory": 0, "blocksize": 256, "solo_ptb_blks": 3},
     "mriq": {"register": 31, "shared_memory": 0, "blocksize": 256, "solo_ptb_blks": 4},
     "sgemm": {"register": 64, "shared_memory": 512, "blocksize": 128, "solo_ptb_blks": 4},
-    "tpacf": {"register": 41, "shared_memory": 13312, "blocksize": 256, "solo_ptb_blks": 3}
+    "tpacf": {"register": 41, "shared_memory": 13312, "blocksize": 256, "solo_ptb_blks": 3},
+    "stencil": {"register": 38, "shared_memory": 1024, "blocksize": 128, "solo_ptb_blks": 3}
 }
 
 def get_kernel_info(kernel_name):

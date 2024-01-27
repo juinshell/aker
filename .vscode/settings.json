@@ -63,7 +63,17 @@
         "clocale": "cpp",
         "ratio": "cpp",
         "__nullptr": "cpp",
-        "__functional_03": "cpp"
+        "__functional_03": "cpp",
+        "codecvt": "cpp",
+        "condition_variable": "cpp",
+        "map": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "__config": "cpp",
+        "queue": "cpp",
+        "__split_buffer": "cpp",
+        "stack": "cpp"
     },
     "cmake.sourceDirectory": "/home/jxdeng/workspace/tacker/runtime",
     "C_Cpp.errorSquiggles": "enabled"

@@ -7,8 +7,10 @@
 #include <sstream>
 #include <unistd.h>
 #include <sys/stat.h>
+#include "TackerConfig.h"
 
 enum class LogLevel {
+    DEBUG,
     INFO,
     WARNING,
     ERROR
@@ -37,6 +39,13 @@ public:
         log(LogLevel::ERROR, message);
     }
 
+    void DEBUG(const std::string& message) {
+        #ifdef BUILD_TYPE
+        if (std::string(BUILD_TYPE) == "DEBUG") {
+            log(LogLevel::DEBUG, message);
+        }
+        #endif
+    }
 
 private:
     std::ofstream logFile;

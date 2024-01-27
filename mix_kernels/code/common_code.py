@@ -18,6 +18,8 @@ common_header = """
 #include <mma.h>
 #include <malloc.h>
 #include <sys/time.h>
+#include <vector>
+#include <algorithm>
 using namespace nvcuda; 
 
 #define cudaErrCheck(stat) { cudaErrCheck_((stat), __FILE__, __LINE__); }

@@ -11,23 +11,12 @@ Copyright (c) 2023 by jxdeng, All Rights Reserved.
 import os
 import re
 import sys
-import subprocess
-
-from tqdm import tqdm, trange
-
-from common_code import common_header, time_event_create_code, main_func_begin_code, main_func_end_code
-from cp_code import get_cp_header_code, get_cp_code_before_mix_kernel, get_cp_code_after_mix_kernel, cp_gptb_params_list
-from cutcp_code import get_cutcp_header_code, get_cutcp_code_before_mix_kernel, get_cutcp_code_after_mix_kernel, cutcp_gptb_params_list
-from fft_code import get_fft_header_code, get_fft_code_before_mix_kernel, get_fft_code_after_mix_kernel, fft_gptb_params_list
-from lbm_code import get_lbm_header_code, get_lbm_code_before_mix_kernel, get_lbm_code_after_mix_kernel, lbm_gptb_params_list
-from mrif_code import get_mrif_header_code, get_mrif_code_before_mix_kernel, get_mrif_code_after_mix_kernel, mrif_gptb_params_list
-from mriq_code import get_mriq_header_code, get_mriq_code_before_mix_kernel, get_mriq_code_after_mix_kernel, mriq_gptb_params_list
-from sgemm_code import get_sgemm_header_code, get_sgemm_code_before_mix_kernel, get_sgemm_code_after_mix_kernel, sgemm_gptb_params_list
+import subproces
 
 from data import get_kernel_info, fuse_kernel_info
 from util import extract_kernel_signature, process_parameter_list
 
-kernel_list = ['cp', 'cutcp', 'fft', 'lbm', 'mrif', 'mriq', 'sgemm']
+kernel_list = ['cp', 'cutcp', 'fft', 'lbm', 'mrif', 'mriq', 'sgemm', 'stencil']
 
 from gen_mix import gen_pair_code_iter
 from gen_test import gen_fused_code
