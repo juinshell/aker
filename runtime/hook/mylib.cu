@@ -11,6 +11,20 @@
 #include <curand.h>
 using namespace nvcuda;
 
+// cudaError_t cudaMemcpy ( void* dst, const void* src, size_t count, cudaMemcpyKind kind )
+// {
+// cudaError_t (*lcudaMemcpy) ( void*, const void*, size_t, cudaMemcpyKind) = (cudaError_t (*) ( void* , const void* , size_t , cudaMemcpyKind  ))dlsym(RTLD_NEXT, "cudaMemcpy");
+//     printf("cudaMemcpy hooked\n");
+//     return lcudaMemcpy( dst, src, count, kind );
+// }
+
+// cudaError_t cudaMemcpyAsync ( void* dst, const void* src, size_t count, cudaMemcpyKind kind, cudaStream_t str )
+// {
+// cudaError_t (*lcudaMemcpyAsync) ( void*, const void*, size_t, cudaMemcpyKind, cudaStream_t) = (cudaError_t (*) ( void* , const void* , size_t , cudaMemcpyKind, cudaStream_t   ))dlsym(RTLD_NEXT, "cudaMemcpyAsync");
+//     printf("cudaMemcpyAsync hooked\n");
+//     return lcudaMemcpyAsync( dst, src, count, kind, str );
+// }
+
 #define curandErrCheck(stat) { curandErrCheck_((stat), __FILE__, __LINE__); }
 void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
    if (stat != CURAND_STATUS_SUCCESS) {
@@ -155,7 +169,7 @@ __global__ void im2col_gpu_kernel(int n, float* data_im,
     int stride_h, int stride_w,
     int dilation_h, int dilation_w,
     int height_col, int width_col,
-    float* data_col) {
+    float* data_col, int data_im_size, int data_col_size) {
 		for (int i = blockIdx.x * blockDim.x + threadIdx.x; 
 				i < n; 
 				i += blockDim.x * gridDim.x) {
@@ -174,8 +188,12 @@ __global__ void im2col_gpu_kernel(int n, float* data_im,
 				for (int j = 0; j < kernel_w; ++j) {
 					int h_im = h_offset + i * dilation_h;
 					int w_im = w_offset + j * dilation_w;
+                    if (h_col >= height_col || w_col >= width_col || h_col < 0 || w_col < 0 || (data_col_ptr - data_col) >= data_col_size) {
+                        // printf("h_col: %d, w_col: %d, height_col: %d, width_col: %d, data_col_ptr - data_col: %d\n", h_col, w_col, height_col, width_col, data_col_ptr - data_col);
+                        continue;
+                    }
 					*data_col_ptr =
-						(h_im >= 0 && w_im >= 0 && h_im < height && w_im < width) ?
+						(h_im >= 0 && w_im >= 0 && h_im < height && w_im < width && (i * dilation_h * width + j * dilation_w < data_im_size)) ?
 						data_im_ptr[i * dilation_h * width + j * dilation_w] : 0;
 					data_col_ptr += height_col * width_col;
 				}
@@ -350,18 +368,26 @@ __global__ void ptb_tzgemm(half *A, half *B, float *C,
     }
 }
 
-// hook cublasSgemm
-cublasStatus_t cublasSgemm(cublasHandle_t handle, cublasOperation_t transa, cublasOperation_t transb, int m, int n, int k, const float *alpha, const float *A, int lda, const float *B, int ldb, const float *beta, float *C, int ldc)
-{
-    cublasStatus_t (*lcublasSgemm) (cublasHandle_t, cublasOperation_t, cublasOperation_t, int, int, int, const float *, const float *, int, const float *, int, const float *, float *, int) = (cublasStatus_t (*) (cublasHandle_t, cublasOperation_t, cublasOperation_t, int, int, int, const float *, const float *, int, const float *, int, const float *, float *, int))dlsym(RTLD_NEXT, "cublasSgemm");
-    printf("cublasSgemm hooked!\n");
-    return lcublasSgemm(handle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+
+__global__ void convertFp32ToFp16 (half *out, float *in, int n) {
+   int idx = blockDim.x * blockIdx.x + threadIdx.x;
+   if (idx < n) {
+      out[idx] = in[idx];
+   }
 }
+
+// hook cublasSgemm
+// cublasStatus_t cublasSgemm(cublasHandle_t handle, cublasOperation_t transa, cublasOperation_t transb, int m, int n, int k, const float *alpha, const float *A, int lda, const float *B, int ldb, const float *beta, float *C, int ldc)
+// {
+//     cublasStatus_t (*lcublasSgemm) (cublasHandle_t, cublasOperation_t, cublasOperation_t, int, int, int, const float *, const float *, int, const float *, int, const float *, float *, int) = (cublasStatus_t (*) (cublasHandle_t, cublasOperation_t, cublasOperation_t, int, int, int, const float *, const float *, int, const float *, int, const float *, float *, int))dlsym(RTLD_NEXT, "cublasSgemm");
+//     printf("cublasSgemm hooked!\n");
+//     return lcublasSgemm(handle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+// }
 
 // hook cudnnConvolutionForward
 cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, const cudnnTensorDescriptor_t xDesc, const void *x, const cudnnFilterDescriptor_t wDesc, const void *w, const cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t algo, void *workSpace, size_t workSpaceSizeInBytes, const void *beta, const cudnnTensorDescriptor_t yDesc, void *y) {
-    printf("cudnnConvolutionForward hooked!\n");
-    char foo;
+    // printf("cudnnConvolutionForward hooked!\n");
+    // char foo;
     // std::cin >> foo;
 
     // img2col参数
@@ -398,21 +424,27 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
     int a,b,c,d;
 
     CUDNN_SAFE_CALL(cudnnGetTensor4dDescriptor(xDesc, &dataType, &input_n, &input_c, &input_h, &input_w, &a, &b, &c, &d));
-    printf("input_n: %d, input_c: %d, input_h: %d, input_w: %d\n", input_n, input_c, input_h, input_w);
+    // printf("input_n: %d, input_c: %d, input_h: %d, input_w: %d\n", input_n, input_c, input_h, input_w);
     // get Filter args from wDesc
     cudnnTensorFormat_t format;
     CUDNN_SAFE_CALL(cudnnGetFilter4dDescriptor(wDesc, &dataType, &format, &kernel_k, &kernel_c, &kernel_h, &kernel_w));
-    printf("kernel_k: %d, kernel_c: %d, kernel_h: %d, kernel_w: %d\n", kernel_k, kernel_c, kernel_h, kernel_w);
+    // printf("kernel_k: %d, kernel_c: %d, kernel_h: %d, kernel_w: %d\n", kernel_k, kernel_c, kernel_h, kernel_w);
 
     // get output tensor args from yDesc
     CUDNN_SAFE_CALL(cudnnGetTensor4dDescriptor(yDesc, &dataType, &output_n, &output_c, &output_h, &output_w, &a, &b, &c, &d));
-    printf("output_n: %d, output_c: %d, output_h: %d, output_w: %d\n", output_n, output_c, output_h, output_w);
+    // printf("output_n: %d, output_c: %d, output_h: %d, output_w: %d\n", output_n, output_c, output_h, output_w);
 
     cudnnConvolutionMode_t mode;
     // get convolution args from convDesc
     CUDNN_SAFE_CALL(cudnnGetConvolution2dDescriptor(convDesc, &pad_h, &pad_w, &stride_h, &stride_w, &dilation_h, &dilation_w, &mode, &dataType));
-    printf("pad_h: %d, pad_w: %d, stride_h: %d, stride_w: %d, dilation_h: %d, dilation_w: %d\n", pad_h, pad_w, stride_h, stride_w, dilation_h, dilation_w);
+    // printf("pad_h: %d, pad_w: %d, stride_h: %d, stride_w: %d, dilation_h: %d, dilation_w: %d\n", pad_h, pad_w, stride_h, stride_w, dilation_h, dilation_w);
 
+    // if (input_c == 64 && input_h == 56 && input_w == 56 && kernel_k == 64 && kernel_c == 64 && kernel_h == 3 && kernel_w == 3) {
+    //     // 调用cudnn的convolution
+    //     cudnnStatus_t (*lcudnnConvolutionForward) (cudnnHandle_t, const void *, const cudnnTensorDescriptor_t, const void *, const cudnnFilterDescriptor_t, const void *, const cudnnConvolutionDescriptor_t, cudnnConvolutionFwdAlgo_t, void *, size_t, const void *, const cudnnTensorDescriptor_t, void *) = (cudnnStatus_t (*) (cudnnHandle_t, const void *, const cudnnTensorDescriptor_t, const void *, const cudnnFilterDescriptor_t, const void *, const cudnnConvolutionDescriptor_t, cudnnConvolutionFwdAlgo_t, void *, size_t, const void *, const cudnnTensorDescriptor_t, void *)) dlsym(RTLD_NEXT, "cudnnConvolutionForward");
+    //     return lcudnnConvolutionForward(handle, alpha, xDesc, x, wDesc, w, convDesc, algo, workSpace, workSpaceSizeInBytes, beta, yDesc, y);
+
+    // }
     col_n = input_n;
     col_c = input_c;
 
@@ -429,20 +461,20 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
     col_h = height_col;
     col_w = width_col;
 
+    // printf("col_n:%d, col_c:%d, col_h:%d, col_w:%d\n", col_n, col_c, col_h, col_w);
+
+    // std::cin >> foo;
+
     cudaErrCheck(cudaMalloc((void**)&bottom, input_n * input_c * input_h * input_w * sizeof(float)));
     cudaErrCheck(cudaMalloc((void**)&col_buffer, col_n * col_c * col_h * col_w * sizeof(float)));
 
-    // curandGenerator_t gen;
-    // curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
-    // curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
-    // curandErrCheck(curandGenerateUniform(gen, bottom, input_n * input_c * input_h * input_w));
-    // curandErrCheck(curandGenerateUniform(gen, col_buffer, col_n * col_c * col_h * col_w));
-    cudaErrCheck(cudaMemset(bottom, 1.0f, input_n * input_c * input_h * input_w * sizeof(float)));
-    cudaErrCheck(cudaMemset(col_buffer, 1.0f, col_n * col_c * col_h * col_w * sizeof(float)));
-
-    printf("col_n:%d, col_c:%d, col_h:%d, col_w:%d\n", col_n, col_c, col_h, col_w);
-
-    std::cin >> foo;
+    curandGenerator_t gen;
+    curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
+    curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
+    curandErrCheck(curandGenerateUniform(gen, bottom, input_n * input_c * input_h * input_w));
+    curandErrCheck(curandGenerateUniform(gen, col_buffer, col_n * col_c * col_h * col_w));
+    // cudaErrCheck(cudaMemset(bottom, 1.0f, input_n * input_c * input_h * input_w * sizeof(float)));
+    // cudaErrCheck(cudaMemset(col_buffer, 1.0f, col_n * col_c * col_h * col_w * sizeof(float)));
 
     // 调用 img2col
     dim3 im_grid;
@@ -451,24 +483,42 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
 	im_grid.x = int(num_kernels / 256);
 	im_grid.x = 68 * 1;
 
-    cudaEvent_t startKERNEL, stopKERNEL;
-	cudaErrCheck(cudaEventCreate(&startKERNEL));
-	cudaErrCheck(cudaEventCreate(&stopKERNEL));
-    float milliseconds = 0;
+    // cudaEvent_t startKERNEL, stopKERNEL;
+	// cudaErrCheck(cudaEventCreate(&startKERNEL));
+	// cudaErrCheck(cudaEventCreate(&stopKERNEL));
+    // float milliseconds = 0;
 
-    printf("Running with im2col...\n");
-    cudaErrCheck(cudaEventRecord(startKERNEL));
+    // printf("Running with im2col...\n");
+    // printf("num_kernels: %d\n", num_kernels);
+	// printf("input_h: %d\n", input_h);
+	// printf("input_w: %d\n", input_w);
+	// printf("kernel_h: %d\n", kernel_h);
+	// printf("kernel_w: %d\n", kernel_w);
+	// printf("pad_h: %d\n", pad_h);
+	// printf("pad_w: %d\n", pad_w);
+	// printf("stride_h: %d\n", stride_h);
+	// printf("stride_w: %d\n", stride_w);
+	// printf("dilation_h: %d\n", dilation_h);
+	// printf("dilation_w: %d\n", dilation_w);
+	// printf("height_col: %d\n", height_col);
+	// printf("width_col: %d\n", width_col);
+    // printf("col_buffer size: %d\n", col_n * col_c * col_h * col_w);
+	// printf("bottom size: %d\n", input_n * input_c * input_h * input_w);
+
+    // cudaErrCheck(cudaDeviceSynchronize());
+
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
     // launch im2col
     checkKernelErrors((im2col_gpu_kernel<<<im_grid, im_block>>>(
 		num_kernels, bottom, input_h, input_w, kernel_h, kernel_w, pad_h,
 		pad_w, stride_h, stride_w, dilation_h, dilation_w, height_col,
-		width_col, col_buffer)));
+		width_col, col_buffer, input_n * input_c * input_h * input_w, col_n * col_c * col_h * col_w)));
     
-    cudaErrCheck(cudaEventRecord(stopKERNEL));
-	cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-	cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-	printf("im2col_gpu_kernel took %f ms\n", milliseconds);
-    milliseconds = 0;
+    // cudaErrCheck(cudaEventRecord(stopKERNEL));
+	// cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+	// cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+	// printf("im2col_gpu_kernel took %f ms\n", milliseconds);
+    // milliseconds = 0;
 
     // 调用 gemm
     // input matrix size
@@ -505,30 +555,37 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
     half *ori_wmma_A = NULL;
 	half *ori_wmma_B = NULL;
 	float *ori_wmma_C = NULL;
+    float *ori_host_A = NULL;
+	float *ori_host_B = NULL;
 
+    cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * M_GLOBAL * K_GLOBAL));
+	cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * N_GLOBAL * K_GLOBAL));
     cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * M_GLOBAL * K_GLOBAL));
 	cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * N_GLOBAL * K_GLOBAL));
 	cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * M_GLOBAL * N_GLOBAL));
 
-    // set all to 2.0f
-    cudaErrCheck(cudaMemset(ori_wmma_A, 2.0f, sizeof(half) * M_GLOBAL * K_GLOBAL)); 
-    cudaErrCheck(cudaMemset(ori_wmma_B, 3.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
-    cudaErrCheck(cudaMemset(ori_wmma_C, 4.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
+    assert(((unsigned long long)ori_wmma_A) % 128 == 0);
+	assert(((unsigned long long)ori_wmma_B) % 128 == 0);
+	assert(((unsigned long long)ori_wmma_C) % 128 == 0);
 
-    printf("Running with gemm...\n");
-    cudaErrCheck(cudaEventRecord(startKERNEL));
+	curandErrCheck(curandGenerateUniform(gen, ori_host_A, M_GLOBAL * K_GLOBAL));
+    curandErrCheck(curandGenerateUniform(gen, ori_host_B, N_GLOBAL * K_GLOBAL));
+	convertFp32ToFp16 <<< (M_GLOBAL * K_GLOBAL + 255) / 256, 256 >>> (ori_wmma_A, ori_host_A, M_GLOBAL * K_GLOBAL);
+    convertFp32ToFp16 <<< (N_GLOBAL * K_GLOBAL + 255) / 256, 256 >>> (ori_wmma_B, ori_host_B, N_GLOBAL * K_GLOBAL);
+    cudaErrCheck(cudaMemset(ori_wmma_C, 0.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
+
+    // printf("Running with gemm...\n");
+    // printf("gemm M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);
+    // printf("gemm block dim: %d, grid dim: %d\n", wmma_block_dim_x, wmma_grid_dim_x);
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
     checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
 		M_GLOBAL, N_GLOBAL, K_GLOBAL,
 		// alpha, beta,
 		wmma_grid_dim_x, wmma_block_dim_x)));
-    cudaErrCheck(cudaEventRecord(stopKERNEL));
-    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-    cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-    printf("ptb_tzgemm took %f ms\n", milliseconds);
-    
-
-    // y set to 1.0f
-    cudaErrCheck(cudaMemset(y, 1.0f, sizeof(float) * output_n * output_c * output_h * output_w));
+    // cudaErrCheck(cudaEventRecord(stopKERNEL));
+    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    // cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    // printf("ptb_tzgemm took %f ms\n", milliseconds);
 
     return CUDNN_STATUS_SUCCESS;
 }

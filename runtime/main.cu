@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
     //     0, 
     //     32 * 512));
 
-    Resnet50 resnet50(2);
+    Resnet50 resnet50(3);
     
     for (int i = 0; i < 10; i++) {
         resnet50.executeTask(ExecutionMode::WARMUP);

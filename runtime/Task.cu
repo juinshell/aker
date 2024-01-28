@@ -22,7 +22,7 @@ void Task::executeTask(ExecutionMode mode) {
     CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
 
     for (auto &kernel : kernels) {
-        logger.INFO("kernel name: " + kernel->kernelName + ", id: " + std::to_string(kernel->Id) + " is executing ...");
+        // logger.INFO("kernel name: " + kernel->kernelName + ", id: " + std::to_string(kernel->Id) + " is executing ...");
 
         // execute kernel
         CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
@@ -30,7 +30,7 @@ void Task::executeTask(ExecutionMode mode) {
         CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
         CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
         CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        logger.DEBUG("kernel name: " + kernel->getKernelName() + ", kernel time: " + std::to_string(kernel_time) + " ms");
+        // logger.DEBUG("kernel name: " + kernel->getKernelName() + ", kernel time: " + std::to_string(kernel_time) + " ms");
 
         // record kernel time
         if (mode == ExecutionMode::PROFILE)

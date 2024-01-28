@@ -115,17 +115,17 @@ int main(int argc, char* argv[]) {
     cudaErrCheck(cudaEventCreate(&stopKERNEL));
 
 	int input_n = 1;
-	int input_c = 64;
-	int input_h = 56;
-	int input_w = 56;
+	int input_c = 128;
+	int input_h = 28;
+	int input_w = 28;
 	int output_n = 1;
-	int output_c = 64;
-	int output_h = 56;
-	int output_w = 56;
+	int output_c = 128;
+	int output_h = 28;
+	int output_w = 28;
 	int col_n = 1;
-	int col_c = 64;
-	int col_h = 56;
-	int col_w = 56;
+	int col_c = 128;
+	int col_h = 28;
+	int col_w = 28;
 	float *top;
 	float *bottom;
 	float *col_buffer;
@@ -146,6 +146,9 @@ int main(int argc, char* argv[]) {
     curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
     curandErrCheck(curandGenerateUniform(gen, bottom, input_n * input_c * input_h * input_w));
     curandErrCheck(curandGenerateUniform(gen, col_buffer, col_n * col_c * col_h * col_w));
+
+	// cudaErrCheck(cudaMemset(bottom, 1.0f, input_n * input_c * input_h * input_w * sizeof(float)));
+    // cudaErrCheck(cudaMemset(col_buffer, 1.0f, col_n * col_c * col_h * col_w * sizeof(float)));
 
     // im2col_gpu(data_im, input_c, height, width, kernel_h, kernel_w,
     //             pad_h, pad_w, stride_h, stride_w, dilation_h, dilation_w, data_col);
@@ -169,10 +172,29 @@ int main(int argc, char* argv[]) {
 	
 	cudaErrCheck(cudaEventRecord(startKERNEL));
 
+	// 打印所有参数
+	printf("num_kernels: %d\n", num_kernels);
+	printf("input_h: %d\n", input_h);
+	printf("input_w: %d\n", input_w);
+	printf("kernel_h: %d\n", kernel_h);
+	printf("kernel_w: %d\n", kernel_w);
+	printf("pad_h: %d\n", pad_h);
+	printf("pad_w: %d\n", pad_w);
+	printf("stride_h: %d\n", stride_h);
+	printf("stride_w: %d\n", stride_w);
+	printf("dilation_h: %d\n", dilation_h);
+	printf("dilation_w: %d\n", dilation_w);
+	printf("height_col: %d\n", height_col);
+	printf("width_col: %d\n", width_col);
+	printf("col_buffer size: %d\n", col_n * col_c * col_h * col_w);
+	printf("bottom size: %d\n", input_n * input_c * input_h * input_w);
+
+
+
 	checkKernelErrors((im2col_gpu_kernel<<<im_grid, im_block>>>(
 		num_kernels, bottom, input_h, input_w, kernel_h, kernel_w, pad_h,
 		pad_w, stride_h, stride_w, dilation_h, dilation_w, height_col,
-		width_col, col_buffer, im_iter)));
+		width_col, col_buffer, 1)));
 
 	cudaErrCheck(cudaEventRecord(stopKERNEL));
     cudaErrCheck(cudaEventSynchronize(stopKERNEL));

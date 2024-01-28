@@ -17,12 +17,13 @@ void Recorder::text() {
         return;
     }
 
-    for (const auto& task_pair : task_time_map) {
+    for (auto& task_pair : task_time_map) {
         int taskId = task_pair.first;
-        const auto& times = task_pair.second;
-        const auto& kernelIds = task_kernel_map[taskId];
-        const std::string& taskName = task_name_map[taskId];
+        auto& times = task_pair.second;
+        auto& kernelIds = task_kernel_map[taskId];
+        auto& taskName = task_name_map[taskId];
 
+        std::cout << "taskID: " << taskId << ", taskName: " << taskName << "\n";
         file << "taskID: " << taskId << ", taskName: " << taskName << "\n";
 
         float totalTaskTime = 0.0;
@@ -30,12 +31,14 @@ void Recorder::text() {
             int kernelId = kernelIds[i];
             float time = times[i];
             totalTaskTime += time;
-            const std::string& kernelName = kernel_name_map[kernelId];
+            auto& kernelName = task_kernel_name_vec[taskId][i];
 
             file << "    kernelID: " << kernelId << ", kernelName: " << kernelName
                  << ", execTime: " << time << "ms\n";
         }
 
         file << "    task running time: " << totalTaskTime << "ms\n\n";
+
+        // std::cout << "Task: " << taskName << ", taskID: " << taskId << ", task running time: " << totalTaskTime << "ms\n";
     }
 }

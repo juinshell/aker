@@ -9,7 +9,7 @@ public:
                 float executionTime) {
         task_time_map[taskId].push_back(executionTime);
         task_kernel_map[taskId].push_back(kernelId);
-        kernel_name_map[kernelId] = kernelName;
+        task_kernel_name_vec[taskId].push_back(kernelName);
     }
     void recordTask(int taskId, const std::string& taskName) {
         task_name_map[taskId] = taskName;
@@ -19,6 +19,6 @@ public:
 private:
     std::unordered_map<int, std::vector<float> > task_time_map; // task_id -> execution_time vector
     std::unordered_map<int, std::vector<int> > task_kernel_map; // task_id -> kernel_id vector
+    std::unordered_map<int, std::vector<std::string> > task_kernel_name_vec; // task_id -> kernel_name vector
     std::unordered_map<int, std::string> task_name_map; // task_id -> task_name
-    std::unordered_map<int, std::string> kernel_name_map; // kernel_id -> kernel_name
 };

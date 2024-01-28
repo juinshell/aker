@@ -9552,6 +9552,8 @@ class Reshape_float_float_cuda_Reshape_271_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_271_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_271_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9579,6 +9581,8 @@ class Pad_float_float_float_cuda_Pad_273_CallKernel : public Kernel {
 public:
     Pad_float_float_float_cuda_Pad_273_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Pad_float_float_float_cuda_Pad_273_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9606,6 +9610,8 @@ class Reshape_float_float_cuda_Reshape_274_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_274_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_274_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9633,6 +9639,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_275Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_275Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_275";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9716,6 +9724,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9743,6 +9753,8 @@ class Relu_float_float_cuda_Relu_277_CallKernel : public Kernel {
 public:
     Relu_float_float_cuda_Relu_277_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Relu_float_float_cuda_Relu_277_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9770,6 +9782,8 @@ class MaxPool_float_float_cuda_lib_MaxPool_278Kernel : public Kernel {
 public:
     MaxPool_float_float_cuda_lib_MaxPool_278Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "MaxPool_float_float_cuda_lib_MaxPool_278";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9813,6 +9827,8 @@ class Reshape_float_float_cuda_Reshape_281_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_281_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_281_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9840,6 +9856,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_282Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_282Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_282";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9923,6 +9941,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9950,6 +9970,8 @@ class Reshape_float_float_cuda_Reshape_286_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_286_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_286_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -9977,6 +9999,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_287Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_287Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_287";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10060,6 +10084,8 @@ class Reshape_float_float_cuda_Reshape_290_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_290_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_290_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10087,6 +10113,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_291Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_291Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_291";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10170,6 +10198,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10197,6 +10227,8 @@ class FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel : public Kernel {
 public:
     FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "FusedKernel_float_float_float_cuda_Add_Relu_0_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10224,6 +10256,8 @@ class Reshape_float_float_cuda_Reshape_295_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_295_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_295_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10251,6 +10285,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_296Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_296Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_296";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10334,6 +10370,8 @@ class Reshape_float_float_cuda_Reshape_323_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_323_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_323_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10361,6 +10399,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_324Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_324Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_324";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10444,6 +10484,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10471,6 +10513,8 @@ class Reshape_float_float_cuda_Reshape_328_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_328_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_328_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10498,6 +10542,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_329Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_329Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_329";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10581,6 +10627,8 @@ class Reshape_float_float_cuda_Reshape_332_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_332_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_332_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10608,6 +10656,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_333Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_333Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_333";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10691,6 +10741,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10718,6 +10770,8 @@ class Reshape_float_float_cuda_Reshape_321_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_321_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_321_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10745,6 +10799,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_322Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_322Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_322";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10828,6 +10884,8 @@ class Reshape_float_float_cuda_Reshape_337_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_337_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_337_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10855,6 +10913,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_338Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_338Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_338";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10938,6 +10998,8 @@ class Reshape_float_float_cuda_Reshape_378_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_378_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_378_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -10965,6 +11027,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_379Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_379Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_379";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11048,6 +11112,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11075,6 +11141,8 @@ class Reshape_float_float_cuda_Reshape_383_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_383_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_383_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11102,6 +11170,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_384Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_384Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_384";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11185,6 +11255,8 @@ class Reshape_float_float_cuda_Reshape_387_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_387_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_387_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11212,6 +11284,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_388Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_388Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_388";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11295,6 +11369,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11322,6 +11398,8 @@ class Reshape_float_float_cuda_Reshape_376_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_376_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_376_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11349,6 +11427,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_377Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_377Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_377";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11432,6 +11512,8 @@ class Reshape_float_float_cuda_Reshape_392_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_392_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_392_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11459,6 +11541,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_393Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_393Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_393";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11542,6 +11626,8 @@ class Reshape_float_float_cuda_Reshape_459_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_459_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_459_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11569,6 +11655,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_460Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_460Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_460";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11652,6 +11740,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11679,6 +11769,8 @@ class Reshape_float_float_cuda_Reshape_464_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_464_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_464_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11706,6 +11798,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_465Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_465Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_465";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11789,6 +11883,8 @@ class Reshape_float_float_cuda_Reshape_468_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_468_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_468_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11816,6 +11912,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_469Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_469Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_469";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11899,6 +11997,8 @@ class BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInfer
 public:
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  input2, float*  input3, float*  input4, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11926,6 +12026,8 @@ class Reshape_float_float_cuda_Reshape_457_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_457_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_457_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -11953,6 +12055,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_458Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_458Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_458";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -12036,6 +12140,8 @@ class Reshape_float_float_cuda_Reshape_473_CallKernel : public Kernel {
 public:
     Reshape_float_float_cuda_Reshape_473_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Reshape_float_float_cuda_Reshape_473_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -12063,6 +12169,8 @@ class Convolution_float_float_float_cuda_lib_Convolution_474Kernel : public Kern
 public:
     Convolution_float_float_float_cuda_lib_Convolution_474Kernel(cudnnHandle_t  cudnn_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_474";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -12146,6 +12254,8 @@ class Sum_float_float_cuda_Sum_499_CallKernel : public Kernel {
 public:
     Sum_float_float_cuda_Sum_499_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Sum_float_float_cuda_Sum_499_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -12173,6 +12283,8 @@ class Divide_float_float_float_cuda_Divide_501_CallKernel : public Kernel {
 public:
     Divide_float_float_float_cuda_Divide_501_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Divide_float_float_float_cuda_Divide_501_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -12200,6 +12312,8 @@ class Dot_float_float_float_cuda_lib_Dot_502Kernel : public Kernel {
 public:
     Dot_float_float_float_cuda_lib_Dot_502Kernel(cublasHandle_t  cublas_handle, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->cublas_handle = cublas_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Dot_float_float_float_cuda_lib_Dot_502";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -12231,6 +12345,8 @@ class Add_float_float_float_cuda_Add_504_CallKernel : public Kernel {
 public:
     Add_float_float_float_cuda_Add_504_CallKernel(const dim3 & grids, const dim3 & blocks, unsigned  mem, cudaStream_t  stream, float*  input0, float*  input1, float*  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Add_float_float_float_cuda_Add_504_Call";
+        this->Id = 0;
     }
 
     void initParams() override {
@@ -12258,6 +12374,8 @@ class Result_float_float_cuda_lib_Result_505Kernel : public Kernel {
 public:
     Result_float_float_cuda_lib_Result_505Kernel(float*  input0, float**  output0, float*  Parameter_270_0, float**  Result_505_0) {
         this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
+        this->kernelName = "Result_float_float_cuda_lib_Result_505";
+        this->Id = 0;
     }
 
     void initParams() override {
