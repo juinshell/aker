@@ -52,9 +52,9 @@ int main(int argc, char **argv) {
 	// int M_INPUT = 64;
 	// int N_INPUT = 64 * 805;
 	// int K_INPUT = 64 * 7;
-	int M_INPUT = 16 * 8 * 32;
-	int N_INPUT = 16 * 8 * 24;
-	int K_INPUT = 16 * 8 * 6;
+	int M_INPUT = 16 * 8;
+	int N_INPUT = 16 * 128;
+	int K_INPUT = 16 * 32;
     if (argc == 3) {
         tzgemm_blks = atoi(argv[1]);
         tzgemm_iter = atoi(argv[2]);
@@ -137,6 +137,8 @@ int main(int argc, char **argv) {
 	wmma_grid.x = 68 * tzgemm_blks;
 	wmma_block.x = THREADS_PER_BLOCK;
 	
+	printf("block_dim_x: %d, grid_dim_x: %d \n", wmma_block_dim_x, wmma_grid_dim_x);
+	printf("launch grid: %d, block: %d \n", wmma_grid.x, wmma_block.x);
 	checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
 		M_GLOBAL, N_GLOBAL, K_GLOBAL,
 		// alpha, beta,

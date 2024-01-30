@@ -13,3 +13,4 @@ build/
 *.log
 /modelsWithCudnn
 Constant/
+log/

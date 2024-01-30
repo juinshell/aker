@@ -376,19 +376,36 @@ __global__ void convertFp32ToFp16 (half *out, float *in, int n) {
    }
 }
 
-// hook cublasSgemm
-// cublasStatus_t cublasSgemm(cublasHandle_t handle, cublasOperation_t transa, cublasOperation_t transb, int m, int n, int k, const float *alpha, const float *A, int lda, const float *B, int ldb, const float *beta, float *C, int ldc)
-// {
-//     cublasStatus_t (*lcublasSgemm) (cublasHandle_t, cublasOperation_t, cublasOperation_t, int, int, int, const float *, const float *, int, const float *, int, const float *, float *, int) = (cublasStatus_t (*) (cublasHandle_t, cublasOperation_t, cublasOperation_t, int, int, int, const float *, const float *, int, const float *, int, const float *, float *, int))dlsym(RTLD_NEXT, "cublasSgemm");
-//     printf("cublasSgemm hooked!\n");
-//     return lcublasSgemm(handle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-// }
+int MAX_M_GLOBAL = 12544;
+int MAX_N_GLOBAL = 2048;
+int MAX_K_GLOBAL = 4608;
+int MAX_COL_BUFFER = 802816;
+int MAX_BOTTOM = 802816;
+bool im2col_malloced = false;
+bool gemm_malloced = false;
+float *bottom;
+float *col_buffer;
+float *ori_host_A;
+float *ori_host_B;
+half *ori_wmma_A;
+half *ori_wmma_B;
+float *ori_wmma_C;
+
+int hook_times = 0;
 
 // hook cudnnConvolutionForward
 cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, const cudnnTensorDescriptor_t xDesc, const void *x, const cudnnFilterDescriptor_t wDesc, const void *w, const cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t algo, void *workSpace, size_t workSpaceSizeInBytes, const void *beta, const cudnnTensorDescriptor_t yDesc, void *y) {
     // printf("cudnnConvolutionForward hooked!\n");
     // char foo;
     // std::cin >> foo;
+    hook_times += 1;
+    printf("hooked %d times\n", hook_times);
+    cudaEvent_t startKERNEL, stopKERNEL;
+	cudaErrCheck(cudaEventCreate(&startKERNEL));
+	cudaErrCheck(cudaEventCreate(&stopKERNEL));
+    float milliseconds = 0;
+
+    cudaErrCheck(cudaEventRecord(startKERNEL));
 
     // img2col参数
     int input_n;
@@ -404,8 +421,6 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
 	int col_c;
 	int col_h;
 	int col_w;
-	float *bottom;
-	float *col_buffer;
 
     int kernel_k;
     int kernel_c;
@@ -439,12 +454,6 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
     CUDNN_SAFE_CALL(cudnnGetConvolution2dDescriptor(convDesc, &pad_h, &pad_w, &stride_h, &stride_w, &dilation_h, &dilation_w, &mode, &dataType));
     // printf("pad_h: %d, pad_w: %d, stride_h: %d, stride_w: %d, dilation_h: %d, dilation_w: %d\n", pad_h, pad_w, stride_h, stride_w, dilation_h, dilation_w);
 
-    // if (input_c == 64 && input_h == 56 && input_w == 56 && kernel_k == 64 && kernel_c == 64 && kernel_h == 3 && kernel_w == 3) {
-    //     // 调用cudnn的convolution
-    //     cudnnStatus_t (*lcudnnConvolutionForward) (cudnnHandle_t, const void *, const cudnnTensorDescriptor_t, const void *, const cudnnFilterDescriptor_t, const void *, const cudnnConvolutionDescriptor_t, cudnnConvolutionFwdAlgo_t, void *, size_t, const void *, const cudnnTensorDescriptor_t, void *) = (cudnnStatus_t (*) (cudnnHandle_t, const void *, const cudnnTensorDescriptor_t, const void *, const cudnnFilterDescriptor_t, const void *, const cudnnConvolutionDescriptor_t, cudnnConvolutionFwdAlgo_t, void *, size_t, const void *, const cudnnTensorDescriptor_t, void *)) dlsym(RTLD_NEXT, "cudnnConvolutionForward");
-    //     return lcudnnConvolutionForward(handle, alpha, xDesc, x, wDesc, w, convDesc, algo, workSpace, workSpaceSizeInBytes, beta, yDesc, y);
-
-    // }
     col_n = input_n;
     col_c = input_c;
 
@@ -465,8 +474,16 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
 
     // std::cin >> foo;
 
-    cudaErrCheck(cudaMalloc((void**)&bottom, input_n * input_c * input_h * input_w * sizeof(float)));
-    cudaErrCheck(cudaMalloc((void**)&col_buffer, col_n * col_c * col_h * col_w * sizeof(float)));
+    MAX_COL_BUFFER = max(MAX_COL_BUFFER, col_n * col_c * col_h * col_w);
+    MAX_BOTTOM = max(MAX_BOTTOM, input_n * input_c * input_h * input_w);
+
+    printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
+    
+    if (!im2col_malloced) {
+        cudaErrCheck(cudaMalloc((void**)&bottom, MAX_BOTTOM * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&col_buffer, MAX_COL_BUFFER * sizeof(float)));
+        im2col_malloced = true;
+    }
 
     curandGenerator_t gen;
     curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
@@ -482,11 +499,6 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
     im_block.x = 256;
 	im_grid.x = int(num_kernels / 256);
 	im_grid.x = 68 * 1;
-
-    // cudaEvent_t startKERNEL, stopKERNEL;
-	// cudaErrCheck(cudaEventCreate(&startKERNEL));
-	// cudaErrCheck(cudaEventCreate(&stopKERNEL));
-    // float milliseconds = 0;
 
     // printf("Running with im2col...\n");
     // printf("num_kernels: %d\n", num_kernels);
@@ -505,20 +517,25 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
     // printf("col_buffer size: %d\n", col_n * col_c * col_h * col_w);
 	// printf("bottom size: %d\n", input_n * input_c * input_h * input_w);
 
-    // cudaErrCheck(cudaDeviceSynchronize());
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    printf("pre im2col_gpu_kernel took %f ms\n", milliseconds);
+    milliseconds = 0;
 
-    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    cudaErrCheck(cudaEventRecord(startKERNEL));
     // launch im2col
     checkKernelErrors((im2col_gpu_kernel<<<im_grid, im_block>>>(
 		num_kernels, bottom, input_h, input_w, kernel_h, kernel_w, pad_h,
 		pad_w, stride_h, stride_w, dilation_h, dilation_w, height_col,
 		width_col, col_buffer, input_n * input_c * input_h * input_w, col_n * col_c * col_h * col_w)));
     
-    // cudaErrCheck(cudaEventRecord(stopKERNEL));
-	// cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-	// cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-	// printf("im2col_gpu_kernel took %f ms\n", milliseconds);
-    // milliseconds = 0;
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+	cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+	cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+	printf("im2col_gpu_kernel took %f ms\n", milliseconds);
+    milliseconds = 0;
+
 
     // 调用 gemm
     // input matrix size
@@ -538,6 +555,10 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
 	int N_GLOBAL = (N_INPUT < 128) ? 128 : (N_INPUT / 128) * 128;
 	int K_GLOBAL = (K_INPUT < 128) ? 128 : (K_INPUT / 128) * 128;
 
+    MAX_M_GLOBAL = max(MAX_M_GLOBAL, M_GLOBAL);
+    MAX_N_GLOBAL = max(MAX_N_GLOBAL, N_GLOBAL);
+    MAX_K_GLOBAL = max(MAX_K_GLOBAL, K_GLOBAL);
+
 	int M_TILES = M_GLOBAL / WMMA_M;
 	int N_TILES = N_GLOBAL / WMMA_N;
 	int K_TILES = K_GLOBAL / WMMA_K;
@@ -552,40 +573,79 @@ cudnnStatus_t cudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, c
 	wmma_grid.x = 68 * 1;
 	wmma_block.x = THREADS_PER_BLOCK;
 
-    half *ori_wmma_A = NULL;
-	half *ori_wmma_B = NULL;
-	float *ori_wmma_C = NULL;
-    float *ori_host_A = NULL;
-	float *ori_host_B = NULL;
+    // half *ori_wmma_A = NULL;
+	// half *ori_wmma_B = NULL;
+	// float *ori_wmma_C = NULL;
+    // float *ori_host_A = NULL;
+	// float *ori_host_B = NULL;
 
-    cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * M_GLOBAL * K_GLOBAL));
-	cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * N_GLOBAL * K_GLOBAL));
-    cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * M_GLOBAL * K_GLOBAL));
-	cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * N_GLOBAL * K_GLOBAL));
-	cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * M_GLOBAL * N_GLOBAL));
+    cudaErrCheck(cudaEventRecord(startKERNEL));
+
+    if (!gemm_malloced) {
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
+        gemm_malloced = true;
+    }
+
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    printf("tzgemm malloc took %f ms\n", milliseconds);
+    milliseconds = 0;
 
     assert(((unsigned long long)ori_wmma_A) % 128 == 0);
 	assert(((unsigned long long)ori_wmma_B) % 128 == 0);
 	assert(((unsigned long long)ori_wmma_C) % 128 == 0);
 
+    cudaErrCheck(cudaEventRecord(startKERNEL));
+
+    // cudaErrCheck(cudaEventRecord(startKERNEL))
 	curandErrCheck(curandGenerateUniform(gen, ori_host_A, M_GLOBAL * K_GLOBAL));
     curandErrCheck(curandGenerateUniform(gen, ori_host_B, N_GLOBAL * K_GLOBAL));
 	convertFp32ToFp16 <<< (M_GLOBAL * K_GLOBAL + 255) / 256, 256 >>> (ori_wmma_A, ori_host_A, M_GLOBAL * K_GLOBAL);
     convertFp32ToFp16 <<< (N_GLOBAL * K_GLOBAL + 255) / 256, 256 >>> (ori_wmma_B, ori_host_B, N_GLOBAL * K_GLOBAL);
-    cudaErrCheck(cudaMemset(ori_wmma_C, 0.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
+    cudaErrCheck(cudaMemset(ori_wmma_C, 0.0f, sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
+
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    printf("tzgemm randgen & convert took %f ms\n", milliseconds);
+    milliseconds = 0;
 
     // printf("Running with gemm...\n");
     // printf("gemm M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);
     // printf("gemm block dim: %d, grid dim: %d\n", wmma_block_dim_x, wmma_grid_dim_x);
-    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    cudaErrCheck(cudaEventRecord(startKERNEL));
     checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
 		M_GLOBAL, N_GLOBAL, K_GLOBAL,
 		// alpha, beta,
 		wmma_grid_dim_x, wmma_block_dim_x)));
-    // cudaErrCheck(cudaEventRecord(stopKERNEL));
-    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-    // cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-    // printf("ptb_tzgemm took %f ms\n", milliseconds);
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    printf("ptb_tzgemm took %f ms\n", milliseconds);
+    milliseconds = 0;
+
+    // 调用cudnn测时
+    cudnnStatus_t (*lcudnnConvolutionForward) (cudnnHandle_t, const void *, const cudnnTensorDescriptor_t, const void *, const cudnnFilterDescriptor_t, const void *, const cudnnConvolutionDescriptor_t, cudnnConvolutionFwdAlgo_t, void *, size_t, const void *, const cudnnTensorDescriptor_t, void *) = (cudnnStatus_t (*) (cudnnHandle_t, const void *, const cudnnTensorDescriptor_t, const void *, const cudnnFilterDescriptor_t, const void *, const cudnnConvolutionDescriptor_t, cudnnConvolutionFwdAlgo_t, void *, size_t, const void *, const cudnnTensorDescriptor_t, void *))dlsym(RTLD_NEXT, "cudnnConvolutionForward");
+    
+    cudaErrCheck(cudaEventRecord(startKERNEL));
+    lcudnnConvolutionForward(handle, alpha, xDesc, bottom, wDesc, w, convDesc, algo, workSpace, workSpaceSizeInBytes, beta, yDesc, y);
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    printf("cudnnConvolutionForward took %f ms\n", milliseconds);
+
+    printf("M_ORI: %5d M_GLOBAL: %5d (%d x %d) \n", M_INPUT, M_GLOBAL, WMMA_M, M_TILES);
+	printf("N_ORI: %5d N_GLOBAL: %5d (%d x %d) \n", N_INPUT, N_GLOBAL, WMMA_N, N_TILES);
+	printf("K_ORI: %5d K_GLOBAL: %5d (%d x %d) \n", K_INPUT, K_GLOBAL, WMMA_K, K_TILES);
+
+    printf("MAX_M_GLOBAL: %d, MAX_N_GLOBAL: %d, MAX_K_GLOBAL: %d\n", MAX_M_GLOBAL, MAX_N_GLOBAL, MAX_K_GLOBAL);
+
+    printf("--------------------------------\n");
 
     return CUDNN_STATUS_SUCCESS;
 }

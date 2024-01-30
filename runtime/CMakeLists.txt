@@ -10,7 +10,7 @@ message(STATUS "CUDA_LIBRARIES: " ${CUDA_LIBRARIES})
 
 SET(CMAKE_CXX_COMPILER "/usr/local/cuda/bin/nvcc")
 
-set(CUDA_NVCC_FLAGS "-arch=sm_75 -Xptxas -dlcm=ca --ptxas-options=-v -cudart shared ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75
+set(CUDA_NVCC_FLAGS "-arch=sm_75 -Xptxas -dlcm=ca --ptxas-options=-v -cudart shared ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75, -cudart, not -lcudart
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
   set(CMAKE_CUDA_ARCHITECTURES 75)
@@ -22,7 +22,7 @@ set(CMAKE_BUILD_TYPE "RELEASE" CACHE STRING
 endif()
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-set(CMAKE_CXX_FLAGS "-O3  -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}") # must have -lcuda, linker is /usr/bin/c++, not nvcc
+set(CMAKE_CXX_FLAGS "-O3  -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}") # must have -lcuda, linker is /usr/bin/c++, not nvcc. must no -lcudart
 message(STATUS "${PROJECT_NAME} compile cuda code in [RELEASE] mode")
 else()
 set(CMAKE_CXX_FLAGS "-g -O0 -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}")
@@ -48,14 +48,18 @@ configure_file(TackerConfig.h.in TackerConfig.h)
 CUDA_ADD_EXECUTABLE(${PROJECT_NAME} ${SRC_LIST})
 
 set_target_properties( ${PROJECT_NAME}
-                       PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+                       PROPERTIES CUDA_SEPARABLE_COMPILATION ON
+                       )
 
-
+# # hook lib
+# add_library(mylib  ./hook/mylib.cu)
+# target_compile_options(mylib PRIVATE -I/usr/local/cuda/include -Xcompiler -fPIC -shared -ldl -L/usr/local/cuda/lib64 -lcudart -arch=sm_75 -lcublas -lcurand)
 target_include_directories(${PROJECT_NAME} PUBLIC
                            ${PROJECT_BINARY_DIR}
                            ${CUDA_INCLUDE_DIRS}
                            ${PROJECT_SOURCE_DIR}
                            ${CUDNN_LIBRARIES}
+                        #    mylib
                           #  ../mix_kernels
                           #  ../mix_kernels/file_t/header
                            )  

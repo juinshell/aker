@@ -1,0 +1,7 @@
+resnet50: 
+    cudnnConvolutionForward times: 56
+    cublasSgemm times: 1
+    MAX_COL_BUFFER: 802816, MAX_BOTTOM: 802816
+
+
+

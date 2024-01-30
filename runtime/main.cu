@@ -8,6 +8,7 @@
 #include "ModuleCenter.h"
 #include "Recorder.h"
 #include <stdlib.h>
+#include "./include/clipp.h"
 
 
 #include "cp_kernel.cu"
@@ -138,7 +139,19 @@ void my_exit() {
     logger.INFO("Tacker exit");
 }
 
+std::string SYSTEM = "aker";
+std::string ROOT_PATH = "/home/jxdeng/workspace/tacker/runtime";
+
 int main(int argc, char* argv[]) {
+    using namespace clipp;
+
+    auto cli = (
+        option("-s", "--sys", "--system").set(SYSTEM).doc("system name, one of aker/tacker/baymax"),
+        option("-r", "--root").set(ROOT_PATH).doc("root path")
+    );
+
+    if(!parse(argc, argv, cli)) std::cout << make_man_page(cli, argv[0]);
+
     atexit (my_exit);
     initCUDA();
     // Print compile info
@@ -249,11 +262,9 @@ int main(int argc, char* argv[]) {
 
     Resnet50 resnet50(3);
     
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 20; i++) {
         resnet50.executeTask(ExecutionMode::WARMUP);
     }
-
-    resnet50.executeTask(ExecutionMode::WARMUP);
 
     taskManager.addTask(resnet50);
 
