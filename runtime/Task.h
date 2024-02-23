@@ -8,15 +8,22 @@ enum ExecutionMode{
     PROFILE
 };
 
+enum TaskType{
+    LC = 0,
+    BE
+};
 class Task {
 public:
     Task(int taskId, std::string taskName);
     Task(int taskId);
     ~Task();
-    void addKernel(std::unique_ptr<Kernel> kernel);
+    void addKernel(Kernel* kernel);
     void executeTask(ExecutionMode mode);
+    void executeTask(ExecutionMode mode, int idx);
 
     int taskId;
     std::string taskName;
-    std::vector<std::unique_ptr<Kernel>> kernels; // 容器一般不能存放引用
+    std::vector<Kernel*> kernels; // 容器一般不能存放引用
+
+    TaskType taskType;
 };

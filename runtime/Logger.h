@@ -37,6 +37,7 @@ public:
 
     void ERROR(const std::string& message) {
         log(LogLevel::ERROR, message);
+        exit(1);
     }
 
     void DEBUG(const std::string& message) {

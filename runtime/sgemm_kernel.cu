@@ -46,7 +46,7 @@ extern "C" __global__ void ori_sgemm(float *A, float *B, float *C, int NORMAL_M,
 
 OriSGEMMKernel::OriSGEMMKernel(int id){
     Id = id;
-    this->kernelName = "ori_sgemm";
+    this->kernelName = "sgemm";
     initParams();
 }
 

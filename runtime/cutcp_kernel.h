@@ -26,6 +26,9 @@ public:
     // 实现纯虚函数
     void executeImpl();
     void initParams();
+    std::vector<int> getArgs() {
+        return std::vector<int>();
+    }
 
 private:
     void loadKernel();  

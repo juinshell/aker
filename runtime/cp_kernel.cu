@@ -9,6 +9,7 @@
  * @Copyright (c) 2023 by jxdeng, All Rights Reserved. 
  */
 // cp_kernel.cu
+#pragma once
 #include "cp_kernel.h"
 #include "Logger.h"
 #include "header/cp_header.h"
@@ -87,7 +88,7 @@ OriCPKernel::OriCPKernel(int id, const std::string& moduleName, const std::strin
 
 OriCPKernel::OriCPKernel(int id){
     Id = id;
-    kernelName = "ori_cp";
+    kernelName = "cp";
     moduleName = "ori_cp";
     initParams();
     // loadKernel();
@@ -149,7 +150,7 @@ static int initatoms(float **atombuf, int count, dim3 volsize, float gridspacing
 
 // 初始化参数default
 void OriCPKernel::initParams() {
-    int cp_blks = 8;
+    int cp_blks = 6;
     int cp_iter = 1;
     float *atoms = NULL;
     int atomcount = ATOMCOUNT;
@@ -163,13 +164,17 @@ void OriCPKernel::initParams() {
     float *ori_output;	
     // float *ptb_output;
     // float *gptb_output;
-    CUDA_SAFE_CALL(cudaMalloc((void**)&ori_output, volmemsz));
-    CUDA_SAFE_CALL(cudaMemset(ori_output, 0, volmemsz));
+	if (!this->initialized) {
+		CUDA_SAFE_CALL(cudaMalloc((void**)&ori_output, volmemsz));
+		CUDA_SAFE_CALL(cudaMemset(ori_output, 0, volmemsz));
+	} else {
+		CUDA_SAFE_CALL(cudaMemset(this->CPKernelParams->energygrid, 0, volmemsz));
+	}
     // cudaErrCheck(cudaMalloc((void**)&ptb_output, volmemsz));
     // cudaErrCheck(cudaMemset(ptb_output, 0, volmemsz));
     // cudaErrCheck(cudaMalloc((void**)&gptb_output, volmemsz));
     // cudaErrCheck(cudaMemset(gptb_output, 0, volmemsz));
-    float *host_ori_energy = (float *) malloc(volmemsz);
+    // float *host_ori_energy = (float *) malloc(volmemsz);
     // float *host_ptb_energy = (float *) malloc(volmemsz);
     // float *host_gptb_energy = (float *) malloc(volmemsz);
 
@@ -188,20 +193,24 @@ void OriCPKernel::initParams() {
     cp_grid.z = volsize.z / cp_block.z; 
 
     copyatomstoconstbuf(atoms + 4 * atomstart, runatoms, 0*gridspacing);
+	
+	if (!this->initialized) {
+		this->CPKernelParams = new OriCPParamsStruct();
+		this->CPKernelParams->numatoms = runatoms;
+		this->CPKernelParams->gridspacing = 0.1;
+		this->CPKernelParams->energygrid = ori_output;
+		this->launchGridDim = cp_grid;
+		this->launchBlockDim = cp_block;
 
-    this->CPKernelParams = new OriCPParamsStruct();
-    this->CPKernelParams->numatoms = runatoms;
-    this->CPKernelParams->gridspacing = 0.1;
-    this->CPKernelParams->energygrid = ori_output;
-    this->launchGridDim = cp_grid;
-    this->launchBlockDim = cp_block;
+		this->kernelParams.push_back(&this->CPKernelParams->numatoms);
+		this->kernelParams.push_back(&this->CPKernelParams->gridspacing);
+		this->kernelParams.push_back(&this->CPKernelParams->energygrid);
 
-    this->kernelParams.push_back(&this->CPKernelParams->numatoms);
-    this->kernelParams.push_back(&this->CPKernelParams->gridspacing);
-    this->kernelParams.push_back(&this->CPKernelParams->energygrid);
+		this->kernelFunc = (void*)ori_cp;
+		this->smem = 0;
 
-    this->kernelFunc = (void*)ori_cp;
-	this->smem = 0;
+		this->initialized = true;
+	}
 }
 
 // 虚析构函数实现
@@ -209,20 +218,21 @@ OriCPKernel::~OriCPKernel() {
     // free gpu memory
     CUDA_SAFE_CALL(cudaFree(this->CPKernelParams->energygrid));
 
-    // logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
+	// free heap host memory
+	free(this->CPKernelParams);
+
+    logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
 }
 
 void OriCPKernel::executeImpl() {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // // print dim
-    // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
-    // logger.INFO("-- launchBlockDim: " + std::to_string(this->launchBlockDim.x) + ", " + std::to_string(this->launchBlockDim.y) + ", " + std::to_string(this->launchBlockDim.z));
+    // logger.INFO("[Ori] cp -- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
+    // logger.INFO("[Ori] cp -- launchBlockDim: " + std::to_string(this->launchBlockDim.x) + ", " + std::to_string(this->launchBlockDim.y) + ", " + std::to_string(this->launchBlockDim.z));
     
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
     launchGridDim, launchBlockDim,
     (void**)this->kernelParams.data(), 0, 0));
-
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
     
 }
 

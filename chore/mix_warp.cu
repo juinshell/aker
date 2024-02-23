@@ -56,67 +56,67 @@ const float alpha = 2.0f;
 const float beta = 2.0f;
 
 
-__global__ void ori_wmma(half *a, half *b, float *c, int iteration) {
-   // Leading dimensions. Packed with no transpositions.
-    int lda = MATRIX_M;
-    int ldb = MATRIX_K;
-    int ldc = MATRIX_M;
+// __global__ void ori_wmma(half *a, half *b, float *c, int iteration) {
+//    // Leading dimensions. Packed with no transpositions.
+//     int lda = MATRIX_M;
+//     int ldb = MATRIX_K;
+//     int ldc = MATRIX_M;
 
-    // Tile using a 2D grid
-    int warpM = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
-    int warpN = blockIdx.y * blockDim.y + threadIdx.y;
+//     // Tile using a 2D grid
+//     int warpM = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
+//     int warpN = blockIdx.y * blockDim.y + threadIdx.y;
 
-    // Declare the fragments
-    wmma::fragment<wmma::matrix_a, WMMA_M, WMMA_N, WMMA_K, half, wmma::col_major> a_frag;
-    wmma::fragment<wmma::matrix_b, WMMA_M, WMMA_N, WMMA_K, half, wmma::col_major> b_frag;
-    wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> acc_frag;
-    wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> c_frag;
-    wmma::fill_fragment(acc_frag, 0.0f);
+//     // Declare the fragments
+//     wmma::fragment<wmma::matrix_a, WMMA_M, WMMA_N, WMMA_K, half, wmma::col_major> a_frag;
+//     wmma::fragment<wmma::matrix_b, WMMA_M, WMMA_N, WMMA_K, half, wmma::col_major> b_frag;
+//     wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> acc_frag;
+//     wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> c_frag;
+//     wmma::fill_fragment(acc_frag, 0.0f);
 
-    for (int loop = 0; loop < iteration; loop++) 
-    {
-        // for (int i = 0; i < 1; i++)
-        for (int i = 0; i < MATRIX_K; i += WMMA_K)
-        {
-            int aRow = warpM * WMMA_M;
-            int aCol = i;
-            int bRow = i;
-            int bCol = warpN * WMMA_N;
+//     for (int loop = 0; loop < iteration; loop++) 
+//     {
+//         // for (int i = 0; i < 1; i++)
+//         for (int i = 0; i < MATRIX_K; i += WMMA_K)
+//         {
+//             int aRow = warpM * WMMA_M;
+//             int aCol = i;
+//             int bRow = i;
+//             int bCol = warpN * WMMA_N;
 
-            // Bounds checking
-            if (aRow < MATRIX_M && aCol < MATRIX_K && bRow < MATRIX_K && bCol < MATRIX_N)
-            {
-                // Load the inputs
-                // ptx asm("load. bypass_l1cache")
-                wmma::load_matrix_sync(a_frag, a + aRow + aCol * lda, lda);
-                wmma::load_matrix_sync(b_frag, b + bRow + bCol * ldb, ldb);
+//             // Bounds checking
+//             if (aRow < MATRIX_M && aCol < MATRIX_K && bRow < MATRIX_K && bCol < MATRIX_N)
+//             {
+//                 // Load the inputs
+//                 // ptx asm("load. bypass_l1cache")
+//                 wmma::load_matrix_sync(a_frag, a + aRow + aCol * lda, lda);
+//                 wmma::load_matrix_sync(b_frag, b + bRow + bCol * ldb, ldb);
                 
-                wmma::mma_sync(acc_frag, a_frag, b_frag, acc_frag);
-            }
-        }
+//                 wmma::mma_sync(acc_frag, a_frag, b_frag, acc_frag);
+//             }
+//         }
 
-        // Load in the current value of c, scale it by beta, and add this our result scaled by alpha
-        int cRow = warpM * WMMA_M;
-        int cCol = warpN * WMMA_N;
+//         // Load in the current value of c, scale it by beta, and add this our result scaled by alpha
+//         int cRow = warpM * WMMA_M;
+//         int cCol = warpN * WMMA_N;
 
-        if (cRow < MATRIX_M && cCol < MATRIX_N) {
-            // for (int j = 0; j < 10000; j++) {
-                wmma::load_matrix_sync(c_frag, c + cRow + cCol * ldc, ldc, wmma::mem_col_major);
-                for(int i=0; i < c_frag.num_elements; i++) {
-                    c_frag.x[i] = alpha * acc_frag.x[i] + beta * c_frag.x[i];
-                }
-                wmma::store_matrix_sync(c + cRow + cCol * ldc, c_frag, ldc, wmma::mem_col_major);
-            // }
-        }
-    }
-}
+//         if (cRow < MATRIX_M && cCol < MATRIX_N) {
+//             // for (int j = 0; j < 10000; j++) {
+//                 wmma::load_matrix_sync(c_frag, c + cRow + cCol * ldc, ldc, wmma::mem_col_major);
+//                 for(int i=0; i < c_frag.num_elements; i++) {
+//                     c_frag.x[i] = alpha * acc_frag.x[i] + beta * c_frag.x[i];
+//                 }
+//                 wmma::store_matrix_sync(c + cRow + cCol * ldc, c_frag, ldc, wmma::mem_col_major);
+//             // }
+//         }
+//     }
+// }
 
 
 __global__ void fp_compute(float *a, float *b, float *c)
 {
     float a2 = 0,a3 = 1, a4 = 2, b2 = 2,b3 = 4,b4 = 5, c2 = 4,c3 = 7,c4 = 9;
-    for (int j = 0; j < 4000; j++) {
-        for (int t = 0; t < 30000; t++)
+    for (int j = 0; j < 1000; j++) {
+        for (int t = 0; t < 1300; t++)
         {
             c2 += a2 * b2 + c2;
             c3 += a3 * b3 + c3;
@@ -130,75 +130,75 @@ __global__ void fp_compute(float *a, float *b, float *c)
 }
 
 
-__global__ void convertFp32ToFp16 (half *out, float *in, int n) {
-   int idx = blockDim.x * blockIdx.x + threadIdx.x;
-   if (idx < n) {
-      out[idx] = in[idx];
-   }
-}
+// __global__ void convertFp32ToFp16 (half *out, float *in, int n) {
+//    int idx = blockDim.x * blockIdx.x + threadIdx.x;
+//    if (idx < n) {
+//       out[idx] = in[idx];
+//    }
+// }
 
 
-__device__ void mix_wmma(half *a, half *b, float *c, int iteration) {  // Kt
-   // Leading dimensions. Packed with no transpositions. 
-    int lda = MATRIX_M;
-    int ldb = MATRIX_K;
-    int ldc = MATRIX_M;
+// __device__ void mix_wmma(half *a, half *b, float *c, int iteration) {  // Kt
+//    // Leading dimensions. Packed with no transpositions. 
+//     int lda = MATRIX_M;
+//     int ldb = MATRIX_K;
+//     int ldc = MATRIX_M;
 
-    // Tile using a 2D grid
-    int warpM = (blockIdx.x * blockDim.x + threadIdx.x) / warpSize;
-    int warpN = blockIdx.y * blockDim.y + threadIdx.y;
+//     // Tile using a 2D grid
+//     int warpM = (blockIdx.x * blockDim.x / 2 + threadIdx.x) / warpSize;
+//     int warpN = blockIdx.y * blockDim.y + threadIdx.y;
 
-    // Declare the fragments
-    wmma::fragment<wmma::matrix_a, WMMA_M, WMMA_N, WMMA_K, half, wmma::col_major> a_frag;
-    wmma::fragment<wmma::matrix_b, WMMA_M, WMMA_N, WMMA_K, half, wmma::col_major> b_frag;
-    wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> acc_frag;
-    wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> c_frag;
-    wmma::fill_fragment(acc_frag, 0.0f);
+//     // Declare the fragments
+//     wmma::fragment<wmma::matrix_a, WMMA_M, WMMA_N, WMMA_K, half, wmma::col_major> a_frag;
+//     wmma::fragment<wmma::matrix_b, WMMA_M, WMMA_N, WMMA_K, half, wmma::col_major> b_frag;
+//     wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> acc_frag;
+//     wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> c_frag;
+//     wmma::fill_fragment(acc_frag, 0.0f);
 
-    for (int loop = 0; loop < iteration; loop++) 
-    {
-        // for (int i = 0; i < 1; i++)
-        for (int i = 0; i < MATRIX_K; i += WMMA_K)
-        {
-            int aRow = warpM * WMMA_M;
-            int aCol = i;
-            int bRow = i;
-            int bCol = warpN * WMMA_N;
+//     for (int loop = 0; loop < iteration; loop++) 
+//     {
+//         // for (int i = 0; i < 1; i++)
+//         for (int i = 0; i < MATRIX_K; i += WMMA_K)
+//         {
+//             int aRow = warpM * WMMA_M;
+//             int aCol = i;
+//             int bRow = i;
+//             int bCol = warpN * WMMA_N;
 
-            // Bounds checking
-            if (aRow < MATRIX_M && aCol < MATRIX_K && bRow < MATRIX_K && bCol < MATRIX_N)
-            {
-                // Load the inputs
-                // ptx asm("load. bypass_l1cache")
-                wmma::load_matrix_sync(a_frag, a + aRow + aCol * lda, lda);
-                wmma::load_matrix_sync(b_frag, b + bRow + bCol * ldb, ldb);
+//             // Bounds checking
+//             if (aRow < MATRIX_M && aCol < MATRIX_K && bRow < MATRIX_K && bCol < MATRIX_N)
+//             {
+//                 // Load the inputs
+//                 // ptx asm("load. bypass_l1cache")
+//                 wmma::load_matrix_sync(a_frag, a + aRow + aCol * lda, lda);
+//                 wmma::load_matrix_sync(b_frag, b + bRow + bCol * ldb, ldb);
                 
-                wmma::mma_sync(acc_frag, a_frag, b_frag, acc_frag);
-            }
-        }
+//                 wmma::mma_sync(acc_frag, a_frag, b_frag, acc_frag);
+//             }
+//         }
 
-        // Load in the current value of c, scale it by beta, and add this our result scaled by alpha
-        int cRow = warpM * WMMA_M;
-        int cCol = warpN * WMMA_N;
+//         // Load in the current value of c, scale it by beta, and add this our result scaled by alpha
+//         int cRow = warpM * WMMA_M;
+//         int cCol = warpN * WMMA_N;
 
-        if (cRow < MATRIX_M && cCol < MATRIX_N) {
-            // for (int j = 0; j < 10000; j++) {
-                wmma::load_matrix_sync(c_frag, c + cRow + cCol * ldc, ldc, wmma::mem_col_major);
-                for(int i=0; i < c_frag.num_elements; i++) {
-                    c_frag.x[i] = alpha * acc_frag.x[i] + beta * c_frag.x[i];
-                }
-                wmma::store_matrix_sync(c + cRow + cCol * ldc, c_frag, ldc, wmma::mem_col_major);
-            // }
-        }
-    }
-}
+//         if (cRow < MATRIX_M && cCol < MATRIX_N) {
+//             // for (int j = 0; j < 10000; j++) {
+//                 wmma::load_matrix_sync(c_frag, c + cRow + cCol * ldc, ldc, wmma::mem_col_major);
+//                 for(int i=0; i < c_frag.num_elements; i++) {
+//                     c_frag.x[i] = alpha * acc_frag.x[i] + beta * c_frag.x[i];
+//                 }
+//                 wmma::store_matrix_sync(c + cRow + cCol * ldc, c_frag, ldc, wmma::mem_col_major);
+//             // }
+//         }
+//     }
+// }
 
 
 __device__ void mix_compute(float *a, float *b, float *c) // Kc
 {
     float a2 = 0,a3 = 1, a4 = 2, b2 = 2,b3 = 4,b4 = 5, c2 = 4,c3 = 7,c4 = 9;
-    for (int j = 0; j < 4000; j++) {
-        for (int t = 0; t < 30000; t++)
+    for (int j = 0; j < 1000; j++) {
+        for (int t = 0; t < 1300; t++)
         {
             c2 += a2 * b2 + c2;
             c3 += a3 * b3 + c3;
@@ -212,14 +212,81 @@ __device__ void mix_compute(float *a, float *b, float *c) // Kc
 }
 
 
-__global__ void mixwarp_kernel(
-    half *wmma_a, half *wmma_b, float *wmma_c, int wmma_iter,
-    float *fp_a, float *fp_b, float *fp_c
-    ) {
+// __global__ void mixwarp_kernel(
+//     half *wmma_a, half *wmma_b, float *wmma_c, int wmma_iter,
+//     float *fp_a, float *fp_b, float *fp_c
+//     ) {
+//     if (threadIdx.x < 128) {
+//         mix_wmma(wmma_a, wmma_b, wmma_c, wmma_iter);
+//     } else {
+//         mix_compute(fp_a, fp_b, fp_c);
+//     }
+// }
+
+__global__ void ori_memory(float *input, float *output) { // Km
+    float sum = 0;
+    int thread_idx = (blockIdx.x * blockDim.x + threadIdx.x);
+    int offset = thread_idx % 30000; // 初始偏移，基于线程ID
+
+    for (int j = 0; j < 30000; j++) {
+        output[(j * 101 + offset) % 30000] = 2.0f; // 使访问模式更随机
+        output[(j * 1001 + offset) % 30000] = 2.0f; // 使访问模式更随机
+        output[(j + offset) % 30000] = 2.0f; // 使访问模式更随机
+        output[(j * 731 + offset) % 30000] = 2.0f; // 使访问模式更随机
+        output[(j * 20 + offset) % 30000] = 2.0f; // 使访问模式更随机
+    }
+
+    asm volatile("bar.sync %0, %1;" : : "r"(1), "r"(128) : "memory");
+
+    for (int i = 0; i < 30000; i++) {
+        int input_idx = (i * 70 + offset) % 30000; // 使访问模式更随机
+        sum += input[input_idx];
+
+        int output_idx = (i * 130 + offset) % 30000; // 更复杂的访问模式
+        output[(output_idx * 10) % 30000] = 2.0f; // 使访问模式更随机
+        output[(output_idx * 1231) % 30000] = 2.0f; // 使访问模式更随机
+        output[output_idx] = sum / (i % 10 + 1); // 增加计算复杂性
+    }
+}
+
+__device__ void mix_memory(float *input, float *output, int thread_base) { // Kc
+    float sum = 0;
+    int thread_idx = (blockIdx.x * (blockDim.x / 2) + threadIdx.x - thread_base);
+    int offset = thread_idx % 30000; // 初始偏移，基于线程ID
+
+    for (int j = 0; j < 30000; j++) {
+        output[(j * 101 + offset) % 30000] = 2.0f; // 使访问模式更随机
+        output[(j * 1001 + offset) % 30000] = 2.0f; // 使访问模式更随机
+        output[(j + offset) % 30000] = 2.0f; // 使访问模式更随机
+        output[(j * 731 + offset) % 30000] = 2.0f; // 使访问模式更随机
+        output[(j * 20 + offset) % 30000] = 2.0f; // 使访问模式更随机
+    }
+    asm volatile("bar.sync %0, %1;" : : "r"(1), "r"(128) : "memory");
+
+    for (int i = 0; i < 30000; i++) {
+        int input_idx = (i * 70 + offset) % 30000; // 使访问模式更随机
+        sum += input[input_idx];
+
+        int output_idx = (i * 130 + offset) % 30000; // 更复杂的访问模式
+        output[(output_idx * 10) % 30000] = 2.0f; // 使访问模式更随机
+        output[(output_idx * 1231) % 30000] = 2.0f; // 使访问模式更随机
+        output[output_idx] = sum / (i % 10 + 1); // 增加计算复杂性
+    }
+}
+
+__global__ void mix_mem_mem_kernel(float *input, float *output) {
     if (threadIdx.x < 128) {
-        mix_wmma(wmma_a, wmma_b, wmma_c, wmma_iter);
+        mix_memory(input, output, 0);
     } else {
-        mix_compute(fp_a, fp_b, fp_c);
+        mix_memory(input, output, 128);
+    }
+}
+
+__global__ void mix_mem_compute_kernel(float *input, float *output, float *a, float *b, float *c) {
+    if (threadIdx.x < 128) {
+        mix_memory(input, output, 0);
+    } else {
+        mix_compute(a, b, c);
     }
 }
 
@@ -239,47 +306,47 @@ int main(int argc, char* argv[]) {
 
 	// wmma variables
     // ----------------------------------------------------------------------------------------------------------------------
-    float *wmma_base_a;
-    float *wmma_base_b;
-    float *wmma_base_c;
+    // float *wmma_base_a;
+    // float *wmma_base_b;
+    // float *wmma_base_c;
 
-    half *wmma_ori_a;
-    half *wmma_ori_b;
-    float *wmma_ori_c;
-    half *wmma_mix_a;
-    half *wmma_mix_b;
-    float *wmma_mix_c;
+    // half *wmma_ori_a;
+    // half *wmma_ori_b;
+    // float *wmma_ori_c;
+    // half *wmma_mix_a;
+    // half *wmma_mix_b;
+    // float *wmma_mix_c;
 
-    float *wmma_host_ori_c;
-    float *wmma_host_mix_c;
+    // float *wmma_host_ori_c;
+    // float *wmma_host_mix_c;
 
-    cudaErrCheck(cudaMalloc((void**)&wmma_base_a, MATRIX_M * MATRIX_K * sizeof(float)));
-    cudaErrCheck(cudaMalloc((void**)&wmma_base_b, MATRIX_K * MATRIX_N * sizeof(float)));
-    cudaErrCheck(cudaMalloc((void**)&wmma_base_c, MATRIX_M * MATRIX_N * sizeof(float)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_base_a, MATRIX_M * MATRIX_K * sizeof(float)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_base_b, MATRIX_K * MATRIX_N * sizeof(float)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_base_c, MATRIX_M * MATRIX_N * sizeof(float)));
 
-    cudaErrCheck(cudaMalloc((void**)&wmma_ori_a, MATRIX_M * MATRIX_K * sizeof(half)));
-    cudaErrCheck(cudaMalloc((void**)&wmma_ori_b, MATRIX_K * MATRIX_N * sizeof(half)));
-    cudaErrCheck(cudaMalloc((void**)&wmma_ori_c, MATRIX_M * MATRIX_N * sizeof(float)));
-    cudaErrCheck(cudaMalloc((void**)&wmma_mix_a, MATRIX_M * MATRIX_K * sizeof(half)));
-    cudaErrCheck(cudaMalloc((void**)&wmma_mix_b, MATRIX_K * MATRIX_N * sizeof(half)));
-    cudaErrCheck(cudaMalloc((void**)&wmma_mix_c, MATRIX_M * MATRIX_N * sizeof(float)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_ori_a, MATRIX_M * MATRIX_K * sizeof(half)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_ori_b, MATRIX_K * MATRIX_N * sizeof(half)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_ori_c, MATRIX_M * MATRIX_N * sizeof(float)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_mix_a, MATRIX_M * MATRIX_K * sizeof(half)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_mix_b, MATRIX_K * MATRIX_N * sizeof(half)));
+    // cudaErrCheck(cudaMalloc((void**)&wmma_mix_c, MATRIX_M * MATRIX_N * sizeof(float)));
 
-    wmma_host_ori_c = (float*)malloc(MATRIX_M * MATRIX_N * sizeof(float));
-    wmma_host_mix_c = (float*)malloc(MATRIX_M * MATRIX_N * sizeof(float));
+    // wmma_host_ori_c = (float*)malloc(MATRIX_M * MATRIX_N * sizeof(float));
+    // wmma_host_mix_c = (float*)malloc(MATRIX_M * MATRIX_N * sizeof(float));
 
-    curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
-    curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
-    curandErrCheck(curandGenerateUniform(gen, wmma_base_a, MATRIX_M * MATRIX_K));
-    curandErrCheck(curandGenerateUniform(gen, wmma_base_b, MATRIX_K * MATRIX_N));
-    curandErrCheck(curandGenerateUniform(gen, wmma_base_c, MATRIX_M * MATRIX_N));
+    // curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
+    // curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
+    // curandErrCheck(curandGenerateUniform(gen, wmma_base_a, MATRIX_M * MATRIX_K));
+    // curandErrCheck(curandGenerateUniform(gen, wmma_base_b, MATRIX_K * MATRIX_N));
+    // curandErrCheck(curandGenerateUniform(gen, wmma_base_c, MATRIX_M * MATRIX_N));
 
-    convertFp32ToFp16 <<< (MATRIX_M * MATRIX_K + 255) / 256, 256 >>> (wmma_ori_a, wmma_base_a, MATRIX_M * MATRIX_K);
-    convertFp32ToFp16 <<< (MATRIX_K * MATRIX_N + 255) / 256, 256 >>> (wmma_ori_b, wmma_base_b, MATRIX_K * MATRIX_N);
+    // convertFp32ToFp16 <<< (MATRIX_M * MATRIX_K + 255) / 256, 256 >>> (wmma_ori_a, wmma_base_a, MATRIX_M * MATRIX_K);
+    // convertFp32ToFp16 <<< (MATRIX_K * MATRIX_N + 255) / 256, 256 >>> (wmma_ori_b, wmma_base_b, MATRIX_K * MATRIX_N);
 
-    cudaErrCheck(cudaMemcpy(wmma_mix_a, wmma_ori_a, MATRIX_M * MATRIX_K * sizeof(half), cudaMemcpyDeviceToDevice));
-    cudaErrCheck(cudaMemcpy(wmma_mix_b, wmma_ori_b, MATRIX_K * MATRIX_N * sizeof(half), cudaMemcpyDeviceToDevice));
-    cudaErrCheck(cudaMemcpy(wmma_ori_c, wmma_base_c, MATRIX_M * MATRIX_N * sizeof(float), cudaMemcpyDeviceToDevice));
-    cudaErrCheck(cudaMemcpy(wmma_mix_c, wmma_base_c, MATRIX_M * MATRIX_N * sizeof(float), cudaMemcpyDeviceToDevice));
+    // cudaErrCheck(cudaMemcpy(wmma_mix_a, wmma_ori_a, MATRIX_M * MATRIX_K * sizeof(half), cudaMemcpyDeviceToDevice));
+    // cudaErrCheck(cudaMemcpy(wmma_mix_b, wmma_ori_b, MATRIX_K * MATRIX_N * sizeof(half), cudaMemcpyDeviceToDevice));
+    // cudaErrCheck(cudaMemcpy(wmma_ori_c, wmma_base_c, MATRIX_M * MATRIX_N * sizeof(float), cudaMemcpyDeviceToDevice));
+    // cudaErrCheck(cudaMemcpy(wmma_mix_c, wmma_base_c, MATRIX_M * MATRIX_N * sizeof(float), cudaMemcpyDeviceToDevice));
 
     // compute variables
     // ----------------------------------------------------------------------------------------------------------------------
@@ -310,6 +377,26 @@ int main(int argc, char* argv[]) {
     cudaErrCheck(cudaMalloc((void **)&ic_mix_a, 1 * NORMAL_M * NORMAL_K * sizeof(int)));
     cudaErrCheck(cudaMalloc((void **)&ic_mix_b, 1 * NORMAL_K * NORMAL_N * sizeof(int)));
     cudaErrCheck(cudaMalloc((void **)&ic_mix_c, 1 * NORMAL_M * NORMAL_N * sizeof(int)));
+
+    // memory variables
+    // ----------------------------------------------------------------------------------------------------------------------
+    float *ori_device_input;
+    float *ori_device_output;
+    float *mix_device_input;
+    float *mix_device_output;
+    float *ori_host_output = (float *)malloc(1 * 30000 * sizeof(float));
+    float *mix_host_output = (float *)malloc(1 * 30000 * sizeof(float));
+
+
+
+    cudaErrCheck(cudaMalloc((void **)&ori_device_input, 1 * 30000 * sizeof(float)));
+    cudaErrCheck(cudaMalloc((void **)&ori_device_output, 1 * 30000 * sizeof(float)));
+    cudaErrCheck(cudaMalloc((void **)&mix_device_input, 1 * 30000 * sizeof(float)));
+    cudaErrCheck(cudaMalloc((void **)&mix_device_output, 1 * 30000 * sizeof(float)));
+    cudaErrCheck(cudaMemset(ori_device_input, 2.1f, 1 * 30000 * sizeof(float)));
+    cudaErrCheck(cudaMemset(ori_device_output, 0, 1 * 30000 * sizeof(float)));
+    cudaErrCheck(cudaMemset(mix_device_input, 2.1f, 1 * 30000 * sizeof(float)));
+    cudaErrCheck(cudaMemset(mix_device_output, 0, 1 * 30000 * sizeof(float)));
     
     // First: using WMMA
     dim3 gridDim;
@@ -320,8 +407,11 @@ int main(int argc, char* argv[]) {
     blockDim.x = 128;
     blockDim.y = 1;
 
-    gridDim.x = (MATRIX_M + (WMMA_M * blockDim.x / 32 - 1)) / (WMMA_M * blockDim.x / 32);
-    gridDim.y = (MATRIX_N + WMMA_N * blockDim.y - 1) / (WMMA_N * blockDim.y);
+    gridDim.x = 64;
+    gridDim.y = 1;
+
+    // gridDim.x = (MATRIX_M + (WMMA_M * blockDim.x / 32 - 1)) / (WMMA_M * blockDim.x / 32);
+    // gridDim.y = (MATRIX_N + WMMA_N * blockDim.y - 1) / (WMMA_N * blockDim.y);
 
     // gridDim.x = 1;
     // gridDim.y = 68;
@@ -329,13 +419,13 @@ int main(int argc, char* argv[]) {
     printf("gridDim -- x y: %d, %d \n", gridDim.x, gridDim.y);
     printf("blockDim -- x y: %d, %d \n", blockDim.x, blockDim.y);
 
-    printf("[ORI] Running with WMMA...\n");
-    cudaErrCheck(cudaEventRecord(startKERNEL));
-    checkKernelErrors((ori_wmma<<<gridDim, blockDim>>>(wmma_ori_a, wmma_ori_b, wmma_ori_c, 40000)));
-    cudaErrCheck(cudaEventRecord(stopKERNEL));
-    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-    cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-    printf("[ORI] wmma took %f ms\n", kernel_time);
+    // printf("[ORI] Running with WMMA...\n");
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    // checkKernelErrors((ori_wmma<<<gridDim, blockDim>>>(wmma_ori_a, wmma_ori_b, wmma_ori_c, 40000)));
+    // cudaErrCheck(cudaEventRecord(stopKERNEL));
+    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    // cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    // printf("[ORI] wmma took %f ms\n", kernel_time);
 
     printf("[ORI] Running with FP compute ...\n");
     cudaErrCheck(cudaEventRecord(startKERNEL));
@@ -348,21 +438,86 @@ int main(int argc, char* argv[]) {
 
     // blockDim.x = 128 * 2;
 
-    printf("[MIX] Running with MIX WMMA FP32 ...\n");
-    cudaErrCheck(cudaEventRecord(startKERNEL));
-    // checkKernelErrors((ori_wmma<<<gridDim, blockDim, 0, streams[0]>>>(wmma_mix_a, wmma_mix_b, wmma_mix_c, 40000)));
-    // // checkKernelErrors((fp_compute<<<gridDim, blockDim, 0, streams[0]>>>(fp_mix_a, fp_mix_a, wmma_mix_c)));
-    checkKernelErrors((fp_compute<<<gridDim, blockDim, 0, streams[1]>>>(fp_mix_a, fp_mix_b, fp_mix_c)));
-    checkKernelErrors((fp_compute<<<gridDim, blockDim, 0, streams[0]>>>(fp_ori_a, fp_ori_b, fp_ori_c)));
-    // // checkKernelErrors((int_compute<<<gridDim, blockDim, 0, streams[1]>>>(ic_ori_a, ic_ori_b, ic_ori_c)));
+    // printf("[MIX] Running with MIX WMMA FP32 ...\n");
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    // // checkKernelErrors((ori_wmma<<<gridDim, blockDim, 0, streams[0]>>>(wmma_mix_a, wmma_mix_b, wmma_mix_c, 40000)));
+    // // // checkKernelErrors((fp_compute<<<gridDim, blockDim, 0, streams[0]>>>(fp_mix_a, fp_mix_a, wmma_mix_c)));
+    // // checkKernelErrors((fp_compute<<<gridDim, blockDim, 0, streams[1]>>>(fp_mix_a, fp_mix_b, fp_mix_c)));
+    // // checkKernelErrors((fp_compute<<<gridDim, blockDim, 0, streams[0]>>>(fp_ori_a, fp_ori_b, fp_ori_c)));
+    // // // checkKernelErrors((int_compute<<<gridDim, blockDim, 0, streams[1]>>>(ic_ori_a, ic_ori_b, ic_ori_c)));
 
     // checkKernelErrors((mixwarp_kernel<<<gridDim, blockDim>>>(wmma_mix_a, wmma_mix_b, wmma_mix_c, 40000,
     //                     fp_mix_a, fp_mix_b, fp_mix_c
     //                     )));
+    // cudaErrCheck(cudaEventRecord(stopKERNEL));
+    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    // cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    // printf("mix took %f ms\n", kernel_time);
+
+    // ori memory
+    blockDim.x = 128;
+    printf("[ORI] Running with ORI memory ...\n");
+    cudaErrCheck(cudaEventRecord(startKERNEL));
+    checkKernelErrors((ori_memory<<<gridDim, blockDim>>>(ori_device_input, ori_device_output)));
     cudaErrCheck(cudaEventRecord(stopKERNEL));
     cudaErrCheck(cudaEventSynchronize(stopKERNEL));
     cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-    printf("mix took %f ms\n", kernel_time);
+    printf("[ORI] ORI memory took %f ms\n", kernel_time);
+
+    cudaErrCheck(cudaMemcpy(ori_host_output, ori_device_output, 1 * 30000 * sizeof(float), cudaMemcpyDeviceToHost));
+
+
+    blockDim.x = 128 * 2;
+    // compute-memory
+    printf("[MIX] Running with MIX compute-memory ...\n");
+    cudaErrCheck(cudaEventRecord(startKERNEL));
+    checkKernelErrors((mix_mem_compute_kernel<<<gridDim, blockDim>>>(mix_device_input, mix_device_output, fp_mix_a, fp_mix_b, fp_mix_c)));
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    printf("[MIX] MIX compute-memory took %f ms\n", kernel_time);
+
+    cudaErrCheck(cudaMemcpy(mix_host_output, mix_device_output, 1 * 30000 * sizeof(float), cudaMemcpyDeviceToHost));
+
+    // verify
+    // int errors = 0;
+    // for (int i = 0; i < 30000; i++) {
+    //     if (abs(ori_host_output[i] - mix_host_output[i]) > 0.01f) {
+    //         printf("ori_host_output[%d] = %f, mix_host_output[%d] = %f\n", i, ori_host_output[i], i, mix_host_output[i]);
+    //         errors++;
+    //         if (errors > 10) {
+    //             printf("more than 10 errors\n");
+    //             break;
+    //         }
+    //     }
+    // }
+
+    // memory-memory
+    blockDim.x = 128 * 2;
+    printf("[MIX] Running with MIX memory-memory ...\n");
+    cudaErrCheck(cudaEventRecord(startKERNEL));
+    checkKernelErrors((mix_mem_mem_kernel<<<gridDim, blockDim>>>(mix_device_input, mix_device_output)));
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    printf("[MIX] MIX memory-memory took %f ms\n", kernel_time);
+
+    cudaErrCheck(cudaMemcpy(mix_host_output, mix_device_output, 1 * 30000 * sizeof(float), cudaMemcpyDeviceToHost));
+
+    // errors = 0;
+    // for (int i = 0; i < 30000; i++) {
+    //     if (abs(ori_host_output[i] - mix_host_output[i]) > 0.01f) {
+    //         printf("ori_host_output[%d] = %f, mix_host_output[%d] = %f\n", i, ori_host_output[i], i, mix_host_output[i]);
+    //         errors++;
+    //         if (errors > 10) {
+    //             printf("more than 10 errors\n");
+    //             break;
+    //         }
+    //     }
+    // }
+
+
+
 
 
     cudaErrCheck(cudaEventDestroy(startKERNEL));

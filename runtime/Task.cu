@@ -4,14 +4,14 @@
 #include "Recorder.h"
 
 extern Logger logger;
-
+extern std::string SYSTEM;
 extern Recorder recorder;
 
 Task::Task(int taskId, std::string taskName) : taskId(taskId), taskName(taskName){}
 Task::Task(int taskId) : taskId(taskId) {}
 
-void Task::addKernel(std::unique_ptr<Kernel> kernel) {
-    kernels.emplace_back(std::move(kernel));
+void Task::addKernel(Kernel* kernel) {
+    kernels.emplace_back(kernel);
 }
 
 void Task::executeTask(ExecutionMode mode) {
@@ -22,28 +22,47 @@ void Task::executeTask(ExecutionMode mode) {
     CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
 
     for (auto &kernel : kernels) {
-        // logger.INFO("kernel name: " + kernel->kernelName + ", id: " + std::to_string(kernel->Id) + " is executing ...");
-
+        logger.DEBUG("kernel name: " + kernel->kernelName + ", id: " + std::to_string(kernel->Id) + " is executing ...");
         // execute kernel
-        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
         kernel->execute();
-        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
         CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
         CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        // logger.DEBUG("kernel name: " + kernel->getKernelName() + ", kernel time: " + std::to_string(kernel_time) + " ms");
-
-        // record kernel time
-        if (mode == ExecutionMode::PROFILE)
+        
+        if (mode == ExecutionMode::PROFILE) {
             recorder.recordKernel(taskId, kernel->Id, kernel->kernelName, kernel_time);
+        }
+        // logger.DEBUG("kernel name: " + kernel->getKernelName() + ", kernel time: " + std::to_string(kernel_time) + " ms");
         // ~kernel
     }
-    // record task
-    if (mode == ExecutionMode::PROFILE)
-    recorder.recordTask(taskId, taskName);
-    // logger.INFO("task name: " + taskName + ", id: " + std::to_string(taskId) + " is executed!");
+    if (mode == ExecutionMode::PROFILE) {
+        recorder.recordTask(taskId, taskName);
+    }
+}
+
+void Task::executeTask(ExecutionMode mode, int idx) {
+    float kernel_time = 0.0f;
+    cudaEvent_t startKERNEL;
+    cudaEvent_t stopKERNEL;
+    CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+    CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
+    auto& kernel = this->kernels[idx];
+    logger.DEBUG("kernel name: " + kernel->kernelName + ", id: " + std::to_string(kernel->Id) + " is executing ...");
+    // execute kernel
+    CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
+    kernel->execute();
+    CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
+    CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    
+    if (mode == ExecutionMode::PROFILE) {
+        recorder.recordKernel(taskId, kernel->Id, kernel->kernelName, kernel_time);
+    }
+    // logger.DEBUG("kernel name: " + kernel->getKernelName() + ", kernel time: " + std::to_string(kernel_time) + " ms");
 }
 
 Task::~Task() {
-    std::vector<std::unique_ptr<Kernel>>().swap(kernels);
-    // logger.INFO("task name: " + taskName + ", id: " + std::to_string(taskId) + " is destroyed!");
+    // std::vector<std::unique_ptr<Kernel>>().swap(kernels);
+    logger.DEBUG("task name: " + taskName + ", id: " + std::to_string(taskId) + " is destroyed!");
 }

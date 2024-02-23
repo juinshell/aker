@@ -1,3 +1,4 @@
+#pragma once
 #include "fft_kernel.h"
 #include "Logger.h"
 #include "header/fft_header.h"
@@ -70,7 +71,7 @@ OriFFTKernel::OriFFTKernel(int id, const std::string& moduleName, const std::str
 
 OriFFTKernel::OriFFTKernel(int id){
     Id = id;
-    this->kernelName = "ori_fft";
+    this->kernelName = "fft";
     this->moduleName = "ori_fft"; 
     // loadKernel();
     initParams();
@@ -97,13 +98,13 @@ void OriFFTKernel::initParams() {
 
     // allocate device memory
     float2 *fft_ori_source;
-    float *fft_ori_shared_source;
-    cudaMalloc((void**) &fft_ori_shared_source, n_bytes);
-    cudaFreeList.push_back(fft_ori_shared_source);
+    // float *fft_ori_shared_source;
+    // cudaMalloc((void**) &fft_ori_shared_source, n_bytes);
     // copy host memory to device
-    cudaMemcpy(fft_ori_shared_source, host_shared_source, n_bytes, cudaMemcpyHostToDevice);
-    cudaMalloc((void**) &fft_ori_source, n_bytes);
-    cudaFreeList.push_back(fft_ori_source);
+    // cudaMemcpy(fft_ori_shared_source, host_shared_source, n_bytes, cudaMemcpyHostToDevice);
+    if (!this->initialized) cudaMalloc((void**) &fft_ori_source, n_bytes);
+    else fft_ori_source = (float2*)this->FFTKernelParams->data;
+
     // copy host memory to device
     cudaMemcpy(fft_ori_source, source, n_bytes, cudaMemcpyHostToDevice);
 
@@ -112,27 +113,30 @@ void OriFFTKernel::initParams() {
     fft_grid.x = FFT_B;
     fft_block.x = nthreads;
 
-    this->FFTKernelParams = new OriFFTParamsStruct();
-    this->FFTKernelParams->data = fft_ori_source;
+    if (!this->initialized) {
+        this->FFTKernelParams = new OriFFTParamsStruct();
+        this->FFTKernelParams->data = fft_ori_source;
 
-    this->kernelParams.push_back(&(this->FFTKernelParams->data));
+        this->kernelParams.push_back(&(this->FFTKernelParams->data));
 
-    this->launchGridDim = fft_grid;
-    this->launchBlockDim = fft_block;
+        this->launchGridDim = fft_grid;
+        this->launchBlockDim = fft_block;
 
-    this->smem = 2048;
+        this->smem = 2048;
 
-    this->kernelFunc = (void*)ori_fft;
+        this->kernelFunc = (void*)ori_fft;
+        this->initialized = true;
+    }
 }
 
 OriFFTKernel::~OriFFTKernel() {
     // free gpu memory
-    for (auto &ptr : cudaFreeList) {
-        CUDA_SAFE_CALL(cudaFree(ptr));
-    }
+    // for (auto &ptr : cudaFreeList) {
+    //     CUDA_SAFE_CALL(cudaFree(ptr));
+    // }
 
-    // free cpu heap memory
-    free(this->FFTKernelParams);
+    // // free cpu heap memory
+    // free(this->FFTKernelParams);
     
     // logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
 }
@@ -158,6 +162,4 @@ void OriFFTKernel::executeImpl() {
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,
         (void**)this->kernelParams.data(), this->smem, 0));
-
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
 }

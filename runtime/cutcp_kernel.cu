@@ -1,3 +1,4 @@
+#pragma once
 #include <mma.h>
 using namespace nvcuda; 
 #include "header/atom.h"
@@ -171,7 +172,7 @@ OriCUTCPKernel::OriCUTCPKernel(int id, const std::string& moduleName, const std:
 
 OriCUTCPKernel::OriCUTCPKernel(int id){
     Id = id;
-    this->kernelName = "ori_cutcp";
+    this->kernelName = "cutcp";
     // loadKernel();
     initParams();
 }
@@ -334,31 +335,23 @@ void OriCUTCPKernel::initParams() {
     // std::cin.get();
 
     // free nbrlist
-    free(nbrlist);
+    // free(nbrlist);
 }
 
 OriCUTCPKernel::~OriCUTCPKernel() {
     // free gpu memory
-    for (auto &ptr : cudaFreeList) {
-        CUDA_SAFE_CALL(cudaFree(ptr));
-    }
+    // for (auto &ptr : cudaFreeList) {
+    //     CUDA_SAFE_CALL(cudaFree(ptr));
+    // }
 
-    // free cpu heap memory
-    free(this->CUTCPKernelParams);
+    // // free cpu heap memory
+    // free(this->CUTCPKernelParams);
     
-    // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
+    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
 }
 
 void OriCUTCPKernel::loadKernel() {
-    logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is loading ...");
-
-    this->function = moduleCenter.getFunction(moduleName, kernelName);
-
-    if (this->function == nullptr) {
-        logger.ERROR("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " load failed!");
-        exit(EXIT_FAILURE);
-    }
-    return ;
+    
 }
 
 void OriCUTCPKernel::executeImpl() {
@@ -388,8 +381,5 @@ void OriCUTCPKernel::executeImpl() {
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,
         (void**)this->kernelParams.data(), 0, 0));
-
-
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
     
 }

@@ -1,17 +1,551 @@
 // TaskManager.cpp
 #include "TaskManager.h"
 #include "Logger.h"
+#include "Recorder.h"
+#include "tzgemm_kernel.h"
+#include "GPTBKernel.h"
+#include "MixKernel.h"
+#include "Creator.h"
+#include "json.h"
+#include <time.h>
+#include <cuda_profiler_api.h>
+
 
 extern Logger logger;
+extern Recorder recorder;
 
-void TaskManager::addTask(Task& task) {
-    tasks.push_back(&task);
+int batch_size = 1;
+
+int MAX_M_GLOBAL = 12544 * batch_size;
+int MAX_N_GLOBAL = 2048;
+int MAX_K_GLOBAL = 4608;
+int MAX_COL_BUFFER = 802816;
+int MAX_BOTTOM = 802816;
+bool im2col_malloced = false;
+bool gemm_malloced = false;
+float *bottom;
+float *col_buffer;
+float *ori_host_A;
+float *ori_host_B;
+half *ori_wmma_A;
+half *ori_wmma_B;
+float *ori_wmma_C;
+
+__global__ void im2col_gpu_kernel_(int n, float* data_im,
+    int height, int width, int kernel_h, int kernel_w,
+    int pad_h, int pad_w,
+    int stride_h, int stride_w,
+    int dilation_h, int dilation_w,
+    int height_col, int width_col,
+    float* data_col, int data_im_size, int data_col_size, int batch_size_) {
+        for (int batch_pos = 0; batch_pos < batch_size_; ++batch_pos) {
+            for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += blockDim.x * gridDim.x) {
+                int h_index = i / width_col;
+                int h_col = h_index % height_col;
+                int w_col = i % width_col;
+                int c_im = h_index / height_col;
+                int c_col = c_im * kernel_h * kernel_w;
+                int h_offset = h_col * stride_h - pad_h;
+                int w_offset = w_col * stride_w - pad_w;
+                float* data_col_ptr = data_col;
+                data_col_ptr += (c_col * height_col + h_col) * width_col + w_col;
+                float* data_im_ptr = data_im;
+                data_im_ptr += (c_im * height + h_offset) * width + w_offset;
+                for (int i = 0; i < kernel_h; ++i) {
+                    for (int j = 0; j < kernel_w; ++j) {
+                        int h_im = h_offset + i * dilation_h;
+                        int w_im = w_offset + j * dilation_w;
+                        if (h_col >= height_col || w_col >= width_col || h_col < 0 || w_col < 0 || (data_col_ptr - data_col) >= data_col_size) {
+                            // printf("h_col: %d, w_col: %d, height_col: %d, width_col: %d, data_col_ptr - data_col: %d\n", h_col, w_col, height_col, width_col, data_col_ptr - data_col);
+                            continue;
+                        }
+                        *data_col_ptr =
+                            (h_im >= 0 && w_im >= 0 && h_im < height && w_im < width && (i * dilation_h * width + j * dilation_w < data_im_size)) ?
+                            data_im_ptr[i * dilation_h * width + j * dilation_w] : 0;
+                        data_col_ptr += height_col * width_col;
+                    }
+                }
+            }
+        }
+}
+
+__global__ void convertFp32ToFp16_ (half *out, float *in, int n) {
+   int idx = blockDim.x * blockIdx.x + threadIdx.x;
+   if (idx < n) {
+      out[idx] = in[idx];
+   }
+}
+
+std::vector<int> get_mnk_from_cudnn_args(std::vector<int>& cudnn_args) {
+    int input_n = cudnn_args[0];
+    int input_c = cudnn_args[1];
+    int input_h = cudnn_args[2];
+    int input_w = cudnn_args[3];
+    int kernel_k = cudnn_args[4];
+    int kernel_c = cudnn_args[5];
+    int kernel_h = cudnn_args[6];
+    int kernel_w = cudnn_args[7];
+
+    int pad_h = cudnn_args[8];
+	int pad_w = cudnn_args[9];
+	int stride_h = cudnn_args[10];
+	int stride_w = cudnn_args[11];
+    int dilation_h = cudnn_args[12];
+	int dilation_w = cudnn_args[13];
+    
+    int height_col = (input_h + 2 * pad_h -
+		(dilation_h * (kernel_h - 1) + 1)) / stride_h + 1;
+	int width_col = (input_w + 2 * pad_w -
+		(dilation_w * (kernel_w - 1) + 1)) / stride_w + 1;
+
+    int M_INPUT = input_n * height_col * width_col; // 1 * 112 * 112
+    int N_INPUT = kernel_k; // 64
+    int K_INPUT = kernel_h * kernel_w * input_c;  // 7 * 7 * 3
+
+    vector<int> mnk = {M_INPUT, N_INPUT, K_INPUT};
+    return mnk;
+}
+
+void mixcudnnConvolutionForward(std::vector<int>& cudnn_args, GPTBKernel* gptb_cd_kernel, int cd_start_blk, int cd_end_blk) {
+    printf("--------------------------------mixcudnnConvolutionForward\n");
+    // cudaEvent_t startKERNEL, stopKERNEL;
+	// cudaErrCheck(cudaEventCreate(&startKERNEL));
+	// cudaErrCheck(cudaEventCreate(&stopKERNEL));
+    // float milliseconds = 0;
+
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
+
+    // img2col参数
+    int input_n = cudnn_args[0];
+	int input_c = cudnn_args[1];
+	int input_h = cudnn_args[2];
+	int input_w = cudnn_args[3];
+	// int output_n;
+	// int output_c;
+	// int output_h;
+	// int output_w;
+
+	int col_n;
+	int col_c;
+	int col_h;
+	int col_w;
+
+    int kernel_k = cudnn_args[4];
+    int kernel_c = cudnn_args[5];
+    int kernel_h = cudnn_args[6];
+	int kernel_w = cudnn_args[7];
+	int pad_h = cudnn_args[8];
+	int pad_w = cudnn_args[9];
+	int stride_h = cudnn_args[10];
+	int stride_w = cudnn_args[11];
+    int dilation_h = cudnn_args[12];
+	int dilation_w = cudnn_args[13];
+
+    
+    col_n = input_n;
+    col_c = input_c;
+
+    int height_col = (input_h + 2 * pad_h -
+		(dilation_h * (kernel_h - 1) + 1)) / stride_h + 1;
+	int width_col = (input_w + 2 * pad_w -
+		(dilation_w * (kernel_w - 1) + 1)) / stride_w + 1;
+	int num_kernels = input_n * input_c * height_col * width_col;
+
+    // assert(input_n == output_n);
+    // assert(output_h == height_col);
+    // assert(output_w == width_col);
+
+    col_h = height_col;
+    col_w = width_col;
+
+    // printf("col_n:%d, col_c:%d, col_h:%d, col_w:%d\n", col_n, col_c, col_h, col_w);
+
+    // std::cin >> foo;
+
+    MAX_COL_BUFFER = max(MAX_COL_BUFFER, col_n * col_c * col_h * col_w);
+    MAX_BOTTOM = max(MAX_BOTTOM, input_n * input_c * input_h * input_w);
+
+    // printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
+    
+    if (!im2col_malloced) {
+        cudaErrCheck(cudaMalloc((void**)&bottom, MAX_BOTTOM * sizeof(float)));
+        cudaErrCheck(cudaMalloc((void**)&col_buffer, MAX_COL_BUFFER * sizeof(float)));
+        im2col_malloced = true;
+    }
+
+    // curandGenerator_t gen;
+    // curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
+    // curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
+    // curandErrCheck(curandGenerateUniform(gen, bottom, input_n * input_c * input_h * input_w));
+    // curandErrCheck(curandGenerateUniform(gen, col_buffer, col_n * col_c * col_h * col_w));
+    cudaErrCheck(cudaMemset(bottom, 1.0f, input_n * input_c * input_h * input_w * sizeof(float)));
+    cudaErrCheck(cudaMemset(col_buffer, 1.0f, col_n * col_c * col_h * col_w * sizeof(float)));
+
+    // 调用 img2col
+    dim3 im_grid;
+	dim3 im_block;
+    im_block.x = 256;
+	im_grid.x = int(num_kernels / 256);
+	im_grid.x = 68 * 1;
+
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    // launch im2col
+    checkKernelErrors((im2col_gpu_kernel_<<<im_grid, im_block>>>(
+		num_kernels, bottom, input_h, input_w, kernel_h, kernel_w, pad_h,
+		pad_w, stride_h, stride_w, dilation_h, dilation_w, height_col,
+		width_col, col_buffer, input_n * input_c * input_h * input_w, col_n * col_c * col_h * col_w, batch_size)));
+    // cudaErrCheck(cudaEventRecord(stopKERNEL));
+    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    // cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    // printf("im2col took %f ms\n", milliseconds);
+
+    int M_INPUT = batch_size * height_col * width_col; // 32 * 112 * 112
+    int N_INPUT = kernel_k; // 64
+    int K_INPUT = kernel_h * kernel_w * input_c;  // 7 * 7 * 3
+
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
+
+    auto ori_tzgemm = new OriTZGEMMKernel(0, M_INPUT, N_INPUT, K_INPUT);
+    auto gptb_tzgemm_kernel = new GPTBKernel(
+        1, 
+        "tzgemm",
+        "gptb_tzgemm", 
+        ori_tzgemm,
+        dim3(SM_NUM * 1, 1, 1), 
+        dim3(128, 1, 1), 
+        0,
+        getTZGEMMGridDim(M_INPUT, N_INPUT, K_INPUT)[3]
+    );
+    
+
+    // std::cout << "gptb_cd_kernel->kernelName " << gptb_cd_kernel->kernelName << std::endl;
+    std::string mix_kernel_name = "tzgemm_" + gptb_cd_kernel->kernelName;
+
+    auto mix_kernel = new MixKernel(
+        1, 
+        mix_kernel_name, 
+        gptb_cd_kernel,
+        gptb_tzgemm_kernel, 
+        dim3(SM_NUM * get_kernel_info(mix_kernel_name, "gridsize"), 1, 1),
+        dim3(get_kernel_info(mix_kernel_name, "blocksize"), 1, 1),
+        cd_start_blk,
+        cd_end_blk,
+        0,
+        getTZGEMMGridDim(M_INPUT, N_INPUT, K_INPUT)[3]
+    );
+
+    
+    printf("cd_start_blk: %d, cd_end_blk: %d\n", mix_kernel->kernel1_start_block_pos, mix_kernel->kernel1_end_block_pos);
+    printf("tzgemm start block: %d, end block: %d\n", mix_kernel->kernel2_start_block_pos, mix_kernel->kernel2_end_block_pos);
+
+    
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    mix_kernel->execute();
+    
+    // gptb_cd_kernel->gptbParams.ptb_end_block_pos -= cd_end_blk * fget_kernel_info(mix_kernel_name, "block_ratio");
+    // cudaErrCheck(cudaEventRecord(stopKERNEL));
+    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    // cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    // printf("cudnnConv kernel took %f ms\n", milliseconds);
+    // milliseconds = 0;
+
+    // printf("M_ORI: %5d M_GLOBAL: %5d (%d x %d) \n", M_INPUT, M_GLOBAL, WMMA_M, M_TILES);
+	// printf("N_ORI: %5d N_GLOBAL: %5d (%d x %d) \n", N_INPUT, N_GLOBAL, WMMA_N, N_TILES);
+	// printf("K_ORI: %5d K_GLOBAL: %5d (%d x %d) \n", K_INPUT, K_GLOBAL, WMMA_K, K_TILES);
+
+    // printf("MAX_M_GLOBAL: %d, MAX_N_GLOBAL: %d, MAX_K_GLOBAL: %d\n", MAX_M_GLOBAL, MAX_N_GLOBAL, MAX_K_GLOBAL);
+
+    // printf("--------------------------------\n");
+    free(ori_tzgemm);
+    free(gptb_tzgemm_kernel);
+    free(mix_kernel);
+
+    return ;
+}
+
+
+void mixcublasSgemm(std::vector<int>& gemm_args, GPTBKernel* gptb_cd_kernel, int cd_start_blk, int cd_end_blk)
+{
+    int M_INPUT = gemm_args[0];
+    int N_INPUT = gemm_args[1];
+    int K_INPUT = gemm_args[2];
+
+    int M_GLOBAL = (M_INPUT < 128) ? 128 : (M_INPUT / 128) * 128;
+	int N_GLOBAL = (N_INPUT < 128) ? 128 : (N_INPUT / 128) * 128;
+	int K_GLOBAL = (K_INPUT < 128) ? 128 : (K_INPUT / 128) * 128;
+
+	int M_TILES = M_GLOBAL / WMMA_M;
+	int N_TILES = N_GLOBAL / WMMA_N;
+	int K_TILES = K_GLOBAL / WMMA_K;
+
+    dim3 wmma_grid;
+    dim3 wmma_block;
+	wmma_grid.x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
+	wmma_block.x = THREADS_PER_BLOCK;
+
+	int wmma_grid_dim_x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
+	int wmma_block_dim_x = wmma_block.x;
+	wmma_grid.x = 68 * 1;
+	wmma_block.x = THREADS_PER_BLOCK;
+
+
+    if (!gemm_malloced) {
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
+        gemm_malloced = true;
+    }
+    // assert(((unsigned long long)ori_wmma_A) % 128 == 0);
+	// assert(((unsigned long long)ori_wmma_B) % 128 == 0);
+	// assert(((unsigned long long)ori_wmma_C) % 128 == 0);
+    
+    cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
+    cudaErrCheck(cudaMemset(ori_wmma_B, 1.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
+    cudaErrCheck(cudaMemset(ori_wmma_C, 0.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
+
+    // printf("Running with gemm...\n");
+    // printf("gemm M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);
+    // printf("gemm block dim: %d, grid dim: %d\n", wmma_block_dim_x, wmma_grid_dim_x);
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    auto ori_tzgemm = new OriTZGEMMKernel(0, M_INPUT, N_INPUT, K_INPUT);
+    auto gptb_tzgemm_kernel = new GPTBKernel(
+        1, 
+        "tzgemm",
+        "gptb_tzgemm", 
+        ori_tzgemm,
+        dim3(SM_NUM * 1, 1, 1), 
+        dim3(128, 1, 1), 
+        0,
+        wmma_grid_dim_x
+    );
+
+
+    
+    std::string mix_kernel_name = "tzgemm_" + gptb_cd_kernel->kernelName;
+
+
+    auto mix_kernel = new MixKernel(
+        1, 
+        mix_kernel_name, 
+        gptb_cd_kernel,
+        (gptb_tzgemm_kernel), 
+        dim3(SM_NUM * get_kernel_info(mix_kernel_name, "gridsize"), 1, 1),
+        dim3(get_kernel_info(mix_kernel_name, "blocksize"), 1, 1),
+        cd_start_blk,
+        cd_end_blk,
+        0,
+        getTZGEMMGridDim(M_INPUT, N_INPUT, K_INPUT)[3]
+    );
+
+    printf("cd_start_blk: %d, cd_end_blk: %d\n", mix_kernel->kernel1_start_block_pos, mix_kernel->kernel1_end_block_pos);
+    printf("tzgemm start block: %d, end block: %d\n", mix_kernel->kernel2_start_block_pos, mix_kernel->kernel2_end_block_pos);
+
+    mix_kernel->execute();
+    // cudaErrCheck(cudaEventRecord(stopKERNEL));
+    free(ori_tzgemm);
+    free(gptb_tzgemm_kernel);
+    free(mix_kernel);
+    return ;
+}
+
+TaskManager::TaskManager(Task* lc_task, const std::string& be_task1, const std::string& be_task2) {
+    // logger.INFO("TaskManager is created!");
+    this->be_task1_name = be_task1;
+    this->be_task2_name = be_task2;
+    this->lc_task = lc_task;
+
 }
 
 void TaskManager::executeAllTasks(ExecutionMode mode) {
-    for (auto& task : tasks) {
-        task->executeTask(mode);
+    float kernel_time = 0.0f, iter_time = 0.0f;
+    cudaEvent_t startKERNEL, stopKERNEL, start_i, stop_i;
+    cudaEventCreate(&startKERNEL);
+    cudaEventCreate(&stopKERNEL);
+    cudaEventCreate(&start_i);
+    cudaEventCreate(&stop_i);
+
+        if (!im2col_malloced) {
+            cudaErrCheck(cudaMalloc((void**)&bottom, MAX_BOTTOM * sizeof(float)));
+            cudaErrCheck(cudaMalloc((void**)&col_buffer, MAX_COL_BUFFER * sizeof(float)));
+            im2col_malloced = true;
+        }
+        if (!gemm_malloced) {
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
+            gemm_malloced = true;
+        }
+
+    float qos_headroom = 50.0f;
+    int lc_kernel_idx = 0;
+    int be1_kernel_idx = 0;
+    int be2_kernel_idx = 0;
+
+    clock_t start,end;
+
+    CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
+
+    for (auto& lc_kernel : lc_task->kernels) {
+        // init cd tobe mix
+        // GPTBKernel * be_kernel1 = createKernel(be_task1_name);
+        // be_kernel1->kernel_->initParams();
+
+        cudaEventRecord(start_i, 0);
+        lc_kernel->execute();
+        cudaEventRecord(stop_i, 0);
+        cudaEventSynchronize(stop_i);
+        cudaEventElapsedTime(&iter_time, start_i, stop_i);
+        printf("lc kernel %s took %f ms.\n", lc_kernel->kernelName.c_str(), iter_time);
+
+        // cudaEventRecord(start_i, 0);
+        // if (lc_kernel->mixable == 1) { // cublassgemm
+        //     std::vector<int> mnk = lc_kernel->getArgs();
+        //     if (mnk.size() != 3) {
+        //         logger.INFO("lc kernel: " + lc_kernel->kernelName + " mnk size is not 3, but " + std::to_string(mnk.size()) + ", mixable: " + std::to_string(lc_kernel->mixable));
+        //         logger.ERROR("exit");
+        //     }
+        //     // execute mix, be1 first
+        //     // GPTBKernel * be_kernel1 = createKernel(be_task1_name);
+        //     int cd_block_num = min(int(getTZGEMMGridDim(mnk[0], mnk[1], mnk[2])[3] * fget_kernel_info("tzgemm_" + be_task1_name, "block_ratio")), be_kernel1->gptbParams.ptb_end_block_pos);
+        //     mixcublasSgemm(mnk, be_kernel1, be_kernel1->gptbParams.ptb_start_block_pos, cd_block_num);
+        //     // 补充执行剩余的cd block
+        //     be_kernel1->gptbParams.ptb_start_block_pos = cd_block_num;
+        //     be_kernel1->execute();
+        //     be_kernel1->gptbParams.ptb_start_block_pos = 0;
+        //     if (mode == ExecutionMode::PROFILE) {
+        //         this->be_task_finish_num++;
+        //     }
+        // } else if (lc_kernel->mixable == 2) { // cudnnConv
+
+        //     std::vector<int> cudnnArgs = lc_kernel->getArgs();
+        //     if (cudnnArgs.size() != 14) {
+        //         logger.INFO("lc kernel: " + lc_kernel->kernelName + " cudnn args size is not 14, but " + std::to_string(cudnnArgs.size()) + ", mixable: " + std::to_string(lc_kernel->mixable));
+        //         logger.ERROR("exit");
+        //     }
+        //     std::vector<int> mnk = get_mnk_from_cudnn_args(cudnnArgs);
+        //     // GPTBKernel * be_kernel1 = createKernel(be_task1_name);
+        //     int cd_block_num = min(int(getTZGEMMGridDim(mnk[0], mnk[1], mnk[2])[3] * fget_kernel_info("tzgemm_" + be_task1_name, "block_ratio")), be_kernel1->gptbParams.ptb_end_block_pos);
+        //     mixcudnnConvolutionForward(cudnnArgs, be_kernel1, be_kernel1->gptbParams.ptb_start_block_pos, cd_block_num);
+        //     // 补充执行剩余的cd block
+        //     be_kernel1->gptbParams.ptb_start_block_pos = cd_block_num;
+        //     be_kernel1->execute();
+        //     be_kernel1->gptbParams.ptb_start_block_pos = 0;
+        //     if (mode == ExecutionMode::PROFILE) {
+        //         this->be_task_finish_num++;
+        //     }
+        // } else { // no mix
+        //     lc_kernel->execute();
+
+        // }
+        // cudaEventRecord(stop_i, 0);
+        // cudaEventSynchronize(stop_i);
+        // cudaEventElapsedTime(&iter_time, start_i, stop_i);
+
+        // printf("lc kernel %s took %f ms to execute.\n", lc_kernel->kernelName.c_str(), iter_time);
+        // qos_headroom -= iter_time;
+        // logger.INFO("lc kernel: " + lc_kernel->kernelName + " took " + std::to_string(kernel_time) + " ms to execute.");
     }
+    
+    // cudaProfilerStop();
+    CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
+    CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    printf("lc kernel took %f ms to execute.\n", kernel_time);
+    // qos_headroom -= kernel_time;
+
+    // mix cd pair
+    // auto be_task1 = createKernel(be_task1_name);
+    // auto be_task2 = createKernel(be_task2_name);
+
+    // float be_task1_ori_time = 0.0f, be_task2_ori_time = 0.0f;
+    // // init cd
+    // be_task1->kernel_->initParams();
+    // be_task2->kernel_->initParams();
+    // // ori sum time
+    // printf("[Ori] be_task1: %s, be_task2: %s\n", be_task1_name.c_str(), be_task2_name.c_str());
+    // printf("[Ori] task1 blks range: %d - %d, task2 blks range: %d - %d\n", be_task1->gptbParams.ptb_start_block_pos, be_task1->gptbParams.ptb_end_block_pos, be_task2->gptbParams.ptb_start_block_pos, be_task2->gptbParams.ptb_end_block_pos);
+
+    // CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
+    // be_task1->execute();
+    // CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
+    // CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    // CUDA_SAFE_CALL(cudaEventElapsedTime(&be_task1_ori_time, startKERNEL, stopKERNEL));
+
+    // CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
+    // be_task2->execute();
+    // CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
+    // CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    // CUDA_SAFE_CALL(cudaEventElapsedTime(&be_task2_ori_time, startKERNEL, stopKERNEL));
+    // printf("[Ori] BE task1 cost %f ms, BE task2 cost %f ms\n", be_task1_ori_time, be_task2_ori_time);
+    // printf("[Ori] BE task1 + task2 took %f ms to execute.\n", be_task1_ori_time + be_task2_ori_time);
+
+    // // init cd
+    // be_task1->kernel_->initParams();
+    // be_task2->kernel_->initParams();
+
+    // std::string mix_kernel_name = be_task1_name + "_" + be_task2_name;;
+    // if (be_task1_name[0] > be_task2_name[0]) {
+    //     mix_kernel_name = be_task2_name + "_" + be_task1_name;
+    // }
+    // // printf("mix_kernel_name: %s\n", mix_kernel_name.c_str());
+    // auto mix_kernel = createMixKernel(mix_kernel_name);
+    // // printf("before execute mix kernel\n");
+    // printf("[MIX] task1 blks range: %d - %d, task2 blks range: %d - %d\n", mix_kernel->kernel1_start_block_pos, mix_kernel->kernel1_end_block_pos, mix_kernel->kernel2_start_block_pos, mix_kernel->kernel2_end_block_pos);
+    // for (int i = 0; i < 10; i++) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
+    //     mix_kernel->execute();
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&iter_time, startKERNEL, stopKERNEL));
+    //     printf("[MIX] BE task1 + task2 took %f ms to execute.\n", iter_time);
+    // }
+
+    // char foo;
+    // cin >> foo;
+
+    // this->be_task_finish_num += int(qos_headroom / iter_time);
+
+    // while (qos_headroom > 0.0f) {
+    //     std::string mix_kernel_name = be_task1_name + "_" + be_task2_name;;
+    //     if (be_task1_name[0] > be_task2_name[0]) {
+    //         mix_kernel_name = be_task2_name + "_" + be_task1_name;
+    //     }
+    //     // printf("mix_kernel_name: %s\n", mix_kernel_name.c_str());
+    //     auto mix_kernel = createMixKernel(mix_kernel_name);
+    //     // printf("before execute mix kernel\n");
+    //     printf("cd kernel1 start block: %d, end block: %d, kernel2 start block: %d, end block: %d\n", mix_kernel->kernel1_start_block_pos, mix_kernel->kernel1_end_block_pos, mix_kernel->kernel2_start_block_pos, mix_kernel->kernel2_end_block_pos);
+    //     CUDA_SAFE_CALL(cudaEventRecord(start_i, 0));
+    //     mix_kernel->execute();
+    //     // printf("after execute mix kernel\n");
+    //     CUDA_SAFE_CALL(cudaEventRecord(stop_i, 0));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stop_i));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&iter_time, start_i, stop_i));
+
+    //     qos_headroom -= (iter_time);
+    //     printf("cd mix kernerl time: %f, qos_headroom: %f\n", iter_time, qos_headroom);
+    //     if (mode == ExecutionMode::PROFILE) {
+    //         this->be_task_finish_num+=2;
+    //     }
+    // }
+    // if (mode == ExecutionMode::PROFILE) {
+    //     logger.INFO("be task finished: " + std::to_string(this->be_task_finish_num));
+    // }
+    // logger.INFO("be task finished: " + std::to_string(this->be_task_finish_num));
+    // for (auto& task : tasks) {
+    //     // time_t start, end;
+    //     // time(&start);
+    //     task->executeTask(mode);
+    //     // cudaDeviceSynchronize();
+    //     // time(&end);
+    //     // logger.INFO("Task " + task->taskName + " took " + std::to_string(difftime(end, start) * 1000) + " ms to execute.");
+    // }
+    // free event
+    CUDA_SAFE_CALL(cudaEventDestroy(startKERNEL));
+    CUDA_SAFE_CALL(cudaEventDestroy(stopKERNEL));
 }
 
 TaskManager::~TaskManager() {

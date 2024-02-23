@@ -104,7 +104,7 @@ extern "C" __global__ void ori_mriq(int numK, int kGlobalIndex,
 
 OriMRIQKernel::OriMRIQKernel(int id){
     Id = id;
-    this->kernelName = "ori_mriq";
+    this->kernelName = "mriq";
     initParams();
 }
 

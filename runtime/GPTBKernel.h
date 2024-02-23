@@ -9,12 +9,11 @@ extern ModuleCenter moduleCenter;
 extern std::unordered_map<std::string, void*> fmap;
 
 class GPTBKernel : public Kernel {
-private:
-    std::unique_ptr<Kernel> kernel_;
 public:
-    GPTBKernel(int id, const std::string& funcKey, std::unique_ptr<Kernel> kernel, dim3 gridDim, dim3 blockDim, int ptb_start_block_pos, int ptb_end_block_pos) 
-    : kernel_(std::move(kernel)), funcKey(funcKey){ // kernel不能再被使用
-        this->kernelName = funcKey;
+
+    GPTBKernel(int id, const std::string kernelName, const std::string funcKey, Kernel* kernel, dim3 gridDim, dim3 blockDim, int ptb_start_block_pos, int ptb_end_block_pos) 
+    : kernel_(kernel), funcKey(funcKey) {
+        this->kernelName = kernelName;
         this->launchGridDim = gridDim;
         this->launchBlockDim = blockDim;
         this->Id = id;
@@ -37,14 +36,16 @@ public:
         // logger.INFO("kernelParams size: " + std::to_string(kernelParams.size()));
         loadKernel();
         initParams();
+        // printf("gptb kernel class - %s created\n", this->kernelName.c_str());
     }
 
     ~GPTBKernel() {
-        // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
+        logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is destroyed!");
     }
 
     GPTBParams gptbParams;
     const std::string funcKey;
+    Kernel* kernel_;
 
     void initParams() override{
         kernelParams.push_back(&gptbParams.grid_dimension_x);
@@ -61,7 +62,6 @@ public:
             this->kernelFunc = (void*)fmap[funcKey];
         } else {
             logger.ERROR("load kernel {" + funcKey + "} failed!");
-            exit(EXIT_FAILURE);
         }
     }
 
@@ -73,7 +73,6 @@ public:
         kernelParams.push_back(&gptbParams.ptb_end_block_pos);
         int thread_base = 0;
         kernelParams.push_back(&thread_base); // for gptb only, no offset for thread
-        // logger.INFO("kernelParams size: " + std::to_string(kernelParams.size()));
         // logger.INFO("smem: " + std::to_string(smem));
         // launch kernel
         CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
@@ -81,5 +80,14 @@ public:
             (void **)kernelParams.data(), (size_t)this->smem, 0));
         
         // CUDA_SAFE_CALL(cudaDeviceSynchronize());
+        kernelParams.pop_back();
+        kernelParams.pop_back();
+        kernelParams.pop_back();
+        kernelParams.pop_back();
+        // CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    }
+
+    std::vector<int> getArgs() {
+        return std::vector<int>();
     }
 };

@@ -23,21 +23,27 @@ public:
     int getKernelId() { return Id; }
     std::string& getKernelName() { return kernelName; }
 
+    virtual std::vector<int> getArgs() = 0;
+
     int Id;
     std::string kernelName;
     std::string moduleName;
+    std::string funcKey;
     CUfunction function;
     unsigned int smem;
     std::vector<void*> kernelParams;
     std::vector<void*> cudaFreeList;
     dim3 launchGridDim;
     dim3 launchBlockDim;
-
+        
     lmode launchMode;
 
     void* kernelFunc;
+
+    uint mixable = 0;
+    bool initialized = false;
 protected:
-    virtual void executeImpl() = 0; // 纯虚函数，由子类实现
+    virtual void executeImpl() = 0; // implement in subclass
 };
 
 struct GPTBParams {

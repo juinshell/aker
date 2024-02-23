@@ -155,19 +155,19 @@ extern "C" __global__ void ori_lbm( float* srcGrid, float* dstGrid)  {
 
 OriLBMKernel::OriLBMKernel(int id){
     Id = id;
-    this->kernelName = "ori_lbm";
+    this->kernelName = "lbm";
     // loadKernel();
     initParams();
 }
 
 OriLBMKernel::~OriLBMKernel(){
     // free gpu memory
-    for (auto &ptr : cudaFreeList) {
-        CUDA_SAFE_CALL(cudaFree(ptr));
-    }
+    // for (auto &ptr : cudaFreeList) {
+    //     CUDA_SAFE_CALL(cudaFree(ptr));
+    // }
 
-    // free cpu heap memory
-    free(this->LBMKernelParams);
+    // // free cpu heap memory
+    // free(this->LBMKernelParams);
     
     // logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
 }

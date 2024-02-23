@@ -95,7 +95,7 @@ extern "C" __global__ void ori_stencil(float c0,float c1,float *A0,float *Anext,
 
 OriSTENCILKernel::OriSTENCILKernel(int id) {
     this->Id = id;
-    this->kernelName = "ori_stencil";
+    this->kernelName = "stencil";
     initParams();
 }
 

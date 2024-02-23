@@ -22,10 +22,10 @@ set(CMAKE_BUILD_TYPE "RELEASE" CACHE STRING
 endif()
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-set(CMAKE_CXX_FLAGS "-O3  -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}") # must have -lcuda, linker is /usr/bin/c++, not nvcc. must no -lcudart
+set(CMAKE_CXX_FLAGS " -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}") # must have -lcuda, linker is /usr/bin/c++, not nvcc. must no -lcudart
 message(STATUS "${PROJECT_NAME} compile cuda code in [RELEASE] mode")
 else()
-set(CMAKE_CXX_FLAGS "-g -O0 -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-g -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}")
 message(STATUS "${PROJECT_NAME} compile cuda code in [DEBUG] mode")
 endif()
 
@@ -40,16 +40,18 @@ find_library(CUDNN_LIBRARY cudnn
     HINTS ${CUDA_TOOLKIT_ROOT_DIR}
     PATH_SUFFIXES lib lib64 cuda/lib cuda/lib64 lib/x64)
 
-set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c Recorder.cc ./dnn/resnet50/resnet50.cu)
+set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c Recorder.cc ./dnn/resnet50/resnet50.cu json.cc Creator.cu)
 
 string(TIMESTAMP COMPILE_TIME %Y%m%d-%H%M%S)
 configure_file(TackerConfig.h.in TackerConfig.h)
 
 CUDA_ADD_EXECUTABLE(${PROJECT_NAME} ${SRC_LIST})
 
-set_target_properties( ${PROJECT_NAME}
-                       PROPERTIES CUDA_SEPARABLE_COMPILATION ON
-                       )
+# set_target_properties( ${PROJECT_NAME}
+#                        PROPERTIES CUDA_SEPARABLE_COMPILATION ON
+#                        )
+
+target_link_options(${PROJECT_NAME} PRIVATE -Xptxas -wl)
 
 # # hook lib
 # add_library(mylib  ./hook/mylib.cu)

@@ -24,6 +24,10 @@
 #include <malloc.h>
 using namespace nvcuda; 
 
+#ifndef SM_NUM
+#define SM_NUM 68
+#endif
+
 #define CU_SAFE_CALL(err) __checkCudaErrors(err, __FILE__, __LINE__)
 // These are the inline versions for all of the SDK helper functions
 inline void __checkCudaErrors(CUresult err, const char *file, const int line) \

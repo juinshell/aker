@@ -149,7 +149,7 @@ extern "C" __global__ void ori_mrif(int numK, int kGlobalIndex,
 
 OriMRIFKernel::OriMRIFKernel(int id){
     Id = id;
-    this->kernelName = "ori_mrif";
+    this->kernelName = "mrif";
     initParams();
 }
 
@@ -347,6 +347,4 @@ void OriMRIFKernel::executeImpl() {
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,
         (void**)this->kernelParams.data(), this->smem, 0));
-
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
 }

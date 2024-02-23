@@ -313,14 +313,14 @@ int main(int argc, char* argv[]) {
         // mix_block.x = stencil_block.x + wmma_block.x;
         // mix_block.y = 1;
 
-        mix_grid.x = SM_NUM;
-        mix_block.x = 128 * 5;
+        mix_grid.x = SM_NUM * 2;
+        mix_block.x = 128 * 2;
         printf("[PTB] stencil_grid -- %d * %d * %d stencil_block -- %d * %d * %d \n", 
             stencil_grid.x, stencil_grid.y, stencil_grid.z, stencil_block.x, stencil_block.y, stencil_block.z);
 		printf("[MIX] mix_grid -- %d * %d mix_block -- %d * %d \n", mix_grid.x, mix_grid.y, mix_block.x, mix_block.y);
 
 		cudaErrCheck(cudaEventRecord(startKERNEL));
-		checkKernelErrors((mix_kernel1 <<<mix_grid, mix_block>>> (
+		checkKernelErrors((mix_kernel0 <<<mix_grid, mix_block>>> (
 			// wmma parameters
 			wmma_ori_a, wmma_ori_b, wmma_ori_c, 
 			MATRIX_M, MATRIX_N, MATRIX_K,

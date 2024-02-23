@@ -9558,6 +9558,7 @@ CUDNN_SAFE_CALL(cudnnDestroy(cudnn_handle_0));
 #include <mma.h>
 #include <iostream>
 #include <curand.h>
+#include "header/tzgemm_header.h"
 using namespace nvcuda;
 
 #define checkKernelErrors(expr)                             \
@@ -9578,110 +9579,37 @@ __global__ void im2col_gpu_kernel(int n, float* data_im,
     int stride_h, int stride_w,
     int dilation_h, int dilation_w,
     int height_col, int width_col,
-    float* data_col, int data_im_size, int data_col_size) {
-		for (int i = blockIdx.x * blockDim.x + threadIdx.x; 
-				i < n; 
-				i += blockDim.x * gridDim.x) {
-			int h_index = i / width_col;
-			int h_col = h_index % height_col;
-			int w_col = i % width_col;
-			int c_im = h_index / height_col;
-			int c_col = c_im * kernel_h * kernel_w;
-			int h_offset = h_col * stride_h - pad_h;
-			int w_offset = w_col * stride_w - pad_w;
-			float* data_col_ptr = data_col;
-			data_col_ptr += (c_col * height_col + h_col) * width_col + w_col;
-			float* data_im_ptr = data_im;
-			data_im_ptr += (c_im * height + h_offset) * width + w_offset;
-			for (int i = 0; i < kernel_h; ++i) {
-				for (int j = 0; j < kernel_w; ++j) {
-					int h_im = h_offset + i * dilation_h;
-					int w_im = w_offset + j * dilation_w;
-                    if (h_col >= height_col || w_col >= width_col || h_col < 0 || w_col < 0 || (data_col_ptr - data_col) >= data_col_size) {
-                        // printf("h_col: %d, w_col: %d, height_col: %d, width_col: %d, data_col_ptr - data_col: %d\n", h_col, w_col, height_col, width_col, data_col_ptr - data_col);
-                        continue;
+    float* data_col, int data_im_size, int data_col_size, int batch_size_) {
+        for (int batch_pos = 0; batch_pos < batch_size_; ++batch_pos) {
+            for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += blockDim.x * gridDim.x) {
+                int h_index = i / width_col;
+                int h_col = h_index % height_col;
+                int w_col = i % width_col;
+                int c_im = h_index / height_col;
+                int c_col = c_im * kernel_h * kernel_w;
+                int h_offset = h_col * stride_h - pad_h;
+                int w_offset = w_col * stride_w - pad_w;
+                float* data_col_ptr = data_col;
+                data_col_ptr += (c_col * height_col + h_col) * width_col + w_col;
+                float* data_im_ptr = data_im;
+                data_im_ptr += (c_im * height + h_offset) * width + w_offset;
+                for (int i = 0; i < kernel_h; ++i) {
+                    for (int j = 0; j < kernel_w; ++j) {
+                        int h_im = h_offset + i * dilation_h;
+                        int w_im = w_offset + j * dilation_w;
+                        if (h_col >= height_col || w_col >= width_col || h_col < 0 || w_col < 0 || (data_col_ptr - data_col) >= data_col_size) {
+                            // printf("h_col: %d, w_col: %d, height_col: %d, width_col: %d, data_col_ptr - data_col: %d\n", h_col, w_col, height_col, width_col, data_col_ptr - data_col);
+                            continue;
+                        }
+                        *data_col_ptr =
+                            (h_im >= 0 && w_im >= 0 && h_im < height && w_im < width && (i * dilation_h * width + j * dilation_w < data_im_size)) ?
+                            data_im_ptr[i * dilation_h * width + j * dilation_w] : 0;
+                        data_col_ptr += height_col * width_col;
                     }
-					*data_col_ptr =
-						(h_im >= 0 && w_im >= 0 && h_im < height && w_im < width && (i * dilation_h * width + j * dilation_w < data_im_size)) ?
-						data_im_ptr[i * dilation_h * width + j * dilation_w] : 0;
-					data_col_ptr += height_col * width_col;
-				}
-			}
-		}
+                }
+            }
+        }
 }
-
-// gemm
-#define WARP_SIZE 32
-
-// MMA matrix tile dimensions.
-#define WMMA_M 16
-#define WMMA_N 16
-#define WMMA_K 16
-
-// #define M_TILES (8 * 32)
-// #define N_TILES (8 * 24)
-// #define K_TILES (8 * 6)
-// #define M_GLOBAL (WMMA_M * M_TILES)
-// #define N_GLOBAL (WMMA_N * N_TILES)
-// #define K_GLOBAL (WMMA_K * K_TILES)
-
-#define C_LAYOUT wmma::mem_row_major
-
-// With only 64 Kb shared memory available, we can fit two 8-tile chunks of
-// the A and B matrix data, that are 16 * 16 * 8 * 8 * 2 = 32 Kb each
-// (i.e. two 8x8 arrays of tiles of 16x16 half-typed elements per CTA).
-// But we cannot account the 8 Kb total skew overhead, without which the
-// performance would be severely impacted. So we choose to reduce the chunk size
-// in half, i.e. the amount of A and B matrix data we cache in shared memory.
-// Accordingly, this doubles the number of outer iterations across the global WMMA_K
-// dimension, which only slightly impacts the performance.
-#define CHUNK_K 4
-
-#define CHUNK_LINE_BYTES (CHUNK_K * WMMA_K * sizeof(half))
-#define WARP_COPY_BYTES (WARP_SIZE * sizeof(int4))
-#define CHUNK_COPY_LINES_PER_WARP (WARP_COPY_BYTES / CHUNK_LINE_BYTES)
-#define CHUNK_COPY_LINE_LANES (WARP_SIZE / CHUNK_COPY_LINES_PER_WARP)
-
-#define BLOCK_ROW_WARPS 2
-#define BLOCK_COL_WARPS 2
-#define WARP_ROW_TILES 2
-#define WARP_COL_TILES 2
-
-// Implementation constants.
-#define WARPS_PER_BLOCK (BLOCK_ROW_WARPS * BLOCK_COL_WARPS)
-#define THREADS_PER_BLOCK (WARP_SIZE * WARPS_PER_BLOCK)
-
-#define BLOCK_ROW_TILES (WARP_ROW_TILES * BLOCK_ROW_WARPS)
-#define BLOCK_COL_TILES (WARP_COL_TILES * BLOCK_COL_WARPS)
-
-#define GLOBAL_MEM_STRIDE N_GLOBAL
-#define SHMEM_STRIDE (WMMA_N * BLOCK_ROW_TILES)
-#define SHMEM_OFFSET (WMMA_N * WARP_ROW_TILES)
-
-// The macro below is used to shift rows of the A matrix and columns of the B
-// matrix in shared memory to minimize possible bank conflicts. Before
-// performing the nvcuda::wmma::mma_sync operation, the warp must load the
-// matrix data using the nvcuda::wmma::load_matrix_sync operation. Although the
-// memory access pattern is not specified for that function, each lane in the
-// warp can read one or multiple matrix elements from different matrix rows or
-// columns. For shared memory, such access can result in bank conflicts if
-// different rows / columns of the matrix map to the same bank. By shifting each
-// row and column by a few bytes, we make sure that they map to different banks,
-// thus reducing the number of possible bank conflicts. The number of 8 two-byte
-// "half" elements is chosen as the minimum possible shift because we must keep
-// each row and column 128-bit aligned, as required by
-// nvcuda::wmma::load_matrix_sync.
-#define SKEW_HALF 8
-
-const float alpha_g = 1.1f;
-const float beta_g = 0;
-
-#ifndef SM_NUM
-#define SM_NUM 68
-#endif
-#include <cassert>
-#define WMMA_GRID_DIM (SM_NUM * 2)
-#define WMMA_GRID_DIM2 (SM_NUM * 2)
 
 __global__ void convertFp32ToFp16 (half *out, float *in, int n) {
    int idx = blockDim.x * blockIdx.x + threadIdx.x;
@@ -9858,27 +9786,28 @@ __global__ void ptb_tzgemm(half *A, half *B, float *C,
     }
 }
 
-int MAX_M_GLOBAL = 12544;
-int MAX_N_GLOBAL = 2048;
-int MAX_K_GLOBAL = 4608;
-int MAX_COL_BUFFER = 802816;
-int MAX_BOTTOM = 802816;
-bool im2col_malloced = false;
-bool gemm_malloced = false;
-float *bottom;
-float *col_buffer;
-float *ori_host_A;
-float *ori_host_B;
-half *ori_wmma_A;
-half *ori_wmma_B;
-float *ori_wmma_C;
+extern int MAX_M_GLOBAL;
+extern int MAX_N_GLOBAL;
+extern int MAX_K_GLOBAL;
+extern int MAX_COL_BUFFER;
+extern int MAX_BOTTOM;
+extern bool im2col_malloced;
+extern bool gemm_malloced;
+extern float *bottom;
+extern float *col_buffer;
+extern float *ori_host_A;
+extern float *ori_host_B;
+extern half *ori_wmma_A;
+extern half *ori_wmma_B;
+extern float *ori_wmma_C;
 
 int hook_times = 0;
 
+extern int batch_size;
 
 cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, const cudnnTensorDescriptor_t xDesc, const void *x, const cudnnFilterDescriptor_t wDesc, const void *w, const cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t algo, void *workSpace, size_t workSpaceSizeInBytes, const void *beta, const cudnnTensorDescriptor_t yDesc, void *y) {
-    hook_times += 1;
-    printf("mycudnnConv %d times\n", hook_times);
+    // printf("--------------------------------mycudnnConvolutionForward\n");
+    printf("batch_size: %d\n", batch_size);
     cudaEvent_t startKERNEL, stopKERNEL;
 	cudaErrCheck(cudaEventCreate(&startKERNEL));
 	cudaErrCheck(cudaEventCreate(&stopKERNEL));
@@ -9956,7 +9885,7 @@ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const void *alpha,
     MAX_COL_BUFFER = max(MAX_COL_BUFFER, col_n * col_c * col_h * col_w);
     MAX_BOTTOM = max(MAX_BOTTOM, input_n * input_c * input_h * input_w);
 
-    printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
+    // printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
     
     if (!im2col_malloced) {
         cudaErrCheck(cudaMalloc((void**)&bottom, MAX_BOTTOM * sizeof(float)));
@@ -9996,24 +9925,24 @@ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const void *alpha,
     // printf("col_buffer size: %d\n", col_n * col_c * col_h * col_w);
 	// printf("bottom size: %d\n", input_n * input_c * input_h * input_w);
 
-    // cudaErrCheck(cudaEventRecord(stopKERNEL));
-    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-    // cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-    // printf("pre im2col_gpu_kernel took %f ms\n", milliseconds);
-    // milliseconds = 0;
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    printf("pre im2col_gpu_kernel took %f ms\n", milliseconds);
+    milliseconds = 0;
 
-    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    cudaErrCheck(cudaEventRecord(startKERNEL));
     // launch im2col
     checkKernelErrors((im2col_gpu_kernel<<<im_grid, im_block>>>(
 		num_kernels, bottom, input_h, input_w, kernel_h, kernel_w, pad_h,
 		pad_w, stride_h, stride_w, dilation_h, dilation_w, height_col,
-		width_col, col_buffer, input_n * input_c * input_h * input_w, col_n * col_c * col_h * col_w)));
+		width_col, col_buffer, input_n * input_c * input_h * input_w, col_n * col_c * col_h * col_w, batch_size)));
     
-    // cudaErrCheck(cudaEventRecord(stopKERNEL));
-	// cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-	// cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-	// printf("im2col_gpu_kernel took %f ms\n", milliseconds);
-    // milliseconds = 0;
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+	cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+	cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+	printf("im2col_gpu_kernel took %f ms\n", milliseconds);
+    milliseconds = 0;
 
 
     // call gemm
@@ -10022,11 +9951,13 @@ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const void *alpha,
     // int N_INPUT = width_col;
     // int K_INPUT = kernel_k * kernel_c; // 64 * 3
 
-    int M_INPUT = input_n * height_col * width_col; // 1 * 112 * 112
+    int M_INPUT = batch_size * height_col * width_col; // 1 * 112 * 112
     int N_INPUT = kernel_k; // 64
     int K_INPUT = kernel_h * kernel_w * input_c;  // 7 * 7 * 3
 
-    assert (M_INPUT * N_INPUT == output_n * output_c * output_h * output_w);
+    // printf("M_INPUT: %d, N_INPUT: %d, K_INPUT: %d\n", M_INPUT, N_INPUT, K_INPUT);
+
+    // assert (M_INPUT * N_INPUT == output_n * output_c * output_h * output_w);
 
 
 
@@ -10086,15 +10017,15 @@ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const void *alpha,
     // printf("Running with gemm...\n");
     // printf("gemm M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);
     // printf("gemm block dim: %d, grid dim: %d\n", wmma_block_dim_x, wmma_grid_dim_x);
-    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    cudaErrCheck(cudaEventRecord(startKERNEL));
     checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
 		M_GLOBAL, N_GLOBAL, K_GLOBAL,
 		// alpha, beta,
 		wmma_grid_dim_x, wmma_block_dim_x)));
-    // cudaErrCheck(cudaEventRecord(stopKERNEL));
-    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-    // cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-    // printf("ptb_tzgemm took %f ms\n", milliseconds);
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    printf("ptb_tzgemm took %f ms\n", milliseconds);
     milliseconds = 0;
 
     // printf("M_ORI: %5d M_GLOBAL: %5d (%d x %d) \n", M_INPUT, M_GLOBAL, WMMA_M, M_TILES);
@@ -10145,14 +10076,9 @@ cublasStatus_t mycublasSgemm(cublasHandle_t handle, cublasOperation_t transa, cu
     assert(((unsigned long long)ori_wmma_A) % 128 == 0);
 	assert(((unsigned long long)ori_wmma_B) % 128 == 0);
 	assert(((unsigned long long)ori_wmma_C) % 128 == 0);
-
-    curandGenerator_t gen;
-    curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
-    curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
-	curandErrCheck(curandGenerateUniform(gen, ori_host_A, M_GLOBAL * K_GLOBAL));
-    curandErrCheck(curandGenerateUniform(gen, ori_host_B, N_GLOBAL * K_GLOBAL));
-	convertFp32ToFp16 <<< (M_GLOBAL * K_GLOBAL + 255) / 256, 256 >>> (ori_wmma_A, ori_host_A, M_GLOBAL * K_GLOBAL);
-    convertFp32ToFp16 <<< (N_GLOBAL * K_GLOBAL + 255) / 256, 256 >>> (ori_wmma_B, ori_host_B, N_GLOBAL * K_GLOBAL);
+    
+    cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
+    cudaErrCheck(cudaMemset(ori_wmma_B, 1.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
     cudaErrCheck(cudaMemset(ori_wmma_C, 0.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
 
     // printf("Running with gemm...\n");
@@ -10164,6 +10090,7 @@ cublasStatus_t mycublasSgemm(cublasHandle_t handle, cublasOperation_t transa, cu
 		// alpha, beta,
 		wmma_grid_dim_x, wmma_block_dim_x)));
     // cudaErrCheck(cudaEventRecord(stopKERNEL));
+    return CUBLAS_STATUS_SUCCESS;
 }
 
 
@@ -10173,6 +10100,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_271_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10186,6 +10114,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_271_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_271<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -10203,6 +10136,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Pad_float_float_float_cuda_Pad_273_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10216,6 +10150,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Pad_float_float_float_cuda_Pad_273_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* output0) {
     Pad_float_float_float_cuda_Pad_273<<<grids, blocks, mem, stream>>>(input0, input1, output0);
@@ -10233,6 +10172,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_274_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10246,6 +10186,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_274_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_274<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -10263,6 +10208,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_275";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -10276,6 +10222,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 3, 230, 230, 64, 3, 7, 7, 0, 0, 2, 2, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_275(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -10349,6 +10300,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10362,6 +10314,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -10379,6 +10336,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Relu_float_float_cuda_Relu_277_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10392,6 +10350,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Relu_float_float_cuda_Relu_277_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Relu_float_float_cuda_Relu_277<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -10409,6 +10372,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "MaxPool_float_float_cuda_lib_MaxPool_278";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10422,6 +10386,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
     void MaxPool_float_float_cuda_lib_MaxPool_278(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
@@ -10455,6 +10424,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_281_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10468,6 +10438,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_281_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_281<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -10485,6 +10460,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_282";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -10498,6 +10474,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 64, 56, 56, 64, 64, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_282(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -10571,6 +10552,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10584,6 +10566,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -10601,6 +10588,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_286_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10614,6 +10602,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_286_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_286<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -10631,6 +10624,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_287";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -10644,6 +10638,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 64, 56, 56, 64, 64, 3, 3, 1, 1, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_287(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -10717,6 +10716,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_290_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10730,6 +10730,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_290_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_290<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -10747,6 +10752,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_291";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -10760,6 +10766,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 64, 56, 56, 256, 64, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_291(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -10833,6 +10844,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10846,6 +10858,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -10863,6 +10880,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "FusedKernel_float_float_float_cuda_Add_Relu_0_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10876,6 +10894,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void FusedKernel_float_float_float_cuda_Add_Relu_0_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* output0) {
     FusedKernel_float_float_float_cuda_Add_Relu_0<<<grids, blocks, mem, stream>>>(input0, input1, output0);
@@ -10893,6 +10916,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_295_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -10906,6 +10930,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_295_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_295<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -10923,6 +10952,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_296";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -10936,6 +10966,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 256, 56, 56, 64, 256, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_296(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -11009,6 +11044,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_323_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11022,6 +11058,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_323_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_323<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -11039,6 +11080,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_324";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -11052,6 +11094,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 256, 56, 56, 128, 256, 1, 1, 0, 0, 2, 2, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_324(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -11125,6 +11172,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11138,6 +11186,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -11155,6 +11208,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_328_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11168,6 +11222,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_328_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_328<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -11185,6 +11244,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_329";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -11198,6 +11258,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 128, 28, 28, 128, 128, 3, 3, 1, 1, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_329(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -11271,6 +11336,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_332_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11284,6 +11350,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_332_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_332<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -11301,6 +11372,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_333";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -11314,6 +11386,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 128, 28, 28, 512, 128, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_333(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -11387,6 +11464,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11400,6 +11478,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -11417,6 +11500,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_321_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11430,6 +11514,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_321_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_321<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -11447,6 +11536,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_322";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -11460,6 +11550,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 256, 56, 56, 512, 256, 1, 1, 0, 0, 2, 2, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_322(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -11533,6 +11628,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_337_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11546,6 +11642,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_337_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_337<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -11563,6 +11664,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_338";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -11576,6 +11678,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 512, 28, 28, 128, 512, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_338(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -11649,6 +11756,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_378_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11662,6 +11770,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_378_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_378<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -11679,6 +11792,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_379";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -11692,6 +11806,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 512, 28, 28, 256, 512, 1, 1, 0, 0, 2, 2, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_379(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -11765,6 +11884,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11778,6 +11898,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -11795,6 +11920,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_383_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11808,6 +11934,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_383_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_383<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -11825,6 +11956,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_384";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -11838,6 +11970,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 256, 14, 14, 256, 256, 3, 3, 1, 1, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_384(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -11911,6 +12048,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_387_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -11924,6 +12062,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_387_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_387<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -11941,6 +12084,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_388";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -11954,6 +12098,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 256, 14, 14, 1024, 256, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_388(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -12027,6 +12176,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12040,6 +12190,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -12057,6 +12212,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_376_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12070,6 +12226,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_376_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_376<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -12087,6 +12248,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_377";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -12100,6 +12262,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 512, 28, 28, 1024, 512, 1, 1, 0, 0, 2, 2, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_377(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -12173,6 +12340,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_392_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12186,6 +12354,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_392_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_392<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -12203,6 +12376,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_393";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -12216,6 +12390,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 1024, 14, 14, 256, 1024, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_393(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -12289,6 +12468,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_459_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12302,6 +12482,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_459_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_459<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -12319,6 +12504,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_460";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -12332,6 +12518,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 1024, 14, 14, 512, 1024, 1, 1, 0, 0, 2, 2, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_460(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -12405,6 +12596,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12418,6 +12610,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -12435,6 +12632,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_464_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12448,6 +12646,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_464_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_464<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -12465,6 +12668,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_465";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -12478,6 +12682,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 512, 7, 7, 512, 512, 3, 3, 1, 1, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_465(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -12551,6 +12760,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_468_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12564,6 +12774,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_468_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_468<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -12581,6 +12796,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_469";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -12594,6 +12810,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 512, 7, 7, 2048, 512, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_469(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -12667,6 +12888,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->input2 = input2, this->input3 = input3, this->input4 = input4, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12680,6 +12902,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  input2; float*  input3; float*  input4; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* input2, float* input3, float* input4, float* output0) {
     BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470<<<grids, blocks, mem, stream>>>(input0, input1, input2, input3, input4, output0);
@@ -12697,6 +12924,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_457_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12710,6 +12938,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_457_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_457<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -12727,6 +12960,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_458";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -12740,6 +12974,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 1024, 14, 14, 2048, 1024, 1, 1, 0, 0, 2, 2, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_458(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -12813,6 +13052,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Reshape_float_float_cuda_Reshape_473_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12826,6 +13066,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Reshape_float_float_cuda_Reshape_473_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Reshape_float_float_cuda_Reshape_473<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -12843,6 +13088,7 @@ public:
         this->cudnn_handle = cudnn_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Convolution_float_float_float_cuda_lib_Convolution_474";
         this->Id = 0;
+        this->mixable = 2;
     }
 
     void initParams() override {
@@ -12856,6 +13102,11 @@ public:
         cudnnHandle_t  cudnn_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>({1, 2048, 7, 7, 512, 2048, 1, 1, 0, 0, 1, 1, 1, 1});
+}
 
     void Convolution_float_float_float_cuda_lib_Convolution_474(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
@@ -12929,6 +13180,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Sum_float_float_cuda_Sum_499_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12942,6 +13194,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Sum_float_float_cuda_Sum_499_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* output0) {
     Sum_float_float_cuda_Sum_499<<<grids, blocks, mem, stream>>>(input0, output0);
@@ -12959,6 +13216,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Divide_float_float_float_cuda_Divide_501_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -12972,6 +13230,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Divide_float_float_float_cuda_Divide_501_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* output0) {
     Divide_float_float_float_cuda_Divide_501<<<grids, blocks, mem, stream>>>(input0, input1, output0);
@@ -12989,6 +13252,7 @@ public:
         this->cublas_handle = cublas_handle, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Dot_float_float_float_cuda_lib_Dot_502";
         this->Id = 0;
+        this->mixable = 1;
     }
 
     void initParams() override {
@@ -13002,6 +13266,15 @@ public:
         cublasHandle_t  cublas_handle; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    std::vector<int> ret(3);
+    ret[0] = 1001;
+    ret[1] = 1;
+    ret[2] = 2048;
+    return ret;
+}
 
     void Dot_float_float_float_cuda_lib_Dot_502(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
@@ -13023,6 +13296,7 @@ public:
         this->grids = grids, this->blocks = blocks, this->mem = mem, this->stream = stream, this->input0 = input0, this->input1 = input1, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Add_float_float_float_cuda_Add_504_Call";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -13036,6 +13310,11 @@ public:
         dim3  grids; dim3  blocks; unsigned  mem; cudaStream_t  stream; float*  input0; float*  input1; float*  output0;
     float*  Parameter_270_0; float**  Result_505_0;
 private:
+
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
 
      void Add_float_float_float_cuda_Add_504_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* output0) {
     Add_float_float_float_cuda_Add_504<<<grids, blocks, mem, stream>>>(input0, input1, output0);
@@ -13053,6 +13332,7 @@ public:
         this->input0 = input0, this->output0 = output0, this->Parameter_270_0 = Parameter_270_0, this->Result_505_0 = Result_505_0;
         this->kernelName = "Result_float_float_cuda_lib_Result_505";
         this->Id = 0;
+        this->mixable = 0;
     }
 
     void initParams() override {
@@ -13067,6 +13347,11 @@ public:
     float*  Parameter_270_0; float**  Result_505_0;
 private:
 
+    
+std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
+
     void Result_float_float_cuda_lib_Result_505(float* input0, float** output0)
 {
     *output0 = input0;
@@ -13077,220 +13362,220 @@ private:
     }
 };
 void Resnet50::gen_vector(float*  Parameter_270_0, float**  Result_505_0) {
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_271_CallKernel>(dim3(1, 3136, 1), dim3(16, 16, 1), 0, nullptr, std::move(Parameter_270_0), std::move(Reshape_271_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Pad_float_float_float_cuda_Pad_273_CallKernel>(dim3(2480, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(Reshape_271_0), std::move(Constant_272_0), std::move(Pad_273_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_274_CallKernel>(dim3(4, 3, 4), dim3(16, 1, 16), 0, nullptr, std::move(Constant_9_0), std::move(Reshape_274_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_275Kernel>(std::move(cudnn_handle_0), std::move(Pad_273_0), std::move(Reshape_274_0), std::move(Convolution_275_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_CallKernel>(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_6_0), std::move(Constant_5_0), std::move(Convolution_275_0), std::move(Constant_7_0), std::move(Constant_8_0), std::move(BatchNormInference_276_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_276_0), std::move(Relu_277_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<MaxPool_float_float_cuda_lib_MaxPool_278Kernel>(std::move(cudnn_handle_0), std::move(Relu_277_0), std::move(MaxPool_278_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_281_CallKernel>(dim3(4, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_19_0), std::move(Reshape_281_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_282Kernel>(std::move(cudnn_handle_0), std::move(MaxPool_278_0), std::move(Reshape_281_0), std::move(Convolution_282_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel>(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_16_0), std::move(Constant_15_0), std::move(Convolution_282_0), std::move(Constant_17_0), std::move(Constant_18_0), std::move(BatchNormInference_284_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_284_0), std::move(Relu_285_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_286_CallKernel>(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_24_0), std::move(Reshape_286_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_287Kernel>(std::move(cudnn_handle_0), std::move(Relu_285_0), std::move(Reshape_286_0), std::move(Convolution_287_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel>(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_21_0), std::move(Constant_20_0), std::move(Convolution_287_0), std::move(Constant_22_0), std::move(Constant_23_0), std::move(BatchNormInference_288_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_288_0), std::move(Relu_289_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_290_CallKernel>(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_29_0), std::move(Reshape_290_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_291Kernel>(std::move(cudnn_handle_0), std::move(Relu_289_0), std::move(Reshape_290_0), std::move(Convolution_291_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel>(dim3(256, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_26_0), std::move(Constant_25_0), std::move(Convolution_291_0), std::move(Constant_27_0), std::move(Constant_28_0), std::move(BatchNormInference_292_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_290_CallKernel>(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_14_0), std::move(Reshape_279_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_291Kernel>(std::move(cudnn_handle_0), std::move(MaxPool_278_0), std::move(Reshape_279_0), std::move(Convolution_280_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel>(dim3(256, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_11_0), std::move(Constant_10_0), std::move(Convolution_280_0), std::move(Constant_12_0), std::move(Constant_13_0), std::move(BatchNormInference_283_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_283_0), std::move(BatchNormInference_292_0), std::move(Relu_294_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_295_CallKernel>(dim3(4, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_34_0), std::move(Reshape_295_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_296Kernel>(std::move(cudnn_handle_0), std::move(Relu_294_0), std::move(Reshape_295_0), std::move(Convolution_296_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel>(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_31_0), std::move(Constant_30_0), std::move(Convolution_296_0), std::move(Constant_32_0), std::move(Constant_33_0), std::move(BatchNormInference_297_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_297_0), std::move(Relu_298_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_286_CallKernel>(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_39_0), std::move(Reshape_299_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_287Kernel>(std::move(cudnn_handle_0), std::move(Relu_298_0), std::move(Reshape_299_0), std::move(Convolution_300_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel>(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_36_0), std::move(Constant_35_0), std::move(Convolution_300_0), std::move(Constant_37_0), std::move(Constant_38_0), std::move(BatchNormInference_301_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_301_0), std::move(Relu_302_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_290_CallKernel>(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_44_0), std::move(Reshape_303_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_291Kernel>(std::move(cudnn_handle_0), std::move(Relu_302_0), std::move(Reshape_303_0), std::move(Convolution_304_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel>(dim3(256, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_41_0), std::move(Constant_40_0), std::move(Convolution_304_0), std::move(Constant_42_0), std::move(Constant_43_0), std::move(BatchNormInference_305_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_294_0), std::move(BatchNormInference_305_0), std::move(Relu_307_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_295_CallKernel>(dim3(4, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_149_0), std::move(Reshape_308_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_296Kernel>(std::move(cudnn_handle_0), std::move(Relu_307_0), std::move(Reshape_308_0), std::move(Convolution_309_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel>(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_146_0), std::move(Constant_145_0), std::move(Convolution_309_0), std::move(Constant_147_0), std::move(Constant_148_0), std::move(BatchNormInference_310_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_310_0), std::move(Relu_311_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_286_CallKernel>(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_154_0), std::move(Reshape_312_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_287Kernel>(std::move(cudnn_handle_0), std::move(Relu_311_0), std::move(Reshape_312_0), std::move(Convolution_313_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel>(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_151_0), std::move(Constant_150_0), std::move(Convolution_313_0), std::move(Constant_152_0), std::move(Constant_153_0), std::move(BatchNormInference_314_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_314_0), std::move(Relu_315_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_290_CallKernel>(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_144_0), std::move(Reshape_316_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_291Kernel>(std::move(cudnn_handle_0), std::move(Relu_315_0), std::move(Reshape_316_0), std::move(Convolution_317_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel>(dim3(256, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_141_0), std::move(Constant_140_0), std::move(Convolution_317_0), std::move(Constant_142_0), std::move(Constant_143_0), std::move(BatchNormInference_318_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_307_0), std::move(BatchNormInference_318_0), std::move(Relu_320_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_323_CallKernel>(dim3(8, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_164_0), std::move(Reshape_323_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_324Kernel>(std::move(cudnn_handle_0), std::move(Relu_320_0), std::move(Reshape_323_0), std::move(Convolution_324_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel>(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_161_0), std::move(Constant_160_0), std::move(Convolution_324_0), std::move(Constant_162_0), std::move(Constant_163_0), std::move(BatchNormInference_326_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_326_0), std::move(Relu_327_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_328_CallKernel>(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_169_0), std::move(Reshape_328_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_329Kernel>(std::move(cudnn_handle_0), std::move(Relu_327_0), std::move(Reshape_328_0), std::move(Convolution_329_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel>(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_166_0), std::move(Constant_165_0), std::move(Convolution_329_0), std::move(Constant_167_0), std::move(Constant_168_0), std::move(BatchNormInference_330_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_330_0), std::move(Relu_331_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_332_CallKernel>(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_174_0), std::move(Reshape_332_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_333Kernel>(std::move(cudnn_handle_0), std::move(Relu_331_0), std::move(Reshape_332_0), std::move(Convolution_333_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel>(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_171_0), std::move(Constant_170_0), std::move(Convolution_333_0), std::move(Constant_172_0), std::move(Constant_173_0), std::move(BatchNormInference_334_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_321_CallKernel>(dim3(32, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_159_0), std::move(Reshape_321_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_322Kernel>(std::move(cudnn_handle_0), std::move(Relu_320_0), std::move(Reshape_321_0), std::move(Convolution_322_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel>(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_156_0), std::move(Constant_155_0), std::move(Convolution_322_0), std::move(Constant_157_0), std::move(Constant_158_0), std::move(BatchNormInference_325_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(784, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_325_0), std::move(BatchNormInference_334_0), std::move(Relu_336_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_337_CallKernel>(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_179_0), std::move(Reshape_337_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_338Kernel>(std::move(cudnn_handle_0), std::move(Relu_336_0), std::move(Reshape_337_0), std::move(Convolution_338_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel>(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_176_0), std::move(Constant_175_0), std::move(Convolution_338_0), std::move(Constant_177_0), std::move(Constant_178_0), std::move(BatchNormInference_339_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_339_0), std::move(Relu_340_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_328_CallKernel>(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_184_0), std::move(Reshape_341_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_329Kernel>(std::move(cudnn_handle_0), std::move(Relu_340_0), std::move(Reshape_341_0), std::move(Convolution_342_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel>(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_181_0), std::move(Constant_180_0), std::move(Convolution_342_0), std::move(Constant_182_0), std::move(Constant_183_0), std::move(BatchNormInference_343_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_343_0), std::move(Relu_344_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_332_CallKernel>(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_189_0), std::move(Reshape_345_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_333Kernel>(std::move(cudnn_handle_0), std::move(Relu_344_0), std::move(Reshape_345_0), std::move(Convolution_346_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel>(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_186_0), std::move(Constant_185_0), std::move(Convolution_346_0), std::move(Constant_187_0), std::move(Constant_188_0), std::move(BatchNormInference_347_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(784, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_336_0), std::move(BatchNormInference_347_0), std::move(Relu_349_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_337_CallKernel>(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_194_0), std::move(Reshape_350_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_338Kernel>(std::move(cudnn_handle_0), std::move(Relu_349_0), std::move(Reshape_350_0), std::move(Convolution_351_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel>(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_191_0), std::move(Constant_190_0), std::move(Convolution_351_0), std::move(Constant_192_0), std::move(Constant_193_0), std::move(BatchNormInference_352_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_352_0), std::move(Relu_353_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_328_CallKernel>(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_199_0), std::move(Reshape_354_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_329Kernel>(std::move(cudnn_handle_0), std::move(Relu_353_0), std::move(Reshape_354_0), std::move(Convolution_355_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel>(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_196_0), std::move(Constant_195_0), std::move(Convolution_355_0), std::move(Constant_197_0), std::move(Constant_198_0), std::move(BatchNormInference_356_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_356_0), std::move(Relu_357_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_332_CallKernel>(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_204_0), std::move(Reshape_358_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_333Kernel>(std::move(cudnn_handle_0), std::move(Relu_357_0), std::move(Reshape_358_0), std::move(Convolution_359_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel>(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_201_0), std::move(Constant_200_0), std::move(Convolution_359_0), std::move(Constant_202_0), std::move(Constant_203_0), std::move(BatchNormInference_360_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(784, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_349_0), std::move(BatchNormInference_360_0), std::move(Relu_362_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_337_CallKernel>(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_209_0), std::move(Reshape_363_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_338Kernel>(std::move(cudnn_handle_0), std::move(Relu_362_0), std::move(Reshape_363_0), std::move(Convolution_364_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel>(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_206_0), std::move(Constant_205_0), std::move(Convolution_364_0), std::move(Constant_207_0), std::move(Constant_208_0), std::move(BatchNormInference_365_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_365_0), std::move(Relu_366_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_328_CallKernel>(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_214_0), std::move(Reshape_367_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_329Kernel>(std::move(cudnn_handle_0), std::move(Relu_366_0), std::move(Reshape_367_0), std::move(Convolution_368_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel>(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_211_0), std::move(Constant_210_0), std::move(Convolution_368_0), std::move(Constant_212_0), std::move(Constant_213_0), std::move(BatchNormInference_369_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_369_0), std::move(Relu_370_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_332_CallKernel>(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_219_0), std::move(Reshape_371_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_333Kernel>(std::move(cudnn_handle_0), std::move(Relu_370_0), std::move(Reshape_371_0), std::move(Convolution_372_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel>(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_216_0), std::move(Constant_215_0), std::move(Convolution_372_0), std::move(Constant_217_0), std::move(Constant_218_0), std::move(BatchNormInference_373_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(784, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_362_0), std::move(BatchNormInference_373_0), std::move(Relu_375_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_378_CallKernel>(dim3(16, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_229_0), std::move(Reshape_378_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_379Kernel>(std::move(cudnn_handle_0), std::move(Relu_375_0), std::move(Reshape_378_0), std::move(Convolution_379_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_226_0), std::move(Constant_225_0), std::move(Convolution_379_0), std::move(Constant_227_0), std::move(Constant_228_0), std::move(BatchNormInference_381_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_381_0), std::move(Relu_382_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_383_CallKernel>(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_234_0), std::move(Reshape_383_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_384Kernel>(std::move(cudnn_handle_0), std::move(Relu_382_0), std::move(Reshape_383_0), std::move(Convolution_384_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_231_0), std::move(Constant_230_0), std::move(Convolution_384_0), std::move(Constant_232_0), std::move(Constant_233_0), std::move(BatchNormInference_385_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_385_0), std::move(Relu_386_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_387_CallKernel>(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_239_0), std::move(Reshape_387_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_388Kernel>(std::move(cudnn_handle_0), std::move(Relu_386_0), std::move(Reshape_387_0), std::move(Convolution_388_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel>(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_236_0), std::move(Constant_235_0), std::move(Convolution_388_0), std::move(Constant_237_0), std::move(Constant_238_0), std::move(BatchNormInference_389_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_376_CallKernel>(dim3(64, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_224_0), std::move(Reshape_376_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_377Kernel>(std::move(cudnn_handle_0), std::move(Relu_375_0), std::move(Reshape_376_0), std::move(Convolution_377_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel>(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_221_0), std::move(Constant_220_0), std::move(Convolution_377_0), std::move(Constant_222_0), std::move(Constant_223_0), std::move(BatchNormInference_380_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_380_0), std::move(BatchNormInference_389_0), std::move(Relu_391_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_392_CallKernel>(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_244_0), std::move(Reshape_392_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_393Kernel>(std::move(cudnn_handle_0), std::move(Relu_391_0), std::move(Reshape_392_0), std::move(Convolution_393_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_241_0), std::move(Constant_240_0), std::move(Convolution_393_0), std::move(Constant_242_0), std::move(Constant_243_0), std::move(BatchNormInference_394_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_394_0), std::move(Relu_395_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_383_CallKernel>(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_249_0), std::move(Reshape_396_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_384Kernel>(std::move(cudnn_handle_0), std::move(Relu_395_0), std::move(Reshape_396_0), std::move(Convolution_397_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_246_0), std::move(Constant_245_0), std::move(Convolution_397_0), std::move(Constant_247_0), std::move(Constant_248_0), std::move(BatchNormInference_398_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_398_0), std::move(Relu_399_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_387_CallKernel>(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_254_0), std::move(Reshape_400_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_388Kernel>(std::move(cudnn_handle_0), std::move(Relu_399_0), std::move(Reshape_400_0), std::move(Convolution_401_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel>(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_251_0), std::move(Constant_250_0), std::move(Convolution_401_0), std::move(Constant_252_0), std::move(Constant_253_0), std::move(BatchNormInference_402_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_391_0), std::move(BatchNormInference_402_0), std::move(Relu_404_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_392_CallKernel>(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_259_0), std::move(Reshape_405_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_393Kernel>(std::move(cudnn_handle_0), std::move(Relu_404_0), std::move(Reshape_405_0), std::move(Convolution_406_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_256_0), std::move(Constant_255_0), std::move(Convolution_406_0), std::move(Constant_257_0), std::move(Constant_258_0), std::move(BatchNormInference_407_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_407_0), std::move(Relu_408_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_383_CallKernel>(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_264_0), std::move(Reshape_409_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_384Kernel>(std::move(cudnn_handle_0), std::move(Relu_408_0), std::move(Reshape_409_0), std::move(Convolution_410_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_261_0), std::move(Constant_260_0), std::move(Convolution_410_0), std::move(Constant_262_0), std::move(Constant_263_0), std::move(BatchNormInference_411_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_411_0), std::move(Relu_412_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_387_CallKernel>(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_269_0), std::move(Reshape_413_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_388Kernel>(std::move(cudnn_handle_0), std::move(Relu_412_0), std::move(Reshape_413_0), std::move(Convolution_414_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel>(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_266_0), std::move(Constant_265_0), std::move(Convolution_414_0), std::move(Constant_267_0), std::move(Constant_268_0), std::move(BatchNormInference_415_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_404_0), std::move(BatchNormInference_415_0), std::move(Relu_417_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_392_CallKernel>(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_49_0), std::move(Reshape_418_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_393Kernel>(std::move(cudnn_handle_0), std::move(Relu_417_0), std::move(Reshape_418_0), std::move(Convolution_419_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_46_0), std::move(Constant_45_0), std::move(Convolution_419_0), std::move(Constant_47_0), std::move(Constant_48_0), std::move(BatchNormInference_420_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_420_0), std::move(Relu_421_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_383_CallKernel>(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_54_0), std::move(Reshape_422_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_384Kernel>(std::move(cudnn_handle_0), std::move(Relu_421_0), std::move(Reshape_422_0), std::move(Convolution_423_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_51_0), std::move(Constant_50_0), std::move(Convolution_423_0), std::move(Constant_52_0), std::move(Constant_53_0), std::move(BatchNormInference_424_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_424_0), std::move(Relu_425_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_387_CallKernel>(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_59_0), std::move(Reshape_426_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_388Kernel>(std::move(cudnn_handle_0), std::move(Relu_425_0), std::move(Reshape_426_0), std::move(Convolution_427_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel>(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_56_0), std::move(Constant_55_0), std::move(Convolution_427_0), std::move(Constant_57_0), std::move(Constant_58_0), std::move(BatchNormInference_428_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_417_0), std::move(BatchNormInference_428_0), std::move(Relu_430_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_392_CallKernel>(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_64_0), std::move(Reshape_431_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_393Kernel>(std::move(cudnn_handle_0), std::move(Relu_430_0), std::move(Reshape_431_0), std::move(Convolution_432_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_61_0), std::move(Constant_60_0), std::move(Convolution_432_0), std::move(Constant_62_0), std::move(Constant_63_0), std::move(BatchNormInference_433_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_433_0), std::move(Relu_434_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_383_CallKernel>(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_69_0), std::move(Reshape_435_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_384Kernel>(std::move(cudnn_handle_0), std::move(Relu_434_0), std::move(Reshape_435_0), std::move(Convolution_436_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_66_0), std::move(Constant_65_0), std::move(Convolution_436_0), std::move(Constant_67_0), std::move(Constant_68_0), std::move(BatchNormInference_437_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_437_0), std::move(Relu_438_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_387_CallKernel>(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_74_0), std::move(Reshape_439_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_388Kernel>(std::move(cudnn_handle_0), std::move(Relu_438_0), std::move(Reshape_439_0), std::move(Convolution_440_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel>(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_71_0), std::move(Constant_70_0), std::move(Convolution_440_0), std::move(Constant_72_0), std::move(Constant_73_0), std::move(BatchNormInference_441_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_430_0), std::move(BatchNormInference_441_0), std::move(Relu_443_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_392_CallKernel>(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_79_0), std::move(Reshape_444_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_393Kernel>(std::move(cudnn_handle_0), std::move(Relu_443_0), std::move(Reshape_444_0), std::move(Convolution_445_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_76_0), std::move(Constant_75_0), std::move(Convolution_445_0), std::move(Constant_77_0), std::move(Constant_78_0), std::move(BatchNormInference_446_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_446_0), std::move(Relu_447_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_383_CallKernel>(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_84_0), std::move(Reshape_448_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_384Kernel>(std::move(cudnn_handle_0), std::move(Relu_447_0), std::move(Reshape_448_0), std::move(Convolution_449_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel>(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_81_0), std::move(Constant_80_0), std::move(Convolution_449_0), std::move(Constant_82_0), std::move(Constant_83_0), std::move(BatchNormInference_450_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_450_0), std::move(Relu_451_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_387_CallKernel>(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_89_0), std::move(Reshape_452_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_388Kernel>(std::move(cudnn_handle_0), std::move(Relu_451_0), std::move(Reshape_452_0), std::move(Convolution_453_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel>(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_86_0), std::move(Constant_85_0), std::move(Convolution_453_0), std::move(Constant_87_0), std::move(Constant_88_0), std::move(BatchNormInference_454_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_443_0), std::move(BatchNormInference_454_0), std::move(Relu_456_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_459_CallKernel>(dim3(32, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_99_0), std::move(Reshape_459_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_460Kernel>(std::move(cudnn_handle_0), std::move(Relu_456_0), std::move(Reshape_459_0), std::move(Convolution_460_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel>(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_96_0), std::move(Constant_95_0), std::move(Convolution_460_0), std::move(Constant_97_0), std::move(Constant_98_0), std::move(BatchNormInference_462_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_462_0), std::move(Relu_463_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_464_CallKernel>(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_104_0), std::move(Reshape_464_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_465Kernel>(std::move(cudnn_handle_0), std::move(Relu_463_0), std::move(Reshape_464_0), std::move(Convolution_465_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel>(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_101_0), std::move(Constant_100_0), std::move(Convolution_465_0), std::move(Constant_102_0), std::move(Constant_103_0), std::move(BatchNormInference_466_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_466_0), std::move(Relu_467_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_468_CallKernel>(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_109_0), std::move(Reshape_468_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_469Kernel>(std::move(cudnn_handle_0), std::move(Relu_467_0), std::move(Reshape_468_0), std::move(Convolution_469_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel>(dim3(2048, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_106_0), std::move(Constant_105_0), std::move(Convolution_469_0), std::move(Constant_107_0), std::move(Constant_108_0), std::move(BatchNormInference_470_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_457_CallKernel>(dim3(128, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_94_0), std::move(Reshape_457_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_458Kernel>(std::move(cudnn_handle_0), std::move(Relu_456_0), std::move(Reshape_457_0), std::move(Convolution_458_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel>(dim3(2048, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_91_0), std::move(Constant_90_0), std::move(Convolution_458_0), std::move(Constant_92_0), std::move(Constant_93_0), std::move(BatchNormInference_461_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_461_0), std::move(BatchNormInference_470_0), std::move(Relu_472_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_473_CallKernel>(dim3(32, 128, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_114_0), std::move(Reshape_473_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_474Kernel>(std::move(cudnn_handle_0), std::move(Relu_472_0), std::move(Reshape_473_0), std::move(Convolution_474_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel>(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_111_0), std::move(Constant_110_0), std::move(Convolution_474_0), std::move(Constant_112_0), std::move(Constant_113_0), std::move(BatchNormInference_475_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_475_0), std::move(Relu_476_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_464_CallKernel>(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_119_0), std::move(Reshape_477_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_465Kernel>(std::move(cudnn_handle_0), std::move(Relu_476_0), std::move(Reshape_477_0), std::move(Convolution_478_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel>(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_116_0), std::move(Constant_115_0), std::move(Convolution_478_0), std::move(Constant_117_0), std::move(Constant_118_0), std::move(BatchNormInference_479_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_479_0), std::move(Relu_480_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_468_CallKernel>(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_124_0), std::move(Reshape_481_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_469Kernel>(std::move(cudnn_handle_0), std::move(Relu_480_0), std::move(Reshape_481_0), std::move(Convolution_482_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel>(dim3(2048, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_121_0), std::move(Constant_120_0), std::move(Convolution_482_0), std::move(Constant_122_0), std::move(Constant_123_0), std::move(BatchNormInference_483_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_472_0), std::move(BatchNormInference_483_0), std::move(Relu_485_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_473_CallKernel>(dim3(32, 128, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_129_0), std::move(Reshape_486_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_474Kernel>(std::move(cudnn_handle_0), std::move(Relu_485_0), std::move(Reshape_486_0), std::move(Convolution_487_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel>(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_126_0), std::move(Constant_125_0), std::move(Convolution_487_0), std::move(Constant_127_0), std::move(Constant_128_0), std::move(BatchNormInference_488_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_488_0), std::move(Relu_489_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_464_CallKernel>(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_134_0), std::move(Reshape_490_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_465Kernel>(std::move(cudnn_handle_0), std::move(Relu_489_0), std::move(Reshape_490_0), std::move(Convolution_491_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel>(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_131_0), std::move(Constant_130_0), std::move(Convolution_491_0), std::move(Constant_132_0), std::move(Constant_133_0), std::move(BatchNormInference_492_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Relu_float_float_cuda_Relu_277_CallKernel>(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_492_0), std::move(Relu_493_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Reshape_float_float_cuda_Reshape_468_CallKernel>(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_139_0), std::move(Reshape_494_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Convolution_float_float_float_cuda_lib_Convolution_469Kernel>(std::move(cudnn_handle_0), std::move(Relu_493_0), std::move(Reshape_494_0), std::move(Convolution_495_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel>(dim3(2048, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_136_0), std::move(Constant_135_0), std::move(Convolution_495_0), std::move(Constant_137_0), std::move(Constant_138_0), std::move(BatchNormInference_496_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel>(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_485_0), std::move(BatchNormInference_496_0), std::move(Relu_498_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Sum_float_float_cuda_Sum_499_CallKernel>(dim3(2048, 1, 1), dim3(32, 1, 1), 0, nullptr, std::move(Relu_498_0), std::move(Sum_499_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Divide_float_float_float_cuda_Divide_501_CallKernel>(dim3(4, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Sum_499_0), std::move(Constant_500_0), std::move(Divide_501_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Dot_float_float_float_cuda_lib_Dot_502Kernel>(std::move(cublas_handle_0), std::move(Divide_501_0), std::move(Constant_4_0), std::move(Dot_502_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Add_float_float_float_cuda_Add_504_CallKernel>(dim3(7, 1, 1), dim3(143, 1, 1), 0, nullptr, std::move(Dot_502_0), std::move(Broadcast_503_0), std::move(Add_504_0), std::move(Parameter_270_0), std::move(Result_505_0)));
-    kernels.emplace_back(std::make_unique<Result_float_float_cuda_lib_Result_505Kernel>(std::move(Add_504_0), std::move(Result_505_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_271_CallKernel(dim3(1, 3136, 1), dim3(16, 16, 1), 0, nullptr, std::move(Parameter_270_0), std::move(Reshape_271_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Pad_float_float_float_cuda_Pad_273_CallKernel(dim3(2480, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(Reshape_271_0), std::move(Constant_272_0), std::move(Pad_273_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_274_CallKernel(dim3(4, 3, 4), dim3(16, 1, 16), 0, nullptr, std::move(Constant_9_0), std::move(Reshape_274_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_275Kernel(std::move(cudnn_handle_0), std::move(Pad_273_0), std::move(Reshape_274_0), std::move(Convolution_275_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_CallKernel(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_6_0), std::move(Constant_5_0), std::move(Convolution_275_0), std::move(Constant_7_0), std::move(Constant_8_0), std::move(BatchNormInference_276_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_276_0), std::move(Relu_277_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new MaxPool_float_float_cuda_lib_MaxPool_278Kernel(std::move(cudnn_handle_0), std::move(Relu_277_0), std::move(MaxPool_278_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_281_CallKernel(dim3(4, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_19_0), std::move(Reshape_281_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_282Kernel(std::move(cudnn_handle_0), std::move(MaxPool_278_0), std::move(Reshape_281_0), std::move(Convolution_282_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_16_0), std::move(Constant_15_0), std::move(Convolution_282_0), std::move(Constant_17_0), std::move(Constant_18_0), std::move(BatchNormInference_284_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_284_0), std::move(Relu_285_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_286_CallKernel(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_24_0), std::move(Reshape_286_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_287Kernel(std::move(cudnn_handle_0), std::move(Relu_285_0), std::move(Reshape_286_0), std::move(Convolution_287_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_21_0), std::move(Constant_20_0), std::move(Convolution_287_0), std::move(Constant_22_0), std::move(Constant_23_0), std::move(BatchNormInference_288_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_288_0), std::move(Relu_289_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_290_CallKernel(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_29_0), std::move(Reshape_290_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_291Kernel(std::move(cudnn_handle_0), std::move(Relu_289_0), std::move(Reshape_290_0), std::move(Convolution_291_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(256, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_26_0), std::move(Constant_25_0), std::move(Convolution_291_0), std::move(Constant_27_0), std::move(Constant_28_0), std::move(BatchNormInference_292_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_290_CallKernel(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_14_0), std::move(Reshape_279_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_291Kernel(std::move(cudnn_handle_0), std::move(MaxPool_278_0), std::move(Reshape_279_0), std::move(Convolution_280_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(256, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_11_0), std::move(Constant_10_0), std::move(Convolution_280_0), std::move(Constant_12_0), std::move(Constant_13_0), std::move(BatchNormInference_283_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_283_0), std::move(BatchNormInference_292_0), std::move(Relu_294_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_295_CallKernel(dim3(4, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_34_0), std::move(Reshape_295_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_296Kernel(std::move(cudnn_handle_0), std::move(Relu_294_0), std::move(Reshape_295_0), std::move(Convolution_296_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_31_0), std::move(Constant_30_0), std::move(Convolution_296_0), std::move(Constant_32_0), std::move(Constant_33_0), std::move(BatchNormInference_297_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_297_0), std::move(Relu_298_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_286_CallKernel(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_39_0), std::move(Reshape_299_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_287Kernel(std::move(cudnn_handle_0), std::move(Relu_298_0), std::move(Reshape_299_0), std::move(Convolution_300_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_36_0), std::move(Constant_35_0), std::move(Convolution_300_0), std::move(Constant_37_0), std::move(Constant_38_0), std::move(BatchNormInference_301_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_301_0), std::move(Relu_302_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_290_CallKernel(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_44_0), std::move(Reshape_303_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_291Kernel(std::move(cudnn_handle_0), std::move(Relu_302_0), std::move(Reshape_303_0), std::move(Convolution_304_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(256, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_41_0), std::move(Constant_40_0), std::move(Convolution_304_0), std::move(Constant_42_0), std::move(Constant_43_0), std::move(BatchNormInference_305_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_294_0), std::move(BatchNormInference_305_0), std::move(Relu_307_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_295_CallKernel(dim3(4, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_149_0), std::move(Reshape_308_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_296Kernel(std::move(cudnn_handle_0), std::move(Relu_307_0), std::move(Reshape_308_0), std::move(Convolution_309_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_146_0), std::move(Constant_145_0), std::move(Convolution_309_0), std::move(Constant_147_0), std::move(Constant_148_0), std::move(BatchNormInference_310_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_310_0), std::move(Relu_311_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_286_CallKernel(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_154_0), std::move(Reshape_312_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_287Kernel(std::move(cudnn_handle_0), std::move(Relu_311_0), std::move(Reshape_312_0), std::move(Convolution_313_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(64, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_151_0), std::move(Constant_150_0), std::move(Convolution_313_0), std::move(Constant_152_0), std::move(Constant_153_0), std::move(BatchNormInference_314_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_314_0), std::move(Relu_315_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_290_CallKernel(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_144_0), std::move(Reshape_316_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_291Kernel(std::move(cudnn_handle_0), std::move(Relu_315_0), std::move(Reshape_316_0), std::move(Convolution_317_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(256, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_141_0), std::move(Constant_140_0), std::move(Convolution_317_0), std::move(Constant_142_0), std::move(Constant_143_0), std::move(BatchNormInference_318_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_307_0), std::move(BatchNormInference_318_0), std::move(Relu_320_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_323_CallKernel(dim3(8, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_164_0), std::move(Reshape_323_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_324Kernel(std::move(cudnn_handle_0), std::move(Relu_320_0), std::move(Reshape_323_0), std::move(Convolution_324_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_161_0), std::move(Constant_160_0), std::move(Convolution_324_0), std::move(Constant_162_0), std::move(Constant_163_0), std::move(BatchNormInference_326_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_326_0), std::move(Relu_327_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_328_CallKernel(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_169_0), std::move(Reshape_328_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_329Kernel(std::move(cudnn_handle_0), std::move(Relu_327_0), std::move(Reshape_328_0), std::move(Convolution_329_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_166_0), std::move(Constant_165_0), std::move(Convolution_329_0), std::move(Constant_167_0), std::move(Constant_168_0), std::move(BatchNormInference_330_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_330_0), std::move(Relu_331_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_332_CallKernel(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_174_0), std::move(Reshape_332_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_333Kernel(std::move(cudnn_handle_0), std::move(Relu_331_0), std::move(Reshape_332_0), std::move(Convolution_333_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_171_0), std::move(Constant_170_0), std::move(Convolution_333_0), std::move(Constant_172_0), std::move(Constant_173_0), std::move(BatchNormInference_334_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_321_CallKernel(dim3(32, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_159_0), std::move(Reshape_321_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_322Kernel(std::move(cudnn_handle_0), std::move(Relu_320_0), std::move(Reshape_321_0), std::move(Convolution_322_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_156_0), std::move(Constant_155_0), std::move(Convolution_322_0), std::move(Constant_157_0), std::move(Constant_158_0), std::move(BatchNormInference_325_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(784, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_325_0), std::move(BatchNormInference_334_0), std::move(Relu_336_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_337_CallKernel(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_179_0), std::move(Reshape_337_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_338Kernel(std::move(cudnn_handle_0), std::move(Relu_336_0), std::move(Reshape_337_0), std::move(Convolution_338_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_176_0), std::move(Constant_175_0), std::move(Convolution_338_0), std::move(Constant_177_0), std::move(Constant_178_0), std::move(BatchNormInference_339_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_339_0), std::move(Relu_340_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_328_CallKernel(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_184_0), std::move(Reshape_341_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_329Kernel(std::move(cudnn_handle_0), std::move(Relu_340_0), std::move(Reshape_341_0), std::move(Convolution_342_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_181_0), std::move(Constant_180_0), std::move(Convolution_342_0), std::move(Constant_182_0), std::move(Constant_183_0), std::move(BatchNormInference_343_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_343_0), std::move(Relu_344_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_332_CallKernel(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_189_0), std::move(Reshape_345_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_333Kernel(std::move(cudnn_handle_0), std::move(Relu_344_0), std::move(Reshape_345_0), std::move(Convolution_346_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_186_0), std::move(Constant_185_0), std::move(Convolution_346_0), std::move(Constant_187_0), std::move(Constant_188_0), std::move(BatchNormInference_347_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(784, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_336_0), std::move(BatchNormInference_347_0), std::move(Relu_349_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_337_CallKernel(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_194_0), std::move(Reshape_350_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_338Kernel(std::move(cudnn_handle_0), std::move(Relu_349_0), std::move(Reshape_350_0), std::move(Convolution_351_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_191_0), std::move(Constant_190_0), std::move(Convolution_351_0), std::move(Constant_192_0), std::move(Constant_193_0), std::move(BatchNormInference_352_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_352_0), std::move(Relu_353_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_328_CallKernel(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_199_0), std::move(Reshape_354_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_329Kernel(std::move(cudnn_handle_0), std::move(Relu_353_0), std::move(Reshape_354_0), std::move(Convolution_355_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_196_0), std::move(Constant_195_0), std::move(Convolution_355_0), std::move(Constant_197_0), std::move(Constant_198_0), std::move(BatchNormInference_356_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_356_0), std::move(Relu_357_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_332_CallKernel(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_204_0), std::move(Reshape_358_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_333Kernel(std::move(cudnn_handle_0), std::move(Relu_357_0), std::move(Reshape_358_0), std::move(Convolution_359_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_201_0), std::move(Constant_200_0), std::move(Convolution_359_0), std::move(Constant_202_0), std::move(Constant_203_0), std::move(BatchNormInference_360_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(784, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_349_0), std::move(BatchNormInference_360_0), std::move(Relu_362_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_337_CallKernel(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_209_0), std::move(Reshape_363_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_338Kernel(std::move(cudnn_handle_0), std::move(Relu_362_0), std::move(Reshape_363_0), std::move(Convolution_364_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_206_0), std::move(Constant_205_0), std::move(Convolution_364_0), std::move(Constant_207_0), std::move(Constant_208_0), std::move(BatchNormInference_365_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_365_0), std::move(Relu_366_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_328_CallKernel(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_214_0), std::move(Reshape_367_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_329Kernel(std::move(cudnn_handle_0), std::move(Relu_366_0), std::move(Reshape_367_0), std::move(Convolution_368_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_211_0), std::move(Constant_210_0), std::move(Convolution_368_0), std::move(Constant_212_0), std::move(Constant_213_0), std::move(BatchNormInference_369_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_369_0), std::move(Relu_370_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_332_CallKernel(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_219_0), std::move(Reshape_371_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_333Kernel(std::move(cudnn_handle_0), std::move(Relu_370_0), std::move(Reshape_371_0), std::move(Convolution_372_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Constant_216_0), std::move(Constant_215_0), std::move(Convolution_372_0), std::move(Constant_217_0), std::move(Constant_218_0), std::move(BatchNormInference_373_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(784, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_362_0), std::move(BatchNormInference_373_0), std::move(Relu_375_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_378_CallKernel(dim3(16, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_229_0), std::move(Reshape_378_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_379Kernel(std::move(cudnn_handle_0), std::move(Relu_375_0), std::move(Reshape_378_0), std::move(Convolution_379_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_226_0), std::move(Constant_225_0), std::move(Convolution_379_0), std::move(Constant_227_0), std::move(Constant_228_0), std::move(BatchNormInference_381_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_381_0), std::move(Relu_382_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_234_0), std::move(Reshape_383_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(cudnn_handle_0), std::move(Relu_382_0), std::move(Reshape_383_0), std::move(Convolution_384_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_231_0), std::move(Constant_230_0), std::move(Convolution_384_0), std::move(Constant_232_0), std::move(Constant_233_0), std::move(BatchNormInference_385_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_385_0), std::move(Relu_386_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_239_0), std::move(Reshape_387_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(cudnn_handle_0), std::move(Relu_386_0), std::move(Reshape_387_0), std::move(Convolution_388_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_236_0), std::move(Constant_235_0), std::move(Convolution_388_0), std::move(Constant_237_0), std::move(Constant_238_0), std::move(BatchNormInference_389_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_376_CallKernel(dim3(64, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_224_0), std::move(Reshape_376_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_377Kernel(std::move(cudnn_handle_0), std::move(Relu_375_0), std::move(Reshape_376_0), std::move(Convolution_377_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_221_0), std::move(Constant_220_0), std::move(Convolution_377_0), std::move(Constant_222_0), std::move(Constant_223_0), std::move(BatchNormInference_380_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_380_0), std::move(BatchNormInference_389_0), std::move(Relu_391_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_244_0), std::move(Reshape_392_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(cudnn_handle_0), std::move(Relu_391_0), std::move(Reshape_392_0), std::move(Convolution_393_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_241_0), std::move(Constant_240_0), std::move(Convolution_393_0), std::move(Constant_242_0), std::move(Constant_243_0), std::move(BatchNormInference_394_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_394_0), std::move(Relu_395_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_249_0), std::move(Reshape_396_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(cudnn_handle_0), std::move(Relu_395_0), std::move(Reshape_396_0), std::move(Convolution_397_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_246_0), std::move(Constant_245_0), std::move(Convolution_397_0), std::move(Constant_247_0), std::move(Constant_248_0), std::move(BatchNormInference_398_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_398_0), std::move(Relu_399_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_254_0), std::move(Reshape_400_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(cudnn_handle_0), std::move(Relu_399_0), std::move(Reshape_400_0), std::move(Convolution_401_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_251_0), std::move(Constant_250_0), std::move(Convolution_401_0), std::move(Constant_252_0), std::move(Constant_253_0), std::move(BatchNormInference_402_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_391_0), std::move(BatchNormInference_402_0), std::move(Relu_404_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_259_0), std::move(Reshape_405_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(cudnn_handle_0), std::move(Relu_404_0), std::move(Reshape_405_0), std::move(Convolution_406_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_256_0), std::move(Constant_255_0), std::move(Convolution_406_0), std::move(Constant_257_0), std::move(Constant_258_0), std::move(BatchNormInference_407_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_407_0), std::move(Relu_408_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_264_0), std::move(Reshape_409_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(cudnn_handle_0), std::move(Relu_408_0), std::move(Reshape_409_0), std::move(Convolution_410_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_261_0), std::move(Constant_260_0), std::move(Convolution_410_0), std::move(Constant_262_0), std::move(Constant_263_0), std::move(BatchNormInference_411_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_411_0), std::move(Relu_412_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_269_0), std::move(Reshape_413_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(cudnn_handle_0), std::move(Relu_412_0), std::move(Reshape_413_0), std::move(Convolution_414_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_266_0), std::move(Constant_265_0), std::move(Convolution_414_0), std::move(Constant_267_0), std::move(Constant_268_0), std::move(BatchNormInference_415_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_404_0), std::move(BatchNormInference_415_0), std::move(Relu_417_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_49_0), std::move(Reshape_418_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(cudnn_handle_0), std::move(Relu_417_0), std::move(Reshape_418_0), std::move(Convolution_419_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_46_0), std::move(Constant_45_0), std::move(Convolution_419_0), std::move(Constant_47_0), std::move(Constant_48_0), std::move(BatchNormInference_420_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_420_0), std::move(Relu_421_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_54_0), std::move(Reshape_422_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(cudnn_handle_0), std::move(Relu_421_0), std::move(Reshape_422_0), std::move(Convolution_423_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_51_0), std::move(Constant_50_0), std::move(Convolution_423_0), std::move(Constant_52_0), std::move(Constant_53_0), std::move(BatchNormInference_424_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_424_0), std::move(Relu_425_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_59_0), std::move(Reshape_426_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(cudnn_handle_0), std::move(Relu_425_0), std::move(Reshape_426_0), std::move(Convolution_427_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_56_0), std::move(Constant_55_0), std::move(Convolution_427_0), std::move(Constant_57_0), std::move(Constant_58_0), std::move(BatchNormInference_428_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_417_0), std::move(BatchNormInference_428_0), std::move(Relu_430_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_64_0), std::move(Reshape_431_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(cudnn_handle_0), std::move(Relu_430_0), std::move(Reshape_431_0), std::move(Convolution_432_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_61_0), std::move(Constant_60_0), std::move(Convolution_432_0), std::move(Constant_62_0), std::move(Constant_63_0), std::move(BatchNormInference_433_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_433_0), std::move(Relu_434_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_69_0), std::move(Reshape_435_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(cudnn_handle_0), std::move(Relu_434_0), std::move(Reshape_435_0), std::move(Convolution_436_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_66_0), std::move(Constant_65_0), std::move(Convolution_436_0), std::move(Constant_67_0), std::move(Constant_68_0), std::move(BatchNormInference_437_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_437_0), std::move(Relu_438_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_74_0), std::move(Reshape_439_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(cudnn_handle_0), std::move(Relu_438_0), std::move(Reshape_439_0), std::move(Convolution_440_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_71_0), std::move(Constant_70_0), std::move(Convolution_440_0), std::move(Constant_72_0), std::move(Constant_73_0), std::move(BatchNormInference_441_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_430_0), std::move(BatchNormInference_441_0), std::move(Relu_443_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_79_0), std::move(Reshape_444_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(cudnn_handle_0), std::move(Relu_443_0), std::move(Reshape_444_0), std::move(Convolution_445_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_76_0), std::move(Constant_75_0), std::move(Convolution_445_0), std::move(Constant_77_0), std::move(Constant_78_0), std::move(BatchNormInference_446_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_446_0), std::move(Relu_447_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_84_0), std::move(Reshape_448_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(cudnn_handle_0), std::move(Relu_447_0), std::move(Reshape_448_0), std::move(Convolution_449_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(256, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_81_0), std::move(Constant_80_0), std::move(Convolution_449_0), std::move(Constant_82_0), std::move(Constant_83_0), std::move(BatchNormInference_450_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(98, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_450_0), std::move(Relu_451_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_89_0), std::move(Reshape_452_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(cudnn_handle_0), std::move(Relu_451_0), std::move(Reshape_452_0), std::move(Convolution_453_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(1024, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(Constant_86_0), std::move(Constant_85_0), std::move(Convolution_453_0), std::move(Constant_87_0), std::move(Constant_88_0), std::move(BatchNormInference_454_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(392, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_443_0), std::move(BatchNormInference_454_0), std::move(Relu_456_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_459_CallKernel(dim3(32, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_99_0), std::move(Reshape_459_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_460Kernel(std::move(cudnn_handle_0), std::move(Relu_456_0), std::move(Reshape_459_0), std::move(Convolution_460_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_96_0), std::move(Constant_95_0), std::move(Convolution_460_0), std::move(Constant_97_0), std::move(Constant_98_0), std::move(BatchNormInference_462_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_462_0), std::move(Relu_463_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_464_CallKernel(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_104_0), std::move(Reshape_464_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_465Kernel(std::move(cudnn_handle_0), std::move(Relu_463_0), std::move(Reshape_464_0), std::move(Convolution_465_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_101_0), std::move(Constant_100_0), std::move(Convolution_465_0), std::move(Constant_102_0), std::move(Constant_103_0), std::move(BatchNormInference_466_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_466_0), std::move(Relu_467_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_468_CallKernel(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_109_0), std::move(Reshape_468_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_469Kernel(std::move(cudnn_handle_0), std::move(Relu_467_0), std::move(Reshape_468_0), std::move(Convolution_469_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(2048, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_106_0), std::move(Constant_105_0), std::move(Convolution_469_0), std::move(Constant_107_0), std::move(Constant_108_0), std::move(BatchNormInference_470_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_457_CallKernel(dim3(128, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_94_0), std::move(Reshape_457_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_458Kernel(std::move(cudnn_handle_0), std::move(Relu_456_0), std::move(Reshape_457_0), std::move(Convolution_458_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(2048, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_91_0), std::move(Constant_90_0), std::move(Convolution_458_0), std::move(Constant_92_0), std::move(Constant_93_0), std::move(BatchNormInference_461_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_461_0), std::move(BatchNormInference_470_0), std::move(Relu_472_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_473_CallKernel(dim3(32, 128, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_114_0), std::move(Reshape_473_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_474Kernel(std::move(cudnn_handle_0), std::move(Relu_472_0), std::move(Reshape_473_0), std::move(Convolution_474_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_111_0), std::move(Constant_110_0), std::move(Convolution_474_0), std::move(Constant_112_0), std::move(Constant_113_0), std::move(BatchNormInference_475_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_475_0), std::move(Relu_476_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_464_CallKernel(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_119_0), std::move(Reshape_477_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_465Kernel(std::move(cudnn_handle_0), std::move(Relu_476_0), std::move(Reshape_477_0), std::move(Convolution_478_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_116_0), std::move(Constant_115_0), std::move(Convolution_478_0), std::move(Constant_117_0), std::move(Constant_118_0), std::move(BatchNormInference_479_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_479_0), std::move(Relu_480_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_468_CallKernel(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_124_0), std::move(Reshape_481_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_469Kernel(std::move(cudnn_handle_0), std::move(Relu_480_0), std::move(Reshape_481_0), std::move(Convolution_482_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(2048, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_121_0), std::move(Constant_120_0), std::move(Convolution_482_0), std::move(Constant_122_0), std::move(Constant_123_0), std::move(BatchNormInference_483_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_472_0), std::move(BatchNormInference_483_0), std::move(Relu_485_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_473_CallKernel(dim3(32, 128, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_129_0), std::move(Reshape_486_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_474Kernel(std::move(cudnn_handle_0), std::move(Relu_485_0), std::move(Reshape_486_0), std::move(Convolution_487_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_126_0), std::move(Constant_125_0), std::move(Convolution_487_0), std::move(Constant_127_0), std::move(Constant_128_0), std::move(BatchNormInference_488_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_488_0), std::move(Relu_489_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_464_CallKernel(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(Constant_134_0), std::move(Reshape_490_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_465Kernel(std::move(cudnn_handle_0), std::move(Relu_489_0), std::move(Reshape_490_0), std::move(Convolution_491_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(512, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_131_0), std::move(Constant_130_0), std::move(Convolution_491_0), std::move(Constant_132_0), std::move(Constant_133_0), std::move(BatchNormInference_492_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Relu_float_float_cuda_Relu_277_CallKernel(dim3(49, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(BatchNormInference_492_0), std::move(Relu_493_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Reshape_float_float_cuda_Reshape_468_CallKernel(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(Constant_139_0), std::move(Reshape_494_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Convolution_float_float_float_cuda_lib_Convolution_469Kernel(std::move(cudnn_handle_0), std::move(Relu_493_0), std::move(Reshape_494_0), std::move(Convolution_495_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(2048, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(Constant_136_0), std::move(Constant_135_0), std::move(Convolution_495_0), std::move(Constant_137_0), std::move(Constant_138_0), std::move(BatchNormInference_496_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(196, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Relu_485_0), std::move(BatchNormInference_496_0), std::move(Relu_498_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Sum_float_float_cuda_Sum_499_CallKernel(dim3(2048, 1, 1), dim3(32, 1, 1), 0, nullptr, std::move(Relu_498_0), std::move(Sum_499_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Divide_float_float_float_cuda_Divide_501_CallKernel(dim3(4, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(Sum_499_0), std::move(Constant_500_0), std::move(Divide_501_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Dot_float_float_float_cuda_lib_Dot_502Kernel(std::move(cublas_handle_0), std::move(Divide_501_0), std::move(Constant_4_0), std::move(Dot_502_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Add_float_float_float_cuda_Add_504_CallKernel(dim3(7, 1, 1), dim3(143, 1, 1), 0, nullptr, std::move(Dot_502_0), std::move(Broadcast_503_0), std::move(Add_504_0), std::move(Parameter_270_0), std::move(Result_505_0)));
+    kernels.emplace_back(new Result_float_float_cuda_lib_Result_505Kernel(std::move(Add_504_0), std::move(Result_505_0), std::move(Parameter_270_0), std::move(Result_505_0)));
 }

@@ -1,0 +1,124 @@
+//tzgemm_kernel.h
+#pragma once
+#include "Kernel.h"
+#include "util.h"
+#include "Logger.h"
+#include "header/tzgemm_header.h"
+
+extern Logger logger;
+extern bool gemm_malloced;
+extern half *ori_wmma_A;
+extern half *ori_wmma_B;
+extern float *ori_wmma_C;
+extern float *ori_host_A;
+extern float *ori_host_B;
+extern int MAX_M_GLOBAL;
+extern int MAX_N_GLOBAL;
+extern int MAX_K_GLOBAL;
+
+// return GLOBAL of M,N,K and gridDim.x
+inline std::vector<int> getTZGEMMGridDim(int m, int n, int k) {
+    int M_GLOBAL = (m < 128) ? 128 : (m / 128) * 128;
+    int N_GLOBAL = (n < 128) ? 128 : (n / 128) * 128;
+    int K_GLOBAL = (k < 128) ? 128 : (k / 128) * 128;
+
+    int M_TILES = M_GLOBAL / WMMA_M;
+    int N_TILES = N_GLOBAL / WMMA_N;
+    int K_TILES = K_GLOBAL / WMMA_K;
+
+    int gridDimX = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
+
+    std::vector<int> ret;
+    ret.push_back(M_GLOBAL);
+    ret.push_back(N_GLOBAL);
+    ret.push_back(K_GLOBAL);
+    ret.push_back(gridDimX);
+
+    return ret;
+}
+
+
+extern __global__ void ptb_tzgemm(half *A, half *B, float *C, 
+		// float alpha, float beta,
+		int M_GLOBAL, int N_GLOBAL, int K_GLOBAL,
+		int grid_dimension_x, int block_dimension_x);
+
+class OriTZGEMMKernel : public Kernel {
+public:
+    // 构造函数
+    OriTZGEMMKernel(int id, int m, int n, int k) {
+        this->Id = id;
+        this->kernelName = "tzgemm";
+        this->m = m;
+        this->n = n;
+        this->k = k;
+        this->initParams();
+    }
+
+    // 析构函数
+    ~OriTZGEMMKernel(){};
+
+    // impl virtual func
+    void executeImpl() {
+        checkKernelErrors((ptb_tzgemm<<<68 * 2, 128>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
+							M_GLOBAL, N_GLOBAL, K_GLOBAL,
+							launchGridDim.x, launchBlockDim.x)));
+    }
+    void initParams() {
+        if (!gemm_malloced) {
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
+            gemm_malloced = true;
+        }
+
+        int M_GLOBAL = (m < 128) ? 128 : (m / 128) * 128;
+        int N_GLOBAL = (n < 128) ? 128 : (n / 128) * 128;
+        int K_GLOBAL = (k < 128) ? 128 : (k / 128) * 128;
+
+        this->M_GLOBAL = M_GLOBAL;
+        this->N_GLOBAL = N_GLOBAL;
+        this->K_GLOBAL = K_GLOBAL;
+
+        printf("M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);
+        cudaErrCheck(cudaMemset(ori_wmma_C, 1.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
+        cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
+        cudaErrCheck(cudaMemset(ori_wmma_B, 0.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
+
+
+        int M_TILES = M_GLOBAL / WMMA_M;
+        int N_TILES = N_GLOBAL / WMMA_N;
+        int K_TILES = K_GLOBAL / WMMA_K;
+
+        this->launchGridDim.x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
+        this->launchGridDim.y = 1;
+        this->launchGridDim.z = 1;
+        this->launchBlockDim.x = THREADS_PER_BLOCK;
+        this->launchBlockDim.y = 1;
+        this->launchBlockDim.z = 1;
+
+        this->kernelParams.push_back(&ori_wmma_A);
+        this->kernelParams.push_back(&ori_wmma_B);
+        this->kernelParams.push_back(&ori_wmma_C);
+        this->kernelParams.push_back(&(this->M_GLOBAL));
+        this->kernelParams.push_back(&(this->N_GLOBAL));
+        this->kernelParams.push_back(&(this->K_GLOBAL));
+
+        this->smem = 18432;
+    }
+
+    int m, n, k;
+    int M_GLOBAL, N_GLOBAL, K_GLOBAL;
+
+    std::vector<int> getArgs() override {
+    return std::vector<int>();
+}
+private:
+    void loadKernel(){}; 
+};
+
+
+// extern boost::property_tree::ptree ptr;
+

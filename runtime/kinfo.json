@@ -46,5 +46,38 @@
         "shared_memory": 1024, 
         "blocksize": 128, 
         "ori_blks": 1024
+    },
+    "tzgemm_cp": {
+        "gridsize": 2,
+        "blocksize": 256,
+        "block_ratio": 0
+    },
+    "tzgemm_cutcp": {
+        "gridsize": 2,
+        "blocksize": 256
+    },
+    "tzgemm_fft": {
+        "gridsize": 2,
+        "blocksize": 256
+    },
+    "tzgemm_lbm": {
+        "gridsize": 2,
+        "blocksize": 256
+    },
+    "tzgemm_mrif": {
+        "gridsize": 1,
+        "blocksize": 384
+    },
+    "tzgemm_mriq": {
+        "gridsize": 1,
+        "blocksize": 384
+    },
+    "tzgemm_sgemm": {
+        "gridsize": 2,
+        "blocksize": 256
+    },
+    "tzgemm_stencil": {
+        "gridsize": 2,
+        "blocksize": 256
     }
 }

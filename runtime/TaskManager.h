@@ -6,11 +6,13 @@
 
 class TaskManager {
 public:
-    TaskManager() {};
-    void addTask(Task& task);
+    TaskManager(Task* lc_task, const std::string& be_task1, const std::string& be_task2);
     void executeAllTasks(ExecutionMode mode);
     ~TaskManager();
 
 private:
-    std::vector<Task*> tasks;
+    Task* lc_task;
+    std::string be_task1_name;
+    std::string be_task2_name;
+    int be_task_finish_num = 0;
 };
