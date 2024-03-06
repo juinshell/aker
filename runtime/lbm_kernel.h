@@ -18,7 +18,7 @@ public:
     ~OriLBMKernel();
 
     // 实现纯虚函数
-    void executeImpl();
+    void executeImpl(cudaStream_t stream);
     void initParams();
     std::vector<int> getArgs() {
         return std::vector<int>();

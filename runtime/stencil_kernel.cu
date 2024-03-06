@@ -136,7 +136,7 @@ void OriSTENCILKernel::initParams() {
         // nx = 512 ny = 512 nz = 64 iter = 100
         int nx = 128 * 4;
         int ny = 128 * 4;
-        int nz = 32 * 2;
+        int nz = 32 * 2 * 3; // scale up mem by 3x
         // int nz = 16 * 1;
         
         // printf("nx: %d, ny: %d, nz: %d, iteration: %d \n", nx, ny, nz, iteration);
@@ -163,6 +163,8 @@ void OriSTENCILKernel::initParams() {
         // cudaErrCheck(cudaMemcpy(stencil_gptb_a0, stencil_ori_a0, nx * ny * nz * sizeof(float), cudaMemcpyDeviceToDevice));
         // cudaErrCheck(cudaMemcpy(stencil_gptb_anext, stencil_ori_a0, nx * ny * nz * sizeof(float), cudaMemcpyDeviceToDevice));
     // ---------------------------------------------------------------------------------------
+    nz /= 3;
+    
     dim3 stencil_grid, ori_stencil_grid;
     dim3 stencil_block, ori_stencil_block;
     stencil_block.x = tile_x;
@@ -198,7 +200,7 @@ void OriSTENCILKernel::initParams() {
 
 }
 
-void OriSTENCILKernel::executeImpl() {
+void OriSTENCILKernel::executeImpl(cudaStream_t stream) {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
@@ -208,5 +210,5 @@ void OriSTENCILKernel::executeImpl() {
         launchGridDim, launchBlockDim,
         (void**)this->kernelParams.data(), this->smem, 0));
 
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    // CUDA_SAFE_CALL(cudaDeviceSynchronize());
 }

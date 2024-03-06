@@ -24,9 +24,9 @@ void Resnet50::initParams() {
 
     CUDA_SAFE_CALL(cudaMemcpy(Parameter_270_0, Parameter_270_0_host, sizeof(float) * 150528, cudaMemcpyHostToDevice));
     this->Parameter_270_0 = Parameter_270_0;
+    this->Parameter_270_0_host = Parameter_270_0_host;
     this->Result_505_0 = &Result_505_0;
 
     // put all kernel
     this->gen_vector(Parameter_270_0, &Result_505_0);
 }
-

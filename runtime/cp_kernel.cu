@@ -224,7 +224,7 @@ OriCPKernel::~OriCPKernel() {
     logger.INFO("id: " + std::to_string(Id) + " is destroyed!");
 }
 
-void OriCPKernel::executeImpl() {
+void OriCPKernel::executeImpl(cudaStream_t stream) {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // // print dim
     // logger.INFO("[Ori] cp -- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
@@ -232,7 +232,7 @@ void OriCPKernel::executeImpl() {
     
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
     launchGridDim, launchBlockDim,
-    (void**)this->kernelParams.data(), 0, 0));
+    (void**)this->kernelParams.data(), 0, stream));
     
 }
 

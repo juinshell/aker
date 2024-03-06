@@ -18,8 +18,10 @@ public:
     Task(int taskId);
     ~Task();
     void addKernel(Kernel* kernel);
-    void executeTask(ExecutionMode mode);
-    void executeTask(ExecutionMode mode, int idx);
+    void executeTask(ExecutionMode mode, cudaStream_t stream);
+    void executeTask(ExecutionMode mode, int idx, cudaStream_t stream);
+
+    virtual void initExecution() = 0;
 
     int taskId;
     std::string taskName;

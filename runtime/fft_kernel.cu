@@ -81,7 +81,7 @@ void OriFFTKernel::initParams() {
     //8*1024*1024;
     int fft_blks = 3;
     int fft_iter = 1;
-    int n_bytes = FFT_N * FFT_B * sizeof(float2);
+    int n_bytes = FFT_N * FFT_B * sizeof(float2) * 10; // up scale
     int nthreads = FFT_T;
     srand(54321);
 
@@ -153,7 +153,7 @@ void OriFFTKernel::loadKernel() {
     return ;
 }
 
-void OriFFTKernel::executeImpl() {
+void OriFFTKernel::executeImpl(cudaStream_t stream) {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
@@ -161,5 +161,5 @@ void OriFFTKernel::executeImpl() {
     
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,
-        (void**)this->kernelParams.data(), this->smem, 0));
+        (void**)this->kernelParams.data(), this->smem, stream));
 }

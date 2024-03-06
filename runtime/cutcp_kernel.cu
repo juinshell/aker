@@ -354,7 +354,7 @@ void OriCUTCPKernel::loadKernel() {
     
 }
 
-void OriCUTCPKernel::executeImpl() {
+void OriCUTCPKernel::executeImpl(cudaStream_t stream) {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     //logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
@@ -380,6 +380,6 @@ void OriCUTCPKernel::executeImpl() {
     // checkKernelErrors((ori_cutcp<<<this->launchGridDim, this->launchBlockDim>>>(this->CUTCPKernelParams->binDim_x, this->CUTCPKernelParams->binDim_y, this->CUTCPKernelParams->binZeroAddr, this->CUTCPKernelParams->h, this->CUTCPKernelParams->cutoff2, this->CUTCPKernelParams->inv_cutoff2, this->CUTCPKernelParams->regionZeroAddr, this->CUTCPKernelParams->zRegionIndex_t)));
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,
-        (void**)this->kernelParams.data(), 0, 0));
+        (void**)this->kernelParams.data(), 0, stream));
     
 }

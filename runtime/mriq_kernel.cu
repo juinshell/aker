@@ -20,6 +20,7 @@ void inputData(int* _numK, int* _numX,
     }
 
     fread (&numK, sizeof (int), 1, fid);
+    numK *= 2;
     *_numK = numK;
     fread (&numX, sizeof (int), 1, fid);
     *_numX = numX;
@@ -280,7 +281,7 @@ void OriMRIQKernel::initParams() {
 
 }
 
-void OriMRIQKernel::executeImpl() {
+void OriMRIQKernel::executeImpl(cudaStream_t stream) {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
@@ -288,7 +289,5 @@ void OriMRIQKernel::executeImpl() {
     
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,
-        (void**)this->kernelParams.data(), this->smem, 0));
-
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
+        (void**)this->kernelParams.data(), this->smem, stream));
 }

@@ -41,14 +41,18 @@
 #include "mix_kernel/fft_lbm_6_1.cu"
 #include "mix_kernel/fft_mriq_3_2.cu"
 #include "mix_kernel/fft_sgemm_1_4.cu"
+#include "mix_kernel/fft_stencil_5_3.cu"
 #include "mix_kernel/lbm_mrif_1_3.cu"
 #include "mix_kernel/lbm_mriq_1_2.cu"
 #include "mix_kernel/lbm_sgemm_1_7.cu"
 #include "mix_kernel/mrif_sgemm_1_4.cu"
+#include "mix_kernel/mrif_stencil_3_2.cu"
 #include "mix_kernel/mriq_sgemm_1_2.cu"
 
 // dnn
-#include "dnn/resnet50/resnet50.h"
+// #include "dnn/resnet50/resnet50.h"
+// #include "dnn/bert/bert.h"
+#include "dnn/inception3/inception3.h"
 
 #include "gptb_kernel/tzgemm_kernel.cu"
 #include "tzgemm_kernel.h"
@@ -78,6 +82,8 @@ ModuleCenter moduleCenter;
 Recorder recorder;
 
 std::unordered_map<std::string, void*> fmap = {
+    {"fft_tzgemm_mix_1_2", (void*)fft_tzgemm_mix_1_2},
+    {"fft_tzgemm_mix_2_2", (void*)fft_tzgemm_mix_2_2},
     {"gptb_cp", (void*)g_general_ptb_cp},
     {"gptb_cutcp", (void*)general_ptb_cutcp},
     {"gptb_fft", (void*)g_general_ptb_fft},
@@ -92,10 +98,12 @@ std::unordered_map<std::string, void*> fmap = {
     {"fft_lbm", (void*)mixed_fft_lbm_kernel_6_1},
     {"fft_mriq", (void*)mixed_fft_mriq_kernel_3_2},
     {"fft_sgemm", (void*)mixed_fft_sgemm_kernel_1_4},
+    {"fft_stencil", (void*)mixed_fft_stencil_kernel_5_3},
     {"lbm_mrif", (void*)mixed_lbm_mrif_kernel_1_3},
     {"lbm_mriq", (void*)mixed_lbm_mriq_kernel_1_2},
     {"lbm_sgemm", (void*)mixed_lbm_sgemm_kernel_1_7},
     {"mrif_sgemm", (void*)mixed_mrif_sgemm_kernel_1_4},
+    {"mrif_stencil", (void*)mixed_mrif_stencil_kernel_3_2},
     {"mriq_sgemm", (void*)mixed_mriq_sgemm_kernel_1_2},
     {"cutcp_fft", (void*)mixed_cutcp_fft_kernel_1_1},
     {"cutcp_sgemm", (void*)mixed_cutcp_sgemm_kernel_1_1},
@@ -106,6 +114,7 @@ std::unordered_map<std::string, void*> fmap = {
     {"tzgemm_mrif", (void*)mrif_tzgemm_mix},
     {"tzgemm_mriq", (void*)mriq_tzgemm_mix},
     {"tzgemm_stencil", (void*)stencil_tzgemm_mix},
+    // {"tz_fft_test", (void*)fft_tzgemm_mix_1_2}
 };
 
 void compileInfo() {
@@ -164,6 +173,148 @@ std::string ROOT_PATH = "/home/jxdeng/workspace/tacker/runtime";
 
 // extern std::unordered_map<std::string, GPTBKernel*> kernelMap;
 
+void tzgemm_cd_profile() {
+    // 测试fig10，tzgemm-cd load ratio
+    auto gptb_cd_kernel = createKernel(sget_kernel_info("ratio_test", "cd_kernel_name"));
+    printf("cd kernel name: %s\n", gptb_cd_kernel->kernelName.c_str());
+    int NORMAL_M = 12544 * 32;
+    int NORMAL_N = 128;
+    int NORMAL_K = 128 * 2;
+
+    auto ori_tzgemm_kernel = new OriTZGEMMKernel(0, NORMAL_M, NORMAL_N, NORMAL_K);
+    auto gptb_tzgemm_kernel = new GPTBKernel(
+        1, 
+        "tzgemm",
+        "gptb_tzgemm", 
+        ori_tzgemm_kernel,
+        dim3(SM_NUM * 4, 1, 1), 
+        dim3(128, 1, 1), 
+        0,
+        getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3]
+    );
+
+    int mix_cd_task_blk_num = get_kernel_info("ratio_test", "mix_cd_task_blk_num");
+    int solo_cd_task_blk_num = get_kernel_info("ratio_test", "solo_cd_task_blk_num");
+
+    gptb_cd_kernel->gptbParams.ptb_end_block_pos = mix_cd_task_blk_num + solo_cd_task_blk_num;
+
+    float kernel_time;
+    cudaEvent_t startKERNEL;
+    cudaEvent_t stopKERNEL;
+    CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+    CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
+
+
+    std::string mix_kernel_name = "tzgemm_" + gptb_cd_kernel->kernelName;
+
+    auto mix_kernel = new MixKernel(
+        1, 
+        mix_kernel_name, 
+        gptb_cd_kernel,
+        gptb_tzgemm_kernel, 
+        dim3(SM_NUM * get_kernel_info(mix_kernel_name, "gridsize"), 1, 1),
+        dim3(get_kernel_info(mix_kernel_name, "blocksize"), 1, 1),
+        0,
+        mix_cd_task_blk_num,
+        0,
+        getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3]
+    );
+
+
+    std::vector<float> time_vec;
+    // cd solo
+    for(int i = 0; i < 20; ++i) {
+            CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+            gptb_cd_kernel->execute(nullptr);
+            CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+            CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+            CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+            time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float gptb_cd_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        gptb_cd_time += time_vec[i];
+    }
+    gptb_cd_time /= 10.0f;
+
+    time_vec.clear();
+
+    // tzgemm solo
+    for(int i = 0; i < 20; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+        gptb_tzgemm_kernel->execute(nullptr);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float gptb_sgemm_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        gptb_sgemm_time += time_vec[i];
+    }
+    gptb_sgemm_time /= 10.0f;
+
+
+    time_vec.clear();
+
+        // mix
+    for(int i = 0; i < 50; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+        mix_kernel->execute(nullptr);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float mix_time = 0.0f;
+    for(int i = 20; i < 30; ++i) {
+        // printf("%f ", time_vec[i]);
+        mix_time += time_vec[i];
+    }
+    // printf("\n");
+    mix_time /= 10.0f;
+
+    time_vec.clear();
+
+    // left cd
+    float gptb_left_cd_time = 0.0f;
+    if (solo_cd_task_blk_num > 0) {
+        gptb_cd_kernel->gptbParams.ptb_end_block_pos = solo_cd_task_blk_num;
+        for(int i = 0; i < 20; ++i) {
+                CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+                gptb_cd_kernel->execute(nullptr);
+                CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+                CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+                CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+                time_vec.push_back(kernel_time);
+        }
+
+        // 排序后取中间10个数据，计算平均值
+        std::sort(time_vec.begin(), time_vec.end());
+        for(int i = 5; i < 15; ++i) {
+            gptb_left_cd_time += time_vec[i];
+        }
+        gptb_left_cd_time /= 10.0f;
+    }
+
+    float load_ratio = gptb_cd_time / gptb_sgemm_time;
+    printf("load_ratio: %f\n", load_ratio);
+    printf("mix_duration: %f\n", mix_time + gptb_left_cd_time);
+    printf("sgemm gptb time: %f, cd gptb time: %f, sgemm_blk_num: %d, cd_blk_num: %d\n", 
+                gptb_sgemm_time, gptb_cd_time, getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3], mix_cd_task_blk_num);
+    printf("mix cd blks: %d, solo cd blks: %d\n", mix_cd_task_blk_num, solo_cd_task_blk_num);
+    printf("mix cd time: %f, solo cd time: %f\n", mix_time, gptb_left_cd_time);
+}
+
 int main(int argc, char* argv[]) {
     using namespace clipp;
 
@@ -188,219 +339,9 @@ int main(int argc, char* argv[]) {
 
     // profile area
     // cudaEvent_t startKERNEL, stopKERNEL;
-	// cudaErrCheck(cudaEventCreate(&startKERNEL));
-	// cudaErrCheck(cudaEventCreate(&stopKERNEL));
+	// CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+	// CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
     // float milliseconds = 0;
-    // float ori_sum_time = 0;
-    // float max_up = 0;
-    // int cp_block_num = 32 * 512 / 10;
-    // int m = 68, n = 1, k = 1;
-    // int iter = 5;
-
-    // printf("MAX_M_GLOBAL: %d, MAX_N_GLOBAL: %d, MAX_K_GLOBAL: %d\n", MAX_M_GLOBAL, MAX_N_GLOBAL, MAX_K_GLOBAL);
-
-    // char foo;
-    // cin>>foo;
-    
-    // while((m < MAX_M_GLOBAL) && (n < MAX_N_GLOBAL) && (k < MAX_K_GLOBAL)){
-    //     auto o_cp = new OriCPKernel(0);
-    //     auto g_cp = new GPTBKernel(
-    //             10, 
-    //             "cp",
-    //             "gptb_cp", 
-    //             o_cp, 
-    //             dim3(SM_NUM * 8, 1, 1), 
-    //             dim3(128, 1, 1), 
-    //             0, 
-    //             cp_block_num);
-    //     auto o_tzgemm = new OriTZGEMMKernel(10, m, n, k);
-    //     auto g_tzgemm = new GPTBKernel(
-    //             11, 
-    //             "tzgemm",
-    //             "gptb_tzgemm", 
-    //             o_tzgemm, 
-    //             dim3(SM_NUM * 2, 1, 1), 
-    //             dim3(128, 1, 1), 
-    //             0, 
-    //             getTZGEMMGridDim(m, n, k)[3]);
-    //     auto mix_ = new MixKernel(
-    //             100, 
-    //             "tzgemm_cp", 
-    //             g_cp, 
-    //             g_tzgemm, 
-    //             dim3(SM_NUM * 2, 1, 1), 
-    //             dim3(256, 1, 1), 
-    //             0, 
-    //             cp_block_num,
-    //             0,
-    //             getTZGEMMGridDim(m, n, k)[3]);
-        
-    //     float ori1, ori2;
-    //     cudaEventRecord(startKERNEL);
-    //     o_cp->execute();
-    //     cudaEventRecord(stopKERNEL);
-    //     cudaEventSynchronize(stopKERNEL);
-    //     cudaEventElapsedTime(&ori1, startKERNEL, stopKERNEL);
-
-    //     cudaEventRecord(startKERNEL);
-    //     o_tzgemm->execute();
-    //     cudaEventRecord(stopKERNEL);
-    //     cudaEventSynchronize(stopKERNEL);
-    //     cudaEventElapsedTime(&ori2, startKERNEL, stopKERNEL);
-
-    //     ori_sum_time = ori1 + ori2;
-        
-    //     cudaEventRecord(startKERNEL);
-    //     mix_->execute();
-    //     cudaEventRecord(stopKERNEL);
-    //     cudaEventSynchronize(stopKERNEL);
-    //     cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL);
-    //     // std::cout << "block_ratio: " << cp_block_num * 1.0f / getTZGEMMGridDim(m, n, k)[3] << " mix_time: " << milliseconds << std::endl;
-
-
-    //     if (max_up < (ori_sum_time - milliseconds) / ori_sum_time) {
-    //         std::cout << "block_ratio: " << cp_block_num * 1.0f / getTZGEMMGridDim(m, n, k)[3] << std::endl;
-    //         std::cout << "ori_sum_time: " << ori_sum_time << std::endl;
-    //         std::cout << "mix_time: " << milliseconds << std::endl;
-    //         max_up = (ori_sum_time - milliseconds) / ori_sum_time;
-    //         std::cout << "max_up: " << (max_up * 1000.0f) << "%" << std::endl;
-    //     }
-
-    //     if (m + SM_NUM * iter < MAX_M_GLOBAL) m += SM_NUM * iter;
-    //     else if (n + SM_NUM * iter < MAX_N_GLOBAL) n += SM_NUM * iter;
-    //     else if (k + SM_NUM * iter < MAX_K_GLOBAL) k += SM_NUM * iter;
-    //     else break;
-
-    //     free(o_cp);
-    //     free(g_cp);
-    //     free(o_tzgemm);
-    //     free(g_tzgemm);
-    //     free(mix_);
-    // }
-    // auto x  = new MixKernel(
-    //                 0, 
-    //                 "cp_fft", 
-    //                 createKernel("cp"),
-    //                 createKernel("fft"),
-    //                 dim3(SM_NUM * 2, 1, 1), 
-    //                 dim3(1024, 1, 1), 
-    //                 createKernel("cp")->gptbParams.ptb_start_block_pos,
-    //                 createKernel("cp")->gptbParams.ptb_end_block_pos, 
-    //                 createKernel("fft")->gptbParams.ptb_start_block_pos,
-    //                 createKernel("fft")->gptbParams.ptb_end_block_pos);
-    // x->execute();
-    // cudaDeviceSynchronize();
-    // sleep(1);
-
-    // auto gptb_cp_ = createKernel("cp");
-    // gptb_cp_->execute();
-
-    // // Create Task 1
-    // Task task1(1, "Task1");
-    // task1.addKernel(std::make_unique<OriCPKernel>(1));
-    // task1.addKernel(std::make_unique<OriCUTCPKernel>(2));
-    // task1.addKernel(std::make_unique<OriFFTKernel>(3));
-    // task1.addKernel(std::make_unique<OriLBMKernel>(4));
-    // task1.addKernel(std::make_unique<OriMRIFKernel>(5));
-    // task1.addKernel(std::make_unique<OriMRIQKernel>(6));
-    // task1.addKernel(std::make_unique<OriSGEMMKernel>(7));
-    // task1.addKernel(std::make_unique<OriSTENCILKernel>(8));
-    // // task1.addKernel(std::make_unique<OriTZGEMMKernel>(9, 12544, 2048, 4608));
-
-    // taskManager.addTask(task1);
-
-    // Task task2(2, "task2");
-    // auto oriCPKernel = std::make_unique<OriCPKernel>(10);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     10, 
-    //     "gptb_cp", 
-    //     std::move(oriCPKernel), 
-    //     dim3(SM_NUM * 8, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     32 * 512));
-    
-    // auto oriCUTCPKernel = std::make_unique<OriCUTCPKernel>(11);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     11, 
-    //     "gptb_cutcp", 
-    //     std::move(oriCUTCPKernel), 
-    //     dim3(SM_NUM * 6, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     1352));
-
-    // auto oriFFTKernel = std::make_unique<OriFFTKernel>(12);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     12, 
-    //     "gptb_fft", 
-    //     std::move(oriFFTKernel), 
-    //     dim3(SM_NUM * 3, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     10240));
-    
-    // auto oriLBMKernel = std::make_unique<OriLBMKernel>(16);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     16, 
-    //     "gptb_lbm", 
-    //     std::move(oriLBMKernel), 
-    //     dim3(SM_NUM * 1, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     16384));
-
-    // auto oriMRIFKernel = std::make_unique<OriMRIFKernel>(17);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     17, 
-    //     "gptb_mrif", 
-    //     std::move(oriMRIFKernel), 
-    //     dim3(SM_NUM * 3, 1, 1), 
-    //     dim3(256, 1, 1), 
-    //     0, 
-    //     1024));
-
-    // auto oriMRIQKernel = std::make_unique<OriMRIQKernel>(18);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     18, 
-    //     "gptb_mriq", 
-    //     std::move(oriMRIQKernel), 
-    //     dim3(SM_NUM * 4, 1, 1), 
-    //     dim3(256, 1, 1), 
-    //     0, 
-    //     819));
-
-    // auto oriSGEMMKernel = std::make_unique<OriSGEMMKernel>(19);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     19, 
-    //     "gptb_sgemm", 
-    //     std::move(oriSGEMMKernel), 
-    //     dim3(SM_NUM * 4, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     774));
-
-    // auto oriSTENCILKernel = std::make_unique<OriSTENCILKernel>(20);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     20, 
-    //     "gptb_stencil", 
-    //     std::move(oriSTENCILKernel), 
-    //     dim3(SM_NUM * 3, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     1024));
-    
-    // auto oriTZGEMMKernel = std::make_unique<OriTZGEMMKernel>(21, 12544, 2048, 4608);
-    // task2.addKernel(std::make_unique<GPTBKernel>(
-    //     21,
-    //     "gptb_tzgemm",
-    //     std::move(oriTZGEMMKernel),
-    //     dim3(SM_NUM * 1, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     oriTZGEMMKernel->launchGridDim.x));
-    
-    // taskManager.addTask(task2);
 
     // Task task3(3, "Task3");
     // OriCPKernel oriCpKernel(3); // create lvalue
@@ -436,75 +377,44 @@ int main(int argc, char* argv[]) {
     //     0, 
     //     32 * 512));
 
-    // Resnet50 resnet50(3);
-
-    // // taskManager.addTask(resnet50);
-
-    // // test mix
-    // auto tzgemm_cp_cp = std::make_unique<GPTBKernel>(
-    //     0, 
-    //     "gptb_cp", 
-    //     std::make_unique<OriCPKernel>(0),
-    //     dim3(SM_NUM * 6, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     32 * 512);
-
-    // auto tzgemm_cp_tzgemm = std::make_unique<GPTBKernel>(
-    //     1, 
-    //     "gptb_tzgemm", 
-    //     std::make_unique<OriTZGEMMKernel>(1, 4096, 2048, 2048),
-    //     dim3(SM_NUM * 1, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     getTZGEMMGridDim(4096, 2048, 2048)[3]);
+    cudaStream_t stream;
+    CUDA_SAFE_CALL(cudaStreamCreate(&stream));
     
-    // auto tzgemm_cp_mix = std::make_unique<MixKernel>(
-    //     100, 
-    //     "tzgemm_cp", 
-    //     std::move(tzgemm_cp_cp), 
-    //     std::move(tzgemm_cp_tzgemm), 
-    //     dim3(SM_NUM * 1, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     32 * 512,
-    //     0,
-    //     getTZGEMMGridDim(4096, 2048, 2048)[3]);
+    // cudaEvent_t startKERNEL, stopKERNEL;
+	// CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+	// CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
+    // float milliseconds = 0;
 
-    // Task task3(3, "task3");
-    // task3.addKernel(std::make_unique<MixKernel>(
-    //     100, 
-    //     "tzgemm_cp", 
-    //     std::move(tzgemm_cp_cp), 
-    //     std::move(tzgemm_cp_tzgemm), 
-    //     dim3(SM_NUM * 1, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     32 * 512,
-    //     0,
-    //     getTZGEMMGridDim(4096, 2048, 2048)[3]));
-
-    // taskManager.addTask(task3);
-
-    
-    // for (int i = 0; i < 20; i++) {
-    //     resnet50.executeTask(ExecutionMode::WARMUP);
-    //     task1.executeTask(ExecutionMode::WARMUP);
-    //     task2.executeTask(ExecutionMode::WARMUP);
-    //     // task3.executeTask(ExecutionMode::WARMUP);
+    auto lc_task = Inception3(1001);
+    // for (int i = 0; i < 5; ++i) {
+    //     cudaEventRecord(startKERNEL);
+    //     for (auto& kernel: lc_task.kernels) {
+    //         kernel->execute(nullptr);
+    //     }
+    //     cudaEventRecord(stopKERNEL);
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL);
+    //     printf("bert tasks %f ms to execute.\n", milliseconds);
     // }
 
-    // Execute all tasks
-    auto lc_task = Resnet50(1000);
+    // char foo;
+    // cin >> foo;
 
-    TaskManager taskManager(&lc_task, "cp", "fft");
+    // auto lc_task = Resnet50(1000);
 
-    // for (int i = 0; i < 5; i++) {
-    //     taskManager.executeAllTasks(ExecutionMode::WARMUP);
+    // warmup gpu by lc
+    // for (int iter = 0; iter < 5; ++iter) {
+    //     for (auto& kernel : lc_task.kernels) {
+    //         kernel->execute(nullptr);
+    //     }
+    //     cudaDeviceSynchronize();
     // }
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
+
+    // tzgemm_cd_profile();
     
-    taskManager.executeAllTasks(ExecutionMode::PROFILE);
+    TaskManager taskManager(&lc_task, "mrif", "stencil");
+    
+    taskManager.executeAllTasks(ExecutionMode::PROFILE, stream);
 
     // system("nvidia-smi >> nvidia-smi.log");
 

@@ -43,7 +43,7 @@ public:
     uint mixable = 0;
     bool initialized = false;
 protected:
-    virtual void executeImpl() = 0; // implement in subclass
+    virtual void executeImpl(cudaStream_t stream) = 0; // implement in subclass
 };
 
 struct GPTBParams {

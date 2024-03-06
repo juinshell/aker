@@ -65,7 +65,7 @@ public:
         }
     }
 
-    void executeImpl() override{
+    void executeImpl(cudaStream_t stream) override{
         // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
 
         kernelParams.push_back(&gptbParams.ptb_start_block_pos);
@@ -77,7 +77,7 @@ public:
         // launch kernel
         CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
             launchGridDim, launchBlockDim,
-            (void **)kernelParams.data(), (size_t)this->smem, 0));
+            (void **)kernelParams.data(), (size_t)this->smem, stream));
         
         // CUDA_SAFE_CALL(cudaDeviceSynchronize());
         kernelParams.pop_back();

@@ -52,9 +52,9 @@ int main(int argc, char **argv) {
 	// int M_INPUT = 64;
 	// int N_INPUT = 64 * 805;
 	// int K_INPUT = 64 * 7;
-	int M_INPUT = 16 * 8;
-	int N_INPUT = 16 * 128;
-	int K_INPUT = 16 * 32;
+	int M_INPUT = 25088;
+	int N_INPUT = 128 * 2;
+	int K_INPUT = 128;
     if (argc == 3) {
         tzgemm_blks = atoi(argv[1]);
         tzgemm_iter = atoi(argv[2]);

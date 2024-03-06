@@ -59,20 +59,12 @@ public:
     ~OriTZGEMMKernel(){};
 
     // impl virtual func
-    void executeImpl() {
-        checkKernelErrors((ptb_tzgemm<<<68 * 2, 128>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
+    void executeImpl(cudaStream_t stream) {
+        checkKernelErrors((ptb_tzgemm<<<68 * 4, 128, 0, stream>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
 							M_GLOBAL, N_GLOBAL, K_GLOBAL,
 							launchGridDim.x, launchBlockDim.x)));
     }
     void initParams() {
-        if (!gemm_malloced) {
-            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * MAX_M_GLOBAL * MAX_K_GLOBAL));
-            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * MAX_N_GLOBAL * MAX_K_GLOBAL));
-            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL));
-            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL));
-            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
-            gemm_malloced = true;
-        }
 
         int M_GLOBAL = (m < 128) ? 128 : (m / 128) * 128;
         int N_GLOBAL = (n < 128) ? 128 : (n / 128) * 128;
@@ -82,10 +74,25 @@ public:
         this->N_GLOBAL = N_GLOBAL;
         this->K_GLOBAL = K_GLOBAL;
 
-        printf("M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);
-        cudaErrCheck(cudaMemset(ori_wmma_C, 1.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
-        cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
-        cudaErrCheck(cudaMemset(ori_wmma_B, 0.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
+        if (!gemm_malloced) {
+            MAX_M_GLOBAL = max(MAX_M_GLOBAL, M_GLOBAL);
+            MAX_N_GLOBAL = max(MAX_N_GLOBAL, N_GLOBAL);
+            MAX_K_GLOBAL = max(MAX_K_GLOBAL, K_GLOBAL);
+            // cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+            // cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
+            gemm_malloced = true;
+            // cudaErrCheck(cudaMemset(ori_wmma_C, 1.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
+            // cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
+            // cudaErrCheck(cudaMemset(ori_wmma_B, 0.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
+        }
+
+        // printf("M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);
+        // cudaErrCheck(cudaMemset(ori_wmma_C, 1.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
+        // cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
+        // cudaErrCheck(cudaMemset(ori_wmma_B, 0.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
 
 
         int M_TILES = M_GLOBAL / WMMA_M;

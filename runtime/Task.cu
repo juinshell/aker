@@ -14,7 +14,7 @@ void Task::addKernel(Kernel* kernel) {
     kernels.emplace_back(kernel);
 }
 
-void Task::executeTask(ExecutionMode mode) {
+void Task::executeTask(ExecutionMode mode, cudaStream_t stream) {
     float kernel_time = 0.0f;
     cudaEvent_t startKERNEL;
     cudaEvent_t stopKERNEL;
@@ -25,7 +25,7 @@ void Task::executeTask(ExecutionMode mode) {
         logger.DEBUG("kernel name: " + kernel->kernelName + ", id: " + std::to_string(kernel->Id) + " is executing ...");
         // execute kernel
         CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
-        kernel->execute();
+        kernel->execute(stream);
         CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
         CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
         CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
@@ -41,7 +41,7 @@ void Task::executeTask(ExecutionMode mode) {
     }
 }
 
-void Task::executeTask(ExecutionMode mode, int idx) {
+void Task::executeTask(ExecutionMode mode, int idx, cudaStream_t stream) {
     float kernel_time = 0.0f;
     cudaEvent_t startKERNEL;
     cudaEvent_t stopKERNEL;
@@ -51,7 +51,7 @@ void Task::executeTask(ExecutionMode mode, int idx) {
     logger.DEBUG("kernel name: " + kernel->kernelName + ", id: " + std::to_string(kernel->Id) + " is executing ...");
     // execute kernel
     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
-    kernel->execute();
+    kernel->execute(stream);
     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
     CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));

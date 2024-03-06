@@ -1,5 +1,6 @@
 #include "Creator.h"
 #include "Logger.h"
+#include "json.h"
 
 extern Logger logger;
 
@@ -30,7 +31,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     dim3(SM_NUM * 6, 1, 1), 
                     dim3(128, 1, 1), 
                     0, 
-                    32 * 512);
+                    get_kernel_info("cp", "ori_blks"));
             } 
             return kernelMap["cp"];
             break;
@@ -44,7 +45,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     dim3(SM_NUM * 6, 1, 1), 
                     dim3(128, 1, 1), 
                     0, 
-                    1352);
+                    get_kernel_info("cutcp", "ori_blks"));
             }
             return kernelMap["cutcp"];
             break;
@@ -58,7 +59,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     dim3(SM_NUM * 3, 1, 1), 
                     dim3(128, 1, 1), 
                     0, 
-                    10240);
+                    get_kernel_info("fft", "ori_blks"));
             }
             return kernelMap["fft"];
         case myHash("lbm"):
@@ -71,7 +72,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     dim3(SM_NUM * 1, 1, 1), 
                     dim3(128, 1, 1), 
                     0, 
-                    16384);
+                    get_kernel_info("lbm", "ori_blks"));
             }
             return kernelMap["lbm"];
         case myHash("mrif"):
@@ -84,7 +85,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     dim3(SM_NUM * 3, 1, 1), 
                     dim3(256, 1, 1), 
                     0, 
-                    1024);
+                    get_kernel_info("mrif", "ori_blks"));
             }
             return kernelMap["mrif"];
         case myHash("mriq"):
@@ -97,7 +98,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     dim3(SM_NUM * 4, 1, 1), 
                     dim3(256, 1, 1), 
                     0, 
-                    819);
+                    get_kernel_info("mriq", "ori_blks"));
             }
             return kernelMap["mriq"];
         case myHash("sgemm"):
@@ -110,7 +111,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     dim3(SM_NUM * 4, 1, 1), 
                     dim3(128, 1, 1), 
                     0, 
-                    774);
+                    get_kernel_info("sgemm", "ori_blks"));
             }
             return kernelMap["sgemm"];
         case myHash("stencil"):
@@ -123,7 +124,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     dim3(SM_NUM * 3, 1, 1), 
                     dim3(128, 1, 1), 
                     0, 
-                    1024);
+                    get_kernel_info("stencil", "ori_blks"));
             }
             return kernelMap["stencil"];
         default:
@@ -244,7 +245,7 @@ MixKernel* createMixKernel(const std::string &name) {
                     createKernel("cutcp"),
                     createKernel("fft"),
                     dim3(SM_NUM * 3, 1, 1), 
-                    dim3(786, 1, 1), 
+                    dim3(256, 1, 1), 
                     createKernel("cutcp")->gptbParams.ptb_start_block_pos,
                     createKernel("cutcp")->gptbParams.ptb_end_block_pos, 
                     createKernel("fft")->gptbParams.ptb_start_block_pos,
@@ -274,7 +275,7 @@ MixKernel* createMixKernel(const std::string &name) {
                     createKernel("fft"),
                     createKernel("lbm"),
                     dim3(SM_NUM * 1, 1, 1), 
-                    dim3(906, 1, 1), 
+                    dim3(896, 1, 1), 
                     createKernel("fft")->gptbParams.ptb_start_block_pos,
                     createKernel("fft")->gptbParams.ptb_end_block_pos, 
                     createKernel("lbm")->gptbParams.ptb_start_block_pos,

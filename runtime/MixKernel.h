@@ -1,5 +1,6 @@
 #pragma once
 #include "GPTBKernel.h"
+#include "json.h"
 
 extern Logger logger;
 extern std::unordered_map<std::string, void*> fmap;
@@ -14,12 +15,16 @@ public:
             this->kernelName = funcKey;
             this->launchGridDim = gridDim;
             this->launchBlockDim = blockDim;
-
-            this->smem = this->kernel1->smem + this->kernel2->smem;
+            if (get_kernel_info(funcKey, "shared_memory") != JSON_NOT_FOUND) {
+                this->smem = get_kernel_info(funcKey, "shared_memory");
+            }
+            else {
+                this->smem = this->kernel1->smem + this->kernel2->smem;
+            }
 
             // override gptb params
             this->kernel1_iter_block_step = gridDim.x * gridDim.y * gridDim.z;
-            this->kernel2_iter_block_step = this->kernel1->gptbParams.ptb_iter_block_step;
+            this->kernel2_iter_block_step = kernel1_iter_block_step;
 
             this->kernel1_start_block_pos = ptb_start_block_pos1;
             this->kernel1_end_block_pos = ptb_end_block_pos1;
@@ -66,8 +71,9 @@ public:
     }
 
     void loadKernel() override {
-        if (fmap.find(funcKey) != fmap.end()) {
-            this->kernelFunc = (void*)fmap[funcKey];
+        auto iter = fmap.find(funcKey);
+        if (iter != fmap.end()) {
+            this->kernelFunc = (void*)iter->second;
         } else {
             logger.ERROR("load kernel {" + funcKey + "} failed!");
         }
@@ -75,18 +81,19 @@ public:
         return ;
     }
 
-    void executeImpl() override {
+    void executeImpl(cudaStream_t stream) override {
         // logger.INFO("name: " + this->kernelName);
-        // logger.INFO("smem: " + std::to_string(this->smem));
+        // logger.INFO("smem: " + std::to_string(this->smem) + "=" + std::to_string(this->kernel1->smem) + "+" + std::to_string(this->kernel2->smem));
         // logger.INFO("gridDim: " + std::to_string(this->launchGridDim.x) + " " + std::to_string(this->launchGridDim.y) + " " + std::to_string(this->launchGridDim.z));
         // logger.INFO("blockDim: " + std::to_string(this->launchBlockDim.x) + " " + std::to_string(this->launchBlockDim.y) + " " + std::to_string(this->launchBlockDim.z));
         //         logger.INFO("kernelParams size: " + std::to_string(kernelParams.size()));
-        // logger.INFO("mix kernel1 blks range: " + std::to_string(kernel1->gptbParams.ptb_start_block_pos) + " - " + std::to_string(gptbParams.ptb_end_block_pos));
-        // logger.INFO("mix kernel1 blks step: " + std::to_string(gptbParams.ptb_iter_block_step));
-        // logger.INFO("mix kernel2 blks range: " + std::to_string(gptbParams.ptb_start_block_pos + gptbParams.ptb_iter_block_step) + " - " + std::to_string(gptbParams.ptb_end_block_pos + gptbParams.ptb_iter_block_step));
+        // logger.INFO("mix kernel1 blks range: " + std::to_string(kernel1_start_block_pos) + " - " + std::to_string(kernel1_end_block_pos));
+        // logger.INFO("mix kernel1 blks step: " + std::to_string(kernel1_iter_block_step));
+        // logger.INFO("mix kernel2 blks range: " + std::to_string(kernel2_start_block_pos) + " - " + std::to_string(kernel2_end_block_pos));
+        // logger.INFO("mix kernel2 blks step: " + std::to_string(kernel2_iter_block_step));
         CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
             launchGridDim, launchBlockDim,
-            (void **)kernelParams.data(), (size_t)this->smem, 0));
+            (void **)kernelParams.data(), (size_t)this->smem, stream));
         // CUDA_SAFE_CALL(cudaDeviceSynchronize());
     }
 

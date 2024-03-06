@@ -238,7 +238,7 @@ void OriLBMKernel::initParams(){
 
 }
 
-void OriLBMKernel::executeImpl() {
+void OriLBMKernel::executeImpl(cudaStream_t stream) {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
@@ -246,7 +246,7 @@ void OriLBMKernel::executeImpl() {
     
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,
-        (void**)this->kernelParams.data(), this->smem, 0));
+        (void**)this->kernelParams.data(), this->smem, stream));
 
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    // CUDA_SAFE_CALL(cudaDeviceSynchronize());
 }

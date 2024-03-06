@@ -1,83 +1,131 @@
 {
-    "cp" : {
-        "register": 39, 
-        "shared_memory": 0, 
-        "blocksize": 128, 
-        "ori_blks": 16384
+    "cp": {
+        "register": 39,
+        "shared_memory": 0,
+        "blocksize": 128,
+        "ori_blks": 1020,
+        "real_ori_blks": 16384
     },
     "cutcp": {
-        "register": 42, 
-        "shared_memory": 4096, 
-        "blocksize": 128, 
-        "ori_blks": 1352
+        "register": 42,
+        "shared_memory": 4096,
+        "blocksize": 128,
+        "ori_blks": 170,
+        "real_ori_blks": 2720
     },
     "fft": {
-        "register": 33, 
-        "shared_memory": 2048, 
-        "blocksize": 128, 
-        "ori_blks": 10240
+        "register": 33,
+        "shared_memory": 2048,
+        "blocksize": 128,
+        "ori_blks": 1700,
+        "real_ori_blks": 10240
     },
     "lbm": {
         "register": 61,
-         "shared_memory": 0, 
-         "blocksize": 128, 
-         "ori_blks": 16384
-        },
+        "shared_memory": 0,
+        "blocksize": 128,
+        "ori_blks": 6800,
+        "real_ori_blks": 16384
+    },
     "mrif": {
-        "register": 32, 
-        "shared_memory": 0, 
-        "blocksize": 256, 
-        "ori_blks": 1024
+        "register": 32,
+        "shared_memory": 0,
+        "blocksize": 256,
+        "ori_blks": 450,
+        "real_ori_blks": 2048
     },
     "mriq": {
-        "register": 31, 
+        "register": 31,
         "shared_memory": 0,
-        "blocksize": 256, 
-        "ori_blks": 819
+        "blocksize": 256,
+        "ori_blks": 136,
+        "real_ori_blks": 2048
     },
     "sgemm": {
-        "register": 64, 
-        "shared_memory": 512, 
-        "blocksize": 128, 
-        "ori_blks": 774
+        "register": 64,
+        "shared_memory": 512,
+        "blocksize": 128,
+        "ori_blks": 68,
+        "real_ori_blks": 774
     },
     "stencil": {
-        "register": 38, 
-        "shared_memory": 1024, 
-        "blocksize": 128, 
-        "ori_blks": 1024
+        "register": 38,
+        "shared_memory": 1024,
+        "blocksize": 128,
+        "ori_blks": 680,
+        "real_ori_blks": 2048
     },
     "tzgemm_cp": {
-        "gridsize": 2,
-        "blocksize": 256,
-        "block_ratio": 0
+        "gridsize": 1,
+        "blocksize": 512,
+        "block_ratio": 11110.21,
+        "best_block_ratio": 0.21,
+        "shared_memory": 0
     },
     "tzgemm_cutcp": {
         "gridsize": 2,
-        "blocksize": 256
+        "blocksize": 256,
+        "block_ratio": 0.03,
+        "best_block_ratio": 0.03,
+        "shared_memory": 22528
     },
     "tzgemm_fft": {
         "gridsize": 2,
-        "blocksize": 256
+        "blocksize": 256,
+        "block_ratio": 1111.0,
+        "best_block_ratio": 1.0,
+        "shared_memory": 20480
     },
     "tzgemm_lbm": {
         "gridsize": 2,
-        "blocksize": 256
+        "blocksize": 256,
+        "block_ratio": 11110.1,
+        "best_block_ratio": 0.1,
+        "shared_memory": 18432
     },
     "tzgemm_mrif": {
         "gridsize": 1,
-        "blocksize": 384
+        "blocksize": 384,
+        "block_ratio": 0.88,
+        "best_block_ratio": 0.88,
+        "shared_memory": 0,
+        "real_shared_memory": 36864
     },
     "tzgemm_mriq": {
         "gridsize": 1,
-        "blocksize": 384
+        "blocksize": 384,
+        "block_ratio": 111110.05,
+        "best_block_ratio": 0.05,
+        "shared_memory": 0,
+        "real_shared_memory": 36864
     },
     "tzgemm_sgemm": {
         "gridsize": 2,
-        "blocksize": 256
+        "blocksize": 256,
+        "block_ratio": 1.0,
+        "best_block_ratio": 1.0,
+        "shared_memory": 0
     },
     "tzgemm_stencil": {
         "gridsize": 2,
-        "blocksize": 256
+        "blocksize": 256,
+        "block_ratio": 0.1,
+        "best_block_ratio": 0.1,
+        "shared_memory": 19456
+    },
+    "ratio_test": {
+        "cd_kernel_name": "cp",
+        "mix_cd_task_blk_num": 5712,
+        "solo_cd_task_blk_num": 0
+    },
+    "fft_tzgemm_mix_1_2": {
+        "gridsize": 1,
+        "blocksize": 384,
+        "shared_memory": 0
+    },
+    "fft_tzgemm_mix_2_2": {
+        "gridsize": 1,
+        "blocksize": 512,
+        "shared_memory": 0
     }
 }

@@ -142,7 +142,7 @@ void OriSGEMMKernel::initParams(){
         this->kernelFunc = (void*) ori_sgemm;
 }
 
-void OriSGEMMKernel::executeImpl() {
+void OriSGEMMKernel::executeImpl(cudaStream_t stream) {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
@@ -152,5 +152,5 @@ void OriSGEMMKernel::executeImpl() {
         launchGridDim, launchBlockDim,
         (void**)this->kernelParams.data(), this->smem, 0));
 
-    CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    // CUDA_SAFE_CALL(cudaDeviceSynchronize());
 }

@@ -32,6 +32,7 @@ void inputData(int* _numK, int* _numX,
     fread (&numK, sizeof (int), 1, fid);
     *_numK = numK;
     fread (&numX, sizeof (int), 1, fid);
+    numX *= 2; // scale up by 2x
     *_numX = numX;
     *kx = (float *) memalign(16, numK * sizeof (float));
     fread (*kx, sizeof (float), numK, fid);
@@ -338,7 +339,7 @@ void OriMRIFKernel::initParams() {
 }
 
 
-void OriMRIFKernel::executeImpl() {
+void OriMRIFKernel::executeImpl(cudaStream_t stream) {
     // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
     // print dim
     // logger.INFO("-- launchGridDim: " + std::to_string(this->launchGridDim.x) + ", " + std::to_string(this->launchGridDim.y) + ", " + std::to_string(this->launchGridDim.z));
@@ -346,5 +347,5 @@ void OriMRIFKernel::executeImpl() {
     
     CUDA_SAFE_CALL(cudaLaunchKernel(this->kernelFunc, 
         launchGridDim, launchBlockDim,
-        (void**)this->kernelParams.data(), this->smem, 0));
+        (void**)this->kernelParams.data(), this->smem, stream));
 }

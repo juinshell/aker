@@ -96,9 +96,9 @@ int main(int argc, char* argv[]) {
     int cp_blks = 4;
 	int cp_iter = 1;
 	int wmma_blks = 2;
-    int wmma_iter = 20;
-    int M_INPUT = 128 * 1;
-	int N_INPUT = 128 * 3136;
+    int wmma_iter = 1;
+    int M_INPUT = 50176;
+	int N_INPUT = 128;
 	int K_INPUT = 128 * 1;
 	int mixwarp = 1;
 	if (argc == 2) {
@@ -216,7 +216,7 @@ int main(int argc, char* argv[]) {
 		if (wmma_blks != 0) {
 			SHMEM_SZ = 0;
 		}
-
+		printf("wmma_grid_dim_x: %d wmma_block_dim_x: %d\n", wmma_grid_dim_x, wmma_block_dim_x);
 		printf("[PTB] Running with tzgemm...\n");
 		printf("[PTB] wmma_grid -- %d * %d wmma_block -- %d * %d \n", wmma_grid.x, wmma_grid.y, wmma_block.x, wmma_block.y);
 
@@ -286,7 +286,7 @@ int main(int argc, char* argv[]) {
 			wmma_grid_dim_x, wmma_block_dim_x, wmma_iter,
 			// cp parameters
 			runatoms, 0.1, ptb_output, 
-			cp_grid_dim_x, cp_grid_dim_y, cp_block_dim_x, cp_block_dim_y, cp_iter
+			0, 0, cp_block_dim_x, cp_block_dim_y, cp_iter
 		)));
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));
