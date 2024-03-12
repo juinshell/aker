@@ -40,7 +40,7 @@ find_library(CUDNN_LIBRARY cudnn
     HINTS ${CUDA_TOOLKIT_ROOT_DIR}
     PATH_SUFFIXES lib lib64 cuda/lib cuda/lib64 lib/x64)
 
-set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c Recorder.cc json.cc Creator.cu ./dnn/inception3/inception3.cu)
+set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c Recorder.cc json.cc Creator.cu ./dnn/vgg16/vgg16.cu)
 
 string(TIMESTAMP COMPILE_TIME %Y%m%d-%H%M%S)
 configure_file(TackerConfig.h.in TackerConfig.h)

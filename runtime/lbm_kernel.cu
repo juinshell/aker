@@ -187,7 +187,9 @@ void OriLBMKernel::initParams(){
     // float *host_lbm_ptb_dst;
     // float *host_lbm_gptb_dst;
 
-    const size_t size = TOTAL_PADDED_CELLS * N_CELL_ENTRIES * sizeof(float) + 2 * TOTAL_MARGIN * sizeof(float);
+    size_t size = TOTAL_PADDED_CELLS * N_CELL_ENTRIES * sizeof(float) + 2 * TOTAL_MARGIN * sizeof(float);
+
+    size *= 2;
 
     host_lbm_ori_dst = (float *)malloc(size);
     // host_lbm_ptb_dst = (float *)malloc(size);

@@ -30,13 +30,13 @@ void Task::executeTask(ExecutionMode mode, cudaStream_t stream) {
         CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
         CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
         
-        if (mode == ExecutionMode::PROFILE) {
+        if (mode == ExecutionMode::Aker) {
             recorder.recordKernel(taskId, kernel->Id, kernel->kernelName, kernel_time);
         }
         // logger.DEBUG("kernel name: " + kernel->getKernelName() + ", kernel time: " + std::to_string(kernel_time) + " ms");
         // ~kernel
     }
-    if (mode == ExecutionMode::PROFILE) {
+    if (mode == ExecutionMode::Aker) {
         recorder.recordTask(taskId, taskName);
     }
 }
@@ -56,7 +56,7 @@ void Task::executeTask(ExecutionMode mode, int idx, cudaStream_t stream) {
     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
     CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
     
-    if (mode == ExecutionMode::PROFILE) {
+    if (mode == ExecutionMode::Aker) {
         recorder.recordKernel(taskId, kernel->Id, kernel->kernelName, kernel_time);
     }
     // logger.DEBUG("kernel name: " + kernel->getKernelName() + ", kernel time: " + std::to_string(kernel_time) + " ms");

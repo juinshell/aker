@@ -4,8 +4,8 @@
 #include <queue>
 
 enum ExecutionMode{
-    WARMUP = 0,
-    PROFILE
+    Aker = 0,
+    Tacker
 };
 
 enum TaskType{

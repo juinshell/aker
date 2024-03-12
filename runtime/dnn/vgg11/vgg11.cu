@@ -13,7 +13,7 @@ void VGG11::initParams() {
     //input argument
     float* Parameter_32_0_host, *Parameter_32_0;
     CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_32_0_host, sizeof(float)* 150528));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_32_0, sizeof(float) * 150528));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_32_0, sizeof(float) * 150528 * 2));
 
     //output arguments
     float* Result_99_0_host, *Result_99_0;

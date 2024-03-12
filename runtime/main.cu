@@ -9,6 +9,7 @@
 #include "Recorder.h"
 #include <stdlib.h>
 #include <unordered_map>
+#include <unordered_set>
 #include "./include/clipp.h"
 
 
@@ -52,7 +53,10 @@
 // dnn
 // #include "dnn/resnet50/resnet50.h"
 // #include "dnn/bert/bert.h"
-#include "dnn/inception3/inception3.h"
+// #include "dnn/inception3/inception3.h"
+// #include "dnn/lstm/lstm.h"
+// #include "dnn/vgg11/vgg11.h"
+ #include "dnn/vgg16/vgg16.h"
 
 #include "gptb_kernel/tzgemm_kernel.cu"
 #include "tzgemm_kernel.h"
@@ -74,6 +78,7 @@
 #define SM_NUM 68
 #endif
 
+std::unordered_set<int> gemm_ks;
 
 Logger logger(LOG_FILE_PATH, true, true);
 
@@ -108,13 +113,13 @@ std::unordered_map<std::string, void*> fmap = {
     {"cutcp_fft", (void*)mixed_cutcp_fft_kernel_1_1},
     {"cutcp_sgemm", (void*)mixed_cutcp_sgemm_kernel_1_1},
     {"tzgemm_cp", (void*)cp_tzgemm_mix},
-    {"tzgemm_cutcp", (void*)cutcp_tzgemm_mix},
-    {"tzgemm_fft", (void*)fft_tzgemm_mix},
+    {"tzgemm_cutcp", (void*)cutcp_tzgemm_mix}, 
+    {"tzgemm_fft", (void*)fft_tzgemm_mix_2_2},
     {"tzgemm_lbm", (void*)lbm_tzgemm_mix},
     {"tzgemm_mrif", (void*)mrif_tzgemm_mix},
     {"tzgemm_mriq", (void*)mriq_tzgemm_mix},
     {"tzgemm_stencil", (void*)stencil_tzgemm_mix},
-    // {"tz_fft_test", (void*)fft_tzgemm_mix_1_2}
+    // {"tz_fft_test", (void*)fft_tzgemm_mix_1_2} 
 };
 
 void compileInfo() {
@@ -165,21 +170,23 @@ void printDeviceProp() {
 void my_exit() {
     recorder.text();
     system("nvidia-smi >> nvidia-smi.log");
+    for (auto k : gemm_ks) {
+        add_kernel_info("ratio_test", std::to_string(k), 0);
+    }
+    build_json("../kinfo_new.json");
     logger.INFO("Tacker exit");
 }
 
 std::string SYSTEM = "aker";
 std::string ROOT_PATH = "/home/jxdeng/workspace/tacker/runtime";
 
-// extern std::unordered_map<std::string, GPTBKernel*> kernelMap;
-
-void tzgemm_cd_profile() {
+void tzgemm_cd_profile(int m, int k) {
     // 测试fig10，tzgemm-cd load ratio
     auto gptb_cd_kernel = createKernel(sget_kernel_info("ratio_test", "cd_kernel_name"));
     printf("cd kernel name: %s\n", gptb_cd_kernel->kernelName.c_str());
-    int NORMAL_M = 12544 * 32;
-    int NORMAL_N = 128;
-    int NORMAL_K = 128 * 2;
+    int NORMAL_M = m;
+    int NORMAL_N = 512;
+    int NORMAL_K = k;
 
     auto ori_tzgemm_kernel = new OriTZGEMMKernel(0, NORMAL_M, NORMAL_N, NORMAL_K);
     auto gptb_tzgemm_kernel = new GPTBKernel(
@@ -187,11 +194,14 @@ void tzgemm_cd_profile() {
         "tzgemm",
         "gptb_tzgemm", 
         ori_tzgemm_kernel,
-        dim3(SM_NUM * 4, 1, 1), 
+        dim3(SM_NUM * 2, 1, 1), 
         dim3(128, 1, 1), 
         0,
         getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3]
     );
+
+    printf("tzgemm M-N-K: %d %d %d\n", NORMAL_M, NORMAL_N, NORMAL_K);
+    printf("tzgemm blks: %d\n", getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3]);
 
     int mix_cd_task_blk_num = get_kernel_info("ratio_test", "mix_cd_task_blk_num");
     int solo_cd_task_blk_num = get_kernel_info("ratio_test", "solo_cd_task_blk_num");
@@ -315,6 +325,106 @@ void tzgemm_cd_profile() {
     printf("mix cd time: %f, solo cd time: %f\n", mix_time, gptb_left_cd_time);
 }
 
+void cd_pair_profile() {
+    // 测试fig10，tzgemm-cd load ratio
+    auto a = sget_kernel_info("cd_pair_ratio_profile", "a_name");
+    auto b = sget_kernel_info("cd_pair_ratio_profile", "b_name");
+    auto a_kernel = createKernel(a);
+    auto b_kernel = createKernel(b);
+    printf("a cd kernel name: %s\n", a_kernel->kernelName.c_str());
+    printf("b cd kernel name: %s\n", b_kernel->kernelName.c_str());
+    
+
+    int a_blk_num = get_kernel_info("cd_pair_ratio_profile", "a_blk_num");
+    int b_blk_num = get_kernel_info("cd_pair_ratio_profile", "b_blk_num");
+    a_kernel->gptbParams.ptb_end_block_pos = a_blk_num;
+    b_kernel->gptbParams.ptb_end_block_pos = b_blk_num;
+
+    float kernel_time;
+    cudaEvent_t startKERNEL;
+    cudaEvent_t stopKERNEL;
+    CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+    CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
+
+
+    std::string mix_kernel_name = a + "_" + b;
+
+    auto mix_kernel = createMixKernel(mix_kernel_name);
+    mix_kernel->kernel1_end_block_pos = a_blk_num;
+    mix_kernel->kernel2_end_block_pos = b_blk_num;
+
+
+    std::vector<float> time_vec;
+    // a_kernel solo
+    for(int i = 0; i < 20; ++i) {
+            CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+            a_kernel->execute(nullptr);
+            CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+            CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+            CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+            time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float a_kernel_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        a_kernel_time += time_vec[i];
+    }
+    a_kernel_time /= 10.0f;
+
+    time_vec.clear();
+
+    // tzgemm solo
+    for(int i = 0; i < 20; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+        b_kernel->execute(nullptr);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float b_kernel_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        b_kernel_time += time_vec[i];
+    }
+    b_kernel_time /= 10.0f;
+
+
+    time_vec.clear();
+
+        // mix
+    for(int i = 0; i < 50; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+        mix_kernel->execute(nullptr);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float mix_time = 0.0f;
+    for(int i = 20; i < 30; ++i) {
+        // printf("%f ", time_vec[i]);
+        mix_time += time_vec[i];
+    }
+    // printf("\n");
+    mix_time /= 10.0f;
+
+    time_vec.clear();
+
+    float load_ratio = a_kernel_time / b_kernel_time;
+    printf("load_ratio: %f\n", load_ratio);
+    printf("mix_duration: %f\n", mix_time);
+    printf("a cd time: %f, b cd time: %f, a_blk_num: %d, b_blk_num: %d\n", 
+                a_kernel_time, b_kernel_time, a_blk_num, b_blk_num);
+}
+
 int main(int argc, char* argv[]) {
     using namespace clipp;
 
@@ -385,17 +495,18 @@ int main(int argc, char* argv[]) {
 	// CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
     // float milliseconds = 0;
 
-    auto lc_task = Inception3(1001);
-    // for (int i = 0; i < 5; ++i) {
-    //     cudaEventRecord(startKERNEL);
-    //     for (auto& kernel: lc_task.kernels) {
-    //         kernel->execute(nullptr);
-    //     }
-    //     cudaEventRecord(stopKERNEL);
-    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
-    //     cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL);
-    //     printf("bert tasks %f ms to execute.\n", milliseconds);
-    // }
+    auto lc_task = VGG16(1001);
+    for (int i = 0; i < 5; ++i) {
+        for (auto& kernel: lc_task.kernels) {
+            kernel->execute(nullptr);
+        }
+        cudaDeviceSynchronize();
+    }
+    cudaDeviceSynchronize();
+
+    // int k = get_kernel_info("ratio_test", "k");
+    // int m = get_kernel_info("ratio_test", std::to_string(k));
+    // tzgemm_cd_profile(m, k);
 
     // char foo;
     // cin >> foo;
@@ -411,10 +522,11 @@ int main(int argc, char* argv[]) {
     // }
 
     // tzgemm_cd_profile();
+    // auto foo = OriTZGEMMKernel(111, 1, 1, 1);
+    TaskManager taskManager(&lc_task, "fft", "cp");
     
-    TaskManager taskManager(&lc_task, "mrif", "stencil");
-    
-    taskManager.executeAllTasks(ExecutionMode::PROFILE, stream);
+    taskManager.executeAllTasks(ExecutionMode::Aker, stream);
+    taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
 
     // system("nvidia-smi >> nvidia-smi.log");
 

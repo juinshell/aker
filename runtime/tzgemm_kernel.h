@@ -5,6 +5,9 @@
 #include "Logger.h"
 #include "header/tzgemm_header.h"
 
+extern long long MAX_ORI_WMMA_A;
+extern long long MAX_ORI_WMMA_B;
+extern long long MAX_ORI_WMMA_C;
 extern Logger logger;
 extern bool gemm_malloced;
 extern half *ori_wmma_A;
@@ -60,7 +63,8 @@ public:
 
     // impl virtual func
     void executeImpl(cudaStream_t stream) {
-        checkKernelErrors((ptb_tzgemm<<<68 * 4, 128, 0, stream>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
+        printf("ptb_tzgemm blks num: %d\n", launchGridDim.x);
+        checkKernelErrors((ptb_tzgemm<<<68 * 2, 128, 0, stream>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
 							M_GLOBAL, N_GLOBAL, K_GLOBAL,
 							launchGridDim.x, launchBlockDim.x)));
     }
@@ -74,19 +78,22 @@ public:
         this->N_GLOBAL = N_GLOBAL;
         this->K_GLOBAL = K_GLOBAL;
 
+        long long cur_ori_wmma_A = (long long)sizeof(half) * M_GLOBAL * K_GLOBAL;
+        long long cur_ori_wmma_B = (long long)sizeof(half) * N_GLOBAL * K_GLOBAL;
+        long long cur_ori_wmma_C = (long long)sizeof(float) * M_GLOBAL * N_GLOBAL;
+        MAX_ORI_WMMA_A = max(MAX_ORI_WMMA_A, cur_ori_wmma_A);
+        MAX_ORI_WMMA_B = max(MAX_ORI_WMMA_B, cur_ori_wmma_B);
+        MAX_ORI_WMMA_C = max(MAX_ORI_WMMA_C, cur_ori_wmma_C);
+
         if (!gemm_malloced) {
-            MAX_M_GLOBAL = max(MAX_M_GLOBAL, M_GLOBAL);
-            MAX_N_GLOBAL = max(MAX_N_GLOBAL, N_GLOBAL);
-            MAX_K_GLOBAL = max(MAX_K_GLOBAL, K_GLOBAL);
-            // cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), sizeof(float) * MAX_M_GLOBAL * MAX_K_GLOBAL));
-            // cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), sizeof(float) * MAX_N_GLOBAL * MAX_K_GLOBAL));
-            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL));
-            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL));
-            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
+            printf("[ori_tzgemm][initParams] try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL / 1024.0 / 1024.0, sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL / 1024.0 / 1024.0, sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL / 1024.0 / 1024.0); 
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), MAX_ORI_WMMA_A));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), MAX_ORI_WMMA_B));
+            cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), MAX_ORI_WMMA_C));
             gemm_malloced = true;
-            // cudaErrCheck(cudaMemset(ori_wmma_C, 1.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
-            // cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
-            // cudaErrCheck(cudaMemset(ori_wmma_B, 0.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
+            cudaErrCheck(cudaMemset((void*)ori_wmma_C, 1.0f, MAX_ORI_WMMA_C));
+            cudaErrCheck(cudaMemset((void*)ori_wmma_A, 1.0f, MAX_ORI_WMMA_A));
+            cudaErrCheck(cudaMemset((void*)ori_wmma_B, 0.0f, MAX_ORI_WMMA_B));
         }
 
         // printf("M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);

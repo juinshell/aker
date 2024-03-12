@@ -82,11 +82,12 @@ public:
     }
 
     void executeImpl(cudaStream_t stream) override {
+        // printf("mix kernel: %s, gridDim.x: %d, blockDim.x: %d\n", this->kernelName.c_str(), this->launchGridDim.x, this->launchBlockDim.x);
         // logger.INFO("name: " + this->kernelName);
         // logger.INFO("smem: " + std::to_string(this->smem) + "=" + std::to_string(this->kernel1->smem) + "+" + std::to_string(this->kernel2->smem));
         // logger.INFO("gridDim: " + std::to_string(this->launchGridDim.x) + " " + std::to_string(this->launchGridDim.y) + " " + std::to_string(this->launchGridDim.z));
         // logger.INFO("blockDim: " + std::to_string(this->launchBlockDim.x) + " " + std::to_string(this->launchBlockDim.y) + " " + std::to_string(this->launchBlockDim.z));
-        //         logger.INFO("kernelParams size: " + std::to_string(kernelParams.size()));
+        // logger.INFO("kernelParams size: " + std::to_string(kernelParams.size()));
         // logger.INFO("mix kernel1 blks range: " + std::to_string(kernel1_start_block_pos) + " - " + std::to_string(kernel1_end_block_pos));
         // logger.INFO("mix kernel1 blks step: " + std::to_string(kernel1_iter_block_step));
         // logger.INFO("mix kernel2 blks range: " + std::to_string(kernel2_start_block_pos) + " - " + std::to_string(kernel2_end_block_pos));
