@@ -223,9 +223,9 @@ void OriMRIQKernel::initParams() {
         mriq_grid1.y = 1;
         mriq_block1.x = KERNEL_PHI_MAG_THREADS_PER_BLOCK;
         mriq_block1.y = 1;
-        printf("[ORI] Running with mriq...\\n");
-        printf("[ORI] mriq_grid1 -- %d * %d * %d mriq_block1 -- %d * %d * %d \\n", 
-            mriq_grid1.x, mriq_grid1.y, mriq_grid1.z, mriq_block1.x, mriq_block1.y, mriq_block1.z);
+        // printf("[ORI] Running with mriq...\\n");
+        // printf("[ORI] mriq_grid1 -- %d * %d * %d mriq_block1 -- %d * %d * %d \\n", 
+            // mriq_grid1.x, mriq_grid1.y, mriq_grid1.z, mriq_block1.x, mriq_block1.y, mriq_block1.z);
 
         checkKernelErrors((ori_ComputePhiMag <<< mriq_grid1, mriq_block1 >>> (mriq_ori_phiR, mriq_ori_phiI, mriq_ori_phiMag, numK)));
         cudaMemcpy(host_mriq_ori_phiMag, mriq_ori_phiMag, numK * sizeof(float), cudaMemcpyDeviceToHost);

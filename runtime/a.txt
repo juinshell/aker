@@ -1,0 +1,7 @@
+Exec kernel: Convolution_float_float_float_cuda_lib_Convolution_275
+num_kernels: 1204224, input_n: 32, input_c: 3, input_h: 230, input_w: 230, kernel_h: 7, kernel_w: 7, pad_h: 0, pad_w: 0, stride_h: 2, stride_w: 2, dilation_h: 1, dilation_w: 1, height_col: 112, width_col: 112, col_buffer: 0x7ff812000000, bottom: 0x7ff850000000
+col_buffer_size: 1204224, bottom_size: 5078400
+
+Exec kernel: Convolution_float_float_float_cuda_lib_Convolution_275
+num_kernels: 1204224, input_n: 32, input_c: 3, input_h: 230, input_w: 230, kernel_h: 7, kernel_w: 7, pad_h: 0, pad_w: 0, stride_h: 2, stride_w: 2, dilation_h: 1, dilation_w: 1, height_col: 112, width_col: 112, col_buffer: 0x7ff812000000, bottom: 0x7ff850000000
+col_buffer_size: 1204224, bottom_size: 5078400

@@ -16,7 +16,7 @@
 extern Logger logger;
 extern Recorder recorder;
 
-int batch_size = 16;
+int batch_size = 32;
 
 // int MAX_M_GLOBAL = 401408;
 long long MAX_ORI_WMMA_A = 822083584;
@@ -25,8 +25,8 @@ long long MAX_ORI_WMMA_C = 822083584;
 int MAX_M_GLOBAL = 802816;
 int MAX_N_GLOBAL = 128;
 int MAX_K_GLOBAL = 128;
-int MAX_COL_BUFFER = 802816;
-int MAX_BOTTOM = 802816;
+int MAX_COL_BUFFER = 51380224;
+int MAX_BOTTOM = 51380224;
 bool im2col_malloced = false;
 bool gemm_malloced = false;
 float *bottom;
@@ -334,8 +334,8 @@ void mixcublasSgemm(std::vector<int>& gemm_args, GPTBKernel* gptb_cd_kernel, int
 	// assert(((unsigned long long)ori_wmma_B) % 128 == 0);
 	// assert(((unsigned long long)ori_wmma_C) % 128 == 0);
     
-    cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
-    cudaErrCheck(cudaMemset(ori_wmma_B, 1.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
+    // cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, sizeof(half) * M_GLOBAL * K_GLOBAL));
+    // cudaErrCheck(cudaMemset(ori_wmma_B, 1.0f, sizeof(half) * N_GLOBAL * K_GLOBAL));
 	// convertFp32ToFp16_ <<< (M_GLOBAL * K_GLOBAL + 255) / 256, 256 >>> (ori_wmma_A, ori_host_A, M_GLOBAL * K_GLOBAL);
     // convertFp32ToFp16_ <<< (N_GLOBAL * K_GLOBAL + 255) / 256, 256 >>> (ori_wmma_B, ori_host_B, N_GLOBAL * K_GLOBAL);
     // cudaErrCheck(cudaMemset(ori_wmma_C, 0.0f, sizeof(float) * M_GLOBAL * N_GLOBAL));
@@ -471,10 +471,10 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
         // printf("[kernel]: %s, [ori_time]: %f\n", lc_task->kernels[i]->kernelName.c_str(), lc_kernel_time_vec[i]);
         lc_kernel_time += lc_kernel_time_vec[i];
     }
-    printf("[PRE]lc kernel took %f ms to execute.\n", lc_kernel_time);
+    printf("\n[PRE]lc kernel took %f ms to execute.\n", lc_kernel_time);
 
     // char foo;
-    cin >> foo;
+    // cin >> foo;
 
     vector<float> lc_headroom_vec(lc_kernel_time_vec);
     // cal headroom vec
@@ -541,12 +541,14 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     int no_split_times = 0;
     long long total_be_num = 0;
     int mix_times = 0;
+    float time_earned = 0.0f;
     for (int i = 0; i < 5; ++i) {
         lc_task->initExecution();
         qos_headroom = 50.0f;
         long long cd_block_num_executed = 0;
         int lc_kernel_idx = 0;
         mix_times = 0;
+        time_earned = 0.0f;
 
         CUDA_SAFE_CALL(cudaProfilerStart());
         // CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
@@ -565,6 +567,10 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
                 if (mode == ExecutionMode::Tacker) cd_block_num = be_kernel1->gptbParams.ptb_end_block_pos;
                 else if (mode == ExecutionMode::Aker) {
                     float block_ratio = fget_kernel_info("tzgemm_" + be_task1_name, std::to_string(MNKD[2]));
+                    if (block_ratio == JSON_NOT_FOUND) {
+                        float base_block_ratio = fget_kernel_info("tzgemm_" + be_task1_name, std::to_string(4096));
+                        block_ratio = base_block_ratio * MNKD[2] / 4096;
+                    }
                     cd_block_num = min(int(MNKD[3] * block_ratio), be_kernel1->gptbParams.ptb_end_block_pos);
                 }
                 mixcublasSgemm(mnk, be_kernel1, be_kernel1->gptbParams.ptb_start_block_pos, cd_block_num, stream);
@@ -576,6 +582,10 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
                 if (mode == ExecutionMode::Tacker) cd_block_num = be_kernel1->gptbParams.ptb_end_block_pos;
                 else if (mode == ExecutionMode::Aker) {
                     float block_ratio = fget_kernel_info("tzgemm_" + be_task1_name, std::to_string(MNKD[2]));
+                    if (block_ratio == JSON_NOT_FOUND) {
+                        float base_block_ratio = fget_kernel_info("tzgemm_" + be_task1_name, std::to_string(4096));
+                        block_ratio = base_block_ratio * MNKD[2] / 4096;
+                    }
                     cd_block_num = min(int(MNKD[3] * block_ratio), be_kernel1->gptbParams.ptb_end_block_pos);
                 }
                 mixcudnnConvolutionForward(cudnnArgs, be_kernel1, be_kernel1->gptbParams.ptb_start_block_pos, cd_block_num, stream);
@@ -590,16 +600,22 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
             auto duration = float(end - start) * 1000 / CLOCKS_PER_SEC;
             // if no throughput improve, use ori time
             bool do_mix = false;
-            if (duration > lc_kernel_time_vec[lc_kernel_idx] + be_task1_ori_time * cd_block_num / be_kernel1->gptbParams.ptb_end_block_pos) {
+            if (lc_kernel->mixable == 0) {
                 qos_headroom -= lc_kernel_time_vec[lc_kernel_idx];
-                do_mix = false;
+            }
+            else if (duration > lc_kernel_time_vec[lc_kernel_idx] + be_task1_ori_time * cd_block_num / be_kernel1->gptbParams.ptb_end_block_pos) {
+                qos_headroom -= lc_kernel_time_vec[lc_kernel_idx];
             } else {
                 qos_headroom -= duration;
                 do_mix = true;
                 cd_block_num_executed += cd_block_num;
                 mix_times += 1;
+                time_earned += lc_kernel_time_vec[lc_kernel_idx] + be_task1_ori_time * cd_block_num / be_kernel1->gptbParams.ptb_end_block_pos - duration;
             }
-            // if (i == 4 && lc_kernel_idx < lc_kernel_time_vec.size()) printf("[%s]--[kernel]: %s, [ori_time]: %f, [mix_time]: %f, [qos_headroom]: %f\n", do_mix ? "Yes" : "No",  lc_kernel->kernelName.c_str(), lc_kernel_time_vec[lc_kernel_idx], duration, qos_headroom);
+            // if (i == 4 && lc_kernel_idx < lc_kernel_time_vec.size() && lc_kernel->mixable != 0)  {
+            //     printf("[%s]--[kernel]: %s, [ori_time]: %f, [mix_time]: %f, [qos_headroom]: %f\n", do_mix ? "Yes" : "No",  lc_kernel->kernelName.c_str(), lc_kernel_time_vec[lc_kernel_idx], duration, qos_headroom);
+            //     cin >> foo;
+            // }
             lc_kernel_idx ++;
         }
         cudaProfilerStop();
@@ -607,7 +623,7 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
         // CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
         // CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
 
-        printf("\n[Solo]total lc kernel took %f ms to execute.\n", 50.0f - qos_headroom);
+        // printf("\n[Solo]total lc kernel took %f ms to execute.\n", 50.0f - qos_headroom);
         total_be_num = cd_block_num_executed;
 
         // cd_block_num_executed = 0;
@@ -615,7 +631,7 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     }
 
     // total_be_num /= 5;
-    printf("exec be blks: %d, mix times: %d\n", total_be_num, mix_times);
+    printf("execed be blks: %d, mix times: %d/%d, time earned: %f\n", total_be_num, mix_times, mixable_times, time_earned);
     // printf("avg_be_blks_num: %d, avg_be_task_num: %d\n", total_be_num, total_be_num / get_kernel_info(be_task1_name, "ori_blks"));
     // printf("no split time: %d/%d\n", no_split_times, mixable_times);
     // printf("total mix chance: %d\n", mixable_times);
@@ -660,11 +676,11 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
 
     stage2_be_time = max(0.0f, stage2_be_time);
     if (ExecutionMode::Aker == mode) {
-        printf("[Result] Aker BE task took %f + %f = %f ms to execute.\n", stage1_be_time, stage2_be_time, stage1_be_time + stage2_be_time);
+        printf("[Result] Aker BE task took %f + %f(%f) = %f ms to execute.\n", stage1_be_time, stage2_be_time, qos_headroom, stage1_be_time + stage2_be_time);
         // printf("[Result] Tacker BE task took %f + %f = %f ms to execute.\n", stage1_be_time, qos_headroom, stage1_be_time + qos_headroom);
     }
     else if (ExecutionMode::Tacker == mode) {
-        printf("[Result] Tacker BE task took %f + %f = %f ms to execute.\n", stage1_be_time, qos_headroom, stage1_be_time + qos_headroom);
+        printf("[Result] Tacker BE task took %f + %f(%f) = %f ms to execute.\n", stage1_be_time, qos_headroom, qos_headroom, stage1_be_time + qos_headroom);
     }
 
     // my test

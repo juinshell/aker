@@ -16,7 +16,7 @@ public:
         initParams();
     }
     void initExecution() override{
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_270_0, Parameter_270_0_host, sizeof(float) * 150528, cudaMemcpyHostToDevice));
+        CUDA_SAFE_CALL(cudaMemcpy(Parameter_270_0, Parameter_270_0_host, sizeof(float) * 4816896, cudaMemcpyHostToDevice));
     }
     void gen_vector(float*  Parameter_270_0, float**  Result_505_0);
     void initParams();  

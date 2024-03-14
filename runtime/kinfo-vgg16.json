@@ -3,57 +3,92 @@
         "register": 39,
         "shared_memory": 0,
         "blocksize": 128,
-        "ori_blks": 3060,
-        "real_ori_blks": 16384
+        "ori_blks": 4480,
+        "real_ori_blks": 16384,
+        "128": 128,
+        "512": 512,
+        "1152": 1152,
+        "2304": 2304,
+        "4608": 4608
     },
     "cutcp": {
         "register": 42,
         "shared_memory": 4096,
         "blocksize": 128,
-        "ori_blks": 816,
-        "real_ori_blks": 2720
+        "ori_blks": 170,
+        "real_ori_blks": 2720,
+        "128": 128,
+        "512": 512,
+        "1152": 1152,
+        "2304": 2304,
+        "4608": 4608
     },
     "fft": {
         "register": 33,
         "shared_memory": 2048,
         "blocksize": 128,
-        "ori_blks": 5100,
-        "real_ori_blks": 10240
+        "ori_blks": 6800,
+        "real_ori_blks": 10240,
+        "128": 128,
+        "512": 512,
+        "1152": 1152,
+        "2304": 2304,
+        "4608": 4608
     },
     "lbm": {
         "register": 61,
         "shared_memory": 0,
         "blocksize": 128,
-        "ori_blks": 10240,
-        "real_ori_blks": 16384
+        "ori_blks": 6800,
+        "real_ori_blks": 32768,
+        "128": 128,
+        "512": 512,
+        "1152": 1152,
+        "2304": 2304,
+        "4608": 4608
     },
     "mrif": {
         "register": 32,
         "shared_memory": 0,
         "blocksize": 256,
         "ori_blks": 450,
-        "real_ori_blks": 2048
+        "real_ori_blks": 2048,
+        "128": 128,
+        "512": 512,
+        "1152": 1152,
+        "2304": 2304,
+        "4608": 4608
     },
     "mriq": {
         "register": 31,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 408,
-        "real_ori_blks": 2048
+        "ori_blks": 136,
+        "real_ori_blks": 2048,
+        "128": 128,
+        "512": 512,
+        "1152": 1152,
+        "2304": 2304,
+        "4608": 4608
     },
     "sgemm": {
         "register": 64,
         "shared_memory": 512,
         "blocksize": 128,
-        "ori_blks": 176,
+        "ori_blks": 68,
         "real_ori_blks": 774
     },
     "stencil": {
         "register": 38,
         "shared_memory": 1024,
         "blocksize": 128,
-        "ori_blks": 1020,
-        "real_ori_blks": 2048
+        "ori_blks": 680,
+        "real_ori_blks": 2048,
+        "128": 128,
+        "512": 512,
+        "1152": 1152,
+        "2304": 2304,
+        "4608": 4608
     },
     "tzgemm_cp": {
         "gridsize": 1,
@@ -166,18 +201,18 @@
         "a_blk_num": 1,
         "b_blk_num": 1
     },
-    "MAX_ORI_WMMA_A" : {
+    "MAX_ORI_WMMA_A": {
         "vgg16": 822083584
     },
-    "MAX_ORI_WMMA_B" : {
+    "MAX_ORI_WMMA_B": {
         "vgg16": 6422528,
         "resnet50": 6422528
     },
-    "MAX_ORI_WMMA_C" : {
+    "MAX_ORI_WMMA_C": {
         "vgg16": 822083584,
         "resnet50": 822083584
     },
-    "MAX_COL_BUFFER" : {
+    "MAX_COL_BUFFER": {
         "vgg16": 51380224,
         "resnet50": 25690112
     },
@@ -190,5 +225,9 @@
         "gridsize": 1,
         "blocksize": 512,
         "shared_memory": 0
+    },
+    "throughput_test": {
+        "a": "mrif",
+        "b": "stencil"
     }
 }

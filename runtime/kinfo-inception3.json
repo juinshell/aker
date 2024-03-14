@@ -118,6 +118,21 @@
         "mix_cd_task_blk_num": 5712,
         "solo_cd_task_blk_num": 0
     },
+    "MAX_ORI_WMMA_A" : {
+        "vgg16": 822083584
+    },
+    "MAX_ORI_WMMA_B" : {
+        "vgg16": 6422528,
+        "resnet50": 6422528
+    },
+    "MAX_ORI_WMMA_C" : {
+        "vgg16": 822083584,
+        "resnet50": 822083584
+    },
+    "MAX_COL_BUFFER" : {
+        "vgg16": 51380224,
+        "resnet50": 25690112
+    },
     "fft_tzgemm_mix_1_2": {
         "gridsize": 1,
         "blocksize": 384,

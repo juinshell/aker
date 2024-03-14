@@ -56,8 +56,16 @@ __inline__ __global__ void im2col_gpu_kernel(int n, float* data_im,
             int h_offset = h_col * stride_h - pad_h;
             int w_offset = w_col * stride_w - pad_w;
             float* data_col_ptr = data_col;
+            if (((c_col * height_col + h_col) * width_col + w_col) >= data_col_size) {
+                // printf("c_col: %d, data_col_size: %d\n", c_col, data_col_size);
+                continue;
+            }
             data_col_ptr += (c_col * height_col + h_col) * width_col + w_col;
             float* data_im_ptr = data_im;
+            if (((c_im * height + h_offset) * width + w_offset) >= data_im_size) {
+                // printf("c_im: %d, data_im_size: %d\n", c_im, data_im_size);
+                continue;
+            }
             data_im_ptr += (c_im * height + h_offset) * width + w_offset;
             for (int i = 0; i < kernel_h; ++i) {
                 for (int j = 0; j < kernel_w; ++j) {
@@ -67,9 +75,14 @@ __inline__ __global__ void im2col_gpu_kernel(int n, float* data_im,
                         // printf("h_col: %d, w_col: %d, height_col: %d, width_col: %d, data_col_ptr - data_col: %d\n", h_col, w_col, height_col, width_col, data_col_ptr - data_col);
                         continue;
                     }
+                    if ((data_im_ptr - data_im) + i * dilation_h * width + j * dilation_w >= data_im_size) continue;
                     *data_col_ptr =
-                        (h_im >= 0 && w_im >= 0 && h_im < height && w_im < width && (i * dilation_h * width + j * dilation_w < data_im_size)) ?
+                        (h_im >= 0 && w_im >= 0 && h_im < height && w_im < width) ?
                         data_im_ptr[i * dilation_h * width + j * dilation_w] : 0;
+                    if (((data_col_ptr - data_col)+ height_col * width_col) >= data_col_size) {
+                        // printf("data_col_ptr - data_col: %d, data_col_size: %d\n", data_col_ptr - data_col, data_col_size);
+                        continue;
+                    }
                     data_col_ptr += height_col * width_col;
                 }
             }
@@ -347,16 +360,24 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
     col_w = width_col;
 
     // printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
+    MAX_COL_BUFFER = max(MAX_COL_BUFFER, col_n * col_c * col_h * col_w);
+    MAX_BOTTOM = max(MAX_BOTTOM, input_n * input_c * input_h * input_w);
+    // printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
     
-    if (!im2col_malloced || MAX_BOTTOM < input_n * input_c * input_h * input_w || MAX_COL_BUFFER < col_n * col_c * col_h * col_w) {
-        cudaErrCheck(cudaFree((void*)bottom));
-        cudaErrCheck(cudaFree((void*)col_buffer));
+    if (!im2col_malloced) {
         MAX_COL_BUFFER = max(MAX_COL_BUFFER, col_n * col_c * col_h * col_w);
         MAX_BOTTOM = max(MAX_BOTTOM, input_n * input_c * input_h * input_w);
         cudaErrCheck(cudaMalloc((void**)&bottom, MAX_BOTTOM * sizeof(float)));
         cudaErrCheck(cudaMalloc((void**)&col_buffer, MAX_COL_BUFFER * sizeof(float)));
-        cudaErrCheck(cudaMemset(bottom, 1.0f, MAX_COL_BUFFER));
-        cudaErrCheck(cudaMemset(col_buffer, 1.0f, MAX_COL_BUFFER));
+        // curandGenerator_t gen;
+        // curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
+        // curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
+        // curandErrCheck(curandGenerateUniform(gen, bottom, MAX_BOTTOM * sizeof(float)));
+        // curandErrCheck(curandGenerateUniform(gen, col_buffer, MAX_COL_BUFFER * sizeof(float)));
+        // cudaErrCheck(cudaMemset(bottom, 1.0f, input_n * input_c * input_h * input_w * sizeof(float))); // input_n
+        // cudaErrCheck(cudaMemset(col_buffer, 1.0f, col_n * col_c * col_h * col_w * sizeof(float))); // col_n
+        cudaErrCheck(cudaMemset(bottom, 1.0f, MAX_COL_BUFFER * sizeof(float)));
+        cudaErrCheck(cudaMemset(col_buffer, 1.0f, MAX_COL_BUFFER * sizeof(float)));
         im2col_malloced = true;
     }
     // printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
@@ -366,8 +387,8 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
     // curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
     // curandErrCheck(curandGenerateUniform(gen, bottom, input_n * input_c * input_h * input_w));
     // curandErrCheck(curandGenerateUniform(gen, col_buffer, col_n * col_c * col_h * col_w));
-    // cudaErrCheck(cudaMemset(bottom, 1.0f, input_n * input_c * input_h * input_w * sizeof(float))); // input_n
-    // cudaErrCheck(cudaMemset(col_buffer, 1.0f, col_n * col_c * col_h * col_w * sizeof(float))); // col_n
+    // cudaErrCheck(cudaMemset(bottom, 1.0f, MAX_COL_BUFFER * sizeof(float)));
+    //     cudaErrCheck(cudaMemset(col_buffer, 1.0f, MAX_COL_BUFFER * sizeof(float)));
 
     // 调用 img2col
     dim3 im_grid;
@@ -377,6 +398,9 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
 	im_grid.x = 68 * 2;
 
     // cudaErrCheck(cudaEventRecord(startKERNEL));
+    // print args
+    // printf("num_kernels: %d, input_n: %d, input_c: %d, input_h: %d, input_w: %d, kernel_h: %d, kernel_w: %d, pad_h: %d, pad_w: %d, stride_h: %d, stride_w: %d, dilation_h: %d, dilation_w: %d, height_col: %d, width_col: %d, col_buffer: %p, bottom: %p\n", num_kernels, input_n, input_c, input_h, input_w, kernel_h, kernel_w, pad_h, pad_w, stride_h, stride_w, dilation_h, dilation_w, height_col, width_col, col_buffer, bottom);
+    // printf("col_buffer_size: %d, bottom_size: %d\n", col_n * col_c * col_h * col_w, input_n * input_c * input_h * input_w);
     // launch im2col
     checkKernelErrors((im2col_gpu_kernel<<<im_grid, im_block>>>(
 		num_kernels, bottom, input_h, input_w, kernel_h, kernel_w, pad_h,
@@ -429,8 +453,9 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
     MAX_ORI_WMMA_A = max(MAX_ORI_WMMA_A, cur_ori_wmma_A);
     MAX_ORI_WMMA_B = max(MAX_ORI_WMMA_B, cur_ori_wmma_B);
     MAX_ORI_WMMA_C = max(MAX_ORI_WMMA_C, cur_ori_wmma_C);
+    // printf("MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
     if (!gemm_malloced) {
-        printf("[mycudnn]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL / 1024.0 / 1024.0, sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL / 1024.0 / 1024.0, sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL / 1024.0 / 1024.0); 
+        printf("[mycudnn]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", MAX_ORI_WMMA_A / 1024.0 / 1024.0, MAX_ORI_WMMA_B / 1024.0 / 1024.0, MAX_ORI_WMMA_C / 1024.0 / 1024.0);
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), MAX_ORI_WMMA_A));
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), MAX_ORI_WMMA_B));
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), MAX_ORI_WMMA_C));
@@ -494,6 +519,8 @@ __inline__ cublasStatus_t mycublasSgemm(cublasHandle_t handle, cublasOperation_t
 	int N_GLOBAL = (N_INPUT < 128) ? 128 : (N_INPUT / 128) * 128;
 	int K_GLOBAL = (K_INPUT < 128) ? 128 : (K_INPUT / 128) * 128;
 
+    gemm_ks.insert(K_GLOBAL);
+
 	int M_TILES = M_GLOBAL / WMMA_M;
 	int N_TILES = N_GLOBAL / WMMA_N;
 	int K_TILES = K_GLOBAL / WMMA_K;
@@ -505,17 +532,22 @@ __inline__ cublasStatus_t mycublasSgemm(cublasHandle_t handle, cublasOperation_t
 
 	int wmma_grid_dim_x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
 	int wmma_block_dim_x = wmma_block.x;
-	wmma_grid.x = 68 * 2;
+	wmma_grid.x = 68 * 1;
 	wmma_block.x = THREADS_PER_BLOCK;
 
     MAX_ORI_WMMA_A = max(MAX_ORI_WMMA_A, (long long)sizeof(half) * M_GLOBAL * K_GLOBAL);
     MAX_ORI_WMMA_B = max(MAX_ORI_WMMA_B, (long long)sizeof(half) * N_GLOBAL * K_GLOBAL);
     MAX_ORI_WMMA_C = max(MAX_ORI_WMMA_C, (long long)sizeof(float) * M_GLOBAL * N_GLOBAL);
+    // printf("MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
     if (!gemm_malloced) {
-        printf("[mycublas]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL / 1024.0 / 1024.0, sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL / 1024.0 / 1024.0, sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL / 1024.0 / 1024.0);
-        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL));
-        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL));
-        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL));
+        printf("[mycublas]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", MAX_ORI_WMMA_A / 1024.0 / 1024.0, MAX_ORI_WMMA_B / 1024.0 / 1024.0, MAX_ORI_WMMA_C / 1024.0 / 1024.0);
+        // printf("MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), MAX_ORI_WMMA_A));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), MAX_ORI_WMMA_B));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), MAX_ORI_WMMA_C));
+        cudaErrCheck(cudaMemset(ori_wmma_A, 1.0f, MAX_ORI_WMMA_A));
+        cudaErrCheck(cudaMemset(ori_wmma_B, 1.0f, MAX_ORI_WMMA_B));
+        cudaErrCheck(cudaMemset(ori_wmma_C, 0.0f, MAX_ORI_WMMA_C));
         gemm_malloced = true;
     }
     // printf("M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);

@@ -326,7 +326,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_56(cudnnHandle_t cudnn_h
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -1000,7 +1000,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_69(cudnnHandle_t cudnn_h
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -1123,7 +1123,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_76(cudnnHandle_t cudnn_h
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -1509,7 +1509,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_63(cudnnHandle_t cudnn_h
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -1932,7 +1932,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_50(cudnnHandle_t cudnn_h
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -1998,7 +1998,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_114(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -2186,7 +2186,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_82(cudnnHandle_t cudnn_h
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -2403,7 +2403,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_101(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -2469,7 +2469,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_95(cudnnHandle_t cudnn_h
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -2766,7 +2766,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -2966,7 +2966,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -3146,7 +3146,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -3310,7 +3310,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -3490,7 +3490,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -3654,7 +3654,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -3834,7 +3834,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -3998,7 +3998,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -4142,7 +4142,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {

@@ -12,17 +12,17 @@ void Inception3::initParams() {
     cuda_init();
     //input argument
     float* Parameter_485_0_host, *Parameter_485_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_485_0_host, sizeof(float)* 268203));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_485_0, sizeof(float) * 268203));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_485_0_host, sizeof(float)* 4291248));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_485_0, sizeof(float) * 4291248));
 
     //output arguments
     float* Result_892_0_host, *Result_892_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_892_0_host, sizeof(float) * 1001));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_892_0_host, sizeof(float) * 16016));
 
     // fill input values
-    for (int i = 0; i < 268203; ++i) Parameter_485_0_host[i] = 1.0f;
+    for (int i = 0; i < 4291248; ++i) Parameter_485_0_host[i] = 1.0f;
 
-    CUDA_SAFE_CALL(cudaMemcpy(Parameter_485_0, Parameter_485_0_host, sizeof(float) * 268203, cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy(Parameter_485_0, Parameter_485_0_host, sizeof(float) * 4291248, cudaMemcpyHostToDevice));
 
     this->Parameter_485_0 = Parameter_485_0;
     this->Parameter_485_0_host = Parameter_485_0_host;

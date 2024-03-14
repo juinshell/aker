@@ -53,10 +53,10 @@
 // dnn
 // #include "dnn/resnet50/resnet50.h"
 // #include "dnn/bert/bert.h"
-// #include "dnn/inception3/inception3.h"
+#include "dnn/inception3/inception3.h"
 // #include "dnn/lstm/lstm.h"
 // #include "dnn/vgg11/vgg11.h"
- #include "dnn/vgg16/vgg16.h"
+//  #include "dnn/vgg16/vgg16.h"
 
 #include "gptb_kernel/tzgemm_kernel.cu"
 #include "tzgemm_kernel.h"
@@ -169,12 +169,13 @@ void printDeviceProp() {
 
 void my_exit() {
     recorder.text();
-    system("nvidia-smi >> nvidia-smi.log");
-    for (auto k : gemm_ks) {
-        add_kernel_info("ratio_test", std::to_string(k), 0);
-    }
-    build_json("../kinfo_new.json");
-    logger.INFO("Tacker exit");
+    // system("nvidia-smi >> nvidia-smi.log");
+    // printf("gemm_ks: ");
+    // for (auto k : gemm_ks) {
+    //     printf(" %d", k);
+    // }
+    // printf("\n");
+    logger.INFO("System exit");
 }
 
 std::string SYSTEM = "aker";
@@ -221,7 +222,7 @@ void tzgemm_cd_profile(int m, int k) {
         1, 
         mix_kernel_name, 
         gptb_cd_kernel,
-        gptb_tzgemm_kernel, 
+        gptb_tzgemm_kernel,
         dim3(SM_NUM * get_kernel_info(mix_kernel_name, "gridsize"), 1, 1),
         dim3(get_kernel_info(mix_kernel_name, "blocksize"), 1, 1),
         0,
@@ -445,7 +446,7 @@ int main(int argc, char* argv[]) {
 
     // Print device properties
     printDeviceProp();
-    system("nvidia-smi > nvidia-smi.log");
+    // system("nvidia-smi > nvidia-smi.log");
 
     // profile area
     // cudaEvent_t startKERNEL, stopKERNEL;
@@ -495,9 +496,11 @@ int main(int argc, char* argv[]) {
 	// CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
     // float milliseconds = 0;
 
-    auto lc_task = VGG16(1001);
+    auto lc_task = Inception3(1001);
     for (int i = 0; i < 5; ++i) {
+        lc_task.initExecution();
         for (auto& kernel: lc_task.kernels) {
+            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
             kernel->execute(nullptr);
         }
         cudaDeviceSynchronize();
@@ -523,7 +526,10 @@ int main(int argc, char* argv[]) {
 
     // tzgemm_cd_profile();
     // auto foo = OriTZGEMMKernel(111, 1, 1, 1);
-    TaskManager taskManager(&lc_task, "fft", "cp");
+    std::string a = sget_kernel_info("throughput_test", "a");
+    std::string b = sget_kernel_info("throughput_test", "b");
+    printf("[Result] cd1: %s, cd2: %s\n", a.c_str(), b.c_str());
+    TaskManager taskManager(&lc_task, a, b);
     
     taskManager.executeAllTasks(ExecutionMode::Aker, stream);
     taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
