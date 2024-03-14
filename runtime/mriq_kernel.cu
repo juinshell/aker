@@ -20,7 +20,7 @@ void inputData(int* _numK, int* _numX,
     }
 
     fread (&numK, sizeof (int), 1, fid);
-    numK *= 2;
+    numK *= 10;
     *_numK = numK;
     fread (&numX, sizeof (int), 1, fid);
     *_numX = numX;

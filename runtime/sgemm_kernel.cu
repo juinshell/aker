@@ -86,7 +86,7 @@ void OriSGEMMKernel::initParams(){
         int NORMAL_N = 4128;
         int NORMAL_K = 4064;
 
-        NORMAL_M = (NORMAL_M / 10) * sgemm_iter;
+        NORMAL_M = (NORMAL_M) * sgemm_iter;
 
         cudaErrCheck(cudaMalloc((void**)&sgemm_ori_a, NORMAL_M * NORMAL_K * sizeof(float)));
         cudaErrCheck(cudaMalloc((void**)&sgemm_ori_b, NORMAL_K * NORMAL_N * sizeof(float)));
