@@ -326,6 +326,139 @@ void tzgemm_cd_profile(int m, int k) {
     printf("mix cd time: %f, solo cd time: %f\n", mix_time, gptb_left_cd_time);
 }
 
+void solo_gptb_accuracy(cudaStream_t stream) {
+    auto gptb_kernel = createKernel(sget_kernel_info("solo_gptb_accuracy", "name"));
+    printf("gptb kernel name: %s\n", gptb_kernel->kernelName.c_str());
+    int blk_num = get_kernel_info("solo_gptb_accuracy", "blk_num");
+    gptb_kernel->gptbParams.ptb_end_block_pos = blk_num;
+    if (gptb_kernel->kernelName == "cutcp") gptb_kernel->launchGridDim.x = SM_NUM * 2;
+
+    float kernel_time;
+    cudaEvent_t startKERNEL;
+    cudaEvent_t stopKERNEL;
+    CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+    CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
+
+    std::vector<float> time_vec;
+    for(int i = 0; i < 20; ++i) {
+            CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+            gptb_kernel->execute(stream);
+            CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+            CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+            CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+            time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float gptb_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        gptb_time += time_vec[i];
+    }
+    gptb_time /= 10.0f;
+
+    printf("blk_num: %d, duration: %f\n", blk_num, gptb_time);
+}
+
+void cd_pair_accuracy(cudaStream_t stream) {
+    // 测试fig10，tzgemm-cd load ratio
+    auto a = sget_kernel_info("cd_pair_accuracy", "a_name");
+    auto b = sget_kernel_info("cd_pair_accuracy", "b_name");
+    auto a_kernel = createKernel(a);
+    auto b_kernel = createKernel(b);
+    printf("a cd kernel name: %s\n", a_kernel->kernelName.c_str());
+    printf("b cd kernel name: %s\n", b_kernel->kernelName.c_str());
+    
+
+    int a_blk_num = get_kernel_info("cd_pair_accuracy", "a_blk_num");
+    int b_blk_num = get_kernel_info("cd_pair_accuracy", "b_blk_num");
+    a_kernel->gptbParams.ptb_end_block_pos = a_blk_num;
+    b_kernel->gptbParams.ptb_end_block_pos = b_blk_num;
+
+    float kernel_time;
+    cudaEvent_t startKERNEL;
+    cudaEvent_t stopKERNEL;
+    CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+    CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
+
+
+    std::string mix_kernel_name = a[0] < b[0] ? a + "_" + b : b + "_" + a;
+
+    auto mix_kernel = createMixKernel(mix_kernel_name);
+    mix_kernel->kernel1_end_block_pos = a[0] < b[0] ? a_blk_num : b_blk_num;
+    mix_kernel->kernel2_end_block_pos = a[0] < b[0] ? b_blk_num : a_blk_num;
+
+
+    std::vector<float> time_vec;
+    // a_kernel solo
+    for(int i = 0; i < 20; ++i) {
+            CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+            a_kernel->execute(stream);
+            CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+            CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+            CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+            time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float a_kernel_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        a_kernel_time += time_vec[i];
+    }
+    a_kernel_time /= 10.0f;
+
+    time_vec.clear();
+
+    // tzgemm solo
+    for(int i = 0; i < 20; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+        b_kernel->execute(stream);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float b_kernel_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        b_kernel_time += time_vec[i];
+    }
+    b_kernel_time /= 10.0f;
+
+
+    time_vec.clear();
+
+    // mix
+    for(int i = 0; i < 30; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+        mix_kernel->execute(stream);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+
+    // 排序后取中间10个数据，计算平均值
+    std::sort(time_vec.begin(), time_vec.end());
+    float mix_time = 0.0f;
+    for(int i = 10; i < 20; ++i) {
+        // printf("%f ", time_vec[i]);
+        mix_time += time_vec[i];
+    }
+    // printf("\n");
+    mix_time /= 10.0f;
+
+    time_vec.clear();
+
+    // float load_ratio = b_kernel_time / a_kernel_time;
+    printf("base_blks: %d, duration: %f\n", b_blk_num, mix_time);
+    // printf("a_blk_num / b_blk_num: %f\n", (a_blk_num * 1.0f / b_blk_num));
+    // printf("a_kernel_time: %f, b_kernel_time: %f\n", a_kernel_time, b_kernel_time);
+}
+
 void cd_pair_profile(cudaStream_t stream) {
     // 测试fig10，tzgemm-cd load ratio
     auto a = sget_kernel_info("cd_pair_ratio_profile", "a_name");
@@ -422,6 +555,7 @@ void cd_pair_profile(cudaStream_t stream) {
     float load_ratio = b_kernel_time / a_kernel_time;
     printf("load_ratio: %f, duration: %f\n", load_ratio, mix_time);
     printf("a_blk_num / b_blk_num: %f\n", (a_blk_num * 1.0f / b_blk_num));
+    printf("a_kernel_time: %f, b_kernel_time: %f\n", a_kernel_time, b_kernel_time);
 }
 
 int main(int argc, char* argv[]) {
@@ -516,33 +650,34 @@ int main(int argc, char* argv[]) {
     // auto foo = OriTZGEMMKernel(111, 1, 1, 1);
 
     // [Aker] cd pair accuracy test
-    auto lc_task = Inception3(1001);
-    for (auto& kernel: lc_task.kernels) {
-        // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-        kernel->execute(nullptr);
-    }
-    cudaDeviceSynchronize();
-    cd_pair_profile(stream);
+    // auto lc_task = Inception3(1001);
+    // for (auto& kernel: lc_task.kernels) {
+    //     // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //     kernel->execute(nullptr);
+    // }
+    // cudaDeviceSynchronize();
+    // cd_pair_accuracy(stream);
+    // solo_gptb_accuracy(stream);
 
     // [Aker] throughput test
 
-    // auto lc_task = Inception3(1001);
-    // for (int i = 0; i < 5; ++i) {
-    //     lc_task.initExecution();
-    //     for (auto& kernel: lc_task.kernels) {
-    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-    //         kernel->execute(nullptr);
-    //     }
-    //     cudaDeviceSynchronize();
-    // }
-    // cudaDeviceSynchronize();
-    // std::string a = sget_kernel_info("throughput_test", "a");
-    // std::string b = sget_kernel_info("throughput_test", "b");
-    // printf("[Result] cd1: %s, cd2: %s\n", a.c_str(), b.c_str());
-    // TaskManager taskManager(&lc_task, a, b);
+    auto lc_task = Inception3(1001);
+    for (int i = 0; i < 5; ++i) {
+        lc_task.initExecution();
+        for (auto& kernel: lc_task.kernels) {
+            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+            kernel->execute(nullptr);
+        }
+        cudaDeviceSynchronize();
+    }
+    cudaDeviceSynchronize();
+    std::string a = sget_kernel_info("throughput_test", "a");
+    std::string b = sget_kernel_info("throughput_test", "b");
+    printf("[Result] cd1: %s, cd2: %s\n", a.c_str(), b.c_str());
+    TaskManager taskManager(&lc_task, a, b);
     
-    // taskManager.executeAllTasks(ExecutionMode::Aker, stream);
-    // taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
+    taskManager.executeAllTasks(ExecutionMode::Aker, stream);
+    taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
 
     // system("nvidia-smi >> nvidia-smi.log");
 

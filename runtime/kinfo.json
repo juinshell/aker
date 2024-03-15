@@ -154,9 +154,32 @@
         "real_ori_blks": 6800
     },
     "cd_pair_ratio_profile": {
-        "a_name": "fft",
-        "b_name": "cp",
-        "a_blk_num": 5100,
-        "b_blk_num": 1224
+        "a_name": "sgemm",
+        "b_name": "mrif",
+        "a_blk_num": 176,
+        "b_blk_num": 1020
+    },
+    "cd_pair_best_ratio": {
+        "fft_cutcp": 8.366,
+        "fft_lbm": 0.579,
+        "mrif_stencil": 0.836,
+        "sgemm_fft": 0.0588,
+        "fft_sgemm": 17,
+        "stencil_fft": 0.1785,
+        "mrif_lbm": 0.0551,
+        "mriq_lbm": 0.0375,
+        "sgemm_mrif": 0.5176,
+        "fft_cp": 1.1718,
+        "mriq_fft": 0.1
+    },
+    "cd_pair_accuracy": {
+        "a_name": "mriq",
+        "b_name": "lbm",
+        "a_blk_num": 1020,
+        "b_blk_num": 27200
+    },
+    "solo_gptb_accuracy": {
+        "name": "sgemm",
+        "blk_num": 1496
     }
 }
