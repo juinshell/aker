@@ -9,7 +9,7 @@ extern Logger logger;
 extern Recorder recorder;
 
 void VGG11::initParams() {
-    cuda_init();
+    vgg11_cuda_init();
     //input argument
     float* Parameter_32_0_host, *Parameter_32_0;
     CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_32_0_host, sizeof(float)* 4816896));

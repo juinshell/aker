@@ -9,7 +9,7 @@ extern Logger logger;
 extern Recorder recorder;
 
 void Inception3::initParams() {
-    cuda_init();
+    inception3_cuda_init();
     //input argument
     float* Parameter_485_0_host, *Parameter_485_0;
     CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_485_0_host, sizeof(float)* 4291248));

@@ -9,7 +9,7 @@ extern Logger logger;
 extern Recorder recorder;
 
 void Resnet50::initParams() {
-    cuda_init();
+    resnet50_cuda_init();
     //input argument
     float* Parameter_270_0_host, *Parameter_270_0;
     CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_270_0_host, sizeof(float)* 4816896));

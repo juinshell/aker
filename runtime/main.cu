@@ -51,12 +51,11 @@
 #include "mix_kernel/mriq_sgemm_1_2.cu"
 
 // dnn
-// #include "dnn/resnet50/resnet50.h"
-// #include "dnn/bert/bert.h"
+#include "dnn/resnet50/resnet50.h"
+#include "dnn/bert/bert.h"
 #include "dnn/inception3/inception3.h"
-// #include "dnn/lstm/lstm.h"
-// #include "dnn/vgg11/vgg11.h"
-//  #include "dnn/vgg16/vgg16.h"
+#include "dnn/vgg11/vgg11.h"
+ #include "dnn/vgg16/vgg16.h"
 
 #include "gptb_kernel/tzgemm_kernel.cu"
 #include "tzgemm_kernel.h"
@@ -143,7 +142,7 @@ void initCUDA(int device=0) {
 
     CUDA_SAFE_CALL(cudaFree(0)); // Create a CUDA context
 
-    logger.INFO("CUDA init complete");
+    logger.INFO("CUDA init complete!");
 }
 
 void printDeviceProp() {
@@ -180,6 +179,7 @@ void my_exit() {
 
 std::string SYSTEM = "aker";
 std::string ROOT_PATH = "/home/jxdeng/workspace/tacker/runtime";
+std::string MODEL_NAME = "none";
 
 void tzgemm_cd_profile(int m, int k) {
     // 测试fig10，tzgemm-cd load ratio
@@ -558,19 +558,41 @@ void cd_pair_profile(cudaStream_t stream) {
     printf("a_kernel_time: %f, b_kernel_time: %f\n", a_kernel_time, b_kernel_time);
 }
 
+Task* createTask(std::string taskName) {
+    if (taskName == "resnet50") {
+        return new Resnet50(1000);
+    } else if (taskName == "bert") {
+        return new Bert(1000);
+    } else if (taskName == "inception3") {
+        return new Inception3(1001);
+    } else if (taskName == "vgg11") {
+        return new VGG11(1000);
+    } else if (taskName == "vgg16") {
+        return new VGG16(1000);
+    } else {
+        logger.ERROR("Task name not found");
+        exit(EXIT_FAILURE);
+    }
+}
+
 int main(int argc, char* argv[]) {
     using namespace clipp;
 
     auto cli = (
-        option("-s", "--sys", "--system").set(SYSTEM).doc("system name, one of aker/tacker/baymax"),
-        option("-r", "--root").set(ROOT_PATH).doc("root path")
+        required("-s", "--system") & clipp::value("system_name", SYSTEM).doc("system name, aker/tacker"),
+        required("-m", "--model") & clipp::value("model_name", MODEL_NAME).doc("model name")
     );
 
-    if(!parse(argc, argv, cli)) std::cout << make_man_page(cli, argv[0]);
+    if(!parse(argc, argv, cli)) {
+        std::cout << make_man_page(cli, argv[0]);
+        return 0;
+    } else {
+        std::cout << "system: " << SYSTEM << ", model: " << MODEL_NAME << std::endl;
+    }
 
     atexit (my_exit);
 
-    read_json(ROOT_PATH + "/kinfo.json");
+    read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + ".json");
 
     initCUDA();
     // Print compile info
@@ -586,68 +608,8 @@ int main(int argc, char* argv[]) {
 	// CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
     // float milliseconds = 0;
 
-    // Task task3(3, "Task3");
-    // OriCPKernel oriCpKernel(3); // create lvalue
-    // task3.addKernel(std::make_unique<GPTBKernel>(
-    //     10, 
-    //     "_Z16g_general_ptb_cpifPfiiiiiiiiii", 
-    //     "ptb_cp", 
-    //     static_cast<Kernel&>(oriCpKernel),
-    //     dim3(SM_NUM * 6, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     32 * 512));
-    
-    // // bad
-    // task3.addKernel(std::make_unique<GPTBKernel>( 
-    //     11, 
-    //     "_Z16g_general_ptb_cpifPfiiiiiiiiii", 
-    //     "ptb_cp", 
-    //     OriCPKernel(0, "gptb-make-cp"), // create rvalue
-    //     dim3(SM_NUM * 6, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     32 * 512));
-    
-    // std::unique_ptr<OriCPKernel> oriCpKernel_ = std::make_unique<OriCPKernel>(5);
-    // task3.addKernel(std::make_unique<GPTBKernel>(
-    //     6, 
-    //     "g_general_ptb_cp", 
-    //     "cp_fft", 
-    //     std::move(oriCpKernel_), // 不要使用unique_ptr，因为unique_ptr会在函数结束后被销毁，导致kernel的指针指向一个已经被销毁的对象
-    //     dim3(SM_NUM * 6, 1, 1), 
-    //     dim3(128, 1, 1), 
-    //     0, 
-    //     32 * 512));
-
     cudaStream_t stream;
     CUDA_SAFE_CALL(cudaStreamCreate(&stream));
-    
-    // cudaEvent_t startKERNEL, stopKERNEL;
-	// CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
-	// CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
-    // float milliseconds = 0;
-
-
-    // int k = get_kernel_info("ratio_test", "k");
-    // int m = get_kernel_info("ratio_test", std::to_string(k));
-    // tzgemm_cd_profile(m, k);
-
-    // char foo;
-    // cin >> foo;
-
-    // auto lc_task = Resnet50(1000);
-
-    // warmup gpu by lc
-    // for (int iter = 0; iter < 5; ++iter) {
-    //     for (auto& kernel : lc_task.kernels) {
-    //         kernel->execute(nullptr);
-    //     }
-    //     cudaDeviceSynchronize();
-    // }
-
-    // tzgemm_cd_profile();
-    // auto foo = OriTZGEMMKernel(111, 1, 1, 1);
 
     // [Aker] cd pair accuracy test
     // auto lc_task = Inception3(1001);
@@ -660,11 +622,10 @@ int main(int argc, char* argv[]) {
     // solo_gptb_accuracy(stream);
 
     // [Aker] throughput test
-
-    auto lc_task = Inception3(1001);
+    auto lc_task = createTask(MODEL_NAME);
     for (int i = 0; i < 5; ++i) {
-        lc_task.initExecution();
-        for (auto& kernel: lc_task.kernels) {
+        lc_task->initExecution();
+        for (auto& kernel: lc_task->kernels) {
             // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
             kernel->execute(nullptr);
         }
@@ -673,8 +634,8 @@ int main(int argc, char* argv[]) {
     cudaDeviceSynchronize();
     std::string a = sget_kernel_info("throughput_test", "a");
     std::string b = sget_kernel_info("throughput_test", "b");
-    printf("[Result] cd1: %s, cd2: %s\n", a.c_str(), b.c_str());
-    TaskManager taskManager(&lc_task, a, b);
+    printf("[Result] cd1: %s, cd2: %s, dnn: %s\n", a.c_str(), b.c_str(), MODEL_NAME.c_str());
+    TaskManager taskManager(lc_task, a, b);
     
     taskManager.executeAllTasks(ExecutionMode::Aker, stream);
     taskManager.executeAllTasks(ExecutionMode::Tacker, stream);

@@ -408,7 +408,7 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     cudaEventCreate(&start_i);
     cudaEventCreate(&stop_i);
 
-    float qos_headroom = 50.0f;
+    float qos_headroom = 100.0f;
     int be1_kernel_idx = 0;
     int be2_kernel_idx = 0;
 

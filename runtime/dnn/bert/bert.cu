@@ -9,7 +9,7 @@ extern Logger logger;
 extern Recorder recorder;
 
 void Bert::initParams() {
-    cuda_init();
+    bert_cuda_init();
     //input argument
     int32_t* Parameter_964_0_host, *Parameter_964_0;
     CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_964_0_host, sizeof(int32_t)* 512));

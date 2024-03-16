@@ -1,6 +1,8 @@
 #include "json.h"
+#include "Logger.h"
 boost::property_tree::ptree ptr;
 
+extern Logger logger;
 
 int get_kernel_info(const std::string &kernel_name, const std::string &key){
     auto val = ptr.get_child_optional(kernel_name);
@@ -56,6 +58,7 @@ void read_json(const std::string &filename)
   std::stringstream ss;
   ss << str;
   boost::property_tree::read_json(ss, ptr);
+  logger.INFO("Read json file: " + filename);
 }
 
 void add_kernel_info(const std::string &kernel_name, const std::string &key, int value){

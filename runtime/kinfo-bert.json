@@ -166,18 +166,18 @@
         "a_blk_num": 1,
         "b_blk_num": 1
     },
-    "MAX_ORI_WMMA_A" : {
+    "MAX_ORI_WMMA_A": {
         "vgg16": 822083584
     },
-    "MAX_ORI_WMMA_B" : {
+    "MAX_ORI_WMMA_B": {
         "vgg16": 6422528,
         "resnet50": 6422528
     },
-    "MAX_ORI_WMMA_C" : {
+    "MAX_ORI_WMMA_C": {
         "vgg16": 822083584,
         "resnet50": 822083584
     },
-    "MAX_COL_BUFFER" : {
+    "MAX_COL_BUFFER": {
         "vgg16": 51380224,
         "resnet50": 25690112
     },
@@ -192,7 +192,7 @@
         "shared_memory": 0
     },
     "throughput_test": {
-        "a": "fft",
-        "b": "cp"
+        "a": "mrif",
+        "b": "stencil"
     }
 }
