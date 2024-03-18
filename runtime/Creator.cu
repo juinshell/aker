@@ -214,7 +214,7 @@ MixKernel* createMixKernel(const std::string &name) {
                     "cp_fft", 
                     createKernel("cp"),
                     createKernel("fft"),
-                    dim3(SM_NUM * 2, 1, 1), 
+                    dim3(SM_NUM * 2, 1, 1), // 2
                     dim3(1024, 1, 1), 
                     createKernel("cp")->gptbParams.ptb_start_block_pos,
                     createKernel("cp")->gptbParams.ptb_end_block_pos, 

@@ -58,10 +58,11 @@
         "shared_memory": 19456
     },
     "ratio_test": {
-        "cd_kernel_name": "lbm",
-        "mix_cd_task_blk_num": 6528,
+        "cd_kernel_name": "sgemm",
+        "mix_cd_task_blk_num": 136,
         "solo_cd_task_blk_num": 0,
-        "k": 4608,
+        "k": 4096,
+        "4096": 5120,
         "4608": 6272,
         "2304": 12544,
         "1152": 25088,
@@ -123,7 +124,8 @@
         "shared_memory": 0,
         "blocksize": 128,
         "ori_blks": 10240,
-        "real_ori_blks": 32768
+        "real_ori_blks": 32768,
+        "4096": 4096
     },
     "mrif": {
         "register": 32,
@@ -144,7 +146,8 @@
         "shared_memory": 512,
         "blocksize": 128,
         "ori_blks": 176,
-        "real_ori_blks": 2040
+        "real_ori_blks": 3400,
+        "4096": 4096
     },
     "stencil": {
         "register": 38,

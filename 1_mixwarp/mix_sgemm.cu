@@ -89,6 +89,28 @@ __global__ void mix_kernel1(
     } 
 }
 
+__global__ void mix_kernel2(
+    half *a, half *b, float *c,
+	int MATRIX_M, int MATRIX_N, int MATRIX_K,
+    int wmma_grid_dim_x, int wmma_block_dim_x, 
+    int wmma_iter,
+    float *A, float *B, float *C, int NORMAL_M, int NORMAL_N, int NORMAL_K, 
+    int sgemm_grid_dim_x, int sgemm_grid_dim_y, int sgemm_block_dim_x, int sgemm_block_dim_y,
+    int sgemm_iter){
+    int thread_step = 0;
+    if (threadIdx.x < wmma_block_dim_x) {
+        mix_tzgemm0(a, b, c, MATRIX_M, MATRIX_N, MATRIX_K, wmma_grid_dim_x, wmma_block_dim_x, wmma_iter);
+    } else if (threadIdx.x < wmma_block_dim_x * 2) {
+        thread_step = wmma_block_dim_x;
+        mix_sgemm(A, B, C, NORMAL_M, NORMAL_N, NORMAL_K, 
+                sgemm_grid_dim_x, sgemm_grid_dim_y, sgemm_block_dim_x, sgemm_block_dim_y, sgemm_iter, thread_step);
+    } else if (threadIdx.x < wmma_block_dim_x * 3) {
+        thread_step = wmma_block_dim_x * 2;
+        mix_sgemm1(A, B, C, NORMAL_M, NORMAL_N, NORMAL_K, 
+                sgemm_grid_dim_x, sgemm_grid_dim_y, sgemm_block_dim_x, sgemm_block_dim_y, sgemm_iter, thread_step);
+    }
+}
+
 
 int main(int argc, char* argv[]) {
     int sgemm_blks = 2;
@@ -290,15 +312,16 @@ int main(int argc, char* argv[]) {
 		dim3 mix_grid;
 		dim3 mix_block;
 		mix_grid.x = (sgemm_grid.x > wmma_grid.x) ? sgemm_grid.x : wmma_grid.x;
+        mix_grid.x = SM_NUM * 1;
 		mix_grid.y = 1;
-		mix_block.x = sgemm_block.x + wmma_block.x;
+		mix_block.x = sgemm_block.x * 2 + wmma_block.x;
 		mix_block.y = 1;
         printf("[PTB] sgemm_grid -- %d * %d sgemm_block -- %d * %d \n", 
             sgemm_grid.x, sgemm_grid.y, sgemm_block.x, sgemm_block.y);
 		printf("[MIX] mix_grid -- %d * %d mix_block -- %d * %d \n", mix_grid.x, mix_grid.y, mix_block.x, mix_block.y);
 
 		cudaErrCheck(cudaEventRecord(startKERNEL));
-		checkKernelErrors((mix_kernel <<<mix_grid, mix_block>>> (
+		checkKernelErrors((mix_kernel2 <<<mix_grid, mix_block>>> (
 			// wmma parameters
 			wmma_ori_a, wmma_ori_b, wmma_ori_c, 
             MATRIX_M, MATRIX_N, MATRIX_K,

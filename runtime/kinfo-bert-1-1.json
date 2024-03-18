@@ -3,56 +3,56 @@
         "register": 39,
         "shared_memory": 0,
         "blocksize": 128,
-        "ori_blks": 3060,
+        "ori_blks": 340,
         "real_ori_blks": 16384
     },
     "cutcp": {
         "register": 42,
         "shared_memory": 4096,
         "blocksize": 128,
-        "ori_blks": 816,
+        "ori_blks": 68,
         "real_ori_blks": 2720
     },
     "fft": {
         "register": 33,
         "shared_memory": 2048,
         "blocksize": 128,
-        "ori_blks": 5100,
+        "ori_blks": 680,
         "real_ori_blks": 10240
     },
     "lbm": {
         "register": 61,
         "shared_memory": 0,
         "blocksize": 128,
-        "ori_blks": 10240,
+        "ori_blks": 2040,
         "real_ori_blks": 16384
     },
     "mrif": {
         "register": 32,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 450,
+        "ori_blks": 136,
         "real_ori_blks": 2048
     },
     "mriq": {
         "register": 31,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 408,
+        "ori_blks": 136,
         "real_ori_blks": 2048
     },
     "sgemm": {
         "register": 64,
         "shared_memory": 512,
         "blocksize": 128,
-        "ori_blks": 176,
+        "ori_blks": 68,
         "real_ori_blks": 774
     },
     "stencil": {
         "register": 38,
         "shared_memory": 1024,
         "blocksize": 128,
-        "ori_blks": 1020,
+        "ori_blks": 340,
         "real_ori_blks": 2048
     },
     "tzgemm_cp": {
@@ -95,7 +95,7 @@
         "4608": 8.32
     },
     "tzgemm_lbm": {
-        "gridsize": 1,
+        "gridsize": 2,
         "blocksize": 256,
         "block_ratio": 11110.1,
         "best_block_ratio": 0.1,
@@ -151,10 +151,9 @@
     },
     "ratio_test": {
         "cd_kernel_name": "lbm",
-        "mix_cd_task_blk_num": 13600,
+        "mix_cd_task_blk_num": 6528,
         "solo_cd_task_blk_num": 0,
-        "k": 5000,
-        "5000": 5120,
+        "k": 4608,
         "4608": 6272,
         "2304": 12544,
         "1152": 25088,
@@ -195,8 +194,5 @@
     "throughput_test": {
         "a": "mrif",
         "b": "stencil"
-    },
-    "nsight_compute": {
-        "mix_kernel_name": "mrif_stencil"
     }
 }

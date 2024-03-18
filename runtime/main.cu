@@ -592,7 +592,7 @@ int main(int argc, char* argv[]) {
 
     atexit (my_exit);
 
-    read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + ".json");
+    read_json(ROOT_PATH + "/kinfo.json");
 
     initCUDA();
     // Print compile info
@@ -611,6 +611,11 @@ int main(int argc, char* argv[]) {
     cudaStream_t stream;
     CUDA_SAFE_CALL(cudaStreamCreate(&stream));
 
+    // [Aker] nsight compute
+    // auto mix_kernel = createMixKernel(sget_kernel_info("nsight_compute", "mix_kernel_name"));
+    // mix_kernel->execute(stream);
+    // CUDA_SAFE_CALL(cudaStreamSynchronize(stream));
+
     // [Aker] cd pair accuracy test
     // auto lc_task = Inception3(1001);
     // for (auto& kernel: lc_task.kernels) {
@@ -622,6 +627,44 @@ int main(int argc, char* argv[]) {
     // solo_gptb_accuracy(stream);
 
     // [Aker] throughput test
+    // auto lc_task = createTask(MODEL_NAME);
+    // for (int i = 0; i < 5; ++i) {
+    //     lc_task->initExecution();
+    //     for (auto& kernel: lc_task->kernels) {
+    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //         kernel->execute(nullptr);
+    //     }
+    //     cudaDeviceSynchronize();
+    // }
+    // cudaDeviceSynchronize();
+    // std::string a = sget_kernel_info("throughput_test", "a");
+    // std::string b = sget_kernel_info("throughput_test", "b");
+    // printf("[Result] cd1: %s, cd2: %s, dnn: %s\n", a.c_str(), b.c_str(), MODEL_NAME.c_str());
+    // TaskManager taskManager(lc_task, a, b);
+    
+    // taskManager.executeAllTasks(ExecutionMode::Aker, stream);
+    // taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
+
+    // [Aker] throughput test(1:1 version)
+    // auto lc_task = createTask(MODEL_NAME);
+    // for (int i = 0; i < 5; ++i) {
+    //     lc_task->initExecution();
+    //     for (auto& kernel: lc_task->kernels) {
+    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //         kernel->execute(nullptr);
+    //     }
+    //     cudaDeviceSynchronize();
+    // }
+    // cudaDeviceSynchronize();
+    // std::string a = sget_kernel_info("throughput_test", "a");
+    // std::string b = sget_kernel_info("throughput_test", "b");
+    // printf("[Result] cd: %s, dnn: %s\n", a.c_str(), MODEL_NAME.c_str());
+    // TaskManager taskManager(lc_task, a, b);
+    
+    // taskManager.execute_with_one_cd_kernel(ExecutionMode::Aker, stream);
+    // taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, stream);
+
+    // [Aker] tzgemm-cd pair profile
     auto lc_task = createTask(MODEL_NAME);
     for (int i = 0; i < 5; ++i) {
         lc_task->initExecution();
@@ -631,14 +674,10 @@ int main(int argc, char* argv[]) {
         }
         cudaDeviceSynchronize();
     }
-    cudaDeviceSynchronize();
-    std::string a = sget_kernel_info("throughput_test", "a");
-    std::string b = sget_kernel_info("throughput_test", "b");
-    printf("[Result] cd1: %s, cd2: %s, dnn: %s\n", a.c_str(), b.c_str(), MODEL_NAME.c_str());
-    TaskManager taskManager(lc_task, a, b);
-    
-    taskManager.executeAllTasks(ExecutionMode::Aker, stream);
-    taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
+    int k = get_kernel_info("ratio_test", "k");
+    int m = get_kernel_info("ratio_test", std::to_string(k));
+    tzgemm_cd_profile(m, k);
+
 
     // system("nvidia-smi >> nvidia-smi.log");
 
