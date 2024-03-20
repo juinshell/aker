@@ -45,7 +45,7 @@
         "register": 64,
         "shared_memory": 512,
         "blocksize": 128,
-        "ori_blks": 176,
+        "ori_blks": 80,
         "real_ori_blks": 774
     },
     "stencil": {
@@ -99,7 +99,8 @@
         "blocksize": 256,
         "block_ratio": 11110.1,
         "best_block_ratio": 0.1,
-        "shared_memory": 18432
+        "shared_memory": 18432,
+        "4096": 10000.0
     },
     "tzgemm_mrif": {
         "gridsize": 1,
@@ -131,10 +132,11 @@
     },
     "tzgemm_sgemm": {
         "gridsize": 2,
-        "blocksize": 256,
+        "blocksize": 384,
         "block_ratio": 1.0,
         "best_block_ratio": 1.0,
-        "shared_memory": 0
+        "shared_memory": 0,
+        "4096": 0.425
     },
     "tzgemm_stencil": {
         "gridsize": 2,
@@ -192,7 +194,7 @@
         "shared_memory": 0
     },
     "throughput_test": {
-        "a": "lbm",
+        "a": "sgemm",
         "b": "cp"
     },
     "nsight_compute": {

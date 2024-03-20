@@ -67,7 +67,7 @@
 #include "mix_kernel/tzgemm_lbm.cu"
 #include "mix_kernel/tzgemm_mrif.cu"
 #include "mix_kernel/tzgemm_mriq.cu"
-// #include "mix_kernel/tzgemm_sgemm.cu"
+#include "mix_kernel/tzgemm_sgemm.cu"
 #include "mix_kernel/tzgemm_stencil.cu"
 
 #include "json.h"
@@ -117,6 +117,7 @@ std::unordered_map<std::string, void*> fmap = {
     {"tzgemm_lbm", (void*)lbm_tzgemm_mix},
     {"tzgemm_mrif", (void*)mrif_tzgemm_mix},
     {"tzgemm_mriq", (void*)mriq_tzgemm_mix},
+    {"tzgemm_sgemm", (void*)sgemm_tzgemm_mix},
     {"tzgemm_stencil", (void*)stencil_tzgemm_mix},
     // {"tz_fft_test", (void*)fft_tzgemm_mix_1_2} 
 };
@@ -592,6 +593,7 @@ int main(int argc, char* argv[]) {
 
     atexit (my_exit);
 
+    // read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + "-1-1.json");
     read_json(ROOT_PATH + "/kinfo.json");
 
     initCUDA();
@@ -603,10 +605,10 @@ int main(int argc, char* argv[]) {
     // system("nvidia-smi > nvidia-smi.log");
 
     // profile area
-    // cudaEvent_t startKERNEL, stopKERNEL;
-	// CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
-	// CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
-    // float milliseconds = 0;
+    cudaEvent_t startKERNEL, stopKERNEL;
+	CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+	CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
+    float milliseconds = 0;
 
     cudaStream_t stream;
     CUDA_SAFE_CALL(cudaStreamCreate(&stream));
@@ -617,14 +619,36 @@ int main(int argc, char* argv[]) {
     // CUDA_SAFE_CALL(cudaStreamSynchronize(stream));
 
     // [Aker] cd pair accuracy test
-    // auto lc_task = Inception3(1001);
-    // for (auto& kernel: lc_task.kernels) {
-    //     // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-    //     kernel->execute(nullptr);
-    // }
-    // cudaDeviceSynchronize();
+    auto lc_task = Bert(1001);
+    for (auto& kernel: lc_task.kernels) {
+        // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+        kernel->execute(nullptr);
+    }
+    cudaDeviceSynchronize();
     // cd_pair_accuracy(stream);
     // solo_gptb_accuracy(stream);
+    int m = get_kernel_info("solo_gptb_accuracy", "m");
+    int k = 512;
+    int n = 1024;
+    auto ori_tzgemm_kernel = new OriTZGEMMKernel(0, m, n, k);
+    auto gptb_tzgemm_kernel = new GPTBKernel(
+        1, 
+        "tzgemm",
+        "gptb_tzgemm", 
+        ori_tzgemm_kernel,
+        dim3(SM_NUM * 2, 1, 1), 
+        dim3(128, 1, 1), 
+        0,
+        getTZGEMMGridDim(m, n, k)[3]
+    );
+
+    CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+    gptb_tzgemm_kernel->execute(stream);
+    CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+    CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    printf("tzgemm blks: %d\n", getTZGEMMGridDim(m, n, k)[3]);
+    printf("tzgemm duration: %f\n", milliseconds);
 
     // [Aker] throughput test
     // auto lc_task = createTask(MODEL_NAME);
@@ -665,18 +689,18 @@ int main(int argc, char* argv[]) {
     // taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, stream);
 
     // [Aker] tzgemm-cd pair profile
-    auto lc_task = createTask(MODEL_NAME);
-    for (int i = 0; i < 5; ++i) {
-        lc_task->initExecution();
-        for (auto& kernel: lc_task->kernels) {
-            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-            kernel->execute(nullptr);
-        }
-        cudaDeviceSynchronize();
-    }
-    int k = get_kernel_info("ratio_test", "k");
-    int m = get_kernel_info("ratio_test", std::to_string(k));
-    tzgemm_cd_profile(m, k);
+    // auto lc_task = createTask(MODEL_NAME);
+    // for (int i = 0; i < 5; ++i) {
+    //     lc_task->initExecution();
+    //     for (auto& kernel: lc_task->kernels) {
+    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //         kernel->execute(nullptr);
+    //     }
+    //     cudaDeviceSynchronize();
+    // }
+    // int k = get_kernel_info("ratio_test", "k");
+    // int m = get_kernel_info("ratio_test", std::to_string(k));
+    // tzgemm_cd_profile(m, k);
 
 
     // system("nvidia-smi >> nvidia-smi.log");

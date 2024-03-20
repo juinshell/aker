@@ -151,7 +151,7 @@ __global__ void ptb2_sgemm(float *A, float *B, float *C, int NORMAL_M, int NORMA
 
 __device__ void mix_sgemm(float *A, float *B, float *C, int NORMAL_M, int NORMAL_N, int NORMAL_K, 
                     int grid_dimension_x, int grid_dimension_y, int block_dimension_x, int block_dimension_y,
-                    int iteration, int thread_step) {
+                    int iteration, int thread_step, int block_step) {
     int lda = NORMAL_M;
     int ldb = NORMAL_N;
     int ldc = NORMAL_M;
@@ -165,7 +165,7 @@ __device__ void mix_sgemm(float *A, float *B, float *C, int NORMAL_M, int NORMAL
 
     __shared__ float b_s[TILE_TB_HEIGHT][TILE_N];
 
-    for (;; block_pos += gridDim.x) {
+    for (;; block_pos += block_step) {
         if (block_pos >= grid_dimension_x * grid_dimension_y) {
             return;
         }
@@ -209,7 +209,7 @@ __device__ void mix_sgemm(float *A, float *B, float *C, int NORMAL_M, int NORMAL
 
 __device__ void mix_sgemm1(float *A, float *B, float *C, int NORMAL_M, int NORMAL_N, int NORMAL_K, 
                     int grid_dimension_x, int grid_dimension_y, int block_dimension_x, int block_dimension_y,
-                    int iteration, int thread_step) {
+                    int iteration, int thread_step, int block_step) {
     int lda = NORMAL_M;
     int ldb = NORMAL_N;
     int ldc = NORMAL_M;
@@ -217,13 +217,13 @@ __device__ void mix_sgemm1(float *A, float *B, float *C, int NORMAL_M, int NORMA
     float alpha = 2.0f;
     float beta = 2.0f;
 
-    unsigned int block_pos = blockIdx.x;
+    unsigned int block_pos = blockIdx.x + gridDim.x;
     int thread_id_x = (threadIdx.x - thread_step) % block_dimension_x;
     int thread_id_y = (threadIdx.x - thread_step) / block_dimension_x;
 
     __shared__ float b_s[TILE_TB_HEIGHT][TILE_N];
 
-    for (;; block_pos +=  gridDim.x) {
+    for (;; block_pos +=  block_step) {
         if (block_pos >= grid_dimension_x * grid_dimension_y) {
             return;
         }
@@ -267,7 +267,7 @@ __device__ void mix_sgemm1(float *A, float *B, float *C, int NORMAL_M, int NORMA
 
 __device__ void mix_sgemm2(float *A, float *B, float *C, int NORMAL_M, int NORMAL_N, int NORMAL_K, 
                     int grid_dimension_x, int grid_dimension_y, int block_dimension_x, int block_dimension_y,
-                    int iteration, int thread_step) {
+                    int iteration, int thread_step, int block_step) {
     int lda = NORMAL_M;
     int ldb = NORMAL_N;
     int ldc = NORMAL_M;
@@ -281,7 +281,7 @@ __device__ void mix_sgemm2(float *A, float *B, float *C, int NORMAL_M, int NORMA
 
     __shared__ float b_s[TILE_TB_HEIGHT][TILE_N];
 
-    for (;; block_pos +=  gridDim.x) {
+    for (;; block_pos +=  block_step) {
         if (block_pos >= grid_dimension_x * grid_dimension_y) {
             return;
         }

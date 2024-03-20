@@ -59,7 +59,7 @@
     },
     "ratio_test": {
         "cd_kernel_name": "sgemm",
-        "mix_cd_task_blk_num": 136,
+        "mix_cd_task_blk_num": 884,
         "solo_cd_task_blk_num": 0,
         "k": 4096,
         "4096": 5120,
@@ -182,7 +182,8 @@
         "b_blk_num": 27200
     },
     "solo_gptb_accuracy": {
-        "name": "sgemm",
-        "blk_num": 1496
+        "name": "tzgemm",
+        "blk_num": 1360,
+        "m": 9216
     }
 }

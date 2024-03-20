@@ -825,7 +825,8 @@ void TaskManager::execute_with_one_cd_kernel(ExecutionMode mode, cudaStream_t st
                         float base_block_ratio = fget_kernel_info("tzgemm_" + be_task1_name, std::to_string(4096));
                         block_ratio = base_block_ratio * MNKD[2] / 4096;
                     }
-                    cd_block_num = min(int(MNKD[3] * block_ratio), be_kernel1->gptbParams.ptb_end_block_pos);
+                    cd_block_num = int(MNKD[3] * block_ratio);
+                    cd_block_num = min((cd_block_num < SM_NUM ? SM_NUM : (cd_block_num / SM_NUM) * SM_NUM), be_kernel1->gptbParams.ptb_end_block_pos);
                 }
                 mixcublasSgemm(mnk, be_kernel1, be_kernel1->gptbParams.ptb_start_block_pos, cd_block_num, stream);
 
@@ -840,7 +841,8 @@ void TaskManager::execute_with_one_cd_kernel(ExecutionMode mode, cudaStream_t st
                         float base_block_ratio = fget_kernel_info("tzgemm_" + be_task1_name, std::to_string(4096));
                         block_ratio = base_block_ratio * MNKD[2] / 4096;
                     }
-                    cd_block_num = min(int(MNKD[3] * block_ratio), be_kernel1->gptbParams.ptb_end_block_pos);
+                    cd_block_num = int(MNKD[3] * block_ratio);
+                    cd_block_num = min((cd_block_num < SM_NUM ? SM_NUM : (cd_block_num / SM_NUM) * SM_NUM), be_kernel1->gptbParams.ptb_end_block_pos);
                 }
                 mixcudnnConvolutionForward(cudnnArgs, be_kernel1, be_kernel1->gptbParams.ptb_start_block_pos, cd_block_num, stream);
 

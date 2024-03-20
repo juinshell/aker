@@ -3,56 +3,56 @@
         "register": 39,
         "shared_memory": 0,
         "blocksize": 128,
-        "ori_blks": 340,
+        "ori_blks": 680,
         "real_ori_blks": 16384
     },
     "cutcp": {
         "register": 42,
         "shared_memory": 4096,
         "blocksize": 128,
-        "ori_blks": 68,
+        "ori_blks": 272,
         "real_ori_blks": 2720
     },
     "fft": {
         "register": 33,
         "shared_memory": 2048,
         "blocksize": 128,
-        "ori_blks": 680,
+        "ori_blks": 6800,
         "real_ori_blks": 10240
     },
     "lbm": {
         "register": 61,
         "shared_memory": 0,
         "blocksize": 128,
-        "ori_blks": 2040,
+        "ori_blks": 80,
         "real_ori_blks": 16384
     },
     "mrif": {
         "register": 32,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 136,
+        "ori_blks": 1024,
         "real_ori_blks": 2048
     },
     "mriq": {
         "register": 31,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 136,
+        "ori_blks": 13600,
         "real_ori_blks": 2048
     },
     "sgemm": {
         "register": 64,
         "shared_memory": 512,
         "blocksize": 128,
-        "ori_blks": 68,
+        "ori_blks": 90,
         "real_ori_blks": 774
     },
     "stencil": {
         "register": 38,
         "shared_memory": 1024,
         "blocksize": 128,
-        "ori_blks": 340,
+        "ori_blks": 680,
         "real_ori_blks": 2048
     },
     "tzgemm_cp": {
@@ -99,7 +99,8 @@
         "blocksize": 256,
         "block_ratio": 11110.1,
         "best_block_ratio": 0.1,
-        "shared_memory": 18432
+        "shared_memory": 18432,
+        "4096": 10000.0
     },
     "tzgemm_mrif": {
         "gridsize": 1,
@@ -131,10 +132,11 @@
     },
     "tzgemm_sgemm": {
         "gridsize": 2,
-        "blocksize": 256,
+        "blocksize": 384,
         "block_ratio": 1.0,
         "best_block_ratio": 1.0,
-        "shared_memory": 0
+        "shared_memory": 0,
+        "4096": 1000
     },
     "tzgemm_stencil": {
         "gridsize": 2,
@@ -192,7 +194,7 @@
         "shared_memory": 0
     },
     "throughput_test": {
-        "a": "mrif",
+        "a": "lbm",
         "b": "stencil"
     }
 }

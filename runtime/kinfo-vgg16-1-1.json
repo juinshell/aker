@@ -3,7 +3,7 @@
         "register": 39,
         "shared_memory": 0,
         "blocksize": 128,
-        "ori_blks": 4480,
+        "ori_blks": 6800,
         "real_ori_blks": 16384,
         "128": 128,
         "512": 512,
@@ -15,7 +15,7 @@
         "register": 42,
         "shared_memory": 4096,
         "blocksize": 128,
-        "ori_blks": 170,
+        "ori_blks": 6800,
         "real_ori_blks": 2720,
         "128": 128,
         "512": 512,
@@ -51,7 +51,7 @@
         "register": 32,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 450,
+        "ori_blks": 6800,
         "real_ori_blks": 2048,
         "128": 128,
         "512": 512,
@@ -75,7 +75,7 @@
         "register": 64,
         "shared_memory": 512,
         "blocksize": 128,
-        "ori_blks": 68,
+        "ori_blks": 90,
         "real_ori_blks": 774
     },
     "stencil": {
@@ -134,7 +134,8 @@
         "blocksize": 256,
         "block_ratio": 11110.1,
         "best_block_ratio": 0.1,
-        "shared_memory": 18432
+        "shared_memory": 18432,
+        "4096": 10000.0
     },
     "tzgemm_mrif": {
         "gridsize": 1,
@@ -166,10 +167,11 @@
     },
     "tzgemm_sgemm": {
         "gridsize": 2,
-        "blocksize": 256,
+        "blocksize": 384,
         "block_ratio": 1.0,
         "best_block_ratio": 1.0,
-        "shared_memory": 0
+        "shared_memory": 0,
+        "4096": 0.425
     },
     "tzgemm_stencil": {
         "gridsize": 2,
@@ -227,7 +229,7 @@
         "shared_memory": 0
     },
     "throughput_test": {
-        "a": "mrif",
+        "a": "sgemm",
         "b": "stencil"
     }
 }

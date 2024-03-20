@@ -210,7 +210,7 @@ __device__ void mix_tzgemm0(half *A, half *B, float *C,
 	// Each CTA slides along the 128 x 128 tiles from the top left corner of the
 	// matrix to the right and down, and selects the next tile to compute. Once
 	// there's no such tile, all warps in this CTA exit.
-	for (;; block_pos += WMMA_GRID_DIM2) {
+	for (;; block_pos += gridDim.x) {
 		if (block_pos >= grid_dimension_x) {
             return;
         }
