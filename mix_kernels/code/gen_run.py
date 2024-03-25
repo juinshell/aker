@@ -33,9 +33,9 @@ def gen_code_file(kernel1, kernel2):
         exit_flag = False
 
         # check if run_file_dir/xx_xx_mix exists
-        if os.path.exists(run_file_dir + f"{kernel1}_{kernel2}_{ratio1}_{ratio2}_mix"):
-            print(f"[skip {kernel1}_{kernel2}_{ratio1}_{ratio2}_mix]")
-            continue
+        # if os.path.exists(run_file_dir + f"{kernel1}_{kesnel2}_{ratio1}_{ratio2}_mix"):
+        #     print(f"[skip {kernel1}_{kernel2}_{ratio1}_{ratio2}_mix]")
+        #     continue
 
         
         print(f"\nGen {kernel1}_{kernel2}_{ratio1}_{ratio2}.cu, blks_per_sm: {blks_per_sm}")

@@ -557,6 +557,7 @@ void cd_pair_profile(cudaStream_t stream) {
     printf("load_ratio: %f, duration: %f\n", load_ratio, mix_time);
     printf("a_blk_num / b_blk_num: %f\n", (a_blk_num * 1.0f / b_blk_num));
     printf("a_kernel_time: %f, b_kernel_time: %f\n", a_kernel_time, b_kernel_time);
+    printf("improve: %f%\n", (a_kernel_time + b_kernel_time - mix_time) * 100.0 / (a_kernel_time + b_kernel_time));
 }
 
 Task* createTask(std::string taskName) {
@@ -593,7 +594,7 @@ int main(int argc, char* argv[]) {
 
     atexit (my_exit);
 
-    // read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + "-1-1.json");
+    // read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + ".json");
     read_json(ROOT_PATH + "/kinfo.json");
 
     initCUDA();
@@ -619,36 +620,36 @@ int main(int argc, char* argv[]) {
     // CUDA_SAFE_CALL(cudaStreamSynchronize(stream));
 
     // [Aker] cd pair accuracy test
-    auto lc_task = Bert(1001);
-    for (auto& kernel: lc_task.kernels) {
-        // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-        kernel->execute(nullptr);
-    }
-    cudaDeviceSynchronize();
-    // cd_pair_accuracy(stream);
-    // solo_gptb_accuracy(stream);
-    int m = get_kernel_info("solo_gptb_accuracy", "m");
-    int k = 512;
-    int n = 1024;
-    auto ori_tzgemm_kernel = new OriTZGEMMKernel(0, m, n, k);
-    auto gptb_tzgemm_kernel = new GPTBKernel(
-        1, 
-        "tzgemm",
-        "gptb_tzgemm", 
-        ori_tzgemm_kernel,
-        dim3(SM_NUM * 2, 1, 1), 
-        dim3(128, 1, 1), 
-        0,
-        getTZGEMMGridDim(m, n, k)[3]
-    );
+    // auto lc_task = Bert(1001);
+    // for (auto& kernel: lc_task.kernels) {
+    //     // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //     kernel->execute(nullptr);
+    // }
+    // cudaDeviceSynchronize();
+    // // cd_pair_accuracy(stream);
+    // // solo_gptb_accuracy(stream);
+    // int m = get_kernel_info("solo_gptb_accuracy", "m");
+    // int k = 512;
+    // int n = 1024;
+    // auto ori_tzgemm_kernel = new OriTZGEMMKernel(0, m, n, k);
+    // auto gptb_tzgemm_kernel = new GPTBKernel(
+    //     1, 
+    //     "tzgemm",
+    //     "gptb_tzgemm", 
+    //     ori_tzgemm_kernel,
+    //     dim3(SM_NUM * 2, 1, 1), 
+    //     dim3(128, 1, 1), 
+    //     0,
+    //     getTZGEMMGridDim(m, n, k)[3]
+    // );
 
-    CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
-    gptb_tzgemm_kernel->execute(stream);
-    CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
-    CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
-    CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-    printf("tzgemm blks: %d\n", getTZGEMMGridDim(m, n, k)[3]);
-    printf("tzgemm duration: %f\n", milliseconds);
+    // CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+    // gptb_tzgemm_kernel->execute(stream);
+    // CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+    // CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    // CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    // printf("tzgemm blks: %d\n", getTZGEMMGridDim(m, n, k)[3]);
+    // printf("tzgemm duration: %f\n", milliseconds);
 
     // [Aker] throughput test
     // auto lc_task = createTask(MODEL_NAME);
@@ -701,6 +702,64 @@ int main(int argc, char* argv[]) {
     // int k = get_kernel_info("ratio_test", "k");
     // int m = get_kernel_info("ratio_test", std::to_string(k));
     // tzgemm_cd_profile(m, k);
+
+    // [Aker] cd pair profile test
+    auto lc_task = createTask(MODEL_NAME);
+    for (int i = 0; i < 5; ++i) {
+        lc_task->initExecution();
+        for (auto& kernel: lc_task->kernels) {
+            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+            kernel->execute(nullptr);
+        }
+        cudaDeviceSynchronize();
+    }
+    cudaDeviceSynchronize();
+    cd_pair_profile(stream);
+
+    // // [Aker] moti
+    // auto lc_task = createTask(MODEL_NAME);
+    // for (int i = 0; i < 5; ++i) {
+    //     lc_task->initExecution();
+    //     for (auto& kernel: lc_task->kernels) {
+    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //         kernel->execute(stream);
+    //     }
+    //     cudaStreamSynchronize(stream);
+    // }
+    // cudaDeviceSynchronize();
+    // vector<float> time_vec(lc_task->kernels.size(), 0);
+    // for (int i = 0; i < 5; ++i) {
+    //     lc_task->initExecution();
+    //     for (int j = 0; j < lc_task->kernels.size(); ++j) {
+    //         auto start = clock();
+    //         lc_task->kernels[j]->execute(stream);
+    //         cudaDeviceSynchronize();
+    //         cudaStreamSynchronize(stream);
+    //         auto end = clock();
+    //         auto duration = float(end - start) * 1000 / CLOCKS_PER_SEC;
+    //         time_vec[j] += duration;
+    //     }
+    //     cudaStreamSynchronize(stream);
+    // }
+    // // cal total avg time
+    // float total_time = 0.0f;
+    // float tensor_core_time = 0.0f;
+    // for (int i = 0; i < time_vec.size(); ++i) {
+    //     total_time += time_vec[i];
+    // }
+    // printf("total time: %f\n", total_time / 5);
+
+    // int tensor_kernel_count = 0;
+    // for (int k_idx = 0; k_idx < lc_task->kernels.size(); ++k_idx) {
+    //     auto kernel = lc_task->kernels[k_idx];
+    //     // printf("kernel name: %s, time: %f\n", kernel->kernelName.c_str(), time_vec[k_idx] / 5);
+    //     if (kernel->mixable != 0) {
+    //         tensor_core_time += time_vec[k_idx] / 5;
+    //         tensor_kernel_count++;
+    //     }
+    // }
+    // printf("tensor core time: %f, kernel count: %d\n", tensor_core_time, tensor_kernel_count);
+
 
 
     // system("nvidia-smi >> nvidia-smi.log");

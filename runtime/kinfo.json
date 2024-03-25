@@ -157,10 +157,10 @@
         "real_ori_blks": 6800
     },
     "cd_pair_ratio_profile": {
-        "a_name": "sgemm",
-        "b_name": "mrif",
-        "a_blk_num": 176,
-        "b_blk_num": 1020
+        "a_name": "mriq",
+        "b_name": "fft",
+        "a_blk_num": 680,
+        "b_blk_num": 6800
     },
     "cd_pair_best_ratio": {
         "fft_cutcp": 8.366,
