@@ -1,6 +1,19 @@
 #include "tzgemm_kernel.h"
 
-extern "C" __global__ void general_ptb_tzgemm(half *A, half *B, float *C, 
+// extern "C" __global__ void general_ptb_tzgemm(half *A, half *B, float *C, 
+// 		// float alpha, float beta,
+// 		int M_GLOBAL, int N_GLOBAL, int K_GLOBAL,
+// 		int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
+// 		        int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base) {
+// 		internal_general_ptb_tzgemm(
+// 			A, B, C, 
+// 			// alpha, beta,
+// 			M_GLOBAL, N_GLOBAL, K_GLOBAL,
+// 			grid_dimension_x, grid_dimension_y, grid_dimension_z, block_dimension_x, block_dimension_y, block_dimension_z,  
+// 					ptb_start_block_pos, ptb_iter_block_step, ptb_end_block_pos, thread_base
+// 		);
+// 	}
+__device__ void internal_general_ptb_tzgemm(half *A, half *B, float *C, 
 		// float alpha, float beta,
 		int M_GLOBAL, int N_GLOBAL, int K_GLOBAL,
 		int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
@@ -108,7 +121,7 @@ extern "C" __global__ void general_ptb_tzgemm(half *A, half *B, float *C,
 					shmem_idx += CHUNK_COPY_LINES_PER_WARP;
 				}
 
-				__syncthreads();
+				asm volatile("bar.sync %0, %1;" : : "r"(2), "r"(128) : "memory");;
 
 				// Compute a grid of C matrix tiles in each warp.
 				#pragma unroll
@@ -135,7 +148,7 @@ extern "C" __global__ void general_ptb_tzgemm(half *A, half *B, float *C,
 						}
 					}
 				}
-				__syncthreads();
+				asm volatile("bar.sync %0, %1;" : : "r"(2), "r"(128) : "memory");;
 			}
 
 			// Store the D fragments to shared memory.
@@ -154,7 +167,7 @@ extern "C" __global__ void general_ptb_tzgemm(half *A, half *B, float *C,
 				}
 			}
 
-			__syncthreads();
+			asm volatile("bar.sync %0, %1;" : : "r"(2), "r"(128) : "memory");;
 
 			// Now that shared memory contains all the D tiles, stream them to global
 			// memory.
@@ -165,6 +178,23 @@ extern "C" __global__ void general_ptb_tzgemm(half *A, half *B, float *C,
 				*((int2 *)(dst_gmem_warp_stream_ptr + GLOBAL_MEM_STRIDE * i) + laneId) =
 					*((int2 *)(shmem_warp_stream_ptr + SHMEM_STRIDE * i) + laneId);
 			}
-			__syncthreads();
+			asm volatile("bar.sync %0, %1;" : : "r"(2), "r"(128) : "memory");;
 		}
 }
+
+extern "C" __global__ void general_ptb_tzgemm(
+	half *A, half *B, float *C, 
+		// float alpha, float beta,
+		int M_GLOBAL, int N_GLOBAL, int K_GLOBAL,
+		// int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10,
+		// int a11, int a12, int a13, int a14, int a15, int a16, int a17, int a18, int a19, int a20,
+		int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
+		        int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base) {
+		internal_general_ptb_tzgemm(
+			A, B, C, 
+			// alpha, beta,
+			M_GLOBAL, N_GLOBAL, K_GLOBAL,
+			grid_dimension_x, grid_dimension_y, grid_dimension_z, block_dimension_x, block_dimension_y, block_dimension_z,  
+					ptb_start_block_pos, ptb_iter_block_step, ptb_end_block_pos, thread_base
+		);
+	}

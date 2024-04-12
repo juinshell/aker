@@ -13,10 +13,11 @@
 #include "Kernel.h"
 #include "util.h"
 
+template <typename T>
 struct OriCPParamsStruct {
     int numatoms;
     float gridspacing;
-    float * energygrid;
+    T * energygrid;
 };
 
 class OriCPKernel : public Kernel {
@@ -31,13 +32,15 @@ public:
     // 实现纯虚函数
     void executeImpl(cudaStream_t stream);
     void initParams();
+    void initParams_int();
     std::vector<int> getArgs() {
         return std::vector<int>();
     }
 
 private:
     void loadKernel();  
-    OriCPParamsStruct* CPKernelParams;
+    OriCPParamsStruct<float>* CPKernelParams;
+    OriCPParamsStruct<int>* CPKernelParams_int;
     
 };
 

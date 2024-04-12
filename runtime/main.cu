@@ -59,6 +59,7 @@
 
 #include "gptb_kernel/tzgemm_kernel.cu"
 #include "tzgemm_kernel.h"
+#include <cublas_v2.h>
 
 // tzgemm mix
 #include "mix_kernel/tzgemm_cp.cu"
@@ -97,6 +98,10 @@ std::unordered_map<std::string, void*> fmap = {
     {"gptb_sgemm", (void*)general_ptb_sgemm},
     {"gptb_stencil", (void*)general_ptb_stencil},
     {"gptb_tzgemm", (void*)general_ptb_tzgemm},
+    {"gptb_cp_int", (void*)g_general_ptb_cp_int},
+    {"gptb_fft_int", (void*)g_general_ptb_fft_int},
+    {"gptb_mrif_int", (void*)g_general_ptb_mrif_int},
+    {"gptb_mriq_int", (void*)g_general_ptb_mriq_int},
     {"cp_fft", (void*)mixed_cp_fft_kernel_3_1},
     {"cp_sgemm", (void*)mixed_cp_sgemm_kernel_1_1},
     {"fft_lbm", (void*)mixed_fft_lbm_kernel_6_1},
@@ -119,6 +124,10 @@ std::unordered_map<std::string, void*> fmap = {
     {"tzgemm_mriq", (void*)mriq_tzgemm_mix},
     {"tzgemm_sgemm", (void*)sgemm_tzgemm_mix},
     {"tzgemm_stencil", (void*)stencil_tzgemm_mix},
+    {"tzgemm_cp_int", (void*)cp_tzgemm_mix_int},
+    {"tzgemm_fft_int", (void*)fft_tzgemm_mix_int},
+    {"tzgemm_mrif_int", (void*)mrif_tzgemm_mix_int},
+    {"tzgemm_mriq_int", (void*)mriq_tzgemm_mix_int}
     // {"tz_fft_test", (void*)fft_tzgemm_mix_1_2} 
 };
 
@@ -182,28 +191,41 @@ std::string SYSTEM = "aker";
 std::string ROOT_PATH = "/home/jxdeng/workspace/tacker/runtime";
 std::string MODEL_NAME = "none";
 
+extern float* ori_wmma_results1;
+extern float* ori_wmma_results2;
+extern float* ori_wmma_C;
+extern float* cublas_wmma_C;
+
+
 void tzgemm_cd_profile(int m, int k) {
     // 测试fig10，tzgemm-cd load ratio
     auto gptb_cd_kernel = createKernel(sget_kernel_info("ratio_test", "cd_kernel_name"));
-    printf("cd kernel name: %s\n", gptb_cd_kernel->kernelName.c_str());
+    std::string mix_kernel_name = "tzgemm_" + gptb_cd_kernel->kernelName;
+    printf("cd kernel name: %s, mix kernel name: %s\n", gptb_cd_kernel->kernelName.c_str(), mix_kernel_name.c_str());
     int NORMAL_M = m;
     int NORMAL_N = 512;
     int NORMAL_K = k;
+    int M_GLOBAL = (NORMAL_M < 128) ? 128 : (NORMAL_M / 128) * 128;
+	int N_GLOBAL = (NORMAL_N < 128) ? 128 : (NORMAL_N / 128) * 128;
+	int K_GLOBAL = (NORMAL_K < 128) ? 128 : (NORMAL_K / 128) * 128;
+    // CUDA_SAFE_CALL(cudaMemcpy(ori_wmma_results2, ori_wmma_C, sizeof(float) * NORMAL_M * NORMAL_N, cudaMemcpyDeviceToHost));
 
-    auto ori_tzgemm_kernel = new OriTZGEMMKernel(0, NORMAL_M, NORMAL_N, NORMAL_K);
+    auto ori_tzgemm_kernel = new OriTZGEMMKernel(0, M_GLOBAL, N_GLOBAL, K_GLOBAL);
+    int int_params[20] = {M_GLOBAL, N_GLOBAL, K_GLOBAL, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 20, 30, 40};
     auto gptb_tzgemm_kernel = new GPTBKernel(
         1, 
         "tzgemm",
         "gptb_tzgemm", 
         ori_tzgemm_kernel,
-        dim3(SM_NUM * 2, 1, 1), 
+        dim3(SM_NUM * 1, 1, 1), 
         dim3(128, 1, 1), 
         0,
-        getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3]
+        getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]
+        // int_params
     );
 
-    printf("tzgemm M-N-K: %d %d %d\n", NORMAL_M, NORMAL_N, NORMAL_K);
-    printf("tzgemm blks: %d\n", getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3]);
+    printf("tzgemm M-N-K: %d %d %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);
+    printf("tzgemm blks: %d\n", getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]);
 
     int mix_cd_task_blk_num = get_kernel_info("ratio_test", "mix_cd_task_blk_num");
     int solo_cd_task_blk_num = get_kernel_info("ratio_test", "solo_cd_task_blk_num");
@@ -217,8 +239,6 @@ void tzgemm_cd_profile(int m, int k) {
     CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
 
 
-    std::string mix_kernel_name = "tzgemm_" + gptb_cd_kernel->kernelName;
-
     auto mix_kernel = new MixKernel(
         1, 
         mix_kernel_name, 
@@ -229,9 +249,71 @@ void tzgemm_cd_profile(int m, int k) {
         0,
         mix_cd_task_blk_num,
         0,
-        getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3]
+        getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]
     );
 
+    cudaErrCheck(cudaMemset(ori_wmma_C, 0, sizeof(float) * M_GLOBAL * N_GLOBAL));
+    cudaErrCheck(cudaMemset(cublas_wmma_C, 0, sizeof(float) * M_GLOBAL * N_GLOBAL));
+
+    // mix_kernel
+    mix_kernel->execute(nullptr);
+    cudaErrCheck(cudaDeviceSynchronize());
+    cudaErrCheck(cudaMemcpy(ori_wmma_results2, ori_wmma_C, sizeof(float) * M_GLOBAL * N_GLOBAL, cudaMemcpyDeviceToHost));
+
+    // cublas
+    cublasHandle_t cublasHandle;
+	cublasErrCheck(cublasCreate(&cublasHandle));
+	cublasErrCheck(cublasSetMathMode(cublasHandle, CUBLAS_TENSOR_OP_MATH));
+	printf("Running with cuBLAS...\n");
+	cublasErrCheck(cublasGemmEx(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, 
+                        N_GLOBAL, M_GLOBAL, K_GLOBAL, 
+                        &alpha_g,
+                        ori_wmma_B, CUDA_R_16F, K_GLOBAL,
+                        ori_wmma_A, CUDA_R_16F, K_GLOBAL,
+                        &beta_g, 
+                        cublas_wmma_C, CUDA_R_32F, N_GLOBAL,
+                        CUDA_R_32F, CUBLAS_GEMM_DFALT_TENSOR_OP));
+    CUDA_SAFE_CALL(cudaDeviceSynchronize());
+
+    CUDA_SAFE_CALL(cudaMemcpy(ori_wmma_results1, cublas_wmma_C, sizeof(float) * M_GLOBAL * N_GLOBAL, cudaMemcpyDeviceToHost));
+
+    // verify
+    int errors = 0;
+    printf("begin verify mix...\n");
+    for (int i = 0; i < M_GLOBAL * N_GLOBAL; ++i) {
+        float v1 = ori_wmma_results1[i];
+        float v2 = ori_wmma_results2[i];
+        if (fabs(v1 - v2) > 0.001f) {
+            errors++;
+            if (errors < 10) printf("%f %f\n", v1, v2);
+        }
+    }
+    if (errors > 0) {
+        printf("[WMMA] MIX VERSION does not agree with CUBLAS VERSION! %d errors!\n", errors);
+    } else {
+        printf("verify success!\n");
+    }
+    
+    // gptb
+    cudaErrCheck(cudaMemset(ori_wmma_C, 0, sizeof(float) * M_GLOBAL * N_GLOBAL));
+    gptb_tzgemm_kernel->execute(nullptr);
+    CUDA_SAFE_CALL(cudaMemcpy(ori_wmma_results2, ori_wmma_C, sizeof(float) * M_GLOBAL * N_GLOBAL, cudaMemcpyDeviceToHost));
+    // verify
+    errors = 0;
+    printf("begin verify gptb_tzgemm...\n");
+    for (int i = 0; i < M_GLOBAL * N_GLOBAL; ++i) {
+        float v1 = ori_wmma_results1[i];
+        float v2 = ori_wmma_results2[i];
+        if (fabs(v1 - v2) > 0.001f) {
+            errors++;
+            if (errors < 10) printf("%f %f\n", v1, v2);
+        }
+    }
+    if (errors > 0) {
+        printf("[WMMA] GPTB TZGEMM VERSION does not agree with CUBLAS VERSION! %d errors!\n", errors);
+    } else {
+        printf("verify success!\n");
+    }
 
     std::vector<float> time_vec;
     // cd solo
@@ -264,18 +346,36 @@ void tzgemm_cd_profile(int m, int k) {
         time_vec.push_back(kernel_time);
     }
 
+    // CUDA_SAFE_CALL(cudaMemcpy(ori_wmma_results1, ori_wmma_C, sizeof(float) * NORMAL_M * NORMAL_N, cudaMemcpyDeviceToHost));
+
+    //     // verify
+    // int errors = 0;
+    // for (int i = 0; i < NORMAL_M * NORMAL_N; ++i) {
+    //     if (i < 10) {
+    //         printf("%d %f %f\n", i, ori_wmma_results1[i], ori_wmma_results2[i]);
+    //     }
+    //     if (fabs(ori_wmma_results1[i] - ori_wmma_results2[i]) > 1e-3) {
+    //         printf("error: %d %f %f\n", i, ori_wmma_results1[i], ori_wmma_results2[i]);
+    //         errors++;
+    //     }
+    //     if (errors > 10) {
+    //         printf("errors out of: %d\n", errors);
+    //         break;
+    //     }
+    // }
+
     // 排序后取中间10个数据，计算平均值
     std::sort(time_vec.begin(), time_vec.end());
-    float gptb_sgemm_time = 0.0f;
+    float gptb_tzgemm_time = 0.0f;
     for(int i = 5; i < 15; ++i) {
-        gptb_sgemm_time += time_vec[i];
+        gptb_tzgemm_time += time_vec[i];
     }
-    gptb_sgemm_time /= 10.0f;
+    gptb_tzgemm_time /= 10.0f;
 
 
     time_vec.clear();
 
-        // mix
+    // mix
     for(int i = 0; i < 50; ++i) {
         CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
         mix_kernel->execute(nullptr);
@@ -284,6 +384,8 @@ void tzgemm_cd_profile(int m, int k) {
         CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
         time_vec.push_back(kernel_time);
     }
+
+    CUDA_SAFE_CALL(cudaMemcpy(ori_wmma_results2, ori_wmma_C, sizeof(float) * M_GLOBAL * N_GLOBAL, cudaMemcpyDeviceToHost));
 
     // 排序后取中间10个数据，计算平均值
     std::sort(time_vec.begin(), time_vec.end());
@@ -318,13 +420,45 @@ void tzgemm_cd_profile(int m, int k) {
         gptb_left_cd_time /= 10.0f;
     }
 
-    float load_ratio = gptb_cd_time / gptb_sgemm_time;
+    // cublas
+    // cublasHandle_t cublasHandle;
+	// cublasErrCheck(cublasCreate(&cublasHandle));
+	// cublasErrCheck(cublasSetMathMode(cublasHandle, CUBLAS_TENSOR_OP_MATH));
+	// printf("Running with cuBLAS...\n");
+	// cublasErrCheck(cublasGemmEx(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, 
+    //                     N_GLOBAL, M_GLOBAL, K_GLOBAL, 
+    //                     &alpha_g,
+    //                     ori_wmma_B, CUDA_R_16F, K_GLOBAL,
+    //                     ori_wmma_A, CUDA_R_16F, K_GLOBAL,
+    //                     &beta_g, 
+    //                     cublas_wmma_C, CUDA_R_32F, N_GLOBAL,
+    //                     CUDA_R_32F, CUBLAS_GEMM_DFALT_TENSOR_OP));
+    // CUDA_SAFE_CALL(cudaDeviceSynchronize());
+
+    // CUDA_SAFE_CALL(cudaMemcpy(ori_wmma_results1, cublas_wmma_C, sizeof(float) * M_GLOBAL * N_GLOBAL, cudaMemcpyDeviceToHost));
+
+    // // verify
+    // errors = 0;
+    // printf("begin verify...\n");
+    // for (int i = 0; i < M_GLOBAL * N_GLOBAL; ++i) {
+    //     float v1 = ori_wmma_results1[i];
+    //     float v2 = ori_wmma_results2[i];
+    //     if (fabs(v1 - v2) > 0.001f) {
+    //         errors++;
+    //         if (errors < 10) printf("%f %f\n", v1, v2);
+    //     }
+    // }
+    // if (errors > 0) {
+    //     printf("[WMMA] MIX VERSION does not agree with CUBLAS VERSION! %d errors!\n", errors);
+    // }
+
+    float load_ratio = gptb_cd_time / gptb_tzgemm_time;
     printf("load_ratio: %f\n", load_ratio);
     printf("mix_duration: %f\n", mix_time + gptb_left_cd_time);
-    printf("sgemm gptb time: %f, cd gptb time: %f, sgemm_blk_num: %d, cd_blk_num: %d\n", 
-                gptb_sgemm_time, gptb_cd_time, getTZGEMMGridDim(NORMAL_M, NORMAL_N, NORMAL_K)[3], mix_cd_task_blk_num);
-    printf("mix cd blks: %d, solo cd blks: %d\n", mix_cd_task_blk_num, solo_cd_task_blk_num);
-    printf("mix cd time: %f, solo cd time: %f\n", mix_time, gptb_left_cd_time);
+    printf("tzgemm gptb time: %f, cd gptb time: %f, tzgemm_blk_num: %d, cd_blk_num: %d\n", 
+                gptb_tzgemm_time, gptb_cd_time, getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3], mix_cd_task_blk_num);
+    printf("improve: %f%\n", (gptb_tzgemm_time + gptb_cd_time - mix_time) * 100.0 / (gptb_tzgemm_time + gptb_cd_time));
+    printf("block_ratio: %f\n", (mix_cd_task_blk_num * 1.0f / getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]));
 }
 
 void solo_gptb_accuracy(cudaStream_t stream) {
@@ -690,6 +824,24 @@ int main(int argc, char* argv[]) {
     // taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, stream);
 
     // [Aker] tzgemm-cd pair profile
+    auto lc_task = createTask(MODEL_NAME);
+    for (int i = 0; i < 5; ++i) {
+        lc_task->initExecution();
+        auto start = clock();
+        for (auto& kernel: lc_task->kernels) {
+            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+            kernel->execute(nullptr);
+        }
+        cudaDeviceSynchronize();
+        auto end = clock();
+        auto duration = float(end - start) * 1000 / CLOCKS_PER_SEC;
+        printf("%s total time: %f\n", lc_task->taskName.c_str(), duration);
+    }
+    int k = get_kernel_info("ratio_test", "k");
+    int m = get_kernel_info("ratio_test", std::to_string(k));
+    tzgemm_cd_profile(m, k);
+
+    // [Aker] cd pair profile test
     // auto lc_task = createTask(MODEL_NAME);
     // for (int i = 0; i < 5; ++i) {
     //     lc_task->initExecution();
@@ -699,22 +851,8 @@ int main(int argc, char* argv[]) {
     //     }
     //     cudaDeviceSynchronize();
     // }
-    // int k = get_kernel_info("ratio_test", "k");
-    // int m = get_kernel_info("ratio_test", std::to_string(k));
-    // tzgemm_cd_profile(m, k);
-
-    // [Aker] cd pair profile test
-    auto lc_task = createTask(MODEL_NAME);
-    for (int i = 0; i < 5; ++i) {
-        lc_task->initExecution();
-        for (auto& kernel: lc_task->kernels) {
-            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-            kernel->execute(nullptr);
-        }
-        cudaDeviceSynchronize();
-    }
-    cudaDeviceSynchronize();
-    cd_pair_profile(stream);
+    // cudaDeviceSynchronize();
+    // cd_pair_profile(stream);
 
     // // [Aker] moti
     // auto lc_task = createTask(MODEL_NAME);

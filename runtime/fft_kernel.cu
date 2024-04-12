@@ -74,7 +74,11 @@ OriFFTKernel::OriFFTKernel(int id){
     this->kernelName = "fft";
     this->moduleName = "ori_fft"; 
     // loadKernel();
-    initParams();
+    if (id < 0) {
+        initParams_int();
+    } else {
+        initParams();
+    }
 }
 
 void OriFFTKernel::initParams() {
@@ -114,7 +118,7 @@ void OriFFTKernel::initParams() {
     fft_block.x = nthreads;
 
     if (!this->initialized) {
-        this->FFTKernelParams = new OriFFTParamsStruct();
+        this->FFTKernelParams = new OriFFTParamsStruct<float2>();
         this->FFTKernelParams->data = fft_ori_source;
 
         this->kernelParams.push_back(&(this->FFTKernelParams->data));
@@ -123,6 +127,59 @@ void OriFFTKernel::initParams() {
         this->launchBlockDim = fft_block;
 
         this->smem = 2048;
+
+        this->kernelFunc = (void*)ori_fft;
+        this->initialized = true;
+    }
+}
+
+void OriFFTKernel::initParams_int() {
+    //8*1024*1024;
+    printf("OriFFTKernel:initParams_int\n");
+    int fft_blks = 3;
+    int fft_iter = 1;
+    int n_bytes = FFT_N * FFT_B * sizeof(int2) * 10; // up scale
+    int nthreads = FFT_T;
+    srand(54321);
+
+    int *host_shared_source = (int *)malloc(n_bytes);  
+    int2 *source    = (int2 *)malloc( n_bytes );
+    int2 *host_fft_ori_result    = (int2 *)malloc( n_bytes );
+
+    for(int b=0; b<FFT_B;b++) {	
+        for( int i = 0; i < FFT_N; i++ ) {
+            source[b*FFT_N+i].x = (rand()/(int)RAND_MAX)*2-1;
+            source[b*FFT_N+i].y = (rand()/(int)RAND_MAX)*2-1;
+        }
+    }
+
+    // allocate device memory
+    int2 *fft_ori_source;
+    // float *fft_ori_shared_source;
+    // cudaMalloc((void**) &fft_ori_shared_source, n_bytes);
+    // copy host memory to device
+    // cudaMemcpy(fft_ori_shared_source, host_shared_source, n_bytes, cudaMemcpyHostToDevice);
+    if (!this->initialized) cudaMalloc((void**) &fft_ori_source, n_bytes);
+    else fft_ori_source = (int2*)this->FFTKernelParams->data;
+
+    // copy host memory to device
+    cudaMemcpy(fft_ori_source, source, n_bytes, cudaMemcpyHostToDevice);
+
+    dim3 fft_grid;
+    dim3 fft_block;
+    fft_grid.x = FFT_B;
+    fft_block.x = nthreads;
+
+    if (!this->initialized) {
+        this->FFTKernelParams_int = new OriFFTParamsStruct<int2>();
+        this->FFTKernelParams_int->data = fft_ori_source;
+
+        this->kernelParams.push_back(&(this->FFTKernelParams_int->data));
+
+        this->launchGridDim = fft_grid;
+        this->launchBlockDim = fft_block;
+
+        this->smem = 0;
 
         this->kernelFunc = (void*)ori_fft;
         this->initialized = true;

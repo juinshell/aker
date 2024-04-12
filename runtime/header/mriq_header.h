@@ -16,5 +16,12 @@ struct mriq_kValues {
   float PhiMag;
 };
 
+struct mriq_kValues_int {
+  int Kx;
+  int Ky;
+  int Kz;
+  int PhiMag;
+};
+
 #include "pets_common.h"
 #define MRIQ_GRID_DIM (SM_NUM * 1)

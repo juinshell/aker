@@ -229,6 +229,179 @@ __device__ void fft_tzgemm_fft2(float2* data,
 	}
 }
 
+// int begin
+// int
+inline __device__ int2 operator*( int2 a, int2 b ) { return make_int2( a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x ); }
+inline __device__ int2 operator+( int2 a, int2 b ) { return make_int2( a.x + b.x, a.y + b.y ); }
+inline __device__ int2 operator-( int2 a, int2 b ) { return make_int2( a.x - b.x, a.y - b.y ); }
+inline __device__ int2 operator*( int2 a, int b ) { return make_int2( b*a.x , b*a.y); }
+
+inline __device__ void GPU_FFT2(int2* v){
+	int2 vt = v[0];
+	v[0] = vt + v[1];
+	v[1] = vt - v[1];
+}
+
+inline __device__ void GPU_FFT2(int2 &v1, int2 &v2) { 
+    int2 v0 = v1;  
+    v1 = v0 + v2; 
+    v2 = v0 - v2; 
+}
+
+__device__ void G_GPU_exchange_fft_tzgemm_fft0_int( int2* v, int stride, int idxD, int incD, 
+	int idxS, int incS){ 
+	__shared__ int work[FFT_T*FFT_R*2];//FFT_T*FFT_R*2
+	int* sr = work;
+	int* si = work+FFT_T*FFT_R;  
+	// __syncthreads(); 
+asm volatile("bar.sync %0, %1;" : : "r"(1), "r"(128) : "memory");
+	for( int r=0; r<FFT_R; r++ ) { 
+		int i = (idxD + r*incD)*stride; 
+		sr[i] = v[r].x;
+		si[i] = v[r].y;  
+	}   
+	// __syncthreads(); 
+asm volatile("bar.sync %0, %1;" : : "r"(1), "r"(128) : "memory");
+
+	for( int r=0; r<FFT_R; r++ ) { 
+		int i = (idxS + r*incS)*stride;     
+		v[r] = make_int2(sr[i], si[i]);  
+	}        
+} 
+
+__device__ void G_GPU_DoFft_fft_tzgemm_fft0_int(int2* v, int j, int stride=1) { 
+	for( int Ns=1; Ns<FFT_N; Ns*=FFT_R ){ 
+		int angle = -2*M_PI*(j%Ns)/(Ns*FFT_R); 
+		for( int r=0; r<FFT_R; r++ ){
+			v[r] = v[r]*make_int2(cos(float(r*angle)), sin(float(r*angle)));
+		}
+
+		GPU_FFT2( v );
+
+		int idxD = GPU_expand(j,Ns,FFT_R); 
+		int idxS = GPU_expand(j,FFT_N/FFT_R,FFT_R); 
+		G_GPU_exchange_fft_tzgemm_fft0_int( v,stride, idxD,Ns, idxS,FFT_N/FFT_R);
+	}      
+}
+
+__device__ void fft_tzgemm_fft0_int(int2* data, 
+	int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
+		int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base){
+	
+	unsigned int block_pos = blockIdx.x + ptb_start_block_pos;
+
+	// // ori
+	// int thread_id_x = threadIdx.x - thread_step;
+
+    int thread_id_x = (threadIdx.x - thread_base) % block_dimension_x;
+    // int thread_id_y = ((threadIdx.x - thread_base) / block_dimension_x) % block_dimension_y;
+    // int thread_id_z = (threadIdx.x - thread_base) / (block_dimension_x * block_dimension_y);
+
+	for (;; block_pos += ptb_iter_block_step) {
+        if (block_pos >= ptb_end_block_pos) {
+            return;
+        }
+
+		// // ori
+		// int block_id_x = block_pos;
+        int block_id_x = block_pos % grid_dimension_x;
+		// int block_id_y = (block_pos / grid_dimension_x) % grid_dimension_y;
+        // int block_id_z = block_pos / (grid_dimension_x * grid_dimension_y);
+
+		int2 *ori_data = data + block_id_x * FFT_N;
+		int2 v[FFT_R];
+		// data = ori_data;
+
+		int idxG = thread_id_x; 
+		for (int r=0; r<FFT_R; r++) {  
+			v[r] = ori_data[idxG + r*FFT_T];
+		} 
+		G_GPU_DoFft_fft_tzgemm_fft0_int( v, thread_id_x, 1);  
+		for (int r=0; r<FFT_R; r++) {
+			ori_data[idxG + r*FFT_T] = v[r];
+		}
+	}
+}
+
+// 2
+
+__device__ void G_GPU_exchange_fft_tzgemm_fft1_int( int2* v, int stride, int idxD, int incD, 
+	int idxS, int incS){ 
+	__shared__ int work[FFT_T*FFT_R*2];//FFT_T*FFT_R*2
+	int* sr = work;
+	int* si = work+FFT_T*FFT_R;  
+	// __syncthreads(); 
+asm volatile("bar.sync %0, %1;" : : "r"(4), "r"(128) : "memory");
+	for( int r=0; r<FFT_R; r++ ) { 
+		int i = (idxD + r*incD)*stride; 
+		sr[i] = v[r].x;
+		si[i] = v[r].y;  
+	}   
+	// __syncthreads(); 
+asm volatile("bar.sync %0, %1;" : : "r"(4), "r"(128) : "memory");
+
+	for( int r=0; r<FFT_R; r++ ) { 
+		int i = (idxS + r*incS)*stride;     
+		v[r] = make_int2(sr[i], si[i]);  
+	}        
+} 
+
+__device__ void G_GPU_DoFft_fft_tzgemm_fft1_int(int2* v, int j, int stride=1) { 
+	for( int Ns=1; Ns<FFT_N; Ns*=FFT_R ){ 
+		int angle = -2*M_PI*(j%Ns)/(Ns*FFT_R); 
+		for( int r=0; r<FFT_R; r++ ){
+			v[r] = v[r]*make_int2(cos(float(r*angle)), sin(float(r*angle)));
+		}
+
+		GPU_FFT2( v );
+
+		int idxD = GPU_expand(j,Ns,FFT_R); 
+		int idxS = GPU_expand(j,FFT_N/FFT_R,FFT_R); 
+		G_GPU_exchange_fft_tzgemm_fft1_int( v,stride, idxD,Ns, idxS,FFT_N/FFT_R);
+	}      
+}
+
+__device__ void fft_tzgemm_fft1_int(int2* data, 
+	int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
+		int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base){
+	
+	unsigned int block_pos = blockIdx.x + ptb_start_block_pos;
+
+	// // ori
+	// int thread_id_x = threadIdx.x - thread_step;
+
+    int thread_id_x = (threadIdx.x - thread_base) % block_dimension_x;
+    // int thread_id_y = ((threadIdx.x - thread_base) / block_dimension_x) % block_dimension_y;
+    // int thread_id_z = (threadIdx.x - thread_base) / (block_dimension_x * block_dimension_y);
+
+	for (;; block_pos += ptb_iter_block_step) {
+        if (block_pos >= ptb_end_block_pos) {
+            return;
+        }
+
+		// // ori
+		// int block_id_x = block_pos;
+        int block_id_x = block_pos % grid_dimension_x;
+		// int block_id_y = (block_pos / grid_dimension_x) % grid_dimension_y;
+        // int block_id_z = block_pos / (grid_dimension_x * grid_dimension_y);
+
+		int2 *ori_data = data + block_id_x * FFT_N;
+		int2 v[FFT_R];
+		// data = ori_data;
+
+		int idxG = thread_id_x; 
+		for (int r=0; r<FFT_R; r++) {  
+			v[r] = ori_data[idxG + r*FFT_T];
+		} 
+		G_GPU_DoFft_fft_tzgemm_fft1_int( v, thread_id_x, 1);  
+		for (int r=0; r<FFT_R; r++) {
+			ori_data[idxG + r*FFT_T] = v[r];
+		}
+	}
+}
+
+// int end
+
 __device__ void fft_tzgemm_tzgemm0(half *A, half *B, float *C, 
 		// float alpha, float beta,
 		int M_GLOBAL, int N_GLOBAL, int K_GLOBAL,
@@ -785,6 +958,29 @@ extern "C" __global__ void fft_tzgemm_mix_2_2(float2* fft0_data,
         );
     } else if (threadIdx.x < 256) {
 		fft_tzgemm_fft1(
+			fft0_data, fft0_grid_dimension_x, fft0_grid_dimension_y, fft0_grid_dimension_z, fft0_block_dimension_x, fft0_block_dimension_y, fft0_block_dimension_z, fft0_ptb_start_block_pos + 1 * fft0_ptb_iter_block_step, fft0_ptb_iter_block_step * 2, fft0_ptb_end_block_pos, 128
+		);
+	} else if (threadIdx.x < 384) {
+        fft_tzgemm_tzgemm0(
+            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 0 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 256
+        );
+    } else if (threadIdx.x < 512) {
+		fft_tzgemm_tzgemm1(
+			tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 1 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 384
+		);
+	}
+}
+
+extern "C" __global__ void fft_tzgemm_mix_int(int2* fft0_data, 
+		int fft0_grid_dimension_x, int fft0_grid_dimension_y, int fft0_grid_dimension_z, int fft0_block_dimension_x, int fft0_block_dimension_y, int fft0_block_dimension_z, int fft0_ptb_start_block_pos, int fft0_ptb_iter_block_step, int fft0_ptb_end_block_pos, 
+		half* tzgemm1_A, half* tzgemm1_B, float* tzgemm1_C, int tzgemm1_NORMAL_M, int tzgemm1_NORMAL_N, int tzgemm1_NORMAL_K, 
+		int tzgemm1_grid_dimension_x, int tzgemm1_grid_dimension_y, int tzgemm1_grid_dimension_z, int tzgemm1_block_dimension_x, int tzgemm1_block_dimension_y, int tzgemm1_block_dimension_z, int tzgemm1_ptb_start_block_pos, int tzgemm1_ptb_iter_block_step, int tzgemm1_ptb_end_block_pos){
+    if (threadIdx.x < 128) {
+        fft_tzgemm_fft0_int(
+            fft0_data, fft0_grid_dimension_x, fft0_grid_dimension_y, fft0_grid_dimension_z, fft0_block_dimension_x, fft0_block_dimension_y, fft0_block_dimension_z, fft0_ptb_start_block_pos + 0 * fft0_ptb_iter_block_step, fft0_ptb_iter_block_step * 2, fft0_ptb_end_block_pos, 0
+        );
+    } else if (threadIdx.x < 256) {
+		fft_tzgemm_fft1_int(
 			fft0_data, fft0_grid_dimension_x, fft0_grid_dimension_y, fft0_grid_dimension_z, fft0_block_dimension_x, fft0_block_dimension_y, fft0_block_dimension_z, fft0_ptb_start_block_pos + 1 * fft0_ptb_iter_block_step, fft0_ptb_iter_block_step * 2, fft0_ptb_end_block_pos, 128
 		);
 	} else if (threadIdx.x < 384) {

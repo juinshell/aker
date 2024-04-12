@@ -98,8 +98,8 @@ int main(int argc, char* argv[]) {
 	int wmma_blks = 2;
     int wmma_iter = 1;
     int M_INPUT = 50176;
-	int N_INPUT = 128;
-	int K_INPUT = 128 * 1;
+	int N_INPUT = 512;
+	int K_INPUT = 128 * 10;
 	int mixwarp = 1;
 	if (argc == 2) {
 		mixwarp = atoi(argv[1]);
@@ -279,14 +279,14 @@ int main(int argc, char* argv[]) {
 		printf("[MIX] mix_grid -- %d * %d mix_block -- %d * %d \n", mix_grid.x, mix_grid.y, mix_block.x, mix_block.y);
 
 		cudaErrCheck(cudaEventRecord(startKERNEL));
-		checkKernelErrors((mix_kernel1 <<<mix_grid, mix_block>>> (
+		checkKernelErrors((mix_kernel0 <<<mix_grid, mix_block>>> (
 			// wmma parameters
 			wmma_ori_a, wmma_ori_b, wmma_ori_c, 
 			MATRIX_M, MATRIX_N, MATRIX_K,
 			wmma_grid_dim_x, wmma_block_dim_x, wmma_iter,
 			// cp parameters
 			runatoms, 0.1, ptb_output, 
-			0, 0, cp_block_dim_x, cp_block_dim_y, cp_iter
+			cp_grid_dim_x, cp_grid_dim_y, cp_block_dim_x, cp_block_dim_y, cp_iter
 		)));
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));

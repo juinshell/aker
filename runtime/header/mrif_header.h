@@ -29,5 +29,13 @@ struct mrif_kValues {
   float RhoPhiI;
 };
 
+struct mrif_kValues_int {
+  int Kx;
+  int Ky;
+  int Kz;
+  int RhoPhiR;
+  int RhoPhiI;
+};
+
 #include "pets_common.h"
 #define MRIF_GRID_DIM (SM_NUM * 1)

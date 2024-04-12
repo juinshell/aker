@@ -7,6 +7,7 @@
 extern Logger logger;
 
 __constant__ __device__ mriq_kValues ck[KERNEL_Q_K_ELEMS_PER_GRID];
+__constant__ __device__ mriq_kValues_int ck_int[KERNEL_Q_K_ELEMS_PER_GRID];
 
 void inputData(int* _numK, int* _numX,
                float** kx, float** ky, float** kz,

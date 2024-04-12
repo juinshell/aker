@@ -1,4 +1,34 @@
 {
+    "tzgemm_cp_int": {
+        "gridsize": 2,
+        "blocksize": 256,
+        "block_ratio": 5,
+        "best_block_ratio": 0.21,
+        "shared_memory": 0
+    },
+    "tzgemm_fft_int": {
+        "gridsize": 1,
+        "blocksize": 512,
+        "block_ratio": 0.01,
+        "best_block_ratio": 1.0,
+        "shared_memory": 0
+    },
+    "tzgemm_mrif_int": {
+        "gridsize": 1,
+        "blocksize": 512,
+        "block_ratio": 0.88,
+        "best_block_ratio": 0.88,
+        "shared_memory": 0,
+        "real_shared_memory": 36864
+    },
+    "tzgemm_mriq_int": {
+        "gridsize": 1,
+        "blocksize": 512,
+        "block_ratio": 111110.05,
+        "best_block_ratio": 0.05,
+        "shared_memory": 0,
+        "real_shared_memory": 36864
+    },
     "tzgemm_cp": {
         "gridsize": 1,
         "blocksize": 512,
@@ -29,7 +59,7 @@
     },
     "tzgemm_mrif": {
         "gridsize": 1,
-        "blocksize": 384,
+        "blocksize": 512,
         "block_ratio": 0.88,
         "best_block_ratio": 0.88,
         "shared_memory": 0,
@@ -37,7 +67,7 @@
     },
     "tzgemm_mriq": {
         "gridsize": 1,
-        "blocksize": 384,
+        "blocksize": 512,
         "block_ratio": 111110.05,
         "best_block_ratio": 0.05,
         "shared_memory": 0,
@@ -58,11 +88,11 @@
         "shared_memory": 19456
     },
     "ratio_test": {
-        "cd_kernel_name": "sgemm",
-        "mix_cd_task_blk_num": 884,
+        "cd_kernel_name": "mriq_int",
+        "mix_cd_task_blk_num": 680,
         "solo_cd_task_blk_num": 0,
         "k": 4096,
-        "4096": 5120,
+        "4096": 15000,
         "4608": 6272,
         "2304": 12544,
         "1152": 25088,

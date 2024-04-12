@@ -65,5 +65,5 @@ const float alpha_g = 1.1f;
 const float beta_g = 0;
 
 #include "pets_common.h"
-#define WMMA_GRID_DIM (SM_NUM * 2)
-#define WMMA_GRID_DIM2 (SM_NUM * 2)
+// #define WMMA_GRID_DIM (SM_NUM * 2)
+// #define WMMA_GRID_DIM2 (SM_NUM * 2)

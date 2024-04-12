@@ -7,6 +7,7 @@
 extern Logger logger;
 
 __constant__ __device__ mrif_kValues c[KERNEL_FH_K_ELEMS_PER_GRID];
+__constant__ __device__ mrif_kValues_int c_int[KERNEL_FH_K_ELEMS_PER_GRID];
 // __constant__ __device__ mrif_kValues c_gptb_mrif[KERNEL_FH_K_ELEMS_PER_GRID];
 // __constant__ __device__ mrif_kValues c_mix_mrif[KERNEL_FH_K_ELEMS_PER_GRID];
 

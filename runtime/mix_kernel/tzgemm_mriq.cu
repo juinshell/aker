@@ -54,14 +54,84 @@ __device__ void mriq_tzgemm_mriq0(int numK, int kGlobalIndex, float* x, float* y
                 kIndex += 2, kGlobalIndex += 2) {
                 float expArg = PIx2_MRIQ * (ck[kIndex].Kx * sX + ck[kIndex].Ky * sY +
                             ck[kIndex].Kz * sZ);
-                sQr += ck[kIndex].PhiMag * cos(expArg);
+                sQr += ck[kIndex].PhiMag * (int)cos(expArg);
                 sQi += ck[kIndex].PhiMag * sin(expArg);
 
                 int kIndex1 = kIndex + 1;
                 float expArg1 = PIx2_MRIQ * (ck[kIndex1].Kx * sX + ck[kIndex1].Ky * sY +
                             ck[kIndex1].Kz * sZ);
-                sQr += ck[kIndex1].PhiMag * cos(expArg1);
+                sQr += ck[kIndex1].PhiMag * (int)cos(expArg1);
                 sQi += ck[kIndex1].PhiMag * sin(expArg1);
+            }
+
+            Qr[xIndex] = sQr;
+            Qi[xIndex] = sQi;
+        }
+    }
+}
+
+// int
+__device__ void mriq_tzgemm_mriq0_int(int numK, int kGlobalIndex, int* x, int* y, int* z, int* Qr , int* Qi,
+	    int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
+		    int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base) {
+
+    unsigned int block_pos = blockIdx.x + ptb_start_block_pos;
+	
+	int thread_id_x = (threadIdx.x - thread_base) % block_dimension_x;
+    // int thread_id_y = ((threadIdx.x - thread_base) / block_dimension_x) % block_dimension_y;
+    // int thread_id_z = (threadIdx.x - thread_base) / (block_dimension_x * block_dimension_y);
+
+    for (;; block_pos += ptb_iter_block_step) {
+        if (block_pos >= ptb_end_block_pos) {
+            return;
+        }
+        
+        int block_id_x = block_pos % grid_dimension_x;
+		// int block_id_y = (block_pos / grid_dimension_x) % grid_dimension_y;
+        // int block_id_z = block_pos / (grid_dimension_x * grid_dimension_y);
+
+        for (int QGrid = 0; QGrid < 1; QGrid++) {
+            kGlobalIndex = QGrid * KERNEL_Q_K_ELEMS_PER_GRID;
+
+            int sX;
+            int sY;
+            int sZ;
+            int sQr;
+            int sQi;
+
+            // Determine the element of the X arrays computed by this thread
+            int xIndex = block_id_x * KERNEL_Q_THREADS_PER_BLOCK + thread_id_x;
+
+            // Read block's X values from global mem to shared mem
+            sX = x[xIndex];
+            sY = y[xIndex];
+            sZ = z[xIndex];
+            sQr = Qr[xIndex];
+            sQi = Qi[xIndex];
+
+            // Loop over all elements of K in constant mem to compute a partial value
+            // for X.
+            int kIndex = 0;
+            // if (numK % 2) {
+            //     float expArg = PIx2_MRIQ * (ck[0].Kx * sX + ck[0].Ky * sY + ck[0].Kz * sZ);
+            //     sQr += ck[0].PhiMag * cos(expArg);
+            //     sQi += ck[0].PhiMag * sin(expArg);
+            //     kIndex++;
+            //     kGlobalIndex++;
+            // }
+
+            for (; (kIndex < KERNEL_Q_K_ELEMS_PER_GRID) && (kGlobalIndex < numK);
+                kIndex += 2, kGlobalIndex += 2) {
+                float expArg = PIx2_MRIQ * (ck_int[kIndex].Kx * sX + ck_int[kIndex].Ky * sY +
+                            ck_int[kIndex].Kz * sZ);
+                sQr += ck_int[kIndex].PhiMag * (int)cos(expArg);
+                sQi += ck_int[kIndex].PhiMag * (int)sin(expArg);
+
+                int kIndex1 = kIndex + 1;
+                float expArg1 = PIx2_MRIQ * (ck_int[kIndex1].Kx * sX + ck_int[kIndex1].Ky * sY +
+                            ck_int[kIndex1].Kz * sZ);
+                sQr += ck_int[kIndex1].PhiMag * (int)cos(expArg1);
+                sQi += ck_int[kIndex1].PhiMag * (int)sin(expArg1);
             }
 
             Qr[xIndex] = sQr;
@@ -287,7 +357,7 @@ __device__ void mriq_tzgemm_tzgemm1(half *A, half *B, float *C,
 		if (block_pos >= ptb_end_block_pos) {
             return;
         }
-
+		// printf("block_pos: %d\n", block_pos);
 		const unsigned int block_tile_i =
 			((block_pos * BLOCK_ROW_TILES) / N_TILES) * (BLOCK_COL_TILES);
 		const unsigned int block_tile_j = (block_pos * BLOCK_COL_TILES) % N_TILES;
@@ -416,6 +486,30 @@ __global__ void mriq_tzgemm_mix(
 		int tzgemm1_grid_dimension_x, int tzgemm1_grid_dimension_y, int tzgemm1_grid_dimension_z, int tzgemm1_block_dimension_x, int tzgemm1_block_dimension_y, int tzgemm1_block_dimension_z, int tzgemm1_ptb_start_block_pos, int tzgemm1_ptb_iter_block_step, int tzgemm1_ptb_end_block_pos){
     if (threadIdx.x < 256) {
         mriq_tzgemm_mriq0(
+            mriq0_numK, mriq0_kGlobalIndex, mriq0_x, mriq0_y, mriq0_z, mriq0_Qr, mriq0_Qi, mriq0_grid_dimension_x, mriq0_grid_dimension_y, mriq0_grid_dimension_z, mriq0_block_dimension_x, mriq0_block_dimension_y, mriq0_block_dimension_z, mriq0_ptb_start_block_pos + 0 * mriq0_ptb_iter_block_step, mriq0_ptb_iter_block_step * 1, mriq0_ptb_end_block_pos, 0
+        );
+    }
+    else if (threadIdx.x < 384) {
+        mriq_tzgemm_tzgemm0(
+            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 0 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 256
+        );
+    }
+    else if (threadIdx.x < 512) {
+        mriq_tzgemm_tzgemm1(
+            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 1 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 384
+        );
+		// printf("tzgemm1 - 512\n");
+    }
+
+}
+
+__global__ void mriq_tzgemm_mix_int(
+		int mriq0_numK, int mriq0_kGlobalIndex, int* mriq0_x, int* mriq0_y, int* mriq0_z, int* mriq0_Qr, int* mriq0_Qi, 
+		int mriq0_grid_dimension_x, int mriq0_grid_dimension_y, int mriq0_grid_dimension_z, int mriq0_block_dimension_x, int mriq0_block_dimension_y, int mriq0_block_dimension_z, int mriq0_ptb_start_block_pos, int mriq0_ptb_iter_block_step, int mriq0_ptb_end_block_pos, 
+		half* tzgemm1_A, half* tzgemm1_B, float* tzgemm1_C, int tzgemm1_NORMAL_M, int tzgemm1_NORMAL_N, int tzgemm1_NORMAL_K, 
+		int tzgemm1_grid_dimension_x, int tzgemm1_grid_dimension_y, int tzgemm1_grid_dimension_z, int tzgemm1_block_dimension_x, int tzgemm1_block_dimension_y, int tzgemm1_block_dimension_z, int tzgemm1_ptb_start_block_pos, int tzgemm1_ptb_iter_block_step, int tzgemm1_ptb_end_block_pos){
+    if (threadIdx.x < 256) {
+        mriq_tzgemm_mriq0_int(
             mriq0_numK, mriq0_kGlobalIndex, mriq0_x, mriq0_y, mriq0_z, mriq0_Qr, mriq0_Qi, mriq0_grid_dimension_x, mriq0_grid_dimension_y, mriq0_grid_dimension_z, mriq0_block_dimension_x, mriq0_block_dimension_y, mriq0_block_dimension_z, mriq0_ptb_start_block_pos + 0 * mriq0_ptb_iter_block_step, mriq0_ptb_iter_block_step * 1, mriq0_ptb_end_block_pos, 0
         );
     }

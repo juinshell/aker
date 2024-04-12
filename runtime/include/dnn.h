@@ -281,6 +281,9 @@ extern float *ori_host_B;
 extern half *ori_wmma_A;
 extern half *ori_wmma_B;
 extern float *ori_wmma_C;
+extern float *cublas_wmma_C;
+extern float *ori_wmma_results1;
+extern float *ori_wmma_results2;
 
 extern int batch_size;
 
@@ -395,7 +398,7 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
 	dim3 im_block;
     im_block.x = 256;
 	im_grid.x = int(num_kernels / 256);
-	im_grid.x = 68 * 2;
+	im_grid.x = SM_NUM * 2;
 
     // cudaErrCheck(cudaEventRecord(startKERNEL));
     // print args
@@ -443,7 +446,7 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
 
 	int wmma_grid_dim_x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
 	int wmma_block_dim_x = wmma_block.x;
-	wmma_grid.x = 68 * 2;
+	wmma_grid.x = SM_NUM * 1;
 	wmma_block.x = THREADS_PER_BLOCK;
 
     // M_GLOBAL /= batch_size;
@@ -456,14 +459,32 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
     // printf("MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
     if (!gemm_malloced) {
         printf("[mycudnn]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", MAX_ORI_WMMA_A / 1024.0 / 1024.0, MAX_ORI_WMMA_B / 1024.0 / 1024.0, MAX_ORI_WMMA_C / 1024.0 / 1024.0);
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), MAX_ORI_WMMA_A * 2));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), MAX_ORI_WMMA_B * 2));
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), MAX_ORI_WMMA_A));
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), MAX_ORI_WMMA_B));
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_C), MAX_ORI_WMMA_C));
-        // curandGenerator_t gen;
-        // curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
-        // curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
-        // curandErrCheck(curandGenerateUniform(gen, ori_host_A, M_GLOBAL * K_GLOBAL));
-        // curandErrCheck(curandGenerateUniform(gen, ori_host_B, N_GLOBAL * K_GLOBAL));
+        cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&cublas_wmma_C), MAX_ORI_WMMA_C));
+        curandGenerator_t gen;
+        curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
+        curandErrCheck(curandSetPseudoRandomGeneratorSeed(gen, 1337ULL));
+        curandErrCheck(curandGenerateUniform(gen, ori_host_A, MAX_ORI_WMMA_A / sizeof(half)));
+        curandErrCheck(curandGenerateUniform(gen, ori_host_B, MAX_ORI_WMMA_B / sizeof(half)));
+        convertFp32ToFp16 <<< (MAX_ORI_WMMA_A / sizeof(half) + 255) / 256, 256 >>> (ori_wmma_A, ori_host_A, MAX_ORI_WMMA_A / sizeof(half));
+        convertFp32ToFp16 <<< (MAX_ORI_WMMA_B / sizeof(half) + 255) / 256, 256 >>> (ori_wmma_B, ori_host_B, MAX_ORI_WMMA_B / sizeof(half));
+        // cudaErrCheck(cudaMemset(ori_wmma_A, 2.0f, MAX_ORI_WMMA_A));
+        // cudaErrCheck(cudaMemset(ori_wmma_B, 3.0f, MAX_ORI_WMMA_B));
+        cudaErrCheck(cudaMemset(ori_wmma_C, 0, MAX_ORI_WMMA_C));
+        cudaErrCheck(cudaMemset(cublas_wmma_C, 0, MAX_ORI_WMMA_C));
+
+        ori_wmma_results1 = (float *)malloc(MAX_ORI_WMMA_C);
+        for (int i = 0; i < MAX_ORI_WMMA_C / sizeof(float); i++) {
+            ori_wmma_results1[i] = 0.0f;
+        }
+        ori_wmma_results2 = (float *)malloc(MAX_ORI_WMMA_C);
+        for (int i = 0; i < MAX_ORI_WMMA_C / sizeof(float) ; i++) {
+            ori_wmma_results2[i] = 0.0f;
+        }
         gemm_malloced = true;
     }
     // printf("M_GLOBAL: %d, N_GLOBAL: %d, K_GLOBAL: %d\n", M_GLOBAL, N_GLOBAL, K_GLOBAL);

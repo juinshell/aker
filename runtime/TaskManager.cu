@@ -36,6 +36,9 @@ float *ori_host_B;
 half *ori_wmma_A;
 half *ori_wmma_B;
 float *ori_wmma_C;
+float *cublas_wmma_C;
+float *ori_wmma_results1;
+float *ori_wmma_results2;
 
 __global__ void im2col_gpu_kernel_(int n, float* data_im,
     int height, int width, int kernel_h, int kernel_w,
