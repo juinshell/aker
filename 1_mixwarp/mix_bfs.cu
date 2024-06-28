@@ -96,6 +96,46 @@ __global__ void mix_kernel(
     }
 }
 
+__global__ void tgemm_bfs_kernel(
+    half *a, half *b, float *c,
+    int MATRIX_M, int MATRIX_N, int MATRIX_K,
+    int wmma_grid_dim_x, int wmma_block_dim_x, 
+    int wmma_iter,
+	int *q1,
+    int *q2, 
+	Node *g_graph_nodes, 
+	Edge *g_graph_edges, 
+	int *g_color, 
+	int *g_cost, 
+	int no_of_nodes, 
+	int *tail, 
+	int gray_shade, 
+	int k,
+	int *overflow,
+	int grid_dimension_x,
+	int block_dimension_x,
+	int bfs_iter){
+    if (threadIdx.x < wmma_block_dim_x * 1 && blockIdx.x < WMMA_GRID_DIM2) {
+        mix_tzgemm0(a, b, c, MATRIX_M, MATRIX_N, MATRIX_K,
+			wmma_grid_dim_x, wmma_block_dim_x, wmma_iter);
+    } else if (threadIdx.x >= wmma_block_dim_x * 1 && blockIdx.x < BFS_GRID_DIM) {
+        int thread_step = wmma_block_dim_x * 1;
+        mix_bfs(q1, q2, 
+           g_graph_nodes, g_graph_edges, 
+           g_color, g_cost, 
+           no_of_nodes, 
+           tail, 
+           gray_shade, 
+           k,
+           overflow,
+           grid_dimension_x,
+           block_dimension_x,
+		   thread_step,
+           bfs_iter
+           );
+    }
+}
+
 
 int main(int argc, char* argv[]) {
     int bfs_blks = 1;

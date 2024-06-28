@@ -103,8 +103,8 @@ __global__ void mix_kernel1 (
 int main(int argc, char* argv[]) {
     int lbm_blks = 1;
     int lbm_iter = 5;
-	int wmma_blks = 2;
-    int wmma_iter = 5;
+	int wmma_blks = 2; // point
+    int wmma_iter = 1;
     int M_INPUT = 128 * 1;
 	int N_INPUT = 128 * 3136;
 	int K_INPUT = 128 * 1;
@@ -189,6 +189,8 @@ int main(int argc, char* argv[]) {
         float *lbm_ori_dst;
         float *lbm_ptb_src;
         float *lbm_ptb_dst;
+        int *lbm_ptb_src_int;
+        int *lbm_ptb_dst_int;
         float *host_lbm_ori_dst;
         float *host_lbm_ptb_dst;
 
@@ -200,6 +202,8 @@ int main(int argc, char* argv[]) {
         cudaErrCheck(cudaMalloc((void **)&lbm_ori_dst, size));
         cudaErrCheck(cudaMalloc((void **)&lbm_ptb_src, size));
         cudaErrCheck(cudaMalloc((void **)&lbm_ptb_dst, size));
+        cudaErrCheck(cudaMalloc((void **)&lbm_ptb_src_int, size));
+        cudaErrCheck(cudaMalloc((void **)&lbm_ptb_dst_int, size));
 
         // curandGenerator_t gen;
         // curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
@@ -208,10 +212,14 @@ int main(int argc, char* argv[]) {
         curandErrCheck(curandGenerateUniform(gen, lbm_ori_dst, TOTAL_PADDED_CELLS * N_CELL_ENTRIES + 2 * TOTAL_MARGIN));
         cudaErrCheck(cudaMemcpy(lbm_ptb_src, lbm_ori_src, size, cudaMemcpyDeviceToDevice));
         cudaErrCheck(cudaMemcpy(lbm_ptb_dst, lbm_ori_dst, size, cudaMemcpyDeviceToDevice));
+        cudaErrCheck(cudaMemcpy(lbm_ptb_src_int, lbm_ptb_src, size, cudaMemcpyDeviceToDevice));
+        cudaErrCheck(cudaMemcpy(lbm_ptb_dst_int, lbm_ptb_dst, size, cudaMemcpyDeviceToDevice));
         lbm_ori_src += REAL_MARGIN;
         lbm_ori_dst += REAL_MARGIN;
         lbm_ptb_src += REAL_MARGIN;
         lbm_ptb_dst += REAL_MARGIN;
+        lbm_ptb_src_int += REAL_MARGIN;
+        lbm_ptb_dst_int += REAL_MARGIN;
     // ---------------------------------------------------------------------------------------
 
 
@@ -328,16 +336,19 @@ int main(int argc, char* argv[]) {
                 MATRIX_M, MATRIX_N, MATRIX_K,
                 // alpha, beta,
                 wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
-        checkKernelErrors((ptb_lbm<<<lbm_grid, lbm_block, 0, streams[1]>>>(lbm_ptb_src, lbm_ptb_dst,
+        checkKernelErrors((ptb_lbm_int<<<lbm_grid, lbm_block, 0, streams[1]>>>(lbm_ptb_src_int, lbm_ptb_dst_int,
                 lbm_grid_dim_x, lbm_grid_dim_y, lbm_grid_dim_z,
                 lbm_block_dim_x, lbm_block_dim_y, lbm_block_dim_z, lbm_iter)));
+        
 		
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));
 		cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[PTB] lbm_grid -- %d * %d * %d lbm_block -- %d * %d * %d \n", 
+        printf("[MIX] lbm_grid -- %d * %d * %d lbm_block -- %d * %d * %d \n", 
             lbm_grid.x, lbm_grid.y, lbm_grid.z, lbm_block.x, lbm_block.y, lbm_block.z);
-		printf("[STREAMP] mix took %f ms\n\n", kernel_time);
+        printf("[MIX] tgemm_grid -- %d * %d tgemm_block -- %d * %d \n", 
+            wmma_grid.x, wmma_grid.y, wmma_block.x, wmma_block.y);
+		printf("[MIX] mix took %f ms\n\n", kernel_time);
 	} else if (mixwarp == 3) {
         lbm_block.x = SIZE_X;
         lbm_grid.x = SIZE_Y;

@@ -1,5 +1,8 @@
 //TEXTURE memory
-texture<float,1> tex_x_float;
+#ifndef __CUDACC__
+#define __CUDACC__
+#endif // !__CUDACC__
+// texture<float,1> tex_x_float;
 
 //constant memory
 __constant__ int jds_ptr_int[5000];

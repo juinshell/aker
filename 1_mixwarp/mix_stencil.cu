@@ -198,8 +198,14 @@ int main(int argc, char* argv[]) {
     float *stencil_ptb_a0;
     float *stencil_ptb_anext;
 
+    int *host_stencil_ptb_a0_int;
+    int *stencil_ptb_a0_int;
+    int *stencil_ptb_anext_int;
+
     float c0=1.0f/6.0f;
+    int c0_int = 6;
 	float c1=1.0f/6.0f/6.0f;
+    int c1_int = 36;
 
     // nx = 128 ny = 128 nz = 32 iter = 100
     // nx = 512 ny = 512 nz = 64 iter = 100
@@ -215,6 +221,10 @@ int main(int argc, char* argv[]) {
     host_stencil_ptb_a0 = (float *)malloc(nx * ny * nz * sizeof(float));
     cudaErrCheck(cudaMalloc((void**)&stencil_ptb_a0, nx * ny * nz * sizeof(float)));
     cudaErrCheck(cudaMalloc((void**)&stencil_ptb_anext, nx * ny * nz * sizeof(float)));
+    
+    host_stencil_ptb_a0_int = (int *)malloc(nx * ny * nz * sizeof(int));
+    cudaErrCheck(cudaMalloc((void**)&stencil_ptb_a0_int, nx * ny * nz * sizeof(int)));
+    cudaErrCheck(cudaMalloc((void**)&stencil_ptb_anext_int, nx * ny * nz * sizeof(int)));
 
     // curandGenerator_t gen;
     // curandErrCheck(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT));
@@ -224,6 +234,8 @@ int main(int argc, char* argv[]) {
     cudaErrCheck(cudaMemcpy(stencil_ori_anext, stencil_ori_a0, nx * ny * nz * sizeof(float), cudaMemcpyDeviceToDevice));
     cudaErrCheck(cudaMemcpy(stencil_ptb_a0, stencil_ori_a0, nx * ny * nz * sizeof(float), cudaMemcpyDeviceToDevice));
     cudaErrCheck(cudaMemcpy(stencil_ptb_anext, stencil_ori_a0, nx * ny * nz * sizeof(float), cudaMemcpyDeviceToDevice));
+    cudaErrCheck(cudaMemcpy(stencil_ptb_a0_int, stencil_ptb_a0, nx * ny * nz * sizeof(int), cudaMemcpyDeviceToDevice));
+    cudaErrCheck(cudaMemcpy(stencil_ptb_anext_int, stencil_ptb_a0, nx * ny * nz * sizeof(int), cudaMemcpyDeviceToDevice));
 
 
     // SOLO running
@@ -339,8 +351,8 @@ int main(int argc, char* argv[]) {
 							MATRIX_M, MATRIX_N, MATRIX_K,
 							// alpha, beta,
 							wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
-		checkKernelErrors((ptb_stencil<<<stencil_grid, stencil_block, 0, streams[1]>>>(c0, c1, 
-                stencil_ptb_a0, stencil_ptb_anext, nx, ny, nz,
+		checkKernelErrors((ptb_stencil_int<<<stencil_grid, stencil_block, 0, streams[1]>>>(c0_int, c1_int, 
+                stencil_ptb_a0_int, stencil_ptb_anext_int, nx, ny, nz,
                 stencil_grid_dim_x, stencil_grid_dim_y, stencil_block_dim_x, stencil_block_dim_y, stencil_iter)));
 		
 		cudaErrCheck(cudaEventRecord(stopKERNEL));

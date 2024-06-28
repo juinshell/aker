@@ -113,7 +113,7 @@ __device__ void visit_node(int pid,
 	   int gray_shade)
 {
 	g_color[pid] = BLACK;		// Mark this node as visited
-	int cur_cost = g_cost[pid];	// Look up shortest-path distance to this node
+	float cur_cost = g_cost[pid];	// Look up shortest-path distance to this node
 	Node cur_node = tex1Dfetch(bfs_ori_graph_node_ref,pid);
 
 	// For each outgoing edge

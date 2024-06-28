@@ -80,9 +80,9 @@ __global__ void mix_kernel0(
 
 int main(int argc, char* argv[]) {
     int spmv_blks = 2;
-    int spmv_iter = 17000;
-	int wmma_blks = 2;
-    int wmma_iter = 1900;
+    int spmv_iter = 1700;
+	int wmma_blks = 1;
+    int wmma_iter = 100;
     int M_INPUT = 128 * 1;
 	int N_INPUT = 128 * 3136;
 	int K_INPUT = 128 * 1;
@@ -178,6 +178,7 @@ int main(int argc, char* argv[]) {
         //vector
         float *host_spmv_ori_result_vector;
         float *host_spmv_ptb_result_vector;
+        int *host_spmv_ptb_result_vector_int;
         float *host_ori_vector;
 
         char mtx_bin[] = "../0_mybench/file_t/spmv_t/spmv_mtx.bin";
@@ -194,12 +195,15 @@ int main(int argc, char* argv[]) {
         float *spmv_ori_vector;
         //matrix
         float *spmv_ptb_matrix;
+        int *spmv_ptb_matrix_int;
         int *spmv_ptb_matrix_indice;
         int *spmv_ptb_matrix_perm;
         int *spmv_ptb_matrix_nzcnt;
         //vector
         float *spmv_ptb_result_vector;
         float *spmv_ptb_vector;
+        int *spmv_ptb_result_vector_int;
+        int *spmv_ptb_vector_int;
 
         int col_count;
         coo_to_jds(
@@ -216,6 +220,7 @@ int main(int argc, char* argv[]) {
 
         host_spmv_ori_result_vector = (float*)malloc(sizeof(float)*dim); 
         host_spmv_ptb_result_vector = (float*)malloc(sizeof(float)*dim); 
+        host_spmv_ptb_result_vector_int = (int*)malloc(sizeof(int)*dim);
         host_ori_vector = (float*)malloc(sizeof(float)*dim);
         input_vec(vec_bin, host_ori_vector,dim);
 
@@ -241,6 +246,12 @@ int main(int argc, char* argv[]) {
         cudaErrCheck(cudaMalloc((void **)&spmv_ptb_result_vector,dim*sizeof(float)));
         cudaErrCheck(cudaMemset((void *)spmv_ptb_result_vector, 0, dim*sizeof(float)));
 
+        cudaErrCheck(cudaMalloc((void **)&spmv_ptb_matrix_int, len*sizeof(int)));
+        cudaErrCheck(cudaMalloc((void **)&spmv_ptb_result_vector_int,dim*sizeof(int)));
+        cudaErrCheck(cudaMalloc((void **)&spmv_ptb_vector_int, dim*sizeof(int)));
+        cudaErrCheck(cudaMemset((void *)spmv_ptb_result_vector_int, 0, dim*sizeof(float)));
+
+
         //memory copy
         cudaErrCheck(cudaMemcpy(spmv_ori_matrix, h_data, len*sizeof(float), cudaMemcpyHostToDevice));
         cudaErrCheck(cudaMemcpy(spmv_ori_matrix_indice, h_indices, len*sizeof(int), cudaMemcpyHostToDevice));
@@ -252,6 +263,8 @@ int main(int argc, char* argv[]) {
         cudaErrCheck(cudaMemcpy(spmv_ptb_matrix_indice, h_indices, len*sizeof(int), cudaMemcpyHostToDevice));
         cudaErrCheck(cudaMemcpy(spmv_ptb_matrix_perm, h_perm, dim*sizeof(int), cudaMemcpyHostToDevice));
         cudaErrCheck(cudaMemcpy(spmv_ptb_vector, host_ori_vector, dim*sizeof(int), cudaMemcpyHostToDevice));
+
+        cudaErrCheck(cudaMemcpy(spmv_ptb_matrix_int, h_data, len*sizeof(float), cudaMemcpyHostToDevice));
     // ---------------------------------------------------------------------------------------
 
 
@@ -339,18 +352,22 @@ int main(int argc, char* argv[]) {
     cudaErrCheck(cudaMemcpyToSymbol(jds_ptr_int, h_ptr, depth*sizeof(int)));
 	cudaErrCheck(cudaMemcpyToSymbol(sh_zcnt_int, h_nzcnt,nzcnt_len*sizeof(int)));
 
-    // printf("[PTB] Running with spmv...\n");
-    // printf("[PTB] spmv_grid -- %d * %d * %d spmv_block -- %d * %d * %d \n", 
-    //     spmv_grid.x, spmv_grid.y, spmv_grid.z, spmv_block.x, spmv_block.y, spmv_block.z);
-    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    printf("[PTB] Running with spmv...\n");
+    printf("[PTB] spmv_grid -- %d * %d * %d spmv_block -- %d * %d * %d \n", 
+        spmv_grid.x, spmv_grid.y, spmv_grid.z, spmv_block.x, spmv_block.y, spmv_block.z);
+    cudaErrCheck(cudaEventRecord(startKERNEL));
     // checkKernelErrors((ptb_spmv<<<spmv_grid, spmv_block>>> (spmv_ptb_result_vector, spmv_ptb_matrix, 
     //                 spmv_ptb_matrix_indice, spmv_ptb_matrix_perm, 
     //                 spmv_ptb_vector, spmv_ptb_matrix_nzcnt, dim,
     //                 spmv_grid_dim_x, spmv_grid_dim_y, spmv_block_dim_x, spmv_block_dim_y, spmv_iter)));
-    // cudaErrCheck(cudaEventRecord(stopKERNEL));
-    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-    // cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-    // printf("[PTB] spmv took %f ms\n\n", kernel_time);
+    checkKernelErrors((ptb_spmv_int<<<spmv_grid, spmv_block, 0, streams[1]>>> (spmv_ptb_result_vector_int, spmv_ptb_matrix_int, 
+                    spmv_ptb_matrix_indice, spmv_ptb_matrix_perm, 
+                    spmv_ptb_vector_int, spmv_ptb_matrix_nzcnt, dim,
+                    spmv_grid_dim_x, spmv_grid_dim_y, spmv_block_dim_x, spmv_block_dim_y, spmv_iter)));
+    cudaErrCheck(cudaEventRecord(stopKERNEL));
+    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    printf("[PTB] spmv took %f ms\n\n", kernel_time);
     serial_time += kernel_time;
 
 	// MIX running 
@@ -390,17 +407,19 @@ int main(int argc, char* argv[]) {
 							MATRIX_M, MATRIX_N, MATRIX_K,
 							// alpha, beta,
 							wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
-		checkKernelErrors((ptb_spmv<<<spmv_grid, spmv_block, 0, streams[1]>>> (spmv_ptb_result_vector, spmv_ptb_matrix, 
+		checkKernelErrors((ptb_spmv_int<<<spmv_grid, spmv_block, 0, streams[1]>>> (spmv_ptb_result_vector_int, spmv_ptb_matrix_int, 
                     spmv_ptb_matrix_indice, spmv_ptb_matrix_perm, 
-                    spmv_ptb_vector, spmv_ptb_matrix_nzcnt, dim,
+                    spmv_ptb_vector_int, spmv_ptb_matrix_nzcnt, dim,
                     spmv_grid_dim_x, spmv_grid_dim_y, spmv_block_dim_x, spmv_block_dim_y, spmv_iter)));
 		
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));
 		cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[PTB] spmv_grid -- %d * %d * %d spmv_block -- %d * %d * %d \n", 
+        printf("[MIX] tgemm_grid -- %d * %d * %d tgemm_block -- %d * %d * %d \n", 
+            wmma_grid.x, wmma_grid.y, wmma_grid.z, wmma_block.x, wmma_block.y, wmma_block.z);
+        printf("[MIX] spmv_grid -- %d * %d * %d spmv_block -- %d * %d * %d \n", 
             spmv_grid.x, spmv_grid.y, spmv_grid.z, spmv_block.x, spmv_block.y, spmv_block.z);
-		printf("[STREAMP] mix took %f ms\n\n", kernel_time);
+		printf("[MIX] mix took %f ms\n\n", kernel_time);
 	} else if (mixwarp == 3) {
         spmv_grid.x = 1147;
         spmv_grid.y = spmv_grid.z = 1;
