@@ -107,10 +107,10 @@ __global__ void mix_kernel1(
     }
 }
 
-
+#include "./fspmv.h"
 int main(int argc, char* argv[]) {
-    int stencil_blks = 3;
-    int stencil_iter = 1800;
+    int stencil_blks = 2; // 3 in tzgemm test
+    int stencil_iter = 20; // 20 in fspmv test
 	int wmma_blks = 2;
     int wmma_iter = 1900;
     int M_INPUT = 128 * 1;
@@ -257,18 +257,22 @@ int main(int argc, char* argv[]) {
         SHMEM_SZ = 0;
     }
 
-    printf("[PTB] Running with tzgemm...\n");
-    printf("[PTB] wmma_grid -- %d * %d wmma_block -- %d * %d \n", wmma_grid.x, wmma_grid.y, wmma_block.x, wmma_block.y);
+    // printf("[PTB] Running with tzgemm...\n");
+    // printf("[PTB] wmma_grid -- %d * %d wmma_block -- %d * %d \n", wmma_grid.x, wmma_grid.y, wmma_block.x, wmma_block.y);
 
-	cudaErrCheck(cudaEventRecord(startKERNEL));
-	checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block, SHMEM_SZ, streams[0]>>>(wmma_ori_a, wmma_ori_b, wmma_ptb_c, 
-							MATRIX_M, MATRIX_N, MATRIX_K,
-							wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
-	cudaErrCheck(cudaEventRecord(stopKERNEL));
-	cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-	cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-	printf("[PTB] tzgemm took %f ms\n", kernel_time);
-    serial_time += kernel_time;
+	// cudaErrCheck(cudaEventRecord(startKERNEL));
+	// checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block, SHMEM_SZ, streams[0]>>>(wmma_ori_a, wmma_ori_b, wmma_ptb_c, 
+	// 						MATRIX_M, MATRIX_N, MATRIX_K,
+	// 						wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
+	// cudaErrCheck(cudaEventRecord(stopKERNEL));
+	// cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+	// cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+	// printf("[PTB] tzgemm took %f ms\n", kernel_time);
+    // serial_time += kernel_time;
+    printf("---init---\n");
+        float ori_fspmv_time = fspmv_call(streams[0], 0);
+        serial_time += ori_fspmv_time;
+        printf("\n");
 
 	// SOLO running
     // ---------------------------------------------------------------------------------------
@@ -283,8 +287,10 @@ int main(int argc, char* argv[]) {
     printf("[ORI] stencil_grid -- %d * %d * %d stencil_block -- %d * %d * %d \n", stencil_grid.x, stencil_grid.y, stencil_grid.z, stencil_block.x, stencil_block.y, stencil_block.z);
     
     cudaErrCheck(cudaEventRecord(startKERNEL));
-    checkKernelErrors(
-            (ori_stencil<<<stencil_grid, stencil_block>>>(c0, c1, stencil_ori_a0, stencil_ori_anext, nx, ny, nz, stencil_iter)));
+    // checkKernelErrors(
+    //         (ori_stencil<<<stencil_grid, stencil_block>>>(c0, c1, stencil_ori_a0, stencil_ori_anext, nx, ny, nz, stencil_iter)));
+        checkKernelErrors(
+            (ori_stencil_int<<<stencil_grid, stencil_block>>>(c0_int, c1_int, stencil_ptb_a0_int, stencil_ptb_anext_int, nx, ny, nz, stencil_iter)));
     cudaErrCheck(cudaEventRecord(stopKERNEL));
     cudaErrCheck(cudaEventSynchronize(stopKERNEL));
     cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
@@ -347,10 +353,11 @@ int main(int argc, char* argv[]) {
 		printf("[PETS] mix took %f ms\n\n", kernel_time);
 	} else if (mixwarp == 2) {
 		cudaErrCheck(cudaEventRecord(startKERNEL));
-		checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block, SHMEM_SZ, streams[0]>>>(wmma_ori_a, wmma_ori_b, wmma_ori_c, 
-							MATRIX_M, MATRIX_N, MATRIX_K,
-							// alpha, beta,
-							wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
+		// checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block, SHMEM_SZ, streams[0]>>>(wmma_ori_a, wmma_ori_b, wmma_ori_c, 
+		// 					MATRIX_M, MATRIX_N, MATRIX_K,
+		// 					// alpha, beta,
+		// 					wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
+        fspmv_call(streams[0], 1);
 		checkKernelErrors((ptb_stencil_int<<<stencil_grid, stencil_block, 0, streams[1]>>>(c0_int, c1_int, 
                 stencil_ptb_a0_int, stencil_ptb_anext_int, nx, ny, nz,
                 stencil_grid_dim_x, stencil_grid_dim_y, stencil_block_dim_x, stencil_block_dim_y, stencil_iter)));
@@ -358,9 +365,9 @@ int main(int argc, char* argv[]) {
 		cudaErrCheck(cudaEventRecord(stopKERNEL));
 		cudaErrCheck(cudaEventSynchronize(stopKERNEL));
 		cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        printf("[PTB] stencil_grid -- %d * %d * %d stencil_block -- %d * %d * %d \n", 
-            stencil_grid.x, stencil_grid.y, stencil_grid.z, stencil_block.x, stencil_block.y, stencil_block.z);
-		printf("[STREAMP] mix took %f ms\n\n", kernel_time);
+        // printf("[PTB] stencil_grid -- %d * %d * %d stencil_block -- %d * %d * %d \n", 
+        //     stencil_grid.x, stencil_grid.y, stencil_grid.z, stencil_block.x, stencil_block.y, stencil_block.z);
+		printf("[MIX] mix took %f ms\n\n", kernel_time);
 	} else if (mixwarp == 3) {
     	wmma_grid.x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
 
