@@ -136,10 +136,11 @@ __global__ void tgemm_bfs_kernel(
     }
 }
 
+#include "./fspmv.h"
 
 int main(int argc, char* argv[]) {
     int bfs_blks = 1;
-	int bfs_iter = 	8500;
+	int bfs_iter = 	4000;
 	int wmma_blks = 2;
     int wmma_iter = 1900;
     int M_INPUT = 128 * 1;
@@ -455,18 +456,22 @@ int main(int argc, char* argv[]) {
         SHMEM_SZ = 0;
     }
 
-    printf("[PTB] Running with tzgemm...\n");
-    printf("[PTB] wmma_grid -- %d * %d wmma_block -- %d * %d \n", wmma_grid.x, wmma_grid.y, wmma_block.x, wmma_block.y);
-    cudaErrCheck(cudaEventRecord(startKERNEL));
-    checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block, SHMEM_SZ, streams[0]>>>(wmma_ori_a, wmma_ori_b, wmma_ptb_c, 
-							MATRIX_M, MATRIX_N, MATRIX_K,
-							// alpha, beta,
-							wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
-    cudaErrCheck(cudaEventRecord(stopKERNEL));
-    cudaErrCheck(cudaEventSynchronize(stopKERNEL));
-    cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-    printf("[PTB] tzgemm took %f ms\n\n", kernel_time);
-    serial_time += kernel_time;
+    // printf("[PTB] Running with tzgemm...\n");
+    // printf("[PTB] wmma_grid -- %d * %d wmma_block -- %d * %d \n", wmma_grid.x, wmma_grid.y, wmma_block.x, wmma_block.y);
+    // cudaErrCheck(cudaEventRecord(startKERNEL));
+    // checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block, SHMEM_SZ, streams[0]>>>(wmma_ori_a, wmma_ori_b, wmma_ptb_c, 
+	// 						MATRIX_M, MATRIX_N, MATRIX_K,
+	// 						// alpha, beta,
+	// 						wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
+    // cudaErrCheck(cudaEventRecord(stopKERNEL));
+    // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
+    // cudaErrCheck(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    // printf("[PTB] tzgemm took %f ms\n\n", kernel_time);
+    // serial_time += kernel_time;
+	printf("---init---\n");
+	float ori_fspmv_time = fspmv_call(streams[0], 0);
+	serial_time += ori_fspmv_time;
+	printf("\n");
 
 	// SOLO running
     // ---------------------------------------------------------------------------------------
@@ -531,10 +536,11 @@ int main(int argc, char* argv[]) {
 	} else if (mixwarp == 2) {
 		
 		cudaErrCheck(cudaEventRecord(startKERNEL));
-		checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block, SHMEM_SZ, streams[0]>>>(wmma_ori_a, wmma_ori_b, wmma_ori_c, 
-							MATRIX_M, MATRIX_N, MATRIX_K,
-							// alpha, beta,
-							wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
+		// checkKernelErrors((ptb_tzgemm<<<wmma_grid, wmma_block, SHMEM_SZ, streams[0]>>>(wmma_ori_a, wmma_ori_b, wmma_ori_c, 
+		// 					MATRIX_M, MATRIX_N, MATRIX_K,
+		// 					// alpha, beta,
+		// 					wmma_grid_dim_x, wmma_block_dim_x, wmma_iter)));
+		fspmv_call(streams[0], 1);
 		checkKernelErrors((ptb_bfs<<< bfs_grid, bfs_block, 0, streams[1] >>>(bfs_ptb_q1, bfs_ptb_q2, bfs_ptb_graph_nodes, 
 			bfs_ptb_graph_edges, bfs_ptb_color, bfs_ptb_cost, num_t, bfs_ptb_tail, GRAY0, k, bfs_ptb_overflow, 
 			bfs_grid_dim_x, bfs_block_dim_x,

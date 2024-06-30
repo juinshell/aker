@@ -1,5 +1,5 @@
 bfs:
-	nvcc -o bfs_mix -I../0_mybench -arch=sm_70 -lcurand -lm -lpthread --ptxas-options=-v mix_bfs.cu
+	nvcc -o bfs_mix -I../0_mybench -arch=sm_70 -lcurand -lm -lpthread --ptxas-options=-v ../0_mybench/file_t/spmv_t/convert_dataset.o ../0_mybench/file_t/spmv_t/mmio.o mix_bfs.cu
 cp:
 	nvcc -o cp_mix -I../0_mybench -arch=sm_70 -lcurand -lm -lpthread --ptxas-options=-v mix_cp.cu #-maxrregcount 85
 cutcp:
