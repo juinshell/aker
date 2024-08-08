@@ -77,6 +77,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("fft", "ori_blks"));
             }
             return kernelMap["fft"];
+            break;
         case myHash("fft_int"):
             if (kernelMap.find("fft_int") == kernelMap.end()) {
                 kernelMap["fft_int"] = new GPTBKernel(
@@ -90,6 +91,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("fft", "ori_blks"));
             }
             return kernelMap["fft_int"];
+            break;
         case myHash("lbm"):
             if (kernelMap.find("lbm") == kernelMap.end()) {
                 kernelMap["lbm"] = new GPTBKernel(
@@ -103,6 +105,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("lbm", "ori_blks"));
             }
             return kernelMap["lbm"];
+            break;
         case myHash("mrif"):
             if (kernelMap.find("mrif") == kernelMap.end()) {
                 kernelMap["mrif"] = new GPTBKernel(
@@ -116,6 +119,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("mrif", "ori_blks"));
             }
             return kernelMap["mrif"];
+            break;
         case myHash("mrif_int"):
             if (kernelMap.find("mrif_int") == kernelMap.end()) {
                 kernelMap["mrif_int"] = new GPTBKernel(
@@ -129,6 +133,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("mrif", "ori_blks"));
             }
             return kernelMap["mrif_int"];
+            break;
         case myHash("mriq"):
             if (kernelMap.find("mriq") == kernelMap.end()) {
                 kernelMap["mriq"] = new GPTBKernel(
@@ -142,6 +147,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("mriq", "ori_blks"));
             }
             return kernelMap["mriq"];
+            break;
         case myHash("mriq_int"):
             if (kernelMap.find("mriq_int") == kernelMap.end()) {
                 kernelMap["mriq_int"] = new GPTBKernel(
@@ -155,6 +161,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("mriq", "ori_blks"));
             }
             return kernelMap["mriq_int"];
+            break;
         case myHash("sgemm"):
             if (kernelMap.find("sgemm") == kernelMap.end()) {
                 kernelMap["sgemm"] = new GPTBKernel(
@@ -168,6 +175,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("sgemm", "ori_blks"));
             }
             return kernelMap["sgemm"];
+            break;
         case myHash("stencil"):
             if (kernelMap.find("stencil") == kernelMap.end()) {
                 kernelMap["stencil"] = new GPTBKernel(
@@ -181,6 +189,7 @@ GPTBKernel* createKernel(const std::string &name) {
                     get_kernel_info("stencil", "ori_blks"));
             }
             return kernelMap["stencil"];
+            break;
         default:
             logger.ERROR("Creator: Kernel not found: " + name);
         // case myHash("cutcp"): 

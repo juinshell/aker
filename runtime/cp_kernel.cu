@@ -78,6 +78,61 @@ extern "C" __global__ void ori_cp(int numatoms, float gridspacing, float * energ
 		energygrid[outaddr+7*BLOCKSIZEX] += energyvalx8;
 }
 
+extern "C" __global__ void ori_cp_d(int numatoms, float gridspacing, int * energygrid) {
+		unsigned int xindex  = __umul24(blockIdx.x, blockDim.x) * UNROLLX
+								+ threadIdx.x;
+		unsigned int yindex  = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+		unsigned int outaddr = (__umul24(gridDim.x, blockDim.x) * UNROLLX) * yindex
+								+ xindex;
+
+		int coory = gridspacing * yindex;
+		int coorx = gridspacing * xindex;
+
+		int energyvalx1=0.0f;
+		int energyvalx2=0.0f;
+		int energyvalx3=0.0f;
+		int energyvalx4=0.0f;
+		int energyvalx5=0.0f;
+		int energyvalx6=0.0f;
+		int energyvalx7=0.0f;
+		int energyvalx8=0.0f;
+
+		int gridspacing_u = gridspacing * BLOCKSIZEX;
+
+		int atomid;
+		for (atomid=0; atomid<numatoms; atomid++) {
+			int dy = coory - atominfo_int[atomid].y;
+			int dyz2 = (dy * dy) + atominfo_int[atomid].z;
+
+			int dx1 = coorx - atominfo_int[atomid].x;
+			int dx2 = dx1 + gridspacing_u;
+			int dx3 = dx2 + gridspacing_u;
+			int dx4 = dx3 + gridspacing_u;
+			int dx5 = dx4 + gridspacing_u;
+			int dx6 = dx5 + gridspacing_u;
+			int dx7 = dx6 + gridspacing_u;
+			int dx8 = dx7 + gridspacing_u;
+
+			energyvalx1 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx1*dx1 + dyz2));
+			energyvalx2 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx2*dx2 + dyz2));
+			energyvalx3 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx3*dx3 + dyz2));
+			energyvalx4 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx4*dx4 + dyz2));
+			energyvalx5 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx5*dx5 + dyz2));
+			energyvalx6 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx6*dx6 + dyz2));
+			energyvalx7 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx7*dx7 + dyz2));
+			energyvalx8 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx8*dx8 + dyz2));
+		}
+
+		energygrid[outaddr]   += energyvalx1;
+		energygrid[outaddr+1*BLOCKSIZEX] += energyvalx2;
+		energygrid[outaddr+2*BLOCKSIZEX] += energyvalx3;
+		energygrid[outaddr+3*BLOCKSIZEX] += energyvalx4;
+		energygrid[outaddr+4*BLOCKSIZEX] += energyvalx5;
+		energygrid[outaddr+5*BLOCKSIZEX] += energyvalx6;
+		energygrid[outaddr+6*BLOCKSIZEX] += energyvalx7;
+		energygrid[outaddr+7*BLOCKSIZEX] += energyvalx8;
+}
+
 // 构造函数
 OriCPKernel::OriCPKernel(int id, const std::string& moduleName, const std::string& kernelName) {
     Id = id;
@@ -335,7 +390,7 @@ void OriCPKernel::initParams_int() {
 		this->kernelParams.push_back(&this->CPKernelParams_int->gridspacing);
 		this->kernelParams.push_back(&this->CPKernelParams_int->energygrid);
 
-		this->kernelFunc = (void*)ori_cp;
+		this->kernelFunc = (void*)ori_cp_d;
 		this->smem = 0;
 
 		this->initialized = true;

@@ -197,7 +197,7 @@ void mixcudnnConvolutionForward(std::vector<int>& cudnn_args, GPTBKernel* gptb_c
 	dim3 im_block;
     im_block.x = 256;
 	im_grid.x = int(num_kernels / 256);
-	im_grid.x = 68 * 2;
+	im_grid.x = SM_NUM * 2;
 
     // cudaErrCheck(cudaEventRecord(stopKERNEL));
     // cudaErrCheck(cudaEventSynchronize(stopKERNEL));
@@ -235,7 +235,7 @@ void mixcudnnConvolutionForward(std::vector<int>& cudnn_args, GPTBKernel* gptb_c
         "tzgemm",
         "gptb_tzgemm", 
         ori_tzgemm,
-        dim3(SM_NUM * 1, 1, 1), 
+        dim3(SM_NUM * 2, 1, 1), 
         dim3(128, 1, 1), 
         0,
         getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]
@@ -321,7 +321,7 @@ void mixcublasSgemm(std::vector<int>& gemm_args, GPTBKernel* gptb_cd_kernel, int
 
 	int wmma_grid_dim_x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
 	int wmma_block_dim_x = wmma_block.x;
-	wmma_grid.x = 68 * 1;
+	wmma_grid.x = SM_NUM * 2;
 	wmma_block.x = THREADS_PER_BLOCK;
 
 
@@ -353,7 +353,7 @@ void mixcublasSgemm(std::vector<int>& gemm_args, GPTBKernel* gptb_cd_kernel, int
         "tzgemm",
         "gptb_tzgemm", 
         ori_tzgemm,
-        dim3(SM_NUM * 1, 1, 1), 
+        dim3(SM_NUM * 2, 1, 1), 
         dim3(128, 1, 1), 
         0,
         wmma_grid_dim_x
@@ -716,7 +716,14 @@ void TaskManager::execute_with_one_cd_kernel(ExecutionMode mode, cudaStream_t st
     cudaDeviceSynchronize();
 
     GPTBKernel * be_kernel1 = createKernel(be_task1_name);
-    be_kernel1->kernel_->initParams();
+    // if (be_kernel1->kernel_->Id < 0) {
+    //     be_kernel1->kernel_->initParams_int();
+    // } else if (be_kernel1->kernel_->Id == 1000) {
+    //     printf("no impl yet!\n");
+    //     exit(1);
+    // } else {
+    //     be_kernel1->kernel_->initParams();
+    // }
     int mixable_times = 0;
     // test ori
     for (int i = 0; i < 10; ++i) {
@@ -783,17 +790,20 @@ void TaskManager::execute_with_one_cd_kernel(ExecutionMode mode, cudaStream_t st
     // be_task2->kernel_->initParams();
     // // ori sum time
 
+    int cd_ptb_launch_x = be_task1->launchGridDim.x;
+    be_task1->launchGridDim.x = be_task1->gptbParams.ptb_end_block_pos;
     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
     be_task1->execute(stream);
     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, 0));
     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
     CUDA_SAFE_CALL(cudaEventElapsedTime(&be_task1_ori_time, startKERNEL, stopKERNEL));
+    be_task1->launchGridDim.x = cd_ptb_launch_x;
 
     printf("[Ori] be_task: %s\n", be_task1_name.c_str());
     printf("[Result] task blks range: %d - %d\n", be_task1->gptbParams.ptb_start_block_pos, be_task1->gptbParams.ptb_end_block_pos);
     printf("[Result] BE task cost %f ms\n", be_task1_ori_time);
 
-    be_kernel1->kernel_->initParams();
+    // be_kernel1->kernel_->initParams();
 
     int no_split_times = 0;
     long long total_be_num = 0;

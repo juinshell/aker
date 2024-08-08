@@ -138,7 +138,7 @@ extern "C" __global__ void g_general_ptb_mrif_int(int numK, int kGlobalIndex, in
             if (kCnt < KERNEL_FH_K_ELEMS_PER_GRID) {
                 for (kIndex = 0; (kIndex < (kCnt % 4)) && (kGlobalIndex < numK);
                     kIndex++, kGlobalIndex++) {
-                    float expArg = PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
+                    float expArg = (int)PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
                     int cosArg = cos((expArg));
                     int sinArg = sin((expArg));
                     sOutR += c_int[kIndex].RhoPhiR * cosArg - c_int[kIndex].RhoPhiI * sinArg;
@@ -148,28 +148,28 @@ extern "C" __global__ void g_general_ptb_mrif_int(int numK, int kGlobalIndex, in
 
             for (; (kIndex < KERNEL_FH_K_ELEMS_PER_GRID) && (kGlobalIndex < numK);
                     kIndex += 4, kGlobalIndex += 4) {
-                float expArg = PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
+                float expArg = (int)PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
                 int cosArg = cos(expArg);
                 int sinArg = sin(expArg);
                 sOutR += c_int[kIndex].RhoPhiR * cosArg - c_int[kIndex].RhoPhiI * sinArg;
                 sOutI += c_int[kIndex].RhoPhiI * cosArg + c_int[kIndex].RhoPhiR * sinArg;
 
                 int kIndex1 = kIndex + 1;
-                float expArg1 = PIx2 * (c_int[kIndex1].Kx * sX + c_int[kIndex1].Ky * sY + c_int[kIndex1].Kz * sZ);
+                float expArg1 = (int)PIx2 * (c_int[kIndex1].Kx * sX + c_int[kIndex1].Ky * sY + c_int[kIndex1].Kz * sZ);
                 int cosArg1 = cos(expArg1);
                 int sinArg1 = sin(expArg1);
                 sOutR += c_int[kIndex1].RhoPhiR * cosArg1 - c_int[kIndex1].RhoPhiI * sinArg1;
                 sOutI += c_int[kIndex1].RhoPhiI * cosArg1 + c_int[kIndex1].RhoPhiR * sinArg1;
 
                 int kIndex2 = kIndex + 2;
-                float expArg2 = PIx2 * (c_int[kIndex2].Kx * sX + c_int[kIndex2].Ky * sY + c_int[kIndex2].Kz * sZ);
+                float expArg2 = (int)PIx2 * (c_int[kIndex2].Kx * sX + c_int[kIndex2].Ky * sY + c_int[kIndex2].Kz * sZ);
                 int cosArg2 = cos(expArg2);
                 int sinArg2 = sin(expArg2);
                 sOutR += c_int[kIndex2].RhoPhiR * cosArg2 - c_int[kIndex2].RhoPhiI * sinArg2;
                 sOutI += c_int[kIndex2].RhoPhiI * cosArg2 + c_int[kIndex2].RhoPhiR * sinArg2;
 
                 int kIndex3 = kIndex + 3;
-                float expArg3 = PIx2 * (c_int[kIndex3].Kx * sX + c_int[kIndex3].Ky * sY + c_int[kIndex3].Kz * sZ);
+                float expArg3 = (int)PIx2 * (c_int[kIndex3].Kx * sX + c_int[kIndex3].Ky * sY + c_int[kIndex3].Kz * sZ);
                 int cosArg3 = cos(expArg3);
                 int sinArg3 = sin(expArg3);
                 sOutR += c_int[kIndex3].RhoPhiR * cosArg3 - c_int[kIndex3].RhoPhiI * sinArg3;

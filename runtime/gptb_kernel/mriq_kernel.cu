@@ -121,13 +121,13 @@ extern "C" __global__ void g_general_ptb_mriq_int(int numK, int kGlobalIndex, in
 
             for (; (kIndex < KERNEL_Q_K_ELEMS_PER_GRID) && (kGlobalIndex < numK);
                 kIndex += 2, kGlobalIndex += 2) {
-                float expArg = PIx2_MRIQ * (ck_int[kIndex].Kx * sX + ck_int[kIndex].Ky * sY +
+                float expArg = (int)PIx2_MRIQ * (ck_int[kIndex].Kx * sX + ck_int[kIndex].Ky * sY +
                             ck_int[kIndex].Kz * sZ);
                 sQr += ck_int[kIndex].PhiMag * (int)cos(expArg);
                 sQi += ck_int[kIndex].PhiMag * (int)sin(expArg);
 
                 int kIndex1 = kIndex + 1;
-                float expArg1 = PIx2_MRIQ * (ck_int[kIndex1].Kx * sX + ck_int[kIndex1].Ky * sY +
+                float expArg1 = (int)PIx2_MRIQ * (ck_int[kIndex1].Kx * sX + ck_int[kIndex1].Ky * sY +
                             ck_int[kIndex1].Kz * sZ);
                 sQr += ck_int[kIndex1].PhiMag * (int)cos(expArg1);
                 sQi += ck_int[kIndex1].PhiMag * (int)sin(expArg1);

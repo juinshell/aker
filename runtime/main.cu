@@ -118,7 +118,7 @@ std::unordered_map<std::string, void*> fmap = {
     {"cutcp_sgemm", (void*)mixed_cutcp_sgemm_kernel_1_1},
     {"tzgemm_cp", (void*)cp_tzgemm_mix},
     {"tzgemm_cutcp", (void*)cutcp_tzgemm_mix}, 
-    {"tzgemm_fft", (void*)fft_tzgemm_mix_2_2},
+    {"tzgemm_fft", (void*)fft_tzgemm_mix},
     {"tzgemm_lbm", (void*)lbm_tzgemm_mix},
     {"tzgemm_mrif", (void*)mrif_tzgemm_mix},
     {"tzgemm_mriq", (void*)mriq_tzgemm_mix},
@@ -200,7 +200,7 @@ extern float* cublas_wmma_C;
 void tzgemm_cd_profile(int m, int k) {
     // 测试fig10，tzgemm-cd load ratio
     auto gptb_cd_kernel = createKernel(sget_kernel_info("ratio_test", "cd_kernel_name"));
-    std::string mix_kernel_name = "tzgemm_" + gptb_cd_kernel->kernelName;
+    std::string mix_kernel_name = "tzgemm_" + sget_kernel_info("ratio_test", "cd_kernel_name");
     printf("cd kernel name: %s, mix kernel name: %s\n", gptb_cd_kernel->kernelName.c_str(), mix_kernel_name.c_str());
     int NORMAL_M = m;
     int NORMAL_N = 512;
@@ -217,7 +217,7 @@ void tzgemm_cd_profile(int m, int k) {
         "tzgemm",
         "gptb_tzgemm", 
         ori_tzgemm_kernel,
-        dim3(SM_NUM * 1, 1, 1), 
+        dim3(getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3], 1, 1), 
         dim3(128, 1, 1), 
         0,
         getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]
@@ -231,6 +231,7 @@ void tzgemm_cd_profile(int m, int k) {
     int solo_cd_task_blk_num = get_kernel_info("ratio_test", "solo_cd_task_blk_num");
 
     gptb_cd_kernel->gptbParams.ptb_end_block_pos = mix_cd_task_blk_num + solo_cd_task_blk_num;
+    gptb_cd_kernel->launchGridDim.x = gptb_cd_kernel->gptbParams.ptb_end_block_pos; // work in gptb version
 
     float kernel_time;
     cudaEvent_t startKERNEL;
@@ -453,12 +454,18 @@ void tzgemm_cd_profile(int m, int k) {
     // }
 
     float load_ratio = gptb_cd_time / gptb_tzgemm_time;
+    printf("--------------------\n");
+    printf("tzgemm gridDim: %d iter: %d, range: %d-%d\n", gptb_tzgemm_kernel->launchGridDim.x, gptb_tzgemm_kernel->gptbParams.ptb_iter_block_step, gptb_tzgemm_kernel->gptbParams.ptb_start_block_pos, gptb_tzgemm_kernel->gptbParams.ptb_end_block_pos);
+    printf("cd gridDim: %d iter: %d, range: %d-%d\n", gptb_cd_kernel->launchGridDim.x, gptb_cd_kernel->gptbParams.ptb_iter_block_step, gptb_cd_kernel->gptbParams.ptb_start_block_pos, gptb_cd_kernel->gptbParams.ptb_end_block_pos);
+    printf("mix gridDim: %d\n", mix_kernel->launchGridDim.x);
+    printf("--------------------\n");
     printf("load_ratio: %f\n", load_ratio);
     printf("mix_duration: %f\n", mix_time + gptb_left_cd_time);
-    printf("tzgemm gptb time: %f, cd gptb time: %f, tzgemm_blk_num: %d, cd_blk_num: %d\n", 
+    printf("tzgemm ori time: %f, cd ori time: %f, tzgemm_blk_num: %d, cd_blk_num: %d\n", 
                 gptb_tzgemm_time, gptb_cd_time, getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3], mix_cd_task_blk_num);
     printf("improve: %f%\n", (gptb_tzgemm_time + gptb_cd_time - mix_time) * 100.0 / (gptb_tzgemm_time + gptb_cd_time));
     printf("block_ratio: %f\n", (mix_cd_task_blk_num * 1.0f / getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]));
+    printf("--------------------\n");
 }
 
 void solo_gptb_accuracy(cudaStream_t stream) {
@@ -728,8 +735,8 @@ int main(int argc, char* argv[]) {
 
     atexit (my_exit);
 
-    // read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + ".json");
-    read_json(ROOT_PATH + "/kinfo.json");
+    read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + "-1-1-sys.json");
+    // read_json(ROOT_PATH + "/kinfo.json");
 
     initCUDA();
     // Print compile info
@@ -745,8 +752,9 @@ int main(int argc, char* argv[]) {
 	CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
     float milliseconds = 0;
 
-    cudaStream_t stream;
-    CUDA_SAFE_CALL(cudaStreamCreate(&stream));
+    cudaStream_t streams[2];
+    CUDA_SAFE_CALL(cudaStreamCreate(&streams[0]));
+    CUDA_SAFE_CALL(cudaStreamCreate(&streams[1]));
 
     // [Aker] nsight compute
     // auto mix_kernel = createMixKernel(sget_kernel_info("nsight_compute", "mix_kernel_name"));
@@ -805,41 +813,46 @@ int main(int argc, char* argv[]) {
     // taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
 
     // [Aker] throughput test(1:1 version)
-    // auto lc_task = createTask(MODEL_NAME);
-    // for (int i = 0; i < 5; ++i) {
-    //     lc_task->initExecution();
-    //     for (auto& kernel: lc_task->kernels) {
-    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-    //         kernel->execute(nullptr);
-    //     }
-    //     cudaDeviceSynchronize();
-    // }
-    // cudaDeviceSynchronize();
-    // std::string a = sget_kernel_info("throughput_test", "a");
-    // std::string b = sget_kernel_info("throughput_test", "b");
-    // printf("[Result] cd: %s, dnn: %s\n", a.c_str(), MODEL_NAME.c_str());
-    // TaskManager taskManager(lc_task, a, b);
-    
-    // taskManager.execute_with_one_cd_kernel(ExecutionMode::Aker, stream);
-    // taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, stream);
-
-    // [Aker] tzgemm-cd pair profile
     auto lc_task = createTask(MODEL_NAME);
     for (int i = 0; i < 5; ++i) {
         lc_task->initExecution();
-        auto start = clock();
         for (auto& kernel: lc_task->kernels) {
             // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
             kernel->execute(nullptr);
         }
         cudaDeviceSynchronize();
-        auto end = clock();
-        auto duration = float(end - start) * 1000 / CLOCKS_PER_SEC;
-        printf("%s total time: %f\n", lc_task->taskName.c_str(), duration);
     }
-    int k = get_kernel_info("ratio_test", "k");
-    int m = get_kernel_info("ratio_test", std::to_string(k));
-    tzgemm_cd_profile(m, k);
+    cudaDeviceSynchronize();
+    std::string a = sget_kernel_info("throughput_test", "a");
+    std::string b = sget_kernel_info("throughput_test", "b");
+    printf("[Result] cd: %s, dnn: %s\n", a.c_str(), MODEL_NAME.c_str());
+    TaskManager taskManager(lc_task, a, b);
+
+    printf("----float----\n");
+    // taskManager.execute_with_one_cd_kernel(ExecutionMode::Aker, streams[0]);
+    taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, streams[0]);
+    taskManager.be_task1_name = a + "_int";
+    printf("taskManager.be_task1_name: %s\n", taskManager.be_task1_name.c_str());
+    printf("----int----\n");
+    taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, streams[1]);
+
+    // [Aker] tzgemm-cd pair profile
+    // auto lc_task = createTask(MODEL_NAME);
+    // for (int i = 0; i < 5; ++i) {
+    //     lc_task->initExecution();
+    //     auto start = clock();
+    //     for (auto& kernel: lc_task->kernels) {
+    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //         kernel->execute(nullptr);
+    //     }
+    //     cudaDeviceSynchronize();
+    //     auto end = clock();
+    //     auto duration = float(end - start) * 1000 / CLOCKS_PER_SEC;
+    //     printf("%s total time: %f\n", lc_task->taskName.c_str(), duration);
+    // }
+    // int k = get_kernel_info("ratio_test", "k");
+    // int m = get_kernel_info("ratio_test", std::to_string(k));
+    // tzgemm_cd_profile(m, k);
 
     // [Aker] cd pair profile test
     // auto lc_task = createTask(MODEL_NAME);
@@ -898,6 +911,295 @@ int main(int argc, char* argv[]) {
     // }
     // printf("tensor core time: %f, kernel count: %d\n", tensor_core_time, tensor_kernel_count);
 
+
+    // [sys] Table for ptb resource usage
+    // auto ptb_kernel = createKernel("fft_int");
+    // auto ori_kernel = OriFFTKernel(-1);
+    // ptb_kernel->gptbParams.ptb_end_block_pos = ori_kernel.launchGridDim.x * ori_kernel.launchGridDim.y * ori_kernel.launchGridDim.z;
+    // printf("ori blks: %d\n", ori_kernel.launchGridDim.x * ori_kernel.launchGridDim.y * ori_kernel.launchGridDim.z);
+    // for (int i = 0; i < 5; ++i) {
+    //     ptb_kernel->execute(nullptr);
+    //     ori_kernel.execute(nullptr);
+    // }
+
+    // auto time_vec = std::vector<float>();
+    // // ori
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     ori_kernel.execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float ori_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     ori_time += time_vec[i];
+    // }
+    // ori_time /= 10.0f;
+
+    // // ptb
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     ptb_kernel->execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float ptb_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     ptb_time += time_vec[i];
+    // }
+    // ptb_time /= 10.0f;
+
+    // // show nomarlized time
+    // printf("normal time: %f\n", 1.0f - (ptb_time - ori_time)/ori_time);
+
+    // auto fcp_ptb = createKernel("cp");
+    // auto ffft_ptb = createKernel("fft");
+    // auto fmriq_ptb = createKernel("mriq");
+    // auto fmrif_ptb = createKernel("mrif");
+    // auto icp_ptb = createKernel("cp_int");
+    // auto ifft_ptb = createKernel("fft_int");
+    // auto tzgemm_kernel = OriTZGEMMKernel(0, 4096, 512, 4096);
+
+    // // fcp_ptb->execute(nullptr);
+    // // ffft_ptb->execute(nullptr);
+    // // fmriq_ptb->execute(nullptr);
+    // // fmrif_ptb->execute(nullptr);
+    // // icp_ptb->execute(nullptr);
+    // // ifft_ptb->execute(nullptr);
+    // // warmup
+    // for (int i = 0; i < 5; ++i) {
+    //     tzgemm_kernel.execute(nullptr);
+    // }
+    // // ori
+    // auto time_vec = std::vector<float>();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     tzgemm_kernel.execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float ori_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     ori_time += time_vec[i];
+    // }
+    // ori_time /= 10.0f;
+
+    // //ptb
+    // tzgemm_kernel.launchGridDim.x = SM_NUM * 2;
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     tzgemm_kernel.execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float ptb_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     ptb_time += time_vec[i];
+    // }
+    // ptb_time /= 10.0f;
+
+    // printf("normal time: %f\n", 1.0f - (ptb_time - ori_time)/ori_time);
+
+
+    // fig 6 fcp + int32(icp ifft imriq imrif)
+    // auto fcp_ptb = createKernel("cp");
+    // fcp_ptb->gptbParams.ptb_end_block_pos = get_kernel_info("sys_fig6", "cp_blk_num"); // ptb
+
+    // auto icp_ptb = createKernel("cp_int");
+    // icp_ptb->launchGridDim.x = get_kernel_info("sys_fig6", "int_cp_blk_num");
+    // icp_ptb->gptbParams.ptb_end_block_pos = get_kernel_info("sys_fig6", "int_cp_blk_num");
+    // auto ifft = createKernel("fft_int");
+    // ifft->launchGridDim.x = get_kernel_info("sys_fig6", "int_fft_blk_num");
+    // ifft->gptbParams.ptb_end_block_pos = get_kernel_info("sys_fig6", "int_fft_blk_num");
+    // auto imrif = createKernel("mrif_int");
+    // imrif->launchGridDim.x = get_kernel_info("sys_fig6", "int_mrif_blk_num");
+    // imrif->gptbParams.ptb_end_block_pos = get_kernel_info("sys_fig6", "int_mrif_blk_num");
+    // auto imriq = createKernel("mriq_int");
+    // imriq->launchGridDim.x = get_kernel_info("sys_fig6", "int_mriq_blk_num");
+    // imriq->gptbParams.ptb_end_block_pos = get_kernel_info("sys_fig6", "int_mriq_blk_num");
+
+    // // warmup
+    // for (int i = 0; i < 5; ++i) {
+    //     fcp_ptb->execute(nullptr);
+    //     icp_ptb->execute(nullptr);
+    //     ifft->execute(nullptr);
+    //     imrif->execute(nullptr);
+    //     imriq->execute(nullptr);
+    // }
+
+    // CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    // // solo
+    // auto time_vec = std::vector<float>();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     fcp_ptb->execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float fcp_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     fcp_time += time_vec[i];
+    // }
+    // fcp_time /= 10.0f;
+
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     icp_ptb->execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float icp_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     icp_time += time_vec[i];
+    // }
+    // icp_time /= 10.0f;
+
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     ifft->execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float ifft_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     ifft_time += time_vec[i];
+    // }
+    // ifft_time /= 10.0f;
+
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     imrif->execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float imrif_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     imrif_time += time_vec[i];
+    // }
+    // imrif_time /= 10.0f;
+
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     imriq->execute(nullptr);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float imriq_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     imriq_time += time_vec[i];
+    // }
+    // imriq_time /= 10.0f;
+
+    // // fcp+icp
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     fcp_ptb->execute(streams[0]);
+    //     icp_ptb->execute(streams[1]);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float fcp_icp_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     fcp_icp_time += time_vec[i];
+    // }
+    // fcp_icp_time /= 10.0f;
+
+    // // fcp+ifft
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     fcp_ptb->execute(streams[0]);
+    //     ifft->execute(streams[1]);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float fcp_ifft_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     fcp_ifft_time += time_vec[i];
+    // }
+    // fcp_ifft_time /= 10.0f;
+
+    // // fcp+imrif
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     fcp_ptb->execute(streams[0]);
+    //     imrif->execute(streams[1]);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float fcp_imrif_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     fcp_imrif_time += time_vec[i];
+    // }
+    // fcp_imrif_time /= 10.0f;
+
+    // // fcp+imriq
+    // time_vec.clear();
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+    //     fcp_ptb->execute(streams[0]);
+    //     imriq->execute(streams[1]);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(milliseconds);
+    // }
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float fcp_imriq_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     fcp_imriq_time += time_vec[i];
+    // }
+    // fcp_imriq_time /= 10.0f;
+
+    // // show
+    // printf("fcp: %f, icp: %f, fcp+icp: %f\n", fcp_time, icp_time, (fcp_time + icp_time - fcp_icp_time) / (fcp_time + icp_time));
+    // printf("fcp: %f, ifft: %f, fcp+ifft: %f\n", fcp_time, ifft_time, (fcp_time + ifft_time - fcp_ifft_time) / (fcp_time + ifft_time));
+    // printf("fcp: %f, imrif: %f, fcp+imrif: %f\n", fcp_time, imrif_time, (fcp_time + imrif_time - fcp_imrif_time) / (fcp_time + imrif_time));
+    // printf("fcp: %f, imriq: %f, fcp+imriq: %f\n", fcp_time, imriq_time, (fcp_time + imriq_time - fcp_imriq_time) / (fcp_time + imriq_time));
 
 
     // system("nvidia-smi >> nvidia-smi.log");

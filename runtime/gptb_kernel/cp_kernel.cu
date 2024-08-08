@@ -95,7 +95,7 @@ extern "C" __global__ void g_general_ptb_cp(int numatoms, float gridspacing, flo
     }
 }
 
-extern "C" __global__ void g_general_ptb_cp_int(int numatoms, float gridspacing, float * energygrid, 
+extern "C" __global__ void g_general_ptb_cp_int(int numatoms, float gridspacing, int * energygrid, 
 	int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
 		int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base){
 	// unsigned int block_pos = blockIdx.x + 68 * 2;   // TODO: why 68 * 2?
@@ -139,14 +139,14 @@ extern "C" __global__ void g_general_ptb_cp_int(int numatoms, float gridspacing,
         int coory = gridspacing * yindex;
         int coorx = gridspacing * xindex;
 
-        int energyvalx1=0.0f;
-        int energyvalx2=0.0f;
-        int energyvalx3=0.0f;
-        int energyvalx4=0.0f;
-        int energyvalx5=0.0f;
-        int energyvalx6=0.0f;
-        int energyvalx7=0.0f;
-        int energyvalx8=0.0f;
+        int energyvalx1=0;
+        int energyvalx2=0;
+        int energyvalx3=0;
+        int energyvalx4=0;
+        int energyvalx5=0;
+        int energyvalx6=0;
+        int energyvalx7=0;
+        int energyvalx8=0;
 
         int gridspacing_u = gridspacing * BLOCKSIZEX;
 
@@ -164,14 +164,14 @@ extern "C" __global__ void g_general_ptb_cp_int(int numatoms, float gridspacing,
             int dx7 = dx6 + gridspacing_u;
             int dx8 = dx7 + gridspacing_u;
 
-            energyvalx1 += atominfo[atomid].w * (1.0f / sqrtf(dx1*dx1 + dyz2));
-            energyvalx2 += atominfo[atomid].w * (1.0f / sqrtf(dx2*dx2 + dyz2));
-            energyvalx3 += atominfo[atomid].w * (1.0f / sqrtf(dx3*dx3 + dyz2));
-            energyvalx4 += atominfo[atomid].w * (1.0f / sqrtf(dx4*dx4 + dyz2));
-            energyvalx5 += atominfo[atomid].w * (1.0f / sqrtf(dx5*dx5 + dyz2));
-            energyvalx6 += atominfo[atomid].w * (1.0f / sqrtf(dx6*dx6 + dyz2));
-            energyvalx7 += atominfo[atomid].w * (1.0f / sqrtf(dx7*dx7 + dyz2));
-            energyvalx8 += atominfo[atomid].w * (1.0f / sqrtf(dx8*dx8 + dyz2));
+            energyvalx1 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx1*dx1 + dyz2));
+            energyvalx2 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx2*dx2 + dyz2));
+            energyvalx3 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx3*dx3 + dyz2));
+            energyvalx4 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx4*dx4 + dyz2));
+            energyvalx5 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx5*dx5 + dyz2));
+            energyvalx6 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx6*dx6 + dyz2));
+            energyvalx7 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx7*dx7 + dyz2));
+            energyvalx8 += atominfo_int[atomid].w * (1000 / (int)sqrtf(dx8*dx8 + dyz2));
         }
 
         energygrid[outaddr]   += energyvalx1;

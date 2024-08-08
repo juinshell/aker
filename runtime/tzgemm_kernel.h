@@ -63,10 +63,10 @@ public:
 
     // impl virtual func
     void executeImpl(cudaStream_t stream) {
-        printf("ptb_tzgemm blks num: %d\n", launchGridDim.x);
-        checkKernelErrors((ptb_tzgemm<<<68 * 2, 128, 0, stream>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
+        // printf("ptb_tzgemm blks num: %d\n", launchGridDim.x);
+        checkKernelErrors((ptb_tzgemm<<<launchGridDim.x, launchBlockDim.x, 0, stream>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
 							M_GLOBAL, N_GLOBAL, K_GLOBAL,
-							launchGridDim.x, launchBlockDim.x)));
+							ori_blks, launchBlockDim.x)));
     }
     void initParams() {
 
@@ -86,8 +86,8 @@ public:
         MAX_ORI_WMMA_C = max(MAX_ORI_WMMA_C, cur_ori_wmma_C);
 
         if (!gemm_malloced) {
-            printf("should not init gemm in ori tzgemm!\n");
-            exit(1);
+            // printf("should not init gemm in ori tzgemm!\n");
+            // exit(1);
             printf("[ori_tzgemm][initParams] try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", sizeof(half) * MAX_M_GLOBAL * MAX_K_GLOBAL / 1024.0 / 1024.0, sizeof(half) * MAX_N_GLOBAL * MAX_K_GLOBAL / 1024.0 / 1024.0, sizeof(float) * MAX_M_GLOBAL * MAX_N_GLOBAL / 1024.0 / 1024.0); 
             cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), MAX_ORI_WMMA_A));
             cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), MAX_ORI_WMMA_B));
@@ -109,6 +109,7 @@ public:
         int K_TILES = K_GLOBAL / WMMA_K;
 
         this->launchGridDim.x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
+        ori_blks = this->launchGridDim.x;
         this->launchGridDim.y = 1;
         this->launchGridDim.z = 1;
         this->launchBlockDim.x = THREADS_PER_BLOCK;
@@ -127,6 +128,7 @@ public:
 
     int m, n, k;
     int M_GLOBAL, N_GLOBAL, K_GLOBAL;
+    int ori_blks;
 
     std::vector<int> getArgs() override {
     return std::vector<int>();

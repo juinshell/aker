@@ -446,7 +446,7 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
 
 	int wmma_grid_dim_x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
 	int wmma_block_dim_x = wmma_block.x;
-	wmma_grid.x = SM_NUM * 1;
+	wmma_grid.x = SM_NUM * 2;
 	wmma_block.x = THREADS_PER_BLOCK;
 
     // M_GLOBAL /= batch_size;
@@ -553,7 +553,7 @@ __inline__ cublasStatus_t mycublasSgemm(cublasHandle_t handle, cublasOperation_t
 
 	int wmma_grid_dim_x = (M_TILES * N_TILES) / (BLOCK_COL_TILES * BLOCK_ROW_TILES);
 	int wmma_block_dim_x = wmma_block.x;
-	wmma_grid.x = 68 * 1;
+	wmma_grid.x = SM_NUM * 2;
 	wmma_block.x = THREADS_PER_BLOCK;
 
     MAX_ORI_WMMA_A = max(MAX_ORI_WMMA_A, (long long)sizeof(half) * M_GLOBAL * K_GLOBAL);

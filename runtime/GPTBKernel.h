@@ -97,7 +97,7 @@ public:
 
     void executeImpl(cudaStream_t stream) override{
         // logger.INFO("kernel name: " + kernelName + ", id: " + std::to_string(Id) + " is executing ...");
-
+        gptbParams.ptb_iter_block_step = launchGridDim.x * launchGridDim.y * launchGridDim.z;
         kernelParams.push_back(&gptbParams.ptb_start_block_pos);
         kernelParams.push_back(&gptbParams.ptb_iter_block_step);
         kernelParams.push_back(&gptbParams.ptb_end_block_pos);

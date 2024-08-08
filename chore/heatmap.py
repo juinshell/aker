@@ -54,8 +54,12 @@ mask = np.zeros_like(raw_data)
 #这部分就是对应要被遮掉的部分
 mask[np.triu_indices_from(mask)] = True
 # 使用seaborn绘制热力图
+# 设置Times New Roman字体
+sns.set(font='Times New Roman')
+
 
 plt.figure(figsize=(10, 8))
 sns.heatmap(data, annot=True, cmap='coolwarm', cbar=False, square=True, mask=mask)
 plt.title('CD Kernel Pair Heatmap')
 plt.show()
+plt.savefig('heatmap.pdf')

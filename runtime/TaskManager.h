@@ -11,7 +11,6 @@ public:
     void execute_with_one_cd_kernel(ExecutionMode mode, cudaStream_t stream);
     ~TaskManager();
 
-private:
     Task* lc_task;
     std::string be_task1_name;
     std::string be_task2_name;

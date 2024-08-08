@@ -317,23 +317,23 @@ __device__ void cp_tzgemm_cp0_int(int numatoms, float gridspacing, int * energyg
         int coory = gridspacing * yindex;
         int coorx = gridspacing * xindex;
 
-        int energyvalx1=0.0f;
-        int energyvalx2=0.0f;
-        int energyvalx3=0.0f;
-        int energyvalx4=0.0f;
-        int energyvalx5=0.0f;
-        int energyvalx6=0.0f;
-        int energyvalx7=0.0f;
-        int energyvalx8=0.0f;
+        int energyvalx1=0;
+        int energyvalx2=0;
+        int energyvalx3=0;
+        int energyvalx4=0;
+        int energyvalx5=0;
+        int energyvalx6=0;
+        int energyvalx7=0;
+        int energyvalx8=0;
 
         int gridspacing_u = gridspacing * BLOCKSIZEX;
 
         int atomid;
         for (atomid=0; atomid<numatoms; atomid++) {
-            int dy = coory - atominfo[atomid].y;
-            int dyz2 = (dy * dy) + atominfo[atomid].z;
+            int dy = coory - atominfo_int[atomid].y;
+            int dyz2 = (dy * dy) + atominfo_int[atomid].z;
 
-            int dx1 = coorx - atominfo[atomid].x;
+            int dx1 = coorx - atominfo_int[atomid].x;
             int dx2 = dx1 + gridspacing_u;
             int dx3 = dx2 + gridspacing_u;
             int dx4 = dx3 + gridspacing_u;
@@ -342,14 +342,14 @@ __device__ void cp_tzgemm_cp0_int(int numatoms, float gridspacing, int * energyg
             int dx7 = dx6 + gridspacing_u;
             int dx8 = dx7 + gridspacing_u;
 
-            energyvalx1 += atominfo[atomid].w * (1.0f / sqrtf(dx1*dx1 + dyz2));
-            energyvalx2 += atominfo[atomid].w * (1.0f / sqrtf(dx2*dx2 + dyz2));
-            energyvalx3 += atominfo[atomid].w * (1.0f / sqrtf(dx3*dx3 + dyz2));
-            energyvalx4 += atominfo[atomid].w * (1.0f / sqrtf(dx4*dx4 + dyz2));
-            energyvalx5 += atominfo[atomid].w * (1.0f / sqrtf(dx5*dx5 + dyz2));
-            energyvalx6 += atominfo[atomid].w * (1.0f / sqrtf(dx6*dx6 + dyz2));
-            energyvalx7 += atominfo[atomid].w * (1.0f / sqrtf(dx7*dx7 + dyz2));
-            energyvalx8 += atominfo[atomid].w * (1.0f / sqrtf(dx8*dx8 + dyz2));
+            energyvalx1 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx1*dx1 + dyz2));
+            energyvalx2 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx2*dx2 + dyz2));
+            energyvalx3 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx3*dx3 + dyz2));
+            energyvalx4 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx4*dx4 + dyz2));
+            energyvalx5 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx5*dx5 + dyz2));
+            energyvalx6 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx6*dx6 + dyz2));
+            energyvalx7 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx7*dx7 + dyz2));
+            energyvalx8 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx8*dx8 + dyz2));
         }
 
         energygrid[outaddr]   += energyvalx1;
@@ -407,23 +407,23 @@ __device__ void cp_tzgemm_cp1_int(int numatoms, float gridspacing, int * energyg
         int coory = gridspacing * yindex;
         int coorx = gridspacing * xindex;
 
-        int energyvalx1=0.0f;
-        int energyvalx2=0.0f;
-        int energyvalx3=0.0f;
-        int energyvalx4=0.0f;
-        int energyvalx5=0.0f;
-        int energyvalx6=0.0f;
-        int energyvalx7=0.0f;
-        int energyvalx8=0.0f;
+        int energyvalx1=0;
+        int energyvalx2=0;
+        int energyvalx3=0;
+        int energyvalx4=0;
+        int energyvalx5=0;
+        int energyvalx6=0;
+        int energyvalx7=0;
+        int energyvalx8=0;
 
         int gridspacing_u = gridspacing * BLOCKSIZEX;
 
         int atomid;
         for (atomid=0; atomid<numatoms; atomid++) {
-            int dy = coory - atominfo[atomid].y;
-            int dyz2 = (dy * dy) + atominfo[atomid].z;
+            int dy = coory - atominfo_int[atomid].y;
+            int dyz2 = (dy * dy) + atominfo_int[atomid].z;
 
-            int dx1 = coorx - atominfo[atomid].x;
+            int dx1 = coorx - atominfo_int[atomid].x;
             int dx2 = dx1 + gridspacing_u;
             int dx3 = dx2 + gridspacing_u;
             int dx4 = dx3 + gridspacing_u;
@@ -432,14 +432,14 @@ __device__ void cp_tzgemm_cp1_int(int numatoms, float gridspacing, int * energyg
             int dx7 = dx6 + gridspacing_u;
             int dx8 = dx7 + gridspacing_u;
 
-            energyvalx1 += atominfo[atomid].w * (1.0f / sqrtf(dx1*dx1 + dyz2));
-            energyvalx2 += atominfo[atomid].w * (1.0f / sqrtf(dx2*dx2 + dyz2));
-            energyvalx3 += atominfo[atomid].w * (1.0f / sqrtf(dx3*dx3 + dyz2));
-            energyvalx4 += atominfo[atomid].w * (1.0f / sqrtf(dx4*dx4 + dyz2));
-            energyvalx5 += atominfo[atomid].w * (1.0f / sqrtf(dx5*dx5 + dyz2));
-            energyvalx6 += atominfo[atomid].w * (1.0f / sqrtf(dx6*dx6 + dyz2));
-            energyvalx7 += atominfo[atomid].w * (1.0f / sqrtf(dx7*dx7 + dyz2));
-            energyvalx8 += atominfo[atomid].w * (1.0f / sqrtf(dx8*dx8 + dyz2));
+            energyvalx1 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx1*dx1 + dyz2));
+            energyvalx2 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx2*dx2 + dyz2));
+            energyvalx3 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx3*dx3 + dyz2));
+            energyvalx4 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx4*dx4 + dyz2));
+            energyvalx5 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx5*dx5 + dyz2));
+            energyvalx6 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx6*dx6 + dyz2));
+            energyvalx7 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx7*dx7 + dyz2));
+            energyvalx8 += atominfo_int[atomid].w * (1 / (int)sqrtf(dx8*dx8 + dyz2));
         }
 
         energygrid[outaddr]   += energyvalx1;
@@ -1001,24 +1001,24 @@ __global__ void cp_tzgemm_mix(
 	// }
 	if (threadIdx.x < 128) {
         cp_tzgemm_cp0(
-            cp0_numatoms, cp0_gridspacing, cp0_energygrid, cp0_grid_dimension_x, cp0_grid_dimension_y, cp0_grid_dimension_z, cp0_block_dimension_x, cp0_block_dimension_y, cp0_block_dimension_z, cp0_ptb_start_block_pos + 0 * cp0_ptb_iter_block_step, cp0_ptb_iter_block_step * 2, cp0_ptb_end_block_pos, 0
+            cp0_numatoms, cp0_gridspacing, cp0_energygrid, cp0_grid_dimension_x, cp0_grid_dimension_y, cp0_grid_dimension_z, cp0_block_dimension_x, cp0_block_dimension_y, cp0_block_dimension_z, cp0_ptb_start_block_pos, cp0_ptb_iter_block_step, cp0_ptb_end_block_pos, 0
         );
     }
+	// else if (threadIdx.x < 256) {
+	// 	cp_tzgemm_cp1(
+	// 		cp0_numatoms, cp0_gridspacing, cp0_energygrid, cp0_grid_dimension_x, cp0_grid_dimension_y, cp0_grid_dimension_z, cp0_block_dimension_x, cp0_block_dimension_y, cp0_block_dimension_z, cp0_ptb_start_block_pos + 1 * cp0_ptb_iter_block_step, cp0_ptb_iter_block_step * 2, cp0_ptb_end_block_pos, 128
+	// 	);
+	// }
 	else if (threadIdx.x < 256) {
-		cp_tzgemm_cp1(
-			cp0_numatoms, cp0_gridspacing, cp0_energygrid, cp0_grid_dimension_x, cp0_grid_dimension_y, cp0_grid_dimension_z, cp0_block_dimension_x, cp0_block_dimension_y, cp0_block_dimension_z, cp0_ptb_start_block_pos + 1 * cp0_ptb_iter_block_step, cp0_ptb_iter_block_step * 2, cp0_ptb_end_block_pos, 128
-		);
-	}
-	else if (threadIdx.x < 384) {
 		cp_tzgemm_tzgemm0(
-            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 0 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 256
+            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos, tzgemm1_ptb_iter_block_step, tzgemm1_ptb_end_block_pos, 128
         );
 	}
-	else {
-		cp_tzgemm_tzgemm1(
-			tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 1 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 384
-		);
-	}
+	// else {
+	// 	cp_tzgemm_tzgemm1(
+	// 		tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 1 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 384
+	// 	);
+	// }
 
 }
 
@@ -1036,7 +1036,7 @@ extern "C" __global__ void cp_tzgemm_mix_int(
     }
 	else if (threadIdx.x < 256) {
 		cp_tzgemm_cp0_int(
-			cp0_numatoms, cp0_gridspacing, cp0_energygrid, cp0_grid_dimension_x, cp0_grid_dimension_y, cp0_grid_dimension_z, cp0_block_dimension_x, cp0_block_dimension_y, cp0_block_dimension_z, cp0_ptb_start_block_pos + 1 * cp0_ptb_iter_block_step, cp0_ptb_iter_block_step * 1, cp0_ptb_end_block_pos, 128
+			cp0_numatoms, cp0_gridspacing, cp0_energygrid, cp0_grid_dimension_x, cp0_grid_dimension_y, cp0_grid_dimension_z, cp0_block_dimension_x, cp0_block_dimension_y, cp0_block_dimension_z, cp0_ptb_start_block_pos, cp0_ptb_iter_block_step * 1, cp0_ptb_end_block_pos, 128
 		);
     }
 	// else if (threadIdx.x < 384) {

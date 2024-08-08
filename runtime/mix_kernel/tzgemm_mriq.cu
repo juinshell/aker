@@ -122,13 +122,13 @@ __device__ void mriq_tzgemm_mriq0_int(int numK, int kGlobalIndex, int* x, int* y
 
             for (; (kIndex < KERNEL_Q_K_ELEMS_PER_GRID) && (kGlobalIndex < numK);
                 kIndex += 2, kGlobalIndex += 2) {
-                float expArg = PIx2_MRIQ * (ck_int[kIndex].Kx * sX + ck_int[kIndex].Ky * sY +
+                float expArg = (int)PIx2_MRIQ * (ck_int[kIndex].Kx * sX + ck_int[kIndex].Ky * sY +
                             ck_int[kIndex].Kz * sZ);
                 sQr += ck_int[kIndex].PhiMag * (int)cos(expArg);
                 sQi += ck_int[kIndex].PhiMag * (int)sin(expArg);
 
                 int kIndex1 = kIndex + 1;
-                float expArg1 = PIx2_MRIQ * (ck_int[kIndex1].Kx * sX + ck_int[kIndex1].Ky * sY +
+                float expArg1 = (int)PIx2_MRIQ * (ck_int[kIndex1].Kx * sX + ck_int[kIndex1].Ky * sY +
                             ck_int[kIndex1].Kz * sZ);
                 sQr += ck_int[kIndex1].PhiMag * (int)cos(expArg1);
                 sQi += ck_int[kIndex1].PhiMag * (int)sin(expArg1);
@@ -486,17 +486,17 @@ __global__ void mriq_tzgemm_mix(
 		int tzgemm1_grid_dimension_x, int tzgemm1_grid_dimension_y, int tzgemm1_grid_dimension_z, int tzgemm1_block_dimension_x, int tzgemm1_block_dimension_y, int tzgemm1_block_dimension_z, int tzgemm1_ptb_start_block_pos, int tzgemm1_ptb_iter_block_step, int tzgemm1_ptb_end_block_pos){
     if (threadIdx.x < 256) {
         mriq_tzgemm_mriq0(
-            mriq0_numK, mriq0_kGlobalIndex, mriq0_x, mriq0_y, mriq0_z, mriq0_Qr, mriq0_Qi, mriq0_grid_dimension_x, mriq0_grid_dimension_y, mriq0_grid_dimension_z, mriq0_block_dimension_x, mriq0_block_dimension_y, mriq0_block_dimension_z, mriq0_ptb_start_block_pos + 0 * mriq0_ptb_iter_block_step, mriq0_ptb_iter_block_step * 1, mriq0_ptb_end_block_pos, 0
+            mriq0_numK, mriq0_kGlobalIndex, mriq0_x, mriq0_y, mriq0_z, mriq0_Qr, mriq0_Qi, mriq0_grid_dimension_x, mriq0_grid_dimension_y, mriq0_grid_dimension_z, mriq0_block_dimension_x, mriq0_block_dimension_y, mriq0_block_dimension_z, mriq0_ptb_start_block_pos, mriq0_ptb_iter_block_step, mriq0_ptb_end_block_pos, 0
         );
     }
     else if (threadIdx.x < 384) {
         mriq_tzgemm_tzgemm0(
-            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 0 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 256
+            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 256
         );
     }
     else if (threadIdx.x < 512) {
         mriq_tzgemm_tzgemm1(
-            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 1 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 384
+            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 384
         );
 		// printf("tzgemm1 - 512\n");
     }

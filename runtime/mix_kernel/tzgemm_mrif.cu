@@ -138,7 +138,7 @@ __device__ void mrif_tzgemm_mrif0_int(int numK, int kGlobalIndex, int* x, int* y
             if (kCnt < KERNEL_FH_K_ELEMS_PER_GRID) {
                 for (kIndex = 0; (kIndex < (kCnt % 4)) && (kGlobalIndex < numK);
                     kIndex++, kGlobalIndex++) {
-                    float expArg = PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
+                    float expArg = (int)PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
                     int cosArg = cos((expArg));
                     int sinArg = sin((expArg));
                     sOutR += c_int[kIndex].RhoPhiR * cosArg - c_int[kIndex].RhoPhiI * sinArg;
@@ -148,28 +148,117 @@ __device__ void mrif_tzgemm_mrif0_int(int numK, int kGlobalIndex, int* x, int* y
 
             for (; (kIndex < KERNEL_FH_K_ELEMS_PER_GRID) && (kGlobalIndex < numK);
                     kIndex += 4, kGlobalIndex += 4) {
-                float expArg = PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
+                float expArg = (int)PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
                 int cosArg = cos(expArg);
                 int sinArg = sin(expArg);
                 sOutR += c_int[kIndex].RhoPhiR * cosArg - c_int[kIndex].RhoPhiI * sinArg;
                 sOutI += c_int[kIndex].RhoPhiI * cosArg + c_int[kIndex].RhoPhiR * sinArg;
 
                 int kIndex1 = kIndex + 1;
-                float expArg1 = PIx2 * (c_int[kIndex1].Kx * sX + c_int[kIndex1].Ky * sY + c_int[kIndex1].Kz * sZ);
+                float expArg1 = (int)PIx2 * (c_int[kIndex1].Kx * sX + c_int[kIndex1].Ky * sY + c_int[kIndex1].Kz * sZ);
                 int cosArg1 = cos(expArg1);
                 int sinArg1 = sin(expArg1);
                 sOutR += c_int[kIndex1].RhoPhiR * cosArg1 - c_int[kIndex1].RhoPhiI * sinArg1;
                 sOutI += c_int[kIndex1].RhoPhiI * cosArg1 + c_int[kIndex1].RhoPhiR * sinArg1;
 
                 int kIndex2 = kIndex + 2;
-                float expArg2 = PIx2 * (c_int[kIndex2].Kx * sX + c_int[kIndex2].Ky * sY + c_int[kIndex2].Kz * sZ);
+                float expArg2 = (int)PIx2 * (c_int[kIndex2].Kx * sX + c_int[kIndex2].Ky * sY + c_int[kIndex2].Kz * sZ);
                 int cosArg2 = cos(expArg2);
                 int sinArg2 = sin(expArg2);
                 sOutR += c_int[kIndex2].RhoPhiR * cosArg2 - c_int[kIndex2].RhoPhiI * sinArg2;
                 sOutI += c_int[kIndex2].RhoPhiI * cosArg2 + c_int[kIndex2].RhoPhiR * sinArg2;
 
                 int kIndex3 = kIndex + 3;
-                float expArg3 = PIx2 * (c_int[kIndex3].Kx * sX + c_int[kIndex3].Ky * sY + c_int[kIndex3].Kz * sZ);
+                float expArg3 = (int)PIx2 * (c_int[kIndex3].Kx * sX + c_int[kIndex3].Ky * sY + c_int[kIndex3].Kz * sZ);
+                int cosArg3 = cos(expArg3);
+                int sinArg3 = sin(expArg3);
+                sOutR += c_int[kIndex3].RhoPhiR * cosArg3 - c_int[kIndex3].RhoPhiI * sinArg3;
+                sOutI += c_int[kIndex3].RhoPhiI * cosArg3 + c_int[kIndex3].RhoPhiR * sinArg3;    
+            }
+
+            outR[xIndex] = sOutR;
+            outI[xIndex] = sOutI;
+        }
+	}
+}
+
+__device__ void mrif_tzgemm_mrif1_int(int numK, int kGlobalIndex, int* x, int* y, int* z, int* outR, int* outI, 
+	    int grid_dimension_x, int grid_dimension_y, int grid_dimension_z, int block_dimension_x, int block_dimension_y, int block_dimension_z,  
+		    int ptb_start_block_pos, int ptb_iter_block_step, int ptb_end_block_pos, int thread_base) {
+
+    unsigned int block_pos = blockIdx.x + ptb_start_block_pos;
+	
+	int thread_id_x = (threadIdx.x - thread_base) % block_dimension_x;
+    // int thread_id_y = ((threadIdx.x - thread_base) / block_dimension_x) % block_dimension_y;
+    // int thread_id_z = (threadIdx.x - thread_base) / (block_dimension_x * block_dimension_y);
+
+	for (;; block_pos += ptb_iter_block_step) {
+        if (block_pos >= ptb_end_block_pos) {
+            return;
+        }
+
+        int block_id_x = block_pos % grid_dimension_x;
+		// int block_id_y = (block_pos / grid_dimension_x) % grid_dimension_y;
+        // int block_id_z = block_pos / (grid_dimension_x * grid_dimension_y);
+	
+
+        for (int FHGrid = 0; FHGrid < 1; FHGrid++) {
+
+            kGlobalIndex = FHGrid * KERNEL_FH_K_ELEMS_PER_GRID;
+            int sX;
+            int sY;
+            int sZ;
+            int sOutR;
+            int sOutI;
+
+            // Determine the element of the X arrays computed by this thread
+            int xIndex = block_id_x * KERNEL_FH_THREADS_PER_BLOCK + thread_id_x;
+
+            sX = x[xIndex];
+            sY = y[xIndex];
+            sZ = z[xIndex];
+            sOutR = outR[xIndex];
+            sOutI = outI[xIndex];
+
+            // Loop over all elements of K in constant mem to compute a partial value
+            // for X.
+            int kIndex = 0;
+            int kCnt = numK - kGlobalIndex;
+            if (kCnt < KERNEL_FH_K_ELEMS_PER_GRID) {
+                for (kIndex = 0; (kIndex < (kCnt % 4)) && (kGlobalIndex < numK);
+                    kIndex++, kGlobalIndex++) {
+                    float expArg = (int)PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
+                    int cosArg = cos((expArg));
+                    int sinArg = sin((expArg));
+                    sOutR += c_int[kIndex].RhoPhiR * cosArg - c_int[kIndex].RhoPhiI * sinArg;
+                    sOutI += c_int[kIndex].RhoPhiI * cosArg + c_int[kIndex].RhoPhiR * sinArg;
+                }
+            }
+
+            for (; (kIndex < KERNEL_FH_K_ELEMS_PER_GRID) && (kGlobalIndex < numK);
+                    kIndex += 4, kGlobalIndex += 4) {
+                float expArg = (int)PIx2 * (c_int[kIndex].Kx * sX + c_int[kIndex].Ky * sY + c_int[kIndex].Kz * sZ);
+                int cosArg = cos(expArg);
+                int sinArg = sin(expArg);
+                sOutR += c_int[kIndex].RhoPhiR * cosArg - c_int[kIndex].RhoPhiI * sinArg;
+                sOutI += c_int[kIndex].RhoPhiI * cosArg + c_int[kIndex].RhoPhiR * sinArg;
+
+                int kIndex1 = kIndex + 1;
+                float expArg1 = (int)PIx2 * (c_int[kIndex1].Kx * sX + c_int[kIndex1].Ky * sY + c_int[kIndex1].Kz * sZ);
+                int cosArg1 = cos(expArg1);
+                int sinArg1 = sin(expArg1);
+                sOutR += c_int[kIndex1].RhoPhiR * cosArg1 - c_int[kIndex1].RhoPhiI * sinArg1;
+                sOutI += c_int[kIndex1].RhoPhiI * cosArg1 + c_int[kIndex1].RhoPhiR * sinArg1;
+
+                int kIndex2 = kIndex + 2;
+                float expArg2 = (int)PIx2 * (c_int[kIndex2].Kx * sX + c_int[kIndex2].Ky * sY + c_int[kIndex2].Kz * sZ);
+                int cosArg2 = cos(expArg2);
+                int sinArg2 = sin(expArg2);
+                sOutR += c_int[kIndex2].RhoPhiR * cosArg2 - c_int[kIndex2].RhoPhiI * sinArg2;
+                sOutI += c_int[kIndex2].RhoPhiI * cosArg2 + c_int[kIndex2].RhoPhiR * sinArg2;
+
+                int kIndex3 = kIndex + 3;
+                float expArg3 = (int)PIx2 * (c_int[kIndex3].Kx * sX + c_int[kIndex3].Ky * sY + c_int[kIndex3].Kz * sZ);
                 int cosArg3 = cos(expArg3);
                 int sinArg3 = sin(expArg3);
                 sOutR += c_int[kIndex3].RhoPhiR * cosArg3 - c_int[kIndex3].RhoPhiI * sinArg3;
@@ -526,17 +615,17 @@ __global__ void mrif_tzgemm_mix(int mrif0_numK, int mrif0_kGlobalIndex, float* m
 		int tzgemm1_grid_dimension_x, int tzgemm1_grid_dimension_y, int tzgemm1_grid_dimension_z, int tzgemm1_block_dimension_x, int tzgemm1_block_dimension_y, int tzgemm1_block_dimension_z, int tzgemm1_ptb_start_block_pos, int tzgemm1_ptb_iter_block_step, int tzgemm1_ptb_end_block_pos){
     if (threadIdx.x < 256) {
         mrif_tzgemm_mrif0(
-            mrif0_numK, mrif0_kGlobalIndex, mrif0_x, mrif0_y, mrif0_z, mrif0_outR, mrif0_outI, mrif0_grid_dimension_x, mrif0_grid_dimension_y, mrif0_grid_dimension_z, mrif0_block_dimension_x, mrif0_block_dimension_y, mrif0_block_dimension_z, mrif0_ptb_start_block_pos + 0 * mrif0_ptb_iter_block_step, mrif0_ptb_iter_block_step * 1, mrif0_ptb_end_block_pos, 0
+            mrif0_numK, mrif0_kGlobalIndex, mrif0_x, mrif0_y, mrif0_z, mrif0_outR, mrif0_outI, mrif0_grid_dimension_x, mrif0_grid_dimension_y, mrif0_grid_dimension_z, mrif0_block_dimension_x, mrif0_block_dimension_y, mrif0_block_dimension_z, mrif0_ptb_start_block_pos, mrif0_ptb_iter_block_step * 1, mrif0_ptb_end_block_pos, 0
         );
     }
     else if (threadIdx.x < 384) {
         mrif_tzgemm_tzgemm0(
-            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 0 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 256
+            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 256
         );
     }
     else if (threadIdx.x < 512) {
         mrif_tzgemm_tzgemm1(
-            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + 1 * tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 384
+            tzgemm1_A, tzgemm1_B, tzgemm1_C, tzgemm1_NORMAL_M, tzgemm1_NORMAL_N, tzgemm1_NORMAL_K, tzgemm1_grid_dimension_x, tzgemm1_grid_dimension_y, tzgemm1_grid_dimension_z, tzgemm1_block_dimension_x, tzgemm1_block_dimension_y, tzgemm1_block_dimension_z, tzgemm1_ptb_start_block_pos + tzgemm1_ptb_iter_block_step, tzgemm1_ptb_iter_block_step * 2, tzgemm1_ptb_end_block_pos, 384
         );
     }
 }
@@ -547,7 +636,7 @@ __global__ void mrif_tzgemm_mix_int(int mrif0_numK, int mrif0_kGlobalIndex, int*
 		int tzgemm1_grid_dimension_x, int tzgemm1_grid_dimension_y, int tzgemm1_grid_dimension_z, int tzgemm1_block_dimension_x, int tzgemm1_block_dimension_y, int tzgemm1_block_dimension_z, int tzgemm1_ptb_start_block_pos, int tzgemm1_ptb_iter_block_step, int tzgemm1_ptb_end_block_pos){
     if (threadIdx.x < 256) {
         mrif_tzgemm_mrif0_int(
-            mrif0_numK, mrif0_kGlobalIndex, mrif0_x, mrif0_y, mrif0_z, mrif0_outR, mrif0_outI, mrif0_grid_dimension_x, mrif0_grid_dimension_y, mrif0_grid_dimension_z, mrif0_block_dimension_x, mrif0_block_dimension_y, mrif0_block_dimension_z, mrif0_ptb_start_block_pos + 0 * mrif0_ptb_iter_block_step, mrif0_ptb_iter_block_step * 1, mrif0_ptb_end_block_pos, 0
+            mrif0_numK, mrif0_kGlobalIndex, mrif0_x, mrif0_y, mrif0_z, mrif0_outR, mrif0_outI, mrif0_grid_dimension_x, mrif0_grid_dimension_y, mrif0_grid_dimension_z, mrif0_block_dimension_x, mrif0_block_dimension_y, mrif0_block_dimension_z, mrif0_ptb_start_block_pos + 0 * mrif0_ptb_iter_block_step, mrif0_ptb_iter_block_step, mrif0_ptb_end_block_pos, 0
         );
     }
     else if (threadIdx.x < 384) {
