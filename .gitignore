@@ -14,3 +14,9 @@ build/
 /modelsWithCudnn
 Constant/
 log/
+*.o
+*.out
+*.bin
+*.a
+*.tmp
+0_mybench/
