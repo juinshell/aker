@@ -1,4 +1,5 @@
 // main.cc
+#include "header/pets_common.h"
 #include "TackerConfig.h"
 #include "util.h"
 #include "TaskManager.h"
@@ -74,9 +75,6 @@
 #include "json.h"
 #include "Creator.h"
 
-#ifndef SM_NUM
-#define SM_NUM 68
-#endif
 
 std::unordered_set<int> gemm_ks;
 
@@ -188,7 +186,7 @@ void my_exit() {
 }
 
 std::string SYSTEM = "aker";
-std::string ROOT_PATH = "/home/jxdeng/workspace/tacker/runtime";
+std::string ROOT_PATH = "/workspace/tacker/runtime";
 std::string MODEL_NAME = "none";
 
 extern float* ori_wmma_results1;
@@ -721,9 +719,12 @@ Task* createTask(std::string taskName) {
 int main(int argc, char* argv[]) {
     using namespace clipp;
 
+    int device_no = 0;
+
     auto cli = (
         required("-s", "--system") & clipp::value("system_name", SYSTEM).doc("system name, aker/tacker"),
-        required("-m", "--model") & clipp::value("model_name", MODEL_NAME).doc("model name")
+        required("-m", "--model") & clipp::value("model_name", MODEL_NAME).doc("model name"),
+        option("-d", "--device") & clipp::value("device_no", device_no).doc("device number")
     );
 
     if(!parse(argc, argv, cli)) {
@@ -735,10 +736,10 @@ int main(int argc, char* argv[]) {
 
     atexit (my_exit);
 
-    read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + "-1-1-sys.json");
+    read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + ".json");
     // read_json(ROOT_PATH + "/kinfo.json");
 
-    initCUDA();
+    initCUDA(device_no);
     // Print compile info
     compileInfo();
 
@@ -816,25 +817,27 @@ int main(int argc, char* argv[]) {
     auto lc_task = createTask(MODEL_NAME);
     for (int i = 0; i < 5; ++i) {
         lc_task->initExecution();
+        CUDA_SAFE_CALL(cudaDeviceSynchronize());
         for (auto& kernel: lc_task->kernels) {
-            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+            if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
             kernel->execute(nullptr);
+            CUDA_SAFE_CALL(cudaDeviceSynchronize());
         }
-        cudaDeviceSynchronize();
+        CUDA_SAFE_CALL(cudaDeviceSynchronize());
     }
     cudaDeviceSynchronize();
-    std::string a = sget_kernel_info("throughput_test", "a");
-    std::string b = sget_kernel_info("throughput_test", "b");
-    printf("[Result] cd: %s, dnn: %s\n", a.c_str(), MODEL_NAME.c_str());
-    TaskManager taskManager(lc_task, a, b);
+    // std::string a = sget_kernel_info("throughput_test", "a");
+    // std::string b = sget_kernel_info("throughput_test", "b");
+    // printf("[Result] cd: %s, dnn: %s\n", a.c_str(), MODEL_NAME.c_str());
+    // TaskManager taskManager(lc_task, a, b);
 
-    printf("----float----\n");
-    // taskManager.execute_with_one_cd_kernel(ExecutionMode::Aker, streams[0]);
-    taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, streams[0]);
-    taskManager.be_task1_name = a + "_int";
-    printf("taskManager.be_task1_name: %s\n", taskManager.be_task1_name.c_str());
-    printf("----int----\n");
-    taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, streams[1]);
+    // printf("----float----\n");
+    // // taskManager.execute_with_one_cd_kernel(ExecutionMode::Aker, streams[0]);
+    // taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, streams[0]);
+    // taskManager.be_task1_name = a + "_int";
+    // printf("taskManager.be_task1_name: %s\n", taskManager.be_task1_name.c_str());
+    // printf("----int----\n");
+    // taskManager.execute_with_one_cd_kernel(ExecutionMode::Tacker, streams[1]);
 
     // [Aker] tzgemm-cd pair profile
     // auto lc_task = createTask(MODEL_NAME);

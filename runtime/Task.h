@@ -1,6 +1,7 @@
 // Task.h
 #pragma once
 #include "Kernel.h"
+#include <vector>
 #include <queue>
 
 enum ExecutionMode{
@@ -28,4 +29,9 @@ public:
     std::vector<Kernel*> kernels; // 容器一般不能存放引用
 
     TaskType taskType;
+    
+    void* Input[3];
+    void** Result;
+    void* InputHost[3];
+    int InputSize[3];
 };

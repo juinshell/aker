@@ -156,9 +156,6 @@ void cudaErrCheck_(cudaError_t stat, const char *file, int line) {
 const float alpha_g = 1.1f;
 const float beta_g = 0;
 
-#ifndef SM_NUM
-#define SM_NUM 68
-#endif
 #include <cassert>
 #define WMMA_GRID_DIM (SM_NUM * 2)
 #define WMMA_GRID_DIM2 (SM_NUM * 2)

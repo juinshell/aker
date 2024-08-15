@@ -19,14 +19,14 @@ extern Recorder recorder;
 int batch_size = 32;
 
 // int MAX_M_GLOBAL = 401408;
-long long MAX_ORI_WMMA_A = 822083584;
-long long MAX_ORI_WMMA_B = 6422528; // 4718592
-long long MAX_ORI_WMMA_C = 822083584;
+long long MAX_ORI_WMMA_A = 0;
+long long MAX_ORI_WMMA_B = 0; // 4718592
+long long MAX_ORI_WMMA_C = 0;
 int MAX_M_GLOBAL = 802816;
 int MAX_N_GLOBAL = 128;
 int MAX_K_GLOBAL = 128;
-int MAX_COL_BUFFER = 51380224;
-int MAX_BOTTOM = 51380224;
+int MAX_COL_BUFFER = 0;
+int MAX_BOTTOM = 0;
 bool im2col_malloced = false;
 bool gemm_malloced = false;
 float *bottom;

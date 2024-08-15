@@ -16,12 +16,11 @@ public:
         initParams();
     }
     void initExecution() override{
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_270_0, Parameter_270_0_host, sizeof(float) * 4816896, cudaMemcpyHostToDevice));
+        // printf("Resnet50 Input[0] = %p, InputHost[0] = %p, InputSize[0] = %d\n", Input[0], InputHost[0], InputSize[0]);
+        CUDA_SAFE_CALL(cudaMemcpy((float*)Input[0], (float*)InputHost[0], sizeof(float) * InputSize[0], cudaMemcpyHostToDevice));
     }
     void gen_vector(float*  Parameter_270_0, float**  Result_505_0);
     void initParams();  
-    float* Parameter_270_0;
-    float** Result_505_0;
-    float* Parameter_270_0_host;
+    int input_size = -1;
 
 };

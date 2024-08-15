@@ -77,3 +77,59 @@ void build_json(const std::string &filename)
   file.close();
 }
 
+int geti(const std::string &keys, ...)
+{
+    va_list args;
+    va_start(args, keys);
+    auto tmp = ptr;
+    for (const char *key = keys.c_str(); key != NULL; key = va_arg(args, const char *))
+    {
+        if (tmp.get_child_optional(key))
+        {
+            tmp = tmp.get_child(key);
+        }
+        else
+        {
+            return JSON_NOT_FOUND;
+        }
+    }
+    return tmp.get_value<int>();
+}
+
+float getf(const std::string &keys, ...)
+{
+    va_list args;
+    va_start(args, keys);
+    auto tmp = ptr;
+    for (const char *key = keys.c_str(); key != NULL; key = va_arg(args, const char *))
+    {
+        if (tmp.get_child_optional(key))
+        {
+            tmp = tmp.get_child(key);
+        }
+        else
+        {
+            return JSON_NOT_FOUND;
+        }
+    }
+    return tmp.get_value<float>();
+}
+
+std::string gets(const std::string &keys, ...)
+{
+    va_list args;
+    va_start(args, keys);
+    auto tmp = ptr;
+    for (const char *key = keys.c_str(); key != NULL; key = va_arg(args, const char *))
+    {
+        if (tmp.get_child_optional(key))
+        {
+            tmp = tmp.get_child(key);
+        }
+        else
+        {
+            return "";
+        }
+    }
+    return tmp.get_value<std::string>();
+}

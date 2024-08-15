@@ -10,10 +10,10 @@ message(STATUS "CUDA_LIBRARIES: " ${CUDA_LIBRARIES})
 
 SET(CMAKE_CXX_COMPILER "/usr/local/cuda/bin/nvcc")
 
-set(CUDA_NVCC_FLAGS "-arch=sm_75 -Xptxas -dlcm=ca --ptxas-options=-v -cudart shared ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75, -cudart, not -lcudart
+set(CUDA_NVCC_FLAGS "-arch=sm_89 -Xptxas -dlcm=ca -w -cudart shared ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75, -cudart, not -lcudart
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-  set(CMAKE_CUDA_ARCHITECTURES 75)
+  set(CMAKE_CUDA_ARCHITECTURES 89)
 endif()
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -22,10 +22,10 @@ set(CMAKE_BUILD_TYPE "RELEASE" CACHE STRING
 endif()
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-set(CMAKE_CXX_FLAGS " -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}") # must have -lcuda, linker is /usr/bin/c++, not nvcc. must no -lcudart
+set(CMAKE_CXX_FLAGS "-w -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}") # must have -lcuda, linker is /usr/bin/c++, not nvcc. must no -lcudart
 message(STATUS "${PROJECT_NAME} compile cuda code in [RELEASE] mode")
 else()
-set(CMAKE_CXX_FLAGS "-g -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-w -g -lcuda -lcublas -lcurand ${CMAKE_CXX_FLAGS}")
 message(STATUS "${PROJECT_NAME} compile cuda code in [DEBUG] mode")
 endif()
 

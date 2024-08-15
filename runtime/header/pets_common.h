@@ -1,3 +1,3 @@
 #ifndef SM_NUM
-#define SM_NUM 68
+#define SM_NUM 142
 #endif

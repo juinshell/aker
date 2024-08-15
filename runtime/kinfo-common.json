@@ -1,0 +1,9 @@
+{
+    "resnet50": {
+        "MAX_ORI_WMMA_A": 822083584,
+        "MAX_ORI_WMMA_B": 6422528,
+        "MAX_ORI_WMMA_C": 822083584,
+        "MAX_COL_BUFFER": 102760448,
+        "MAX_BOTTOM": 102760448
+    }
+}

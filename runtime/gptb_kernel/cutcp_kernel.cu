@@ -7,9 +7,6 @@ using namespace nvcuda;
 // extern __constant__ int3 NbrList[NBRLIST_MAXLEN];
 
 
-#ifndef SM_NUM
-#define SM_NUM 68
-#endif
 
 
 extern "C" __global__ void general_ptb_cutcp(

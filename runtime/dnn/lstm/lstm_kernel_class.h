@@ -10443,7 +10443,7 @@ extern void Slice_float_float_cuda_Slice_366_Call(const dim3 &grids, const dim3 
 //	- name: Constant_77_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_77(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_77_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_77_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_77_0 failed.\n");
@@ -10462,7 +10462,7 @@ void Constant_float_cuda_Constant_77(cudaStream_t stream, float* output0)
 //	- name: Constant_177_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_177(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_177_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_177_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_177_0 failed.\n");
@@ -10549,7 +10549,7 @@ extern void FusedKernel_float_float_float_float_float_float_float_float_float_fl
 //	- name: Constant_71_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_71(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_71_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_71_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_71_0 failed.\n");
@@ -10568,7 +10568,7 @@ void Constant_float_cuda_Constant_71(cudaStream_t stream, float* output0)
 //	- name: Constant_184_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_184(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_184_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_184_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_184_0 failed.\n");
@@ -10587,7 +10587,7 @@ void Constant_float_cuda_Constant_184(cudaStream_t stream, float* output0)
 //	- name: Constant_117_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_117(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_117_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_117_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_117_0 failed.\n");
@@ -10606,7 +10606,7 @@ void Constant_float_cuda_Constant_117(cudaStream_t stream, float* output0)
 //	- name: Constant_31_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_31(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_31_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_31_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_31_0 failed.\n");
@@ -10625,7 +10625,7 @@ void Constant_float_cuda_Constant_31(cudaStream_t stream, float* output0)
 //	- name: Constant_151_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_151(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_151_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_151_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_151_0 failed.\n");
@@ -10644,7 +10644,7 @@ void Constant_float_cuda_Constant_151(cudaStream_t stream, float* output0)
 //	- name: Constant_121_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_121(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_121_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_121_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_121_0 failed.\n");
@@ -10663,7 +10663,7 @@ void Constant_float_cuda_Constant_121(cudaStream_t stream, float* output0)
 //	- name: Constant_7_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_7(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_7_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_7_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_7_0 failed.\n");
@@ -10682,7 +10682,7 @@ void Constant_float_cuda_Constant_7(cudaStream_t stream, float* output0)
 //	- name: Constant_158_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_158(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_158_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_158_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_158_0 failed.\n");
@@ -10701,7 +10701,7 @@ void Constant_float_cuda_Constant_158(cudaStream_t stream, float* output0)
 //	- name: Constant_114_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_114(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_114_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_114_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_114_0 failed.\n");
@@ -10720,7 +10720,7 @@ void Constant_float_cuda_Constant_114(cudaStream_t stream, float* output0)
 //	- name: Constant_36_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_36(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_36_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_36_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_36_0 failed.\n");
@@ -10739,7 +10739,7 @@ void Constant_float_cuda_Constant_36(cudaStream_t stream, float* output0)
 //	- name: Constant_128_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_128(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_128_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_128_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_128_0 failed.\n");
@@ -10758,7 +10758,7 @@ void Constant_float_cuda_Constant_128(cudaStream_t stream, float* output0)
 //	- name: Constant_28_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_28(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_28_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_28_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_28_0 failed.\n");
@@ -10777,7 +10777,7 @@ void Constant_float_cuda_Constant_28(cudaStream_t stream, float* output0)
 //	- name: Constant_134_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_134(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_134_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_134_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_134_0 failed.\n");
@@ -10796,7 +10796,7 @@ void Constant_float_cuda_Constant_134(cudaStream_t stream, float* output0)
 //	- name: Constant_99_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_99(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_99_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_99_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_99_0 failed.\n");
@@ -10815,7 +10815,7 @@ void Constant_float_cuda_Constant_99(cudaStream_t stream, float* output0)
 //	- name: Constant_161_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_161(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_161_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_161_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_161_0 failed.\n");
@@ -10834,7 +10834,7 @@ void Constant_float_cuda_Constant_161(cudaStream_t stream, float* output0)
 //	- name: Constant_84_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_84(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_84_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_84_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_84_0 failed.\n");
@@ -10853,7 +10853,7 @@ void Constant_float_cuda_Constant_84(cudaStream_t stream, float* output0)
 //	- name: Constant_173_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_173(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_173_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_173_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_173_0 failed.\n");
@@ -10872,7 +10872,7 @@ void Constant_float_cuda_Constant_173(cudaStream_t stream, float* output0)
 //	- name: Constant_75_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_75(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_75_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_75_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_75_0 failed.\n");
@@ -10891,7 +10891,7 @@ void Constant_float_cuda_Constant_75(cudaStream_t stream, float* output0)
 //	- name: Constant_143_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_143(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_143_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_143_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_143_0 failed.\n");
@@ -10910,7 +10910,7 @@ void Constant_float_cuda_Constant_143(cudaStream_t stream, float* output0)
 //	- name: Constant_54_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_54(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_54_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_54_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_54_0 failed.\n");
@@ -10929,7 +10929,7 @@ void Constant_float_cuda_Constant_54(cudaStream_t stream, float* output0)
 //	- name: Constant_144_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_144(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_144_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_144_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_144_0 failed.\n");
@@ -10948,7 +10948,7 @@ void Constant_float_cuda_Constant_144(cudaStream_t stream, float* output0)
 //	- name: Constant_48_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_48(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_48_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_48_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_48_0 failed.\n");
@@ -10967,7 +10967,7 @@ void Constant_float_cuda_Constant_48(cudaStream_t stream, float* output0)
 //	- name: Constant_115_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_115(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_115_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_115_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_115_0 failed.\n");
@@ -10986,7 +10986,7 @@ void Constant_float_cuda_Constant_115(cudaStream_t stream, float* output0)
 //	- name: Constant_105_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_105(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_105_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_105_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_105_0 failed.\n");
@@ -11005,7 +11005,7 @@ void Constant_float_cuda_Constant_105(cudaStream_t stream, float* output0)
 //	- name: Constant_34_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_34(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_34_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_34_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_34_0 failed.\n");
@@ -11024,7 +11024,7 @@ void Constant_float_cuda_Constant_34(cudaStream_t stream, float* output0)
 //	- name: Constant_176_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_176(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_176_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_176_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_176_0 failed.\n");
@@ -11043,7 +11043,7 @@ void Constant_float_cuda_Constant_176(cudaStream_t stream, float* output0)
 //	- name: Constant_61_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_61(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_61_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_61_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_61_0 failed.\n");
@@ -11062,7 +11062,7 @@ void Constant_float_cuda_Constant_61(cudaStream_t stream, float* output0)
 //	- name: Constant_33_0	type: float	shape: Shape{1, 256}
 void Constant_float_cuda_Constant_33(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_33_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_33_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_33_0 failed.\n");
@@ -11081,7 +11081,7 @@ void Constant_float_cuda_Constant_33(cudaStream_t stream, float* output0)
 //	- name: Constant_19_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_19(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_19_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_19_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_19_0 failed.\n");
@@ -11100,7 +11100,7 @@ void Constant_float_cuda_Constant_19(cudaStream_t stream, float* output0)
 //	- name: Constant_129_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_129(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_129_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_129_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_129_0 failed.\n");
@@ -11119,7 +11119,7 @@ void Constant_float_cuda_Constant_129(cudaStream_t stream, float* output0)
 //	- name: Constant_153_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_153(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_153_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_153_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_153_0 failed.\n");
@@ -11138,7 +11138,7 @@ void Constant_float_cuda_Constant_153(cudaStream_t stream, float* output0)
 //	- name: Constant_174_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_174(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_174_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_174_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_174_0 failed.\n");
@@ -11157,7 +11157,7 @@ void Constant_float_cuda_Constant_174(cudaStream_t stream, float* output0)
 //	- name: Constant_17_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_17(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_17_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_17_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_17_0 failed.\n");
@@ -11176,7 +11176,7 @@ void Constant_float_cuda_Constant_17(cudaStream_t stream, float* output0)
 //	- name: Constant_79_0	type: float	shape: Shape{}
 void Constant_float_cuda_Constant_79(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_79_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_79_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_79_0 failed.\n");
@@ -11195,7 +11195,7 @@ void Constant_float_cuda_Constant_79(cudaStream_t stream, float* output0)
 //	- name: Constant_171_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_171(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_171_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_171_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_171_0 failed.\n");
@@ -11214,7 +11214,7 @@ void Constant_float_cuda_Constant_171(cudaStream_t stream, float* output0)
 //	- name: Constant_185_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_185(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_185_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_185_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_185_0 failed.\n");
@@ -11233,7 +11233,7 @@ void Constant_float_cuda_Constant_185(cudaStream_t stream, float* output0)
 //	- name: Constant_111_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_111(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_111_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_111_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_111_0 failed.\n");
@@ -11252,7 +11252,7 @@ void Constant_float_cuda_Constant_111(cudaStream_t stream, float* output0)
 //	- name: Constant_69_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_69(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_69_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_69_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_69_0 failed.\n");
@@ -11271,7 +11271,7 @@ void Constant_float_cuda_Constant_69(cudaStream_t stream, float* output0)
 //	- name: Constant_181_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_181(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_181_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_181_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_181_0 failed.\n");
@@ -11290,7 +11290,7 @@ void Constant_float_cuda_Constant_181(cudaStream_t stream, float* output0)
 //	- name: Constant_182_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_182(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_182_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_182_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_182_0 failed.\n");
@@ -11309,7 +11309,7 @@ void Constant_float_cuda_Constant_182(cudaStream_t stream, float* output0)
 //	- name: Constant_154_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_154(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_154_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_154_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_154_0 failed.\n");
@@ -11328,7 +11328,7 @@ void Constant_float_cuda_Constant_154(cudaStream_t stream, float* output0)
 //	- name: Constant_112_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_112(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_112_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_112_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_112_0 failed.\n");
@@ -11347,7 +11347,7 @@ void Constant_float_cuda_Constant_112(cudaStream_t stream, float* output0)
 //	- name: Constant_97_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_97(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_97_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_97_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_97_0 failed.\n");
@@ -11366,7 +11366,7 @@ void Constant_float_cuda_Constant_97(cudaStream_t stream, float* output0)
 //	- name: Constant_163_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_163(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_163_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_163_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_163_0 failed.\n");
@@ -11385,7 +11385,7 @@ void Constant_float_cuda_Constant_163(cudaStream_t stream, float* output0)
 //	- name: Constant_52_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_52(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_52_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_52_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_52_0 failed.\n");
@@ -11404,7 +11404,7 @@ void Constant_float_cuda_Constant_52(cudaStream_t stream, float* output0)
 //	- name: Constant_41_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_41(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_41_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_41_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_41_0 failed.\n");
@@ -11423,7 +11423,7 @@ void Constant_float_cuda_Constant_41(cudaStream_t stream, float* output0)
 //	- name: Constant_89_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_89(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_89_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_89_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_89_0 failed.\n");
@@ -11442,7 +11442,7 @@ void Constant_float_cuda_Constant_89(cudaStream_t stream, float* output0)
 //	- name: Constant_4_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_4(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_4_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_4_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_4_0 failed.\n");
@@ -11461,7 +11461,7 @@ void Constant_float_cuda_Constant_4(cudaStream_t stream, float* output0)
 //	- name: Constant_27_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_27(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_27_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_27_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_27_0 failed.\n");
@@ -11480,7 +11480,7 @@ void Constant_float_cuda_Constant_27(cudaStream_t stream, float* output0)
 //	- name: Constant_167_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_167(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_167_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_167_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_167_0 failed.\n");
@@ -11499,7 +11499,7 @@ void Constant_float_cuda_Constant_167(cudaStream_t stream, float* output0)
 //	- name: Constant_109_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_109(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_109_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_109_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_109_0 failed.\n");
@@ -11518,7 +11518,7 @@ void Constant_float_cuda_Constant_109(cudaStream_t stream, float* output0)
 //	- name: Constant_44_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_44(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_44_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_44_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_44_0 failed.\n");
@@ -11537,7 +11537,7 @@ void Constant_float_cuda_Constant_44(cudaStream_t stream, float* output0)
 //	- name: Constant_26_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_26(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_26_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_26_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_26_0 failed.\n");
@@ -11556,7 +11556,7 @@ void Constant_float_cuda_Constant_26(cudaStream_t stream, float* output0)
 //	- name: Constant_58_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_58(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_58_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_58_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_58_0 failed.\n");
@@ -11575,7 +11575,7 @@ void Constant_float_cuda_Constant_58(cudaStream_t stream, float* output0)
 //	- name: Constant_55_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_55(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_55_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_55_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_55_0 failed.\n");
@@ -11594,7 +11594,7 @@ void Constant_float_cuda_Constant_55(cudaStream_t stream, float* output0)
 //	- name: Constant_62_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_62(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_62_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_62_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_62_0 failed.\n");
@@ -11613,7 +11613,7 @@ void Constant_float_cuda_Constant_62(cudaStream_t stream, float* output0)
 //	- name: Constant_39_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_39(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_39_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_39_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_39_0 failed.\n");
@@ -11632,7 +11632,7 @@ void Constant_float_cuda_Constant_39(cudaStream_t stream, float* output0)
 //	- name: Constant_135_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_135(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_135_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_135_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_135_0 failed.\n");
@@ -11651,7 +11651,7 @@ void Constant_float_cuda_Constant_135(cudaStream_t stream, float* output0)
 //	- name: Constant_175_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_175(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_175_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_175_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_175_0 failed.\n");
@@ -11670,7 +11670,7 @@ void Constant_float_cuda_Constant_175(cudaStream_t stream, float* output0)
 //	- name: Constant_141_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_141(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_141_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_141_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_141_0 failed.\n");
@@ -11689,7 +11689,7 @@ void Constant_float_cuda_Constant_141(cudaStream_t stream, float* output0)
 //	- name: Constant_127_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_127(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_127_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_127_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_127_0 failed.\n");
@@ -11708,7 +11708,7 @@ void Constant_float_cuda_Constant_127(cudaStream_t stream, float* output0)
 //	- name: Constant_103_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_103(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_103_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_103_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_103_0 failed.\n");
@@ -11727,7 +11727,7 @@ void Constant_float_cuda_Constant_103(cudaStream_t stream, float* output0)
 //	- name: Constant_98_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_98(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_98_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_98_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_98_0 failed.\n");
@@ -11746,7 +11746,7 @@ void Constant_float_cuda_Constant_98(cudaStream_t stream, float* output0)
 //	- name: Constant_142_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_142(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_142_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_142_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_142_0 failed.\n");
@@ -11765,7 +11765,7 @@ void Constant_float_cuda_Constant_142(cudaStream_t stream, float* output0)
 //	- name: Constant_122_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_122(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_122_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_122_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_122_0 failed.\n");
@@ -11784,7 +11784,7 @@ void Constant_float_cuda_Constant_122(cudaStream_t stream, float* output0)
 //	- name: Constant_179_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_179(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_179_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_179_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_179_0 failed.\n");
@@ -11803,7 +11803,7 @@ void Constant_float_cuda_Constant_179(cudaStream_t stream, float* output0)
 //	- name: Constant_169_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_169(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_169_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_169_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_169_0 failed.\n");
@@ -11822,7 +11822,7 @@ void Constant_float_cuda_Constant_169(cudaStream_t stream, float* output0)
 //	- name: Constant_59_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_59(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_59_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_59_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_59_0 failed.\n");
@@ -11841,7 +11841,7 @@ void Constant_float_cuda_Constant_59(cudaStream_t stream, float* output0)
 //	- name: Constant_8_0	type: float	shape: Shape{256}
 void Constant_float_cuda_Constant_8(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_8_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_8_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_8_0 failed.\n");
@@ -11860,7 +11860,7 @@ void Constant_float_cuda_Constant_8(cudaStream_t stream, float* output0)
 //	- name: Constant_64_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_64(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_64_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_64_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_64_0 failed.\n");
@@ -11879,7 +11879,7 @@ void Constant_float_cuda_Constant_64(cudaStream_t stream, float* output0)
 //	- name: Constant_12_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_12(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_12_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_12_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_12_0 failed.\n");
@@ -11898,7 +11898,7 @@ void Constant_float_cuda_Constant_12(cudaStream_t stream, float* output0)
 //	- name: Constant_42_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_42(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_42_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_42_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_42_0 failed.\n");
@@ -11917,7 +11917,7 @@ void Constant_float_cuda_Constant_42(cudaStream_t stream, float* output0)
 //	- name: Constant_82_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_82(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_82_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_82_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_82_0 failed.\n");
@@ -11936,7 +11936,7 @@ void Constant_float_cuda_Constant_82(cudaStream_t stream, float* output0)
 //	- name: Constant_32_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_32(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_32_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_32_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_32_0 failed.\n");
@@ -11955,7 +11955,7 @@ void Constant_float_cuda_Constant_32(cudaStream_t stream, float* output0)
 //	- name: Constant_50_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_50(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_50_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_50_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_50_0 failed.\n");
@@ -11974,7 +11974,7 @@ void Constant_float_cuda_Constant_50(cudaStream_t stream, float* output0)
 //	- name: Constant_83_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_83(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_83_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_83_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_83_0 failed.\n");
@@ -11993,7 +11993,7 @@ void Constant_float_cuda_Constant_83(cudaStream_t stream, float* output0)
 //	- name: Constant_63_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_63(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_63_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_63_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_63_0 failed.\n");
@@ -12012,7 +12012,7 @@ void Constant_float_cuda_Constant_63(cudaStream_t stream, float* output0)
 //	- name: Constant_166_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_166(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_166_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_166_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_166_0 failed.\n");
@@ -12031,7 +12031,7 @@ void Constant_float_cuda_Constant_166(cudaStream_t stream, float* output0)
 //	- name: Constant_23_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_23(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_23_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_23_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_23_0 failed.\n");
@@ -12050,7 +12050,7 @@ void Constant_float_cuda_Constant_23(cudaStream_t stream, float* output0)
 //	- name: Constant_40_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_40(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_40_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_40_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_40_0 failed.\n");
@@ -12644,7 +12644,7 @@ extern void Slice_float_float_cuda_Slice_290_Call(const dim3 &grids, const dim3 
 //	- name: Constant_66_0	type: float	shape: Shape{256, 256}
 void Constant_float_cuda_Constant_66(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/lstm/Constant/Constant_66_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("/workspace/tacker/runtime/dnn/lstm/Constant/Constant_66_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load Constant_66_0 failed.\n");

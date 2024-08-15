@@ -24,9 +24,7 @@
 #include <malloc.h>
 using namespace nvcuda; 
 
-#ifndef SM_NUM
-#define SM_NUM 68
-#endif
+#include "header/pets_common.h"
 
 #define CU_SAFE_CALL(err) __checkCudaErrors(err, __FILE__, __LINE__)
 // These are the inline versions for all of the SDK helper functions

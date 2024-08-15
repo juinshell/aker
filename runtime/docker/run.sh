@@ -1,0 +1,1 @@
+docker run --name hato -d -it -v ~/workspace/:/workspace/ --gpus all --privileged=true hato:latest

@@ -708,9 +708,9 @@ typedef unsigned long int uint64_t;
 #define NNFUSION_GRAPH_INPUT_NUM 1
 #define NNFUSION_GRAPH_OUTPUT_NUM 1
 #define NNFUSION_GRAPH_INPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_INPUT_SHAPE_0 {32, 224, 224, 3}
+#define NNFUSION_GRAPH_INPUT_SHAPE_0 {128, 224, 224, 3}
 #define NNFUSION_GRAPH_OUTPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {32, 1001}
+#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {128, 1001}
 #endif
 
 // Node name:	Reshape_376
@@ -759,18 +759,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_376_Call(const dim3 &grids
 // Node name:	Convolution_393
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_391_0	type: float	shape: Shape{32, 1024, 14, 14}
+//	- name: resnet50_Relu_391_0	type: float	shape: Shape{128, 1024, 14, 14}
 //	- name: resnet50_Reshape_392_0	type: float	shape: Shape{256, 1024, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_393_0	type: float	shape: Shape{32, 256, 14, 14}
+//	- name: resnet50_Convolution_393_0	type: float	shape: Shape{128, 256, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_393(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 1024, 1, 1));
@@ -778,7 +778,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_393(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -868,18 +868,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_332_Call(const dim3 &grids
 // Node name:	Convolution_465
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_463_0	type: float	shape: Shape{32, 512, 7, 7}
+//	- name: resnet50_Relu_463_0	type: float	shape: Shape{128, 512, 7, 7}
 //	- name: resnet50_Reshape_464_0	type: float	shape: Shape{512, 512, 3, 3}
 // Output:
-//	- name: resnet50_Convolution_465_0	type: float	shape: Shape{32, 512, 7, 7}
+//	- name: resnet50_Convolution_465_0	type: float	shape: Shape{128, 512, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_465(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 512, 3, 3));
@@ -887,7 +887,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_465(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -938,7 +938,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_465(cudnnHandle_t cudnn_
 //	- name: resnet50_Constant_40_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_40(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_40_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_40_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_40_0 failed.\n");
@@ -957,7 +957,7 @@ void resnet50_Constant_float_cuda_Constant_40(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_235_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_235(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_235_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_235_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_235_0 failed.\n");
@@ -976,7 +976,7 @@ void resnet50_Constant_float_cuda_Constant_235(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_203_0	type: float	shape: Shape{1, 1, 1024, 256}
 void resnet50_Constant_float_cuda_Constant_203(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_203_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_203_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_203_0 failed.\n");
@@ -995,7 +995,7 @@ void resnet50_Constant_float_cuda_Constant_203(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_51_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_51(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_51_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_51_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_51_0 failed.\n");
@@ -1014,7 +1014,7 @@ void resnet50_Constant_float_cuda_Constant_51(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_36_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_36(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_36_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_36_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_36_0 failed.\n");
@@ -1033,7 +1033,7 @@ void resnet50_Constant_float_cuda_Constant_36(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_10_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_10(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_10_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_10_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_10_0 failed.\n");
@@ -1052,7 +1052,7 @@ void resnet50_Constant_float_cuda_Constant_10(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_11_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_11(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_11_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_11_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_11_0 failed.\n");
@@ -1071,7 +1071,7 @@ void resnet50_Constant_float_cuda_Constant_11(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_27_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_27(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_27_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_27_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_27_0 failed.\n");
@@ -1090,7 +1090,7 @@ void resnet50_Constant_float_cuda_Constant_27(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_6_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_6(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_6_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_6_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_6_0 failed.\n");
@@ -1109,7 +1109,7 @@ void resnet50_Constant_float_cuda_Constant_6(cudaStream_t stream, float* output0
 //	- name: resnet50_Constant_15_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_15(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_15_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_15_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_15_0 failed.\n");
@@ -1128,7 +1128,7 @@ void resnet50_Constant_float_cuda_Constant_15(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_21_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_21(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_21_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_21_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_21_0 failed.\n");
@@ -1147,7 +1147,7 @@ void resnet50_Constant_float_cuda_Constant_21(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_165_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_165(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_165_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_165_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_165_0 failed.\n");
@@ -1166,7 +1166,7 @@ void resnet50_Constant_float_cuda_Constant_165(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_178_0	type: float	shape: Shape{3, 3, 256, 256}
 void resnet50_Constant_float_cuda_Constant_178(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_178_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_178_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_178_0 failed.\n");
@@ -1185,7 +1185,7 @@ void resnet50_Constant_float_cuda_Constant_178(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_12_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_12(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_12_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_12_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_12_0 failed.\n");
@@ -1204,7 +1204,7 @@ void resnet50_Constant_float_cuda_Constant_12(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_169_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_169(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_169_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_169_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_169_0 failed.\n");
@@ -1223,7 +1223,7 @@ void resnet50_Constant_float_cuda_Constant_169(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_20_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_20(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_20_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_20_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_20_0 failed.\n");
@@ -1242,7 +1242,7 @@ void resnet50_Constant_float_cuda_Constant_20(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_38_0	type: float	shape: Shape{1, 1, 64, 256}
 void resnet50_Constant_float_cuda_Constant_38(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_38_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_38_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_38_0 failed.\n");
@@ -1261,7 +1261,7 @@ void resnet50_Constant_float_cuda_Constant_38(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_64_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_64(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_64_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_64_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_64_0 failed.\n");
@@ -1280,7 +1280,7 @@ void resnet50_Constant_float_cuda_Constant_64(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_123_0	type: float	shape: Shape{1, 1, 512, 1024}
 void resnet50_Constant_float_cuda_Constant_123(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_123_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_123_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_123_0 failed.\n");
@@ -1299,7 +1299,7 @@ void resnet50_Constant_float_cuda_Constant_123(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_76_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_76(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_76_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_76_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_76_0 failed.\n");
@@ -1318,7 +1318,7 @@ void resnet50_Constant_float_cuda_Constant_76(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_213_0	type: float	shape: Shape{1, 1, 256, 1024}
 void resnet50_Constant_float_cuda_Constant_213(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_213_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_213_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_213_0 failed.\n");
@@ -1337,7 +1337,7 @@ void resnet50_Constant_float_cuda_Constant_213(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_91_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_91(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_91_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_91_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_91_0 failed.\n");
@@ -1356,7 +1356,7 @@ void resnet50_Constant_float_cuda_Constant_91(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_17_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_17(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_17_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_17_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_17_0 failed.\n");
@@ -1375,7 +1375,7 @@ void resnet50_Constant_float_cuda_Constant_17(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_162_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_162(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_162_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_162_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_162_0 failed.\n");
@@ -1394,7 +1394,7 @@ void resnet50_Constant_float_cuda_Constant_162(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_4_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_4(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_4_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_4_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_4_0 failed.\n");
@@ -1413,7 +1413,7 @@ void resnet50_Constant_float_cuda_Constant_4(cudaStream_t stream, float* output0
 //	- name: resnet50_Constant_44_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_44(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_44_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_44_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_44_0 failed.\n");
@@ -1432,7 +1432,7 @@ void resnet50_Constant_float_cuda_Constant_44(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_259_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_259(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_259_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_259_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_259_0 failed.\n");
@@ -1451,7 +1451,7 @@ void resnet50_Constant_float_cuda_Constant_259(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_70_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_70(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_70_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_70_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_70_0 failed.\n");
@@ -1470,7 +1470,7 @@ void resnet50_Constant_float_cuda_Constant_70(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_50_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_50(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_50_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_50_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_50_0 failed.\n");
@@ -1489,7 +1489,7 @@ void resnet50_Constant_float_cuda_Constant_50(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_196_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_196(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_196_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_196_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_196_0 failed.\n");
@@ -1508,7 +1508,7 @@ void resnet50_Constant_float_cuda_Constant_196(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_34_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_34(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_34_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_34_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_34_0 failed.\n");
@@ -1527,7 +1527,7 @@ void resnet50_Constant_float_cuda_Constant_34(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_14_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_14(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_14_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_14_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_14_0 failed.\n");
@@ -1546,7 +1546,7 @@ void resnet50_Constant_float_cuda_Constant_14(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_192_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_192(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_192_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_192_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_192_0 failed.\n");
@@ -1565,7 +1565,7 @@ void resnet50_Constant_float_cuda_Constant_192(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_246_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_246(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_246_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_246_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_246_0 failed.\n");
@@ -1584,7 +1584,7 @@ void resnet50_Constant_float_cuda_Constant_246(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_129_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_129(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_129_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_129_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_129_0 failed.\n");
@@ -1603,7 +1603,7 @@ void resnet50_Constant_float_cuda_Constant_129(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_153_0	type: float	shape: Shape{1, 1, 256, 1024}
 void resnet50_Constant_float_cuda_Constant_153(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_153_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_153_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_153_0 failed.\n");
@@ -1622,7 +1622,7 @@ void resnet50_Constant_float_cuda_Constant_153(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_19_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_19(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_19_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_19_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_19_0 failed.\n");
@@ -1641,7 +1641,7 @@ void resnet50_Constant_float_cuda_Constant_19(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_73_0	type: float	shape: Shape{1, 1, 128, 512}
 void resnet50_Constant_float_cuda_Constant_73(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_73_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_73_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_73_0 failed.\n");
@@ -1660,7 +1660,7 @@ void resnet50_Constant_float_cuda_Constant_73(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_42_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_42(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_42_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_42_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_42_0 failed.\n");
@@ -1679,7 +1679,7 @@ void resnet50_Constant_float_cuda_Constant_42(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_125_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_125(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_125_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_125_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_125_0 failed.\n");
@@ -1698,7 +1698,7 @@ void resnet50_Constant_float_cuda_Constant_125(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_82_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_82(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_82_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_82_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_82_0 failed.\n");
@@ -1717,7 +1717,7 @@ void resnet50_Constant_float_cuda_Constant_82(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_135_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_135(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_135_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_135_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_135_0 failed.\n");
@@ -1736,7 +1736,7 @@ void resnet50_Constant_float_cuda_Constant_135(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_39_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_39(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_39_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_39_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_39_0 failed.\n");
@@ -1755,7 +1755,7 @@ void resnet50_Constant_float_cuda_Constant_39(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_60_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_60(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_60_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_60_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_60_0 failed.\n");
@@ -1774,7 +1774,7 @@ void resnet50_Constant_float_cuda_Constant_60(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_94_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_94(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_94_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_94_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_94_0 failed.\n");
@@ -1793,7 +1793,7 @@ void resnet50_Constant_float_cuda_Constant_94(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_168_0	type: float	shape: Shape{1, 1, 256, 1024}
 void resnet50_Constant_float_cuda_Constant_168(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_168_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_168_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_168_0 failed.\n");
@@ -1812,7 +1812,7 @@ void resnet50_Constant_float_cuda_Constant_168(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_13_0	type: float	shape: Shape{1, 1, 64, 64}
 void resnet50_Constant_float_cuda_Constant_13(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_13_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_13_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_13_0 failed.\n");
@@ -1831,7 +1831,7 @@ void resnet50_Constant_float_cuda_Constant_13(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_236_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_236(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_236_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_236_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_236_0 failed.\n");
@@ -1850,7 +1850,7 @@ void resnet50_Constant_float_cuda_Constant_236(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_61_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_61(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_61_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_61_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_61_0 failed.\n");
@@ -1869,7 +1869,7 @@ void resnet50_Constant_float_cuda_Constant_61(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_43_0	type: float	shape: Shape{1, 1, 256, 64}
 void resnet50_Constant_float_cuda_Constant_43(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_43_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_43_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_43_0 failed.\n");
@@ -1888,7 +1888,7 @@ void resnet50_Constant_float_cuda_Constant_43(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_120_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_120(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_120_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_120_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_120_0 failed.\n");
@@ -1907,7 +1907,7 @@ void resnet50_Constant_float_cuda_Constant_120(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_31_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_31(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_31_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_31_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_31_0 failed.\n");
@@ -1926,7 +1926,7 @@ void resnet50_Constant_float_cuda_Constant_31(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_66_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_66(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_66_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_66_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_66_0 failed.\n");
@@ -1945,7 +1945,7 @@ void resnet50_Constant_float_cuda_Constant_66(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_190_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_190(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_190_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_190_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_190_0 failed.\n");
@@ -1964,7 +1964,7 @@ void resnet50_Constant_float_cuda_Constant_190(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_25_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_25(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_25_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_25_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_25_0 failed.\n");
@@ -1983,7 +1983,7 @@ void resnet50_Constant_float_cuda_Constant_25(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_158_0	type: float	shape: Shape{1, 1, 1024, 256}
 void resnet50_Constant_float_cuda_Constant_158(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_158_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_158_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_158_0 failed.\n");
@@ -2002,7 +2002,7 @@ void resnet50_Constant_float_cuda_Constant_158(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_77_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_77(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_77_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_77_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_77_0 failed.\n");
@@ -2021,7 +2021,7 @@ void resnet50_Constant_float_cuda_Constant_77(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_95_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_95(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_95_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_95_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_95_0 failed.\n");
@@ -2040,7 +2040,7 @@ void resnet50_Constant_float_cuda_Constant_95(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_47_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_47(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_47_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_47_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_47_0 failed.\n");
@@ -2059,7 +2059,7 @@ void resnet50_Constant_float_cuda_Constant_47(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_46_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_46(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_46_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_46_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_46_0 failed.\n");
@@ -2078,7 +2078,7 @@ void resnet50_Constant_float_cuda_Constant_46(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_45_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_45(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_45_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_45_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_45_0 failed.\n");
@@ -2097,7 +2097,7 @@ void resnet50_Constant_float_cuda_Constant_45(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_198_0	type: float	shape: Shape{1, 1, 256, 1024}
 void resnet50_Constant_float_cuda_Constant_198(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_198_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_198_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_198_0 failed.\n");
@@ -2116,7 +2116,7 @@ void resnet50_Constant_float_cuda_Constant_198(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_48_0	type: float	shape: Shape{3, 3, 64, 64}
 void resnet50_Constant_float_cuda_Constant_48(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_48_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_48_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_48_0 failed.\n");
@@ -2135,7 +2135,7 @@ void resnet50_Constant_float_cuda_Constant_48(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_230_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_230(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_230_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_230_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_230_0 failed.\n");
@@ -2154,7 +2154,7 @@ void resnet50_Constant_float_cuda_Constant_230(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_224_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_224(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_224_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_224_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_224_0 failed.\n");
@@ -2173,7 +2173,7 @@ void resnet50_Constant_float_cuda_Constant_224(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_176_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_176(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_176_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_176_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_176_0 failed.\n");
@@ -2192,7 +2192,7 @@ void resnet50_Constant_float_cuda_Constant_176(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_68_0	type: float	shape: Shape{3, 3, 128, 128}
 void resnet50_Constant_float_cuda_Constant_68(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_68_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_68_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_68_0 failed.\n");
@@ -2211,7 +2211,7 @@ void resnet50_Constant_float_cuda_Constant_68(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_226_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_226(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_226_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_226_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_226_0 failed.\n");
@@ -2230,7 +2230,7 @@ void resnet50_Constant_float_cuda_Constant_226(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_33_0	type: float	shape: Shape{3, 3, 64, 64}
 void resnet50_Constant_float_cuda_Constant_33(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_33_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_33_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_33_0 failed.\n");
@@ -2249,7 +2249,7 @@ void resnet50_Constant_float_cuda_Constant_33(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_219_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_219(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_219_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_219_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_219_0 failed.\n");
@@ -2268,7 +2268,7 @@ void resnet50_Constant_float_cuda_Constant_219(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_152_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_152(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_152_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_152_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_152_0 failed.\n");
@@ -2287,7 +2287,7 @@ void resnet50_Constant_float_cuda_Constant_152(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_53_0	type: float	shape: Shape{1, 1, 64, 256}
 void resnet50_Constant_float_cuda_Constant_53(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_53_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_53_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_53_0 failed.\n");
@@ -2306,7 +2306,7 @@ void resnet50_Constant_float_cuda_Constant_53(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_185_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_185(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_185_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_185_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_185_0 failed.\n");
@@ -2325,7 +2325,7 @@ void resnet50_Constant_float_cuda_Constant_185(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_99_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_99(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_99_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_99_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_99_0 failed.\n");
@@ -2344,7 +2344,7 @@ void resnet50_Constant_float_cuda_Constant_99(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_134_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_134(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_134_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_134_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_134_0 failed.\n");
@@ -2363,7 +2363,7 @@ void resnet50_Constant_float_cuda_Constant_134(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_57_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_57(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_57_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_57_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_57_0 failed.\n");
@@ -2382,7 +2382,7 @@ void resnet50_Constant_float_cuda_Constant_57(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_197_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_197(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_197_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_197_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_197_0 failed.\n");
@@ -2401,7 +2401,7 @@ void resnet50_Constant_float_cuda_Constant_197(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_225_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_225(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_225_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_225_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_225_0 failed.\n");
@@ -2420,7 +2420,7 @@ void resnet50_Constant_float_cuda_Constant_225(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_233_0	type: float	shape: Shape{1, 1, 512, 2048}
 void resnet50_Constant_float_cuda_Constant_233(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_233_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_233_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_233_0 failed.\n");
@@ -2439,7 +2439,7 @@ void resnet50_Constant_float_cuda_Constant_233(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_223_0	type: float	shape: Shape{1, 1, 1024, 512}
 void resnet50_Constant_float_cuda_Constant_223(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_223_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_223_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_223_0 failed.\n");
@@ -2458,7 +2458,7 @@ void resnet50_Constant_float_cuda_Constant_223(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_234_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_234(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_234_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_234_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_234_0 failed.\n");
@@ -2477,7 +2477,7 @@ void resnet50_Constant_float_cuda_Constant_234(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_186_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_186(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_186_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_186_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_186_0 failed.\n");
@@ -2496,7 +2496,7 @@ void resnet50_Constant_float_cuda_Constant_186(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_188_0	type: float	shape: Shape{1, 1, 1024, 256}
 void resnet50_Constant_float_cuda_Constant_188(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_188_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_188_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_188_0 failed.\n");
@@ -2515,7 +2515,7 @@ void resnet50_Constant_float_cuda_Constant_188(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_214_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_214(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_214_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_214_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_214_0 failed.\n");
@@ -2534,7 +2534,7 @@ void resnet50_Constant_float_cuda_Constant_214(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_41_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_41(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_41_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_41_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_41_0 failed.\n");
@@ -2553,7 +2553,7 @@ void resnet50_Constant_float_cuda_Constant_41(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_222_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_222(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_222_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_222_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_222_0 failed.\n");
@@ -2572,7 +2572,7 @@ void resnet50_Constant_float_cuda_Constant_222(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_189_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_189(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_189_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_189_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_189_0 failed.\n");
@@ -2591,7 +2591,7 @@ void resnet50_Constant_float_cuda_Constant_189(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_183_0	type: float	shape: Shape{1, 1, 256, 1024}
 void resnet50_Constant_float_cuda_Constant_183(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_183_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_183_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_183_0 failed.\n");
@@ -2610,7 +2610,7 @@ void resnet50_Constant_float_cuda_Constant_183(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_242_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_242(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_242_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_242_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_242_0 failed.\n");
@@ -2629,7 +2629,7 @@ void resnet50_Constant_float_cuda_Constant_242(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_239_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_239(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_239_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_239_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_239_0 failed.\n");
@@ -2648,7 +2648,7 @@ void resnet50_Constant_float_cuda_Constant_239(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_133_0	type: float	shape: Shape{3, 3, 256, 256}
 void resnet50_Constant_float_cuda_Constant_133(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_133_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_133_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_133_0 failed.\n");
@@ -2667,7 +2667,7 @@ void resnet50_Constant_float_cuda_Constant_133(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_23_0	type: float	shape: Shape{1, 1, 64, 256}
 void resnet50_Constant_float_cuda_Constant_23(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_23_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_23_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_23_0 failed.\n");
@@ -2686,7 +2686,7 @@ void resnet50_Constant_float_cuda_Constant_23(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_267_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_267(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_267_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_267_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_267_0 failed.\n");
@@ -2705,7 +2705,7 @@ void resnet50_Constant_float_cuda_Constant_267(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_207_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_207(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_207_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_207_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_207_0 failed.\n");
@@ -2724,7 +2724,7 @@ void resnet50_Constant_float_cuda_Constant_207(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_78_0	type: float	shape: Shape{1, 1, 512, 128}
 void resnet50_Constant_float_cuda_Constant_78(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_78_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_78_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_78_0 failed.\n");
@@ -2743,7 +2743,7 @@ void resnet50_Constant_float_cuda_Constant_78(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_180_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_180(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_180_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_180_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_180_0 failed.\n");
@@ -2762,7 +2762,7 @@ void resnet50_Constant_float_cuda_Constant_180(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_247_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_247(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_247_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_247_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_247_0 failed.\n");
@@ -2781,7 +2781,7 @@ void resnet50_Constant_float_cuda_Constant_247(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_215_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_215(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_215_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_215_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_215_0 failed.\n");
@@ -2800,7 +2800,7 @@ void resnet50_Constant_float_cuda_Constant_215(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_202_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_202(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_202_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_202_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_202_0 failed.\n");
@@ -2819,7 +2819,7 @@ void resnet50_Constant_float_cuda_Constant_202(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_229_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_229(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_229_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_229_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_229_0 failed.\n");
@@ -2838,7 +2838,7 @@ void resnet50_Constant_float_cuda_Constant_229(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_241_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_241(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_241_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_241_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_241_0 failed.\n");
@@ -2857,7 +2857,7 @@ void resnet50_Constant_float_cuda_Constant_241(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_244_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_244(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_244_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_244_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_244_0 failed.\n");
@@ -2876,7 +2876,7 @@ void resnet50_Constant_float_cuda_Constant_244(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_126_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_126(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_126_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_126_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_126_0 failed.\n");
@@ -2895,7 +2895,7 @@ void resnet50_Constant_float_cuda_Constant_126(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_137_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_137(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_137_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_137_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_137_0 failed.\n");
@@ -2914,7 +2914,7 @@ void resnet50_Constant_float_cuda_Constant_137(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_107_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_107(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_107_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_107_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_107_0 failed.\n");
@@ -2933,7 +2933,7 @@ void resnet50_Constant_float_cuda_Constant_107(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_245_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_245(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_245_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_245_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_245_0 failed.\n");
@@ -2952,7 +2952,7 @@ void resnet50_Constant_float_cuda_Constant_245(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_248_0	type: float	shape: Shape{1, 1, 512, 2048}
 void resnet50_Constant_float_cuda_Constant_248(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_248_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_248_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_248_0 failed.\n");
@@ -2971,7 +2971,7 @@ void resnet50_Constant_float_cuda_Constant_248(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_266_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_266(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_266_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_266_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_266_0 failed.\n");
@@ -2990,7 +2990,7 @@ void resnet50_Constant_float_cuda_Constant_266(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_55_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_55(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_55_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_55_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_55_0 failed.\n");
@@ -3009,7 +3009,7 @@ void resnet50_Constant_float_cuda_Constant_55(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_170_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_170(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_170_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_170_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_170_0 failed.\n");
@@ -3028,7 +3028,7 @@ void resnet50_Constant_float_cuda_Constant_170(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_59_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_59(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_59_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_59_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_59_0 failed.\n");
@@ -3047,7 +3047,7 @@ void resnet50_Constant_float_cuda_Constant_59(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_270_0	type: float	shape: Shape{1001}
 void resnet50_Constant_float_cuda_Constant_270(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_270_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_270_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_270_0 failed.\n");
@@ -3066,7 +3066,7 @@ void resnet50_Constant_float_cuda_Constant_270(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_237_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_237(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_237_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_237_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_237_0 failed.\n");
@@ -3085,7 +3085,7 @@ void resnet50_Constant_float_cuda_Constant_237(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_71_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_71(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_71_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_71_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_71_0 failed.\n");
@@ -3104,7 +3104,7 @@ void resnet50_Constant_float_cuda_Constant_71(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_177_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_177(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_177_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_177_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_177_0 failed.\n");
@@ -3123,7 +3123,7 @@ void resnet50_Constant_float_cuda_Constant_177(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_22_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_22(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_22_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_22_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_22_0 failed.\n");
@@ -3142,7 +3142,7 @@ void resnet50_Constant_float_cuda_Constant_22(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_262_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_262(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_262_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_262_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_262_0 failed.\n");
@@ -3161,7 +3161,7 @@ void resnet50_Constant_float_cuda_Constant_262(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_254_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_254(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_254_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_254_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_254_0 failed.\n");
@@ -3180,7 +3180,7 @@ void resnet50_Constant_float_cuda_Constant_254(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_83_0	type: float	shape: Shape{3, 3, 128, 128}
 void resnet50_Constant_float_cuda_Constant_83(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_83_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_83_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_83_0 failed.\n");
@@ -3199,7 +3199,7 @@ void resnet50_Constant_float_cuda_Constant_83(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_218_0	type: float	shape: Shape{1, 1, 1024, 2048}
 void resnet50_Constant_float_cuda_Constant_218(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_218_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_218_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_218_0 failed.\n");
@@ -3218,7 +3218,7 @@ void resnet50_Constant_float_cuda_Constant_218(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_258_0	type: float	shape: Shape{3, 3, 512, 512}
 void resnet50_Constant_float_cuda_Constant_258(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_258_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_258_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_258_0 failed.\n");
@@ -3237,7 +3237,7 @@ void resnet50_Constant_float_cuda_Constant_258(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_249_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_249(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_249_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_249_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_249_0 failed.\n");
@@ -3256,7 +3256,7 @@ void resnet50_Constant_float_cuda_Constant_249(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_253_0	type: float	shape: Shape{1, 1, 2048, 512}
 void resnet50_Constant_float_cuda_Constant_253(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_253_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_253_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_253_0 failed.\n");
@@ -3275,7 +3275,7 @@ void resnet50_Constant_float_cuda_Constant_253(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_260_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_260(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_260_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_260_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_260_0 failed.\n");
@@ -3294,7 +3294,7 @@ void resnet50_Constant_float_cuda_Constant_260(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_269_0	type: float	shape: Shape{2048, 1001}
 void resnet50_Constant_float_cuda_Constant_269(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_269_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_269_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_269_0 failed.\n");
@@ -3313,7 +3313,7 @@ void resnet50_Constant_float_cuda_Constant_269(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_216_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_216(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_216_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_216_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_216_0 failed.\n");
@@ -3332,7 +3332,7 @@ void resnet50_Constant_float_cuda_Constant_216(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_227_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_227(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_227_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_227_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_227_0 failed.\n");
@@ -3351,7 +3351,7 @@ void resnet50_Constant_float_cuda_Constant_227(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_174_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_174(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_174_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_174_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_174_0 failed.\n");
@@ -3370,7 +3370,7 @@ void resnet50_Constant_float_cuda_Constant_174(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_217_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_217(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_217_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_217_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_217_0 failed.\n");
@@ -3389,7 +3389,7 @@ void resnet50_Constant_float_cuda_Constant_217(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_238_0	type: float	shape: Shape{1, 1, 2048, 512}
 void resnet50_Constant_float_cuda_Constant_238(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_238_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_238_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_238_0 failed.\n");
@@ -3408,7 +3408,7 @@ void resnet50_Constant_float_cuda_Constant_238(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_210_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_210(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_210_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_210_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_210_0 failed.\n");
@@ -3427,7 +3427,7 @@ void resnet50_Constant_float_cuda_Constant_210(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_232_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_232(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_232_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_232_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_232_0 failed.\n");
@@ -3446,7 +3446,7 @@ void resnet50_Constant_float_cuda_Constant_232(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_261_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_261(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_261_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_261_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_261_0 failed.\n");
@@ -3465,7 +3465,7 @@ void resnet50_Constant_float_cuda_Constant_261(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_187_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_187(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_187_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_187_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_187_0 failed.\n");
@@ -3484,7 +3484,7 @@ void resnet50_Constant_float_cuda_Constant_187(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_206_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_206(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_206_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_206_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_206_0 failed.\n");
@@ -3503,7 +3503,7 @@ void resnet50_Constant_float_cuda_Constant_206(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_200_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_200(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_200_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_200_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_200_0 failed.\n");
@@ -3522,7 +3522,7 @@ void resnet50_Constant_float_cuda_Constant_200(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_199_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_199(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_199_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_199_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_199_0 failed.\n");
@@ -3541,7 +3541,7 @@ void resnet50_Constant_float_cuda_Constant_199(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_201_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_201(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_201_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_201_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_201_0 failed.\n");
@@ -3560,7 +3560,7 @@ void resnet50_Constant_float_cuda_Constant_201(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_58_0	type: float	shape: Shape{1, 1, 256, 512}
 void resnet50_Constant_float_cuda_Constant_58(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_58_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_58_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_58_0 failed.\n");
@@ -3579,7 +3579,7 @@ void resnet50_Constant_float_cuda_Constant_58(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_211_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_211(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_211_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_211_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_211_0 failed.\n");
@@ -3598,7 +3598,7 @@ void resnet50_Constant_float_cuda_Constant_211(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_195_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_195(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_195_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_195_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_195_0 failed.\n");
@@ -3617,7 +3617,7 @@ void resnet50_Constant_float_cuda_Constant_195(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_243_0	type: float	shape: Shape{3, 3, 512, 512}
 void resnet50_Constant_float_cuda_Constant_243(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_243_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_243_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_243_0 failed.\n");
@@ -3636,7 +3636,7 @@ void resnet50_Constant_float_cuda_Constant_243(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_179_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_179(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_179_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_179_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_179_0 failed.\n");
@@ -3655,7 +3655,7 @@ void resnet50_Constant_float_cuda_Constant_179(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_184_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_184(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_184_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_184_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_184_0 failed.\n");
@@ -3674,7 +3674,7 @@ void resnet50_Constant_float_cuda_Constant_184(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_220_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_220(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_220_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_220_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_220_0 failed.\n");
@@ -3693,7 +3693,7 @@ void resnet50_Constant_float_cuda_Constant_220(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_194_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_194(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_194_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_194_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_194_0 failed.\n");
@@ -3712,7 +3712,7 @@ void resnet50_Constant_float_cuda_Constant_194(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_160_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_160(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_160_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_160_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_160_0 failed.\n");
@@ -3731,7 +3731,7 @@ void resnet50_Constant_float_cuda_Constant_160(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_257_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_257(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_257_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_257_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_257_0 failed.\n");
@@ -3750,7 +3750,7 @@ void resnet50_Constant_float_cuda_Constant_257(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_191_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_191(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_191_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_191_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_191_0 failed.\n");
@@ -3769,7 +3769,7 @@ void resnet50_Constant_float_cuda_Constant_191(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_204_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_204(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_204_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_204_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_204_0 failed.\n");
@@ -3788,7 +3788,7 @@ void resnet50_Constant_float_cuda_Constant_204(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_62_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_62(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_62_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_62_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_62_0 failed.\n");
@@ -3807,7 +3807,7 @@ void resnet50_Constant_float_cuda_Constant_62(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_252_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_252(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_252_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_252_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_252_0 failed.\n");
@@ -3826,7 +3826,7 @@ void resnet50_Constant_float_cuda_Constant_252(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_205_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_205(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_205_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_205_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_205_0 failed.\n");
@@ -3845,7 +3845,7 @@ void resnet50_Constant_float_cuda_Constant_205(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_29_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_29(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_29_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_29_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_29_0 failed.\n");
@@ -3864,7 +3864,7 @@ void resnet50_Constant_float_cuda_Constant_29(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_164_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_164(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_164_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_164_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_164_0 failed.\n");
@@ -3883,7 +3883,7 @@ void resnet50_Constant_float_cuda_Constant_164(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_181_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_181(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_181_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_181_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_181_0 failed.\n");
@@ -3902,7 +3902,7 @@ void resnet50_Constant_float_cuda_Constant_181(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_182_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_182(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_182_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_182_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_182_0 failed.\n");
@@ -3921,7 +3921,7 @@ void resnet50_Constant_float_cuda_Constant_182(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_231_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_231(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_231_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_231_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_231_0 failed.\n");
@@ -3940,7 +3940,7 @@ void resnet50_Constant_float_cuda_Constant_231(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_175_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_175(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_175_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_175_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_175_0 failed.\n");
@@ -3959,7 +3959,7 @@ void resnet50_Constant_float_cuda_Constant_175(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_24_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_24(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_24_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_24_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_24_0 failed.\n");
@@ -3978,7 +3978,7 @@ void resnet50_Constant_float_cuda_Constant_24(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_256_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_256(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_256_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_256_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_256_0 failed.\n");
@@ -3997,7 +3997,7 @@ void resnet50_Constant_float_cuda_Constant_256(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_172_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_172(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_172_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_172_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_172_0 failed.\n");
@@ -4016,7 +4016,7 @@ void resnet50_Constant_float_cuda_Constant_172(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_75_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_75(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_75_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_75_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_75_0 failed.\n");
@@ -4035,7 +4035,7 @@ void resnet50_Constant_float_cuda_Constant_75(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_37_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_37(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_37_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_37_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_37_0 failed.\n");
@@ -4054,7 +4054,7 @@ void resnet50_Constant_float_cuda_Constant_37(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_9_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_9(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_9_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_9_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_9_0 failed.\n");
@@ -4073,7 +4073,7 @@ void resnet50_Constant_float_cuda_Constant_9(cudaStream_t stream, float* output0
 //	- name: resnet50_Constant_250_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_250(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_250_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_250_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_250_0 failed.\n");
@@ -4092,7 +4092,7 @@ void resnet50_Constant_float_cuda_Constant_250(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_65_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_65(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_65_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_65_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_65_0 failed.\n");
@@ -4111,7 +4111,7 @@ void resnet50_Constant_float_cuda_Constant_65(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_49_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_49(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_49_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_49_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_49_0 failed.\n");
@@ -4130,7 +4130,7 @@ void resnet50_Constant_float_cuda_Constant_49(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_221_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_221(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_221_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_221_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_221_0 failed.\n");
@@ -4149,7 +4149,7 @@ void resnet50_Constant_float_cuda_Constant_221(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_8_0	type: float	shape: Shape{1, 1, 64, 256}
 void resnet50_Constant_float_cuda_Constant_8(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_8_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_8_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_8_0 failed.\n");
@@ -4168,7 +4168,7 @@ void resnet50_Constant_float_cuda_Constant_8(cudaStream_t stream, float* output0
 //	- name: resnet50_Constant_89_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_89(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_89_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_89_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_89_0 failed.\n");
@@ -4187,7 +4187,7 @@ void resnet50_Constant_float_cuda_Constant_89(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_156_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_156(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_156_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_156_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_156_0 failed.\n");
@@ -4206,7 +4206,7 @@ void resnet50_Constant_float_cuda_Constant_156(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_35_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_35(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_35_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_35_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_35_0 failed.\n");
@@ -4225,7 +4225,7 @@ void resnet50_Constant_float_cuda_Constant_35(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_3_0	type: float	shape: Shape{7, 7, 3, 64}
 void resnet50_Constant_float_cuda_Constant_3(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_3_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_3_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_3_0 failed.\n");
@@ -4244,7 +4244,7 @@ void resnet50_Constant_float_cuda_Constant_3(cudaStream_t stream, float* output0
 //	- name: resnet50_Constant_54_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_54(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_54_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_54_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_54_0 failed.\n");
@@ -4263,7 +4263,7 @@ void resnet50_Constant_float_cuda_Constant_54(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_30_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_30(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_30_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_30_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_30_0 failed.\n");
@@ -4282,7 +4282,7 @@ void resnet50_Constant_float_cuda_Constant_30(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_143_0	type: float	shape: Shape{1, 1, 1024, 256}
 void resnet50_Constant_float_cuda_Constant_143(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_143_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_143_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_143_0 failed.\n");
@@ -4301,7 +4301,7 @@ void resnet50_Constant_float_cuda_Constant_143(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_212_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_212(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_212_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_212_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_212_0 failed.\n");
@@ -4320,7 +4320,7 @@ void resnet50_Constant_float_cuda_Constant_212(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_147_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_147(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_147_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_147_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_147_0 failed.\n");
@@ -4339,7 +4339,7 @@ void resnet50_Constant_float_cuda_Constant_147(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_74_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_74(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_74_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_74_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_74_0 failed.\n");
@@ -4358,7 +4358,7 @@ void resnet50_Constant_float_cuda_Constant_74(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_141_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_141(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_141_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_141_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_141_0 failed.\n");
@@ -4377,7 +4377,7 @@ void resnet50_Constant_float_cuda_Constant_141(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_150_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_150(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_150_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_150_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_150_0 failed.\n");
@@ -4396,7 +4396,7 @@ void resnet50_Constant_float_cuda_Constant_150(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_81_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_81(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_81_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_81_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_81_0 failed.\n");
@@ -4415,7 +4415,7 @@ void resnet50_Constant_float_cuda_Constant_81(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_69_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_69(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_69_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_69_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_69_0 failed.\n");
@@ -4434,7 +4434,7 @@ void resnet50_Constant_float_cuda_Constant_69(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_85_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_85(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_85_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_85_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_85_0 failed.\n");
@@ -4453,7 +4453,7 @@ void resnet50_Constant_float_cuda_Constant_85(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_5_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_5(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_5_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_5_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_5_0 failed.\n");
@@ -4472,7 +4472,7 @@ void resnet50_Constant_float_cuda_Constant_5(cudaStream_t stream, float* output0
 //	- name: resnet50_Constant_272_0	type: float	shape: Shape{}
 void resnet50_Constant_float_cuda_Constant_272(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_272_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_272_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_272_0 failed.\n");
@@ -4491,7 +4491,7 @@ void resnet50_Constant_float_cuda_Constant_272(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_80_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_80(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_80_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_80_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_80_0 failed.\n");
@@ -4510,7 +4510,7 @@ void resnet50_Constant_float_cuda_Constant_80(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_140_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_140(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_140_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_140_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_140_0 failed.\n");
@@ -4529,7 +4529,7 @@ void resnet50_Constant_float_cuda_Constant_140(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_86_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_86(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_86_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_86_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_86_0 failed.\n");
@@ -4548,7 +4548,7 @@ void resnet50_Constant_float_cuda_Constant_86(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_171_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_171(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_171_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_171_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_171_0 failed.\n");
@@ -4567,7 +4567,7 @@ void resnet50_Constant_float_cuda_Constant_171(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_84_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_84(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_84_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_84_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_84_0 failed.\n");
@@ -4586,7 +4586,7 @@ void resnet50_Constant_float_cuda_Constant_84(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_88_0	type: float	shape: Shape{1, 1, 128, 512}
 void resnet50_Constant_float_cuda_Constant_88(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_88_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_88_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_88_0 failed.\n");
@@ -4605,7 +4605,7 @@ void resnet50_Constant_float_cuda_Constant_88(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_92_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_92(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_92_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_92_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_92_0 failed.\n");
@@ -4624,7 +4624,7 @@ void resnet50_Constant_float_cuda_Constant_92(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_265_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_265(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_265_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_265_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_265_0 failed.\n");
@@ -4643,7 +4643,7 @@ void resnet50_Constant_float_cuda_Constant_265(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_90_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_90(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_90_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_90_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_90_0 failed.\n");
@@ -4659,18 +4659,18 @@ void resnet50_Constant_float_cuda_Constant_90(cudaStream_t stream, float* output
 // Description:	Constant
 // Input:
 // Output:
-//	- name: resnet50_Constant_500_0	type: float	shape: Shape{32, 2048}
+//	- name: resnet50_Constant_500_0	type: float	shape: Shape{128, 2048}
 void resnet50_Constant_float_cuda_Constant_500(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_500_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_500_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_500_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[262144];
-    bin_file.read(tmp_mem, 262144);
-    cudaMemcpyAsync(output0, tmp_mem, 262144, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[1048576];
+    bin_file.read(tmp_mem, 1048576);
+    cudaMemcpyAsync(output0, tmp_mem, 1048576, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -4681,7 +4681,7 @@ void resnet50_Constant_float_cuda_Constant_500(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_263_0	type: float	shape: Shape{1, 1, 512, 2048}
 void resnet50_Constant_float_cuda_Constant_263(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_263_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_263_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_263_0 failed.\n");
@@ -4700,7 +4700,7 @@ void resnet50_Constant_float_cuda_Constant_263(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_93_0	type: float	shape: Shape{1, 1, 512, 128}
 void resnet50_Constant_float_cuda_Constant_93(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_93_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_93_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_93_0 failed.\n");
@@ -4719,7 +4719,7 @@ void resnet50_Constant_float_cuda_Constant_93(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_97_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_97(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_97_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_97_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_97_0 failed.\n");
@@ -4738,7 +4738,7 @@ void resnet50_Constant_float_cuda_Constant_97(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_163_0	type: float	shape: Shape{3, 3, 256, 256}
 void resnet50_Constant_float_cuda_Constant_163(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_163_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_163_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_163_0 failed.\n");
@@ -4757,7 +4757,7 @@ void resnet50_Constant_float_cuda_Constant_163(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_96_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_96(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_96_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_96_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_96_0 failed.\n");
@@ -4776,7 +4776,7 @@ void resnet50_Constant_float_cuda_Constant_96(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_166_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_166(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_166_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_166_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_166_0 failed.\n");
@@ -4795,7 +4795,7 @@ void resnet50_Constant_float_cuda_Constant_166(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_102_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_102(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_102_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_102_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_102_0 failed.\n");
@@ -4814,7 +4814,7 @@ void resnet50_Constant_float_cuda_Constant_102(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_87_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_87(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_87_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_87_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_87_0 failed.\n");
@@ -4833,7 +4833,7 @@ void resnet50_Constant_float_cuda_Constant_87(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_136_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_136(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_136_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_136_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_136_0 failed.\n");
@@ -4852,7 +4852,7 @@ void resnet50_Constant_float_cuda_Constant_136(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_167_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_167(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_167_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_167_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_167_0 failed.\n");
@@ -4871,7 +4871,7 @@ void resnet50_Constant_float_cuda_Constant_167(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_101_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_101(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_101_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_101_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_101_0 failed.\n");
@@ -4890,7 +4890,7 @@ void resnet50_Constant_float_cuda_Constant_101(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_264_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_264(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_264_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_264_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_264_0 failed.\n");
@@ -4909,7 +4909,7 @@ void resnet50_Constant_float_cuda_Constant_264(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_67_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_67(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_67_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_67_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_67_0 failed.\n");
@@ -4928,7 +4928,7 @@ void resnet50_Constant_float_cuda_Constant_67(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_100_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_100(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_100_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_100_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_100_0 failed.\n");
@@ -4947,7 +4947,7 @@ void resnet50_Constant_float_cuda_Constant_100(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_103_0	type: float	shape: Shape{1, 1, 128, 512}
 void resnet50_Constant_float_cuda_Constant_103(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_103_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_103_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_103_0 failed.\n");
@@ -4966,7 +4966,7 @@ void resnet50_Constant_float_cuda_Constant_103(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_208_0	type: float	shape: Shape{3, 3, 256, 256}
 void resnet50_Constant_float_cuda_Constant_208(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_208_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_208_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_208_0 failed.\n");
@@ -4985,7 +4985,7 @@ void resnet50_Constant_float_cuda_Constant_208(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_104_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_104(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_104_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_104_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_104_0 failed.\n");
@@ -5004,7 +5004,7 @@ void resnet50_Constant_float_cuda_Constant_104(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_228_0	type: float	shape: Shape{3, 3, 512, 512}
 void resnet50_Constant_float_cuda_Constant_228(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_228_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_228_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_228_0 failed.\n");
@@ -5023,7 +5023,7 @@ void resnet50_Constant_float_cuda_Constant_228(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_28_0	type: float	shape: Shape{1, 1, 256, 64}
 void resnet50_Constant_float_cuda_Constant_28(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_28_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_28_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_28_0 failed.\n");
@@ -5042,7 +5042,7 @@ void resnet50_Constant_float_cuda_Constant_28(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_105_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_105(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_105_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_105_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_105_0 failed.\n");
@@ -5061,7 +5061,7 @@ void resnet50_Constant_float_cuda_Constant_105(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_108_0	type: float	shape: Shape{1, 1, 512, 128}
 void resnet50_Constant_float_cuda_Constant_108(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_108_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_108_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_108_0 failed.\n");
@@ -5080,7 +5080,7 @@ void resnet50_Constant_float_cuda_Constant_108(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_240_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_240(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_240_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_240_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_240_0 failed.\n");
@@ -5099,7 +5099,7 @@ void resnet50_Constant_float_cuda_Constant_240(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_113_0	type: float	shape: Shape{3, 3, 128, 128}
 void resnet50_Constant_float_cuda_Constant_113(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_113_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_113_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_113_0 failed.\n");
@@ -5118,7 +5118,7 @@ void resnet50_Constant_float_cuda_Constant_113(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_26_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_26(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_26_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_26_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_26_0 failed.\n");
@@ -5137,7 +5137,7 @@ void resnet50_Constant_float_cuda_Constant_26(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_118_0	type: float	shape: Shape{1, 1, 128, 512}
 void resnet50_Constant_float_cuda_Constant_118(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_118_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_118_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_118_0 failed.\n");
@@ -5156,7 +5156,7 @@ void resnet50_Constant_float_cuda_Constant_118(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_112_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_112(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_112_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_112_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_112_0 failed.\n");
@@ -5175,7 +5175,7 @@ void resnet50_Constant_float_cuda_Constant_112(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_106_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_106(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_106_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_106_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_106_0 failed.\n");
@@ -5194,7 +5194,7 @@ void resnet50_Constant_float_cuda_Constant_106(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_121_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_121(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_121_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_121_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_121_0 failed.\n");
@@ -5213,7 +5213,7 @@ void resnet50_Constant_float_cuda_Constant_121(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_111_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_111(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_111_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_111_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_111_0 failed.\n");
@@ -5232,7 +5232,7 @@ void resnet50_Constant_float_cuda_Constant_111(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_109_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_109(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_109_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_109_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_109_0 failed.\n");
@@ -5251,7 +5251,7 @@ void resnet50_Constant_float_cuda_Constant_109(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_154_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_154(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_154_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_154_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_154_0 failed.\n");
@@ -5270,7 +5270,7 @@ void resnet50_Constant_float_cuda_Constant_154(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_117_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_117(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_117_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_117_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_117_0 failed.\n");
@@ -5289,7 +5289,7 @@ void resnet50_Constant_float_cuda_Constant_117(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_116_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_116(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_116_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_116_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_116_0 failed.\n");
@@ -5308,7 +5308,7 @@ void resnet50_Constant_float_cuda_Constant_116(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_114_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_114(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_114_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_114_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_114_0 failed.\n");
@@ -5327,7 +5327,7 @@ void resnet50_Constant_float_cuda_Constant_114(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_52_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_52(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_52_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_52_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_52_0 failed.\n");
@@ -5346,7 +5346,7 @@ void resnet50_Constant_float_cuda_Constant_52(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_119_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_119(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_119_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_119_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_119_0 failed.\n");
@@ -5365,7 +5365,7 @@ void resnet50_Constant_float_cuda_Constant_119(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_115_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_115(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_115_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_115_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_115_0 failed.\n");
@@ -5384,7 +5384,7 @@ void resnet50_Constant_float_cuda_Constant_115(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_142_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_142(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_142_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_142_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_142_0 failed.\n");
@@ -5403,7 +5403,7 @@ void resnet50_Constant_float_cuda_Constant_142(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_122_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_122(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_122_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_122_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_122_0 failed.\n");
@@ -5422,7 +5422,7 @@ void resnet50_Constant_float_cuda_Constant_122(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_32_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_32(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_32_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_32_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_32_0 failed.\n");
@@ -5441,7 +5441,7 @@ void resnet50_Constant_float_cuda_Constant_32(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_128_0	type: float	shape: Shape{1, 1, 512, 256}
 void resnet50_Constant_float_cuda_Constant_128(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_128_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_128_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_128_0 failed.\n");
@@ -5460,7 +5460,7 @@ void resnet50_Constant_float_cuda_Constant_128(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_209_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_209(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_209_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_209_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_209_0 failed.\n");
@@ -5479,7 +5479,7 @@ void resnet50_Constant_float_cuda_Constant_209(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_159_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_159(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_159_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_159_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_159_0 failed.\n");
@@ -5498,7 +5498,7 @@ void resnet50_Constant_float_cuda_Constant_159(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_131_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_131(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_131_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_131_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_131_0 failed.\n");
@@ -5517,7 +5517,7 @@ void resnet50_Constant_float_cuda_Constant_131(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_255_0	type: float	shape: Shape{512}
 void resnet50_Constant_float_cuda_Constant_255(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_255_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_255_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_255_0 failed.\n");
@@ -5536,7 +5536,7 @@ void resnet50_Constant_float_cuda_Constant_255(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_173_0	type: float	shape: Shape{1, 1, 1024, 256}
 void resnet50_Constant_float_cuda_Constant_173(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_173_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_173_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_173_0 failed.\n");
@@ -5555,7 +5555,7 @@ void resnet50_Constant_float_cuda_Constant_173(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_130_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_130(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_130_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_130_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_130_0 failed.\n");
@@ -5574,7 +5574,7 @@ void resnet50_Constant_float_cuda_Constant_130(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_138_0	type: float	shape: Shape{1, 1, 256, 1024}
 void resnet50_Constant_float_cuda_Constant_138(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_138_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_138_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_138_0 failed.\n");
@@ -5593,7 +5593,7 @@ void resnet50_Constant_float_cuda_Constant_138(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_193_0	type: float	shape: Shape{3, 3, 256, 256}
 void resnet50_Constant_float_cuda_Constant_193(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_193_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_193_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_193_0 failed.\n");
@@ -5612,7 +5612,7 @@ void resnet50_Constant_float_cuda_Constant_193(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_139_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_139(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_139_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_139_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_139_0 failed.\n");
@@ -5631,7 +5631,7 @@ void resnet50_Constant_float_cuda_Constant_139(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_251_0	type: float	shape: Shape{2048}
 void resnet50_Constant_float_cuda_Constant_251(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_251_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_251_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_251_0 failed.\n");
@@ -5650,7 +5650,7 @@ void resnet50_Constant_float_cuda_Constant_251(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_79_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_79(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_79_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_79_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_79_0 failed.\n");
@@ -5669,7 +5669,7 @@ void resnet50_Constant_float_cuda_Constant_79(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_127_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_127(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_127_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_127_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_127_0 failed.\n");
@@ -5688,7 +5688,7 @@ void resnet50_Constant_float_cuda_Constant_127(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_124_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_124(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_124_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_124_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_124_0 failed.\n");
@@ -5707,7 +5707,7 @@ void resnet50_Constant_float_cuda_Constant_124(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_63_0	type: float	shape: Shape{1, 1, 256, 128}
 void resnet50_Constant_float_cuda_Constant_63(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_63_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_63_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_63_0 failed.\n");
@@ -5726,7 +5726,7 @@ void resnet50_Constant_float_cuda_Constant_63(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_98_0	type: float	shape: Shape{3, 3, 128, 128}
 void resnet50_Constant_float_cuda_Constant_98(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_98_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_98_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_98_0 failed.\n");
@@ -5745,7 +5745,7 @@ void resnet50_Constant_float_cuda_Constant_98(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_110_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_110(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_110_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_110_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_110_0 failed.\n");
@@ -5764,7 +5764,7 @@ void resnet50_Constant_float_cuda_Constant_110(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_146_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_146(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_146_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_146_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_146_0 failed.\n");
@@ -5783,7 +5783,7 @@ void resnet50_Constant_float_cuda_Constant_146(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_56_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_56(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_56_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_56_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_56_0 failed.\n");
@@ -5802,7 +5802,7 @@ void resnet50_Constant_float_cuda_Constant_56(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_144_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_144(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_144_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_144_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_144_0 failed.\n");
@@ -5821,7 +5821,7 @@ void resnet50_Constant_float_cuda_Constant_144(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_145_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_145(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_145_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_145_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_145_0 failed.\n");
@@ -5840,7 +5840,7 @@ void resnet50_Constant_float_cuda_Constant_145(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_132_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_132(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_132_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_132_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_132_0 failed.\n");
@@ -5859,7 +5859,7 @@ void resnet50_Constant_float_cuda_Constant_132(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_148_0	type: float	shape: Shape{3, 3, 256, 256}
 void resnet50_Constant_float_cuda_Constant_148(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_148_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_148_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_148_0 failed.\n");
@@ -5878,7 +5878,7 @@ void resnet50_Constant_float_cuda_Constant_148(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_151_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_151(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_151_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_151_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_151_0 failed.\n");
@@ -5897,7 +5897,7 @@ void resnet50_Constant_float_cuda_Constant_151(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_149_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_149(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_149_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_149_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_149_0 failed.\n");
@@ -5916,7 +5916,7 @@ void resnet50_Constant_float_cuda_Constant_149(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_18_0	type: float	shape: Shape{3, 3, 64, 64}
 void resnet50_Constant_float_cuda_Constant_18(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_18_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_18_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_18_0 failed.\n");
@@ -5935,7 +5935,7 @@ void resnet50_Constant_float_cuda_Constant_18(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_157_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_157(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_157_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_157_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_157_0 failed.\n");
@@ -5954,7 +5954,7 @@ void resnet50_Constant_float_cuda_Constant_157(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_155_0	type: float	shape: Shape{1024}
 void resnet50_Constant_float_cuda_Constant_155(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_155_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_155_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_155_0 failed.\n");
@@ -5973,7 +5973,7 @@ void resnet50_Constant_float_cuda_Constant_155(cudaStream_t stream, float* outpu
 //	- name: resnet50_Constant_72_0	type: float	shape: Shape{128}
 void resnet50_Constant_float_cuda_Constant_72(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_72_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_72_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_72_0 failed.\n");
@@ -5992,7 +5992,7 @@ void resnet50_Constant_float_cuda_Constant_72(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_16_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_16(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_16_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_16_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_16_0 failed.\n");
@@ -6011,7 +6011,7 @@ void resnet50_Constant_float_cuda_Constant_16(cudaStream_t stream, float* output
 //	- name: resnet50_Constant_7_0	type: float	shape: Shape{64}
 void resnet50_Constant_float_cuda_Constant_7(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_7_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_7_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_7_0 failed.\n");
@@ -6030,7 +6030,7 @@ void resnet50_Constant_float_cuda_Constant_7(cudaStream_t stream, float* output0
 //	- name: resnet50_Constant_161_0	type: float	shape: Shape{256}
 void resnet50_Constant_float_cuda_Constant_161(cudaStream_t stream, float* output0)
 {
-    std::ifstream bin_file("/home/jxdeng/workspace/tacker/runtime/dnn/resnet50/Constant/Constant_161_0.bin" , std::ios::in | std::ios::binary);
+    std::ifstream bin_file("../dnn/resnet50/Constant/Constant_161_0.bin" , std::ios::in | std::ios::binary);
     if(bin_file.fail())
     {
     	printf("Load resnet50_Constant_161_0 failed.\n");
@@ -6090,11 +6090,11 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_468_Call(const dim3 &grids
 // Input:
 //	- name: resnet50_Constant_4_0	type: float	shape: Shape{64}
 //	- name: resnet50_Constant_5_0	type: float	shape: Shape{64}
-//	- name: resnet50_Convolution_275_0	type: float	shape: Shape{32, 64, 112, 112}
+//	- name: resnet50_Convolution_275_0	type: float	shape: Shape{128, 64, 112, 112}
 //	- name: resnet50_Constant_6_0	type: float	shape: Shape{64}
 //	- name: resnet50_Constant_7_0	type: float	shape: Shape{64}
 // Output:
-//	- name: resnet50_BatchNormInference_276_0	type: float	shape: Shape{32, 64, 112, 112}
+//	- name: resnet50_BatchNormInference_276_0	type: float	shape: Shape{128, 64, 112, 112}
 extern "C" __launch_bounds__(512) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 112 * 112;
@@ -6112,10 +6112,10 @@ extern void resnet50_BatchNormInference_float_float_float_float_float_float_cuda
 // Node name:	Divide_501
 // Description:	Divide
 // Input:
-//	- name: resnet50_Sum_499_0	type: float	shape: Shape{32, 2048}
-//	- name: resnet50_Constant_500_0	type: float	shape: Shape{32, 2048}
+//	- name: resnet50_Sum_499_0	type: float	shape: Shape{128, 2048}
+//	- name: resnet50_Constant_500_0	type: float	shape: Shape{128, 2048}
 // Output:
-//	- name: resnet50_Divide_501_0	type: float	shape: Shape{32, 2048}
+//	- name: resnet50_Divide_501_0	type: float	shape: Shape{128, 2048}
 extern "C" __launch_bounds__(512) __global__ void resnet50_Divide_float_float_float_cuda_Divide_501(float* input0, float* input1, float* output0)
 {
     output0[blockIdx.x * 512 + threadIdx.x] = fdividef(input0[blockIdx.x * 512 + threadIdx.x], input1[blockIdx.x * 512 + threadIdx.x]);
@@ -6127,18 +6127,18 @@ extern void resnet50_Divide_float_float_float_cuda_Divide_501_Call(const dim3 &g
 // Node name:	Convolution_291
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_289_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_Relu_289_0	type: float	shape: Shape{128, 64, 56, 56}
 //	- name: resnet50_Reshape_290_0	type: float	shape: Shape{256, 64, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_291_0	type: float	shape: Shape{32, 256, 56, 56}
+//	- name: resnet50_Convolution_291_0	type: float	shape: Shape{128, 256, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_291(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 64, 1, 1));
@@ -6146,7 +6146,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_291(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -6193,18 +6193,18 @@ void Convolution_float_float_float_cuda_lib_Convolution_291(cudnnHandle_t cudnn_
 // Node name:	Convolution_324
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_320_0	type: float	shape: Shape{32, 256, 56, 56}
+//	- name: resnet50_Relu_320_0	type: float	shape: Shape{128, 256, 56, 56}
 //	- name: resnet50_Reshape_323_0	type: float	shape: Shape{128, 256, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_324_0	type: float	shape: Shape{32, 128, 28, 28}
+//	- name: resnet50_Convolution_324_0	type: float	shape: Shape{128, 128, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_324(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 256, 1, 1));
@@ -6212,7 +6212,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_324(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -6259,10 +6259,10 @@ void Convolution_float_float_float_cuda_lib_Convolution_324(cudnnHandle_t cudnn_
 
 extern "C" void resnet50_cuda_init()
 {
-// total memory:462438144
+// total memory:1542209280
 
-CUDA_SAFE_CALL(cudaMalloc((void**)&resnet50_group_persist_CUDA_GPU0_allocator_memory_pool,102711040));
-CUDA_SAFE_CALL(cudaMemset((void*)resnet50_group_persist_CUDA_GPU0_allocator_memory_pool, 0, 102711040));
+CUDA_SAFE_CALL(cudaMalloc((void**)&resnet50_group_persist_CUDA_GPU0_allocator_memory_pool,103497472));
+CUDA_SAFE_CALL(cudaMemset((void*)resnet50_group_persist_CUDA_GPU0_allocator_memory_pool, 0, 103497472));
 resnet50_Constant_272_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Constant_3_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+64);
 resnet50_Constant_7_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+37696);
@@ -6530,226 +6530,226 @@ resnet50_Constant_266_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_me
 resnet50_Constant_264_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+94228288);
 resnet50_Constant_265_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+94236480);
 resnet50_Constant_500_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+94244672);
-resnet50_Constant_269_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+94506816);
-resnet50_Constant_270_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+102707008);
+resnet50_Constant_269_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+95293248);
+resnet50_Constant_270_0 = (float*)(resnet50_group_persist_CUDA_GPU0_allocator_memory_pool+103493440);
 
-CUDA_SAFE_CALL(cudaMalloc((void**)&resnet50_group_0_CUDA_GPU0_allocator_memory_pool,359727104));
-CUDA_SAFE_CALL(cudaMemset((void*)resnet50_group_0_CUDA_GPU0_allocator_memory_pool, 0, 359727104));
+CUDA_SAFE_CALL(cudaMalloc((void**)&resnet50_group_0_CUDA_GPU0_allocator_memory_pool,1438711808));
+CUDA_SAFE_CALL(cudaMemset((void*)resnet50_group_0_CUDA_GPU0_allocator_memory_pool, 0, 1438711808));
 resnet50_Reshape_271_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Pad_273_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+19267584);
+resnet50_Pad_273_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+77070336);
 resnet50_Reshape_274_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_275_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+39581184);
-resnet50_BatchNormInference_276_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+142341632);
-resnet50_Relu_277_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+142341632);
+resnet50_Convolution_275_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+158324736);
+resnet50_BatchNormInference_276_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+569366528);
+resnet50_Relu_277_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+569366528);
 resnet50_MaxPool_278_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_281_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Convolution_282_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25706496);
-resnet50_BatchNormInference_284_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51396608);
-resnet50_Relu_285_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51396608);
-resnet50_Reshape_286_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Convolution_287_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+77086720);
-resnet50_BatchNormInference_288_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Relu_289_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Reshape_290_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Convolution_291_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51445760);
-resnet50_BatchNormInference_292_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+154206208);
-resnet50_Reshape_279_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Convolution_280_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25755648);
-resnet50_BatchNormInference_283_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+256966656);
+resnet50_Reshape_281_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_282_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102776832);
+resnet50_BatchNormInference_284_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205537280);
+resnet50_Relu_285_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205537280);
+resnet50_Reshape_286_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_287_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+308297728);
+resnet50_BatchNormInference_288_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Relu_289_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Reshape_290_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Convolution_291_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205586432);
+resnet50_BatchNormInference_292_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+616628224);
+resnet50_Reshape_279_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_280_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102825984);
+resnet50_BatchNormInference_283_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+1027670016);
 resnet50_Relu_294_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_295_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-resnet50_Convolution_296_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102825984);
-resnet50_BatchNormInference_297_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+128516096);
-resnet50_Relu_298_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+128516096);
-resnet50_Reshape_299_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-resnet50_Convolution_300_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+154206208);
-resnet50_BatchNormInference_301_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-resnet50_Relu_302_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-resnet50_Reshape_303_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+128450560);
-resnet50_Convolution_304_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+128516096);
-resnet50_BatchNormInference_305_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+231276544);
-resnet50_Relu_307_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Reshape_295_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+411041792);
+resnet50_Convolution_296_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+411107328);
+resnet50_BatchNormInference_297_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+513867776);
+resnet50_Relu_298_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+513867776);
+resnet50_Reshape_299_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+411041792);
+resnet50_Convolution_300_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+616628224);
+resnet50_BatchNormInference_301_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+411041792);
+resnet50_Relu_302_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+411041792);
+resnet50_Reshape_303_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+513802240);
+resnet50_Convolution_304_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+513867776);
+resnet50_BatchNormInference_305_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+924909568);
+resnet50_Relu_307_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+411041792);
 resnet50_Reshape_308_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_309_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+65536);
-resnet50_BatchNormInference_310_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25755648);
-resnet50_Relu_311_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25755648);
+resnet50_BatchNormInference_310_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102825984);
+resnet50_Relu_311_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102825984);
 resnet50_Reshape_312_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_313_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51445760);
+resnet50_Convolution_313_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205586432);
 resnet50_BatchNormInference_314_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_315_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_316_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Convolution_317_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Reshape_316_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_317_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+822083584);
 resnet50_BatchNormInference_318_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_320_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Relu_320_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+822083584);
 resnet50_Reshape_323_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_324_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+131072);
-resnet50_BatchNormInference_326_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12976128);
-resnet50_Relu_327_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12976128);
+resnet50_BatchNormInference_326_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51511296);
+resnet50_Relu_327_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51511296);
 resnet50_Reshape_328_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_329_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25821184);
+resnet50_Convolution_329_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102891520);
 resnet50_BatchNormInference_330_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_331_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_332_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12845056);
-resnet50_Convolution_333_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13107200);
-resnet50_BatchNormInference_334_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+64487424);
+resnet50_Reshape_332_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Convolution_333_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51642368);
+resnet50_BatchNormInference_334_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+257163264);
 resnet50_Reshape_321_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_322_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+524288);
-resnet50_BatchNormInference_325_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+115867648);
+resnet50_BatchNormInference_325_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+462684160);
 resnet50_Relu_336_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_337_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Convolution_338_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51642368);
-resnet50_BatchNormInference_339_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+64487424);
-resnet50_Relu_340_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+64487424);
-resnet50_Reshape_341_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Convolution_342_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+77332480);
-resnet50_BatchNormInference_343_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Relu_344_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Reshape_345_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+64225280);
-resnet50_Convolution_346_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+64487424);
-resnet50_BatchNormInference_347_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+115867648);
-resnet50_Relu_349_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Reshape_337_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Convolution_338_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205783040);
+resnet50_BatchNormInference_339_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+257163264);
+resnet50_Relu_340_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+257163264);
+resnet50_Reshape_341_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Convolution_342_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+308543488);
+resnet50_BatchNormInference_343_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Relu_344_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Reshape_345_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+256901120);
+resnet50_Convolution_346_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+257163264);
+resnet50_BatchNormInference_347_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+462684160);
+resnet50_Relu_349_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
 resnet50_Reshape_350_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_351_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+262144);
-resnet50_BatchNormInference_352_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13107200);
-resnet50_Relu_353_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13107200);
+resnet50_BatchNormInference_352_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51642368);
+resnet50_Relu_353_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51642368);
 resnet50_Reshape_354_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_355_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25952256);
+resnet50_Convolution_355_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+103022592);
 resnet50_BatchNormInference_356_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_357_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_358_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12845056);
-resnet50_Convolution_359_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Reshape_358_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Convolution_359_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+411041792);
 resnet50_BatchNormInference_360_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_362_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Relu_362_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+411041792);
 resnet50_Reshape_363_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_364_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+262144);
-resnet50_BatchNormInference_365_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13107200);
-resnet50_Relu_366_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13107200);
+resnet50_BatchNormInference_365_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51642368);
+resnet50_Relu_366_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51642368);
 resnet50_Reshape_367_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_368_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25952256);
+resnet50_Convolution_368_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+103022592);
 resnet50_BatchNormInference_369_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_370_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_371_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12845056);
-resnet50_Convolution_372_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13107200);
-resnet50_BatchNormInference_373_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+154140672);
+resnet50_Reshape_371_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Convolution_372_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51642368);
+resnet50_BatchNormInference_373_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+616562688);
 resnet50_Relu_375_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_378_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Convolution_379_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51904512);
-resnet50_BatchNormInference_381_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+58327040);
-resnet50_Relu_382_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+58327040);
-resnet50_Reshape_383_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Convolution_384_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+64749568);
-resnet50_BatchNormInference_385_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Relu_386_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Reshape_387_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+57802752);
-resnet50_Convolution_388_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+58851328);
-resnet50_BatchNormInference_389_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+84541440);
-resnet50_Reshape_376_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-resnet50_Convolution_377_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+53477376);
+resnet50_Reshape_378_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Convolution_379_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+206045184);
+resnet50_BatchNormInference_381_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+231735296);
+resnet50_Relu_382_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+231735296);
+resnet50_Reshape_383_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Convolution_384_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+257425408);
+resnet50_BatchNormInference_385_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Relu_386_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Reshape_387_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+231211008);
+resnet50_Convolution_388_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+232259584);
+resnet50_BatchNormInference_389_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+335020032);
+resnet50_Reshape_376_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+resnet50_Convolution_377_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+207618048);
 resnet50_BatchNormInference_380_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_391_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_Relu_391_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 resnet50_Reshape_392_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_393_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+1048576);
-resnet50_BatchNormInference_394_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
-resnet50_Relu_395_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
+resnet50_BatchNormInference_394_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+resnet50_Relu_395_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
 resnet50_Reshape_396_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_397_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+resnet50_Convolution_397_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+52428800);
 resnet50_BatchNormInference_398_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_399_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_400_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+6422528);
-resnet50_Convolution_401_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Reshape_400_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_Convolution_401_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
 resnet50_BatchNormInference_402_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_404_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Relu_404_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
 resnet50_Reshape_405_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_406_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+1048576);
-resnet50_BatchNormInference_407_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
-resnet50_Relu_408_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
+resnet50_BatchNormInference_407_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+resnet50_Relu_408_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
 resnet50_Reshape_409_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_410_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+resnet50_Convolution_410_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+52428800);
 resnet50_BatchNormInference_411_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_412_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_413_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+6422528);
-resnet50_Convolution_414_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
-resnet50_BatchNormInference_415_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+77070336);
+resnet50_Reshape_413_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_Convolution_414_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+resnet50_BatchNormInference_415_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+308281344);
 resnet50_Relu_417_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_418_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Convolution_419_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
-resnet50_BatchNormInference_420_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+33161216);
-resnet50_Relu_421_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+33161216);
-resnet50_Reshape_422_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Convolution_423_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+39583744);
-resnet50_BatchNormInference_424_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Relu_425_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Reshape_426_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+32112640);
-resnet50_Convolution_427_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+33161216);
-resnet50_BatchNormInference_428_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+58851328);
-resnet50_Relu_430_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_Reshape_418_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_419_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+103809024);
+resnet50_BatchNormInference_420_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+129499136);
+resnet50_Relu_421_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+129499136);
+resnet50_Reshape_422_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_423_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+155189248);
+resnet50_BatchNormInference_424_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Relu_425_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Reshape_426_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+128450560);
+resnet50_Convolution_427_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+129499136);
+resnet50_BatchNormInference_428_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+232259584);
+resnet50_Relu_430_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 resnet50_Reshape_431_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_432_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+1048576);
-resnet50_BatchNormInference_433_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
-resnet50_Relu_434_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
+resnet50_BatchNormInference_433_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+resnet50_Relu_434_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
 resnet50_Reshape_435_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_436_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+resnet50_Convolution_436_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+52428800);
 resnet50_BatchNormInference_437_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_438_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_439_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+6422528);
-resnet50_Convolution_440_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Reshape_439_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_Convolution_440_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
 resnet50_BatchNormInference_441_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_443_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Relu_443_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+205520896);
 resnet50_Reshape_444_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_445_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+1048576);
-resnet50_BatchNormInference_446_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
-resnet50_Relu_447_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
+resnet50_BatchNormInference_446_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+resnet50_Relu_447_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
 resnet50_Reshape_448_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Convolution_449_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+resnet50_Convolution_449_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+52428800);
 resnet50_BatchNormInference_450_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_451_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_452_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+6422528);
-resnet50_Convolution_453_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7471104);
-resnet50_BatchNormInference_454_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+77070336);
+resnet50_Reshape_452_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_Convolution_453_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+resnet50_BatchNormInference_454_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+308281344);
 resnet50_Relu_456_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_459_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Convolution_460_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+27787264);
-resnet50_BatchNormInference_462_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+30998528);
-resnet50_Relu_463_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+30998528);
-resnet50_Reshape_464_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+34209792);
-resnet50_Convolution_465_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_BatchNormInference_466_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+28901376);
-resnet50_Relu_467_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+28901376);
-resnet50_Reshape_468_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+32112640);
-resnet50_Convolution_469_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+36306944);
-resnet50_BatchNormInference_470_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+49152000);
-resnet50_Reshape_457_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-resnet50_Convolution_458_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+34078720);
+resnet50_Reshape_459_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_460_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+104857600);
+resnet50_BatchNormInference_462_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+117702656);
+resnet50_Relu_463_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+117702656);
+resnet50_Reshape_464_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_465_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+130547712);
+resnet50_BatchNormInference_466_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Relu_467_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Reshape_468_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+115605504);
+resnet50_Convolution_469_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+119799808);
+resnet50_BatchNormInference_470_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+171180032);
+resnet50_Reshape_457_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+resnet50_Convolution_458_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+111149056);
 resnet50_BatchNormInference_461_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_472_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+resnet50_Relu_472_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
 resnet50_Reshape_473_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_474_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+4194304);
-resnet50_BatchNormInference_475_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_476_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_477_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+3211264);
-resnet50_Convolution_478_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_BatchNormInference_475_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+17039360);
+resnet50_Relu_476_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+17039360);
+resnet50_Reshape_477_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
+resnet50_Convolution_478_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+29884416);
 resnet50_BatchNormInference_479_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_480_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_481_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+3211264);
-resnet50_Convolution_482_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_Reshape_481_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+resnet50_Convolution_482_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 resnet50_BatchNormInference_483_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_485_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+resnet50_Relu_485_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 resnet50_Reshape_486_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Convolution_487_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+4194304);
-resnet50_BatchNormInference_488_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Relu_489_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_490_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+3211264);
-resnet50_Convolution_491_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12648448);
+resnet50_BatchNormInference_488_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+17039360);
+resnet50_Relu_489_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+17039360);
+resnet50_Reshape_490_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
+resnet50_Convolution_491_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+29884416);
 resnet50_BatchNormInference_492_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 resnet50_Relu_493_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Reshape_494_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+3211264);
-resnet50_Convolution_495_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+7405568);
-resnet50_BatchNormInference_496_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+38535168);
+resnet50_Reshape_494_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+resnet50_Convolution_495_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+17039360);
+resnet50_BatchNormInference_496_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+154140672);
 resnet50_Relu_498_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Sum_499_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12845056);
-resnet50_Divide_501_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+resnet50_Sum_499_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+resnet50_Divide_501_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+51380224);
 resnet50_Dot_502_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
-resnet50_Broadcast_503_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+128128);
+resnet50_Broadcast_503_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+512512);
 resnet50_Add_504_0 = (float*)(resnet50_group_0_CUDA_GPU0_allocator_memory_pool+0);
 // create streams/handles
 CUBLAS_SAFE_CALL(cublasCreate(&resnet50_cublas_handle_0));
@@ -7298,18 +7298,18 @@ CUDA_SAFE_CALL(cudaDeviceGetAttribute(&resnet50_num_SMs, cudaDevAttrMultiProcess
 // Node name:	Convolution_296
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_294_0	type: float	shape: Shape{32, 256, 56, 56}
+//	- name: resnet50_Relu_294_0	type: float	shape: Shape{128, 256, 56, 56}
 //	- name: resnet50_Reshape_295_0	type: float	shape: Shape{64, 256, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_296_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_Convolution_296_0	type: float	shape: Shape{128, 64, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_296(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 256, 1, 1));
@@ -7317,7 +7317,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_296(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -7366,11 +7366,11 @@ void Convolution_float_float_float_cuda_lib_Convolution_296(cudnnHandle_t cudnn_
 // Input:
 //	- name: resnet50_Constant_14_0	type: float	shape: Shape{64}
 //	- name: resnet50_Constant_15_0	type: float	shape: Shape{64}
-//	- name: resnet50_Convolution_282_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_Convolution_282_0	type: float	shape: Shape{128, 64, 56, 56}
 //	- name: resnet50_Constant_16_0	type: float	shape: Shape{64}
 //	- name: resnet50_Constant_17_0	type: float	shape: Shape{64}
 // Output:
-//	- name: resnet50_BatchNormInference_284_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_BatchNormInference_284_0	type: float	shape: Shape{128, 64, 56, 56}
 extern "C" __launch_bounds__(512) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 56 * 56;
@@ -7447,11 +7447,11 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_274_Call(const dim3 &grids
 // Input:
 //	- name: resnet50_Constant_74_0	type: float	shape: Shape{512}
 //	- name: resnet50_Constant_75_0	type: float	shape: Shape{512}
-//	- name: resnet50_Convolution_333_0	type: float	shape: Shape{32, 512, 28, 28}
+//	- name: resnet50_Convolution_333_0	type: float	shape: Shape{128, 512, 28, 28}
 //	- name: resnet50_Constant_76_0	type: float	shape: Shape{512}
 //	- name: resnet50_Constant_77_0	type: float	shape: Shape{512}
 // Output:
-//	- name: resnet50_BatchNormInference_334_0	type: float	shape: Shape{32, 512, 28, 28}
+//	- name: resnet50_BatchNormInference_334_0	type: float	shape: Shape{128, 512, 28, 28}
 extern "C" __launch_bounds__(512) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 28 * 28;
@@ -7469,19 +7469,19 @@ extern void resnet50_BatchNormInference_float_float_float_float_float_float_cuda
 // Node name:	Pad_273
 // Description:	Pad
 // Input:
-//	- name: resnet50_Reshape_271_0	type: float	shape: Shape{32, 3, 224, 224}
+//	- name: resnet50_Reshape_271_0	type: float	shape: Shape{128, 3, 224, 224}
 //	- name: resnet50_Constant_272_0	type: float	shape: Shape{}
 // Output:
-//	- name: resnet50_Pad_273_0	type: float	shape: Shape{32, 3, 230, 230}
+//	- name: resnet50_Pad_273_0	type: float	shape: Shape{128, 3, 230, 230}
 extern "C" __launch_bounds__(64) __global__ void resnet50_Pad_float_float_float_cuda_Pad_273(float* input0, float* input1, float* output0)
 {
     uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     float* in = input0;
     float* pad = input1;
     float* out = output0;
-    if (tid < 5078400)
+    if (tid < 20313600)
     {
-        size_t input_shape0 = 32;
+        size_t input_shape0 = 128;
         size_t input_shape1 = 3;
         size_t input_shape2 = 224;
         size_t input_shape3 = 224;
@@ -7538,18 +7538,18 @@ extern void resnet50_Pad_float_float_float_cuda_Pad_273_Call(const dim3 &grids, 
 // Node name:	Convolution_275
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Pad_273_0	type: float	shape: Shape{32, 3, 230, 230}
+//	- name: resnet50_Pad_273_0	type: float	shape: Shape{128, 3, 230, 230}
 //	- name: resnet50_Reshape_274_0	type: float	shape: Shape{64, 3, 7, 7}
 // Output:
-//	- name: resnet50_Convolution_275_0	type: float	shape: Shape{32, 64, 112, 112}
+//	- name: resnet50_Convolution_275_0	type: float	shape: Shape{128, 64, 112, 112}
 void Convolution_float_float_float_cuda_lib_Convolution_275(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 3, 230, 230));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 3, 230, 230));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 112, 112));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 3, 7, 7));
@@ -7557,7 +7557,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_275(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -7747,9 +7747,9 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_392_Call(const dim3 &grids
 // Node name:	Reshape_271
 // Description:	Reshape
 // Input:
-//	- name: Parameter_0_0	type: float	shape: Shape{32, 224, 224, 3}
+//	- name: Parameter_0_0	type: float	shape: Shape{128, 224, 224, 3}
 // Output:
-//	- name: resnet50_Reshape_271_0	type: float	shape: Shape{32, 3, 224, 224}
+//	- name: resnet50_Reshape_271_0	type: float	shape: Shape{128, 3, 224, 224}
 extern "C" __launch_bounds__(256) __global__ void resnet50_Reshape_float_float_cuda_Reshape_271(float* input0, float* output0)
 {
     uint32_t input_strides0 = 150528;
@@ -7760,7 +7760,7 @@ extern "C" __launch_bounds__(256) __global__ void resnet50_Reshape_float_float_c
     uint32_t trans_strides2 = 50176;
     size_t nx = 3;
     size_t ny = 50176;
-    size_t nz = 32;
+    size_t nz = 128;
     __shared__ float tile[1][16][17];
     uint32_t base2 = blockIdx.x * blockDim.x;
     uint32_t base1 = blockIdx.y * blockDim.y;
@@ -7804,18 +7804,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_271_Call(const dim3 &grids
 // Node name:	Convolution_287
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_285_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_Relu_285_0	type: float	shape: Shape{128, 64, 56, 56}
 //	- name: resnet50_Reshape_286_0	type: float	shape: Shape{64, 64, 3, 3}
 // Output:
-//	- name: resnet50_Convolution_287_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_Convolution_287_0	type: float	shape: Shape{128, 64, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_287(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 64, 3, 3));
@@ -7823,7 +7823,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_287(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -7870,17 +7870,17 @@ void Convolution_float_float_float_cuda_lib_Convolution_287(cudnnHandle_t cudnn_
 // Node name:	MaxPool_278
 // Description:	MaxPool
 // Input:
-//	- name: resnet50_Relu_277_0	type: float	shape: Shape{32, 64, 112, 112}
+//	- name: resnet50_Relu_277_0	type: float	shape: Shape{128, 64, 112, 112}
 // Output:
-//	- name: resnet50_MaxPool_278_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_MaxPool_278_0	type: float	shape: Shape{128, 64, 56, 56}
 void MaxPool_float_float_cuda_lib_MaxPool_278(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 112, 112));
     cudnnTensorDescriptor_t output_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnPoolingDescriptor_t desc;
     cudnnCreatePoolingDescriptor(&desc);
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,3, 3, 0, 0, 2, 2));
@@ -7951,13 +7951,13 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_286_Call(const dim3 &grids
 }
 // Node name:	 Elementwise Kernel Fusion
 // Input:
-//	- name: resnet50_BatchNormInference_283_0	type: float	shape: Shape{32, 256, 56, 56}
-//	- name: resnet50_BatchNormInference_292_0	type: float	shape: Shape{32, 256, 56, 56}
+//	- name: resnet50_BatchNormInference_283_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: resnet50_BatchNormInference_292_0	type: float	shape: Shape{128, 256, 56, 56}
 // Output:
-//	- name: resnet50_Relu_294_0	type: float	shape: Shape{32, 256, 56, 56}
+//	- name: resnet50_Relu_294_0	type: float	shape: Shape{128, 256, 56, 56}
 // Fused functions:
-// Add_float_float_float_cuda_Add_293<<<dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0>>>(resnet50_BatchNormInference_283_0, resnet50_BatchNormInference_292_0, Add_293_0);
-// Relu_float_float_cuda_Relu_294<<<dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_293_0, resnet50_Relu_294_0);
+// Add_float_float_float_cuda_Add_293<<<dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0>>>(resnet50_BatchNormInference_283_0, resnet50_BatchNormInference_292_0, Add_293_0);
+// Relu_float_float_cuda_Relu_294<<<dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_293_0, resnet50_Relu_294_0);
 extern "C" __launch_bounds__(512) __global__ void resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0(float* input0, float* input1, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -8015,18 +8015,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_473_Call(const dim3 &grids
 // Node name:	Convolution_329
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_327_0	type: float	shape: Shape{32, 128, 28, 28}
+//	- name: resnet50_Relu_327_0	type: float	shape: Shape{128, 128, 28, 28}
 //	- name: resnet50_Reshape_328_0	type: float	shape: Shape{128, 128, 3, 3}
 // Output:
-//	- name: resnet50_Convolution_329_0	type: float	shape: Shape{32, 128, 28, 28}
+//	- name: resnet50_Convolution_329_0	type: float	shape: Shape{128, 128, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_329(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 128, 3, 3));
@@ -8034,7 +8034,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_329(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8083,11 +8083,11 @@ void Convolution_float_float_float_cuda_lib_Convolution_329(cudnnHandle_t cudnn_
 // Input:
 //	- name: resnet50_Constant_139_0	type: float	shape: Shape{1024}
 //	- name: resnet50_Constant_140_0	type: float	shape: Shape{1024}
-//	- name: resnet50_Convolution_388_0	type: float	shape: Shape{32, 1024, 14, 14}
+//	- name: resnet50_Convolution_388_0	type: float	shape: Shape{128, 1024, 14, 14}
 //	- name: resnet50_Constant_141_0	type: float	shape: Shape{1024}
 //	- name: resnet50_Constant_142_0	type: float	shape: Shape{1024}
 // Output:
-//	- name: resnet50_BatchNormInference_389_0	type: float	shape: Shape{32, 1024, 14, 14}
+//	- name: resnet50_BatchNormInference_389_0	type: float	shape: Shape{128, 1024, 14, 14}
 extern "C" __launch_bounds__(196) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 14 * 14;
@@ -8105,9 +8105,9 @@ extern void resnet50_BatchNormInference_float_float_float_float_float_float_cuda
 // Node name:	Result_505
 // Description:	Result
 // Input:
-//	- name: resnet50_Add_504_0	type: float	shape: Shape{32, 1001}
+//	- name: resnet50_Add_504_0	type: float	shape: Shape{128, 1001}
 // Output:
-//	- name: Result_505_0	type: float	shape: Shape{32, 1001}
+//	- name: Result_505_0	type: float	shape: Shape{128, 1001}
 void Result_float_float_cuda_lib_Result_505(float* input0, float** output0)
 {
     *output0 = input0;
@@ -8115,18 +8115,18 @@ void Result_float_float_cuda_lib_Result_505(float* input0, float** output0)
 // Node name:	Convolution_282
 // Description:	Convolution
 // Input:
-//	- name: resnet50_MaxPool_278_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_MaxPool_278_0	type: float	shape: Shape{128, 64, 56, 56}
 //	- name: resnet50_Reshape_281_0	type: float	shape: Shape{64, 64, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_282_0	type: float	shape: Shape{32, 64, 56, 56}
+//	- name: resnet50_Convolution_282_0	type: float	shape: Shape{128, 64, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_282(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 64, 1, 1));
@@ -8134,7 +8134,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_282(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8224,18 +8224,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_457_Call(const dim3 &grids
 // Node name:	Convolution_460
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_456_0	type: float	shape: Shape{32, 1024, 14, 14}
+//	- name: resnet50_Relu_456_0	type: float	shape: Shape{128, 1024, 14, 14}
 //	- name: resnet50_Reshape_459_0	type: float	shape: Shape{512, 1024, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_460_0	type: float	shape: Shape{32, 512, 7, 7}
+//	- name: resnet50_Convolution_460_0	type: float	shape: Shape{128, 512, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_460(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 1024, 1, 1));
@@ -8243,7 +8243,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_460(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8290,18 +8290,18 @@ void Convolution_float_float_float_cuda_lib_Convolution_460(cudnnHandle_t cudnn_
 // Node name:	Convolution_458
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_456_0	type: float	shape: Shape{32, 1024, 14, 14}
+//	- name: resnet50_Relu_456_0	type: float	shape: Shape{128, 1024, 14, 14}
 //	- name: resnet50_Reshape_457_0	type: float	shape: Shape{2048, 1024, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_458_0	type: float	shape: Shape{32, 2048, 7, 7}
+//	- name: resnet50_Convolution_458_0	type: float	shape: Shape{128, 2048, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_458(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 2048, 1024, 1, 1));
@@ -8309,7 +8309,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_458(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8399,18 +8399,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_459_Call(const dim3 &grids
 // Node name:	Convolution_377
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_375_0	type: float	shape: Shape{32, 512, 28, 28}
+//	- name: resnet50_Relu_375_0	type: float	shape: Shape{128, 512, 28, 28}
 //	- name: resnet50_Reshape_376_0	type: float	shape: Shape{1024, 512, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_377_0	type: float	shape: Shape{32, 1024, 14, 14}
+//	- name: resnet50_Convolution_377_0	type: float	shape: Shape{128, 1024, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_377(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 1024, 512, 1, 1));
@@ -8418,7 +8418,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_377(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8465,18 +8465,18 @@ void Convolution_float_float_float_cuda_lib_Convolution_377(cudnnHandle_t cudnn_
 // Node name:	Convolution_469
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_467_0	type: float	shape: Shape{32, 512, 7, 7}
+//	- name: resnet50_Relu_467_0	type: float	shape: Shape{128, 512, 7, 7}
 //	- name: resnet50_Reshape_468_0	type: float	shape: Shape{2048, 512, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_469_0	type: float	shape: Shape{32, 2048, 7, 7}
+//	- name: resnet50_Convolution_469_0	type: float	shape: Shape{128, 2048, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_469(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 2048, 512, 1, 1));
@@ -8484,7 +8484,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_469(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8574,18 +8574,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_290_Call(const dim3 &grids
 // Node name:	Convolution_322
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_320_0	type: float	shape: Shape{32, 256, 56, 56}
+//	- name: resnet50_Relu_320_0	type: float	shape: Shape{128, 256, 56, 56}
 //	- name: resnet50_Reshape_321_0	type: float	shape: Shape{512, 256, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_322_0	type: float	shape: Shape{32, 512, 28, 28}
+//	- name: resnet50_Convolution_322_0	type: float	shape: Shape{128, 512, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_322(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 256, 1, 1));
@@ -8593,7 +8593,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_322(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8685,11 +8685,11 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_281_Call(const dim3 &grids
 // Input:
 //	- name: resnet50_Constant_24_0	type: float	shape: Shape{256}
 //	- name: resnet50_Constant_25_0	type: float	shape: Shape{256}
-//	- name: resnet50_Convolution_291_0	type: float	shape: Shape{32, 256, 56, 56}
+//	- name: resnet50_Convolution_291_0	type: float	shape: Shape{128, 256, 56, 56}
 //	- name: resnet50_Constant_26_0	type: float	shape: Shape{256}
 //	- name: resnet50_Constant_27_0	type: float	shape: Shape{256}
 // Output:
-//	- name: resnet50_BatchNormInference_292_0	type: float	shape: Shape{32, 256, 56, 56}
+//	- name: resnet50_BatchNormInference_292_0	type: float	shape: Shape{128, 256, 56, 56}
 extern "C" __launch_bounds__(512) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 56 * 56;
@@ -8750,32 +8750,32 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_323_Call(const dim3 &grids
 // Node name:	Dot_502
 // Description:	Dot
 // Input:
-//	- name: resnet50_Divide_501_0	type: float	shape: Shape{32, 2048}
+//	- name: resnet50_Divide_501_0	type: float	shape: Shape{128, 2048}
 //	- name: resnet50_Constant_269_0	type: float	shape: Shape{2048, 1001}
 // Output:
-//	- name: resnet50_Dot_502_0	type: float	shape: Shape{32, 1001}
+//	- name: resnet50_Dot_502_0	type: float	shape: Shape{128, 1001}
 void Dot_float_float_float_cuda_lib_Dot_502(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 32, 2048, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 2048, &beta, static_cast<float*>(output0), 1001));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 128, 2048, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 2048, &beta, static_cast<float*>(output0), 1001));
 
 }
 // Node name:	Convolution_388
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_386_0	type: float	shape: Shape{32, 256, 14, 14}
+//	- name: resnet50_Relu_386_0	type: float	shape: Shape{128, 256, 14, 14}
 //	- name: resnet50_Reshape_387_0	type: float	shape: Shape{1024, 256, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_388_0	type: float	shape: Shape{32, 1024, 14, 14}
+//	- name: resnet50_Convolution_388_0	type: float	shape: Shape{128, 1024, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_388(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 1024, 256, 1, 1));
@@ -8783,7 +8783,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_388(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8832,11 +8832,11 @@ void Convolution_float_float_float_cuda_lib_Convolution_388(cudnnHandle_t cudnn_
 // Input:
 //	- name: resnet50_Constant_64_0	type: float	shape: Shape{128}
 //	- name: resnet50_Constant_65_0	type: float	shape: Shape{128}
-//	- name: resnet50_Convolution_324_0	type: float	shape: Shape{32, 128, 28, 28}
+//	- name: resnet50_Convolution_324_0	type: float	shape: Shape{128, 128, 28, 28}
 //	- name: resnet50_Constant_66_0	type: float	shape: Shape{128}
 //	- name: resnet50_Constant_67_0	type: float	shape: Shape{128}
 // Output:
-//	- name: resnet50_BatchNormInference_326_0	type: float	shape: Shape{32, 128, 28, 28}
+//	- name: resnet50_BatchNormInference_326_0	type: float	shape: Shape{128, 128, 28, 28}
 extern "C" __launch_bounds__(512) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 28 * 28;
@@ -8854,18 +8854,18 @@ extern void resnet50_BatchNormInference_float_float_float_float_float_float_cuda
 // Node name:	Convolution_333
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_331_0	type: float	shape: Shape{32, 128, 28, 28}
+//	- name: resnet50_Relu_331_0	type: float	shape: Shape{128, 128, 28, 28}
 //	- name: resnet50_Reshape_332_0	type: float	shape: Shape{512, 128, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_333_0	type: float	shape: Shape{32, 512, 28, 28}
+//	- name: resnet50_Convolution_333_0	type: float	shape: Shape{128, 512, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_333(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 128, 1, 1));
@@ -8873,7 +8873,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_333(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -8920,13 +8920,13 @@ void Convolution_float_float_float_cuda_lib_Convolution_333(cudnnHandle_t cudnn_
 // Node name:	Add_504
 // Description:	Add
 // Input:
-//	- name: resnet50_Dot_502_0	type: float	shape: Shape{32, 1001}
-//	- name: resnet50_Broadcast_503_0	type: float	shape: Shape{32, 1001}
+//	- name: resnet50_Dot_502_0	type: float	shape: Shape{128, 1001}
+//	- name: resnet50_Broadcast_503_0	type: float	shape: Shape{128, 1001}
 // Output:
-//	- name: resnet50_Add_504_0	type: float	shape: Shape{32, 1001}
-extern "C" __launch_bounds__(416) __global__ void resnet50_Add_float_float_float_cuda_Add_504(float* input0, float* input1, float* output0)
+//	- name: resnet50_Add_504_0	type: float	shape: Shape{128, 1001}
+extern "C" __launch_bounds__(128) __global__ void resnet50_Add_float_float_float_cuda_Add_504(float* input0, float* input1, float* output0)
 {
-    output0[blockIdx.x * 416 + threadIdx.x] = add(input0[blockIdx.x * 416 + threadIdx.x], input1[blockIdx.x * 416 + threadIdx.x]);
+    output0[blockIdx.x * 128 + threadIdx.x] = add(input0[blockIdx.x * 128 + threadIdx.x], input1[blockIdx.x * 128 + threadIdx.x]);
 
 }
 extern void resnet50_Add_float_float_float_cuda_Add_504_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* output0) {
@@ -8994,11 +8994,11 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_464_Call(const dim3 &grids
 // Input:
 //	- name: resnet50_Constant_224_0	type: float	shape: Shape{512}
 //	- name: resnet50_Constant_225_0	type: float	shape: Shape{512}
-//	- name: resnet50_Convolution_460_0	type: float	shape: Shape{32, 512, 7, 7}
+//	- name: resnet50_Convolution_460_0	type: float	shape: Shape{128, 512, 7, 7}
 //	- name: resnet50_Constant_226_0	type: float	shape: Shape{512}
 //	- name: resnet50_Constant_227_0	type: float	shape: Shape{512}
 // Output:
-//	- name: resnet50_BatchNormInference_462_0	type: float	shape: Shape{32, 512, 7, 7}
+//	- name: resnet50_BatchNormInference_462_0	type: float	shape: Shape{128, 512, 7, 7}
 extern "C" __launch_bounds__(49) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 7 * 7;
@@ -9059,18 +9059,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_321_Call(const dim3 &grids
 // Node name:	Convolution_474
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_472_0	type: float	shape: Shape{32, 2048, 7, 7}
+//	- name: resnet50_Relu_472_0	type: float	shape: Shape{128, 2048, 7, 7}
 //	- name: resnet50_Reshape_473_0	type: float	shape: Shape{512, 2048, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_474_0	type: float	shape: Shape{32, 512, 7, 7}
+//	- name: resnet50_Convolution_474_0	type: float	shape: Shape{128, 512, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_474(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 2048, 1, 1));
@@ -9078,7 +9078,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_474(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -9168,18 +9168,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_337_Call(const dim3 &grids
 // Node name:	Convolution_338
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_336_0	type: float	shape: Shape{32, 512, 28, 28}
+//	- name: resnet50_Relu_336_0	type: float	shape: Shape{128, 512, 28, 28}
 //	- name: resnet50_Reshape_337_0	type: float	shape: Shape{128, 512, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_338_0	type: float	shape: Shape{32, 128, 28, 28}
+//	- name: resnet50_Convolution_338_0	type: float	shape: Shape{128, 128, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_338(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 512, 1, 1));
@@ -9187,7 +9187,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_338(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -9234,9 +9234,9 @@ void Convolution_float_float_float_cuda_lib_Convolution_338(cudnnHandle_t cudnn_
 // Node name:	Relu_277
 // Description:	Relu
 // Input:
-//	- name: resnet50_BatchNormInference_276_0	type: float	shape: Shape{32, 64, 112, 112}
+//	- name: resnet50_BatchNormInference_276_0	type: float	shape: Shape{128, 64, 112, 112}
 // Output:
-//	- name: resnet50_Relu_277_0	type: float	shape: Shape{32, 64, 112, 112}
+//	- name: resnet50_Relu_277_0	type: float	shape: Shape{128, 64, 112, 112}
 extern "C" __launch_bounds__(512) __global__ void resnet50_Relu_float_float_cuda_Relu_277(float* input0, float* output0)
 {
     output0[blockIdx.x * 512 + threadIdx.x] = relu(input0[blockIdx.x * 512 + threadIdx.x]);
@@ -9250,10 +9250,10 @@ extern void resnet50_Relu_float_float_cuda_Relu_277_Call(const dim3 &grids, cons
 // Input:
 //	- name: resnet50_Constant_270_0	type: float	shape: Shape{1001}
 // Output:
-//	- name: resnet50_Broadcast_503_0	type: float	shape: Shape{32, 1001}
+//	- name: resnet50_Broadcast_503_0	type: float	shape: Shape{128, 1001}
 extern "C" __launch_bounds__(64) __global__ void resnet50_Broadcast_float_float_cuda_Broadcast_503(float* input0, float* output0)
 {
-    size_t nthreads = 32032;uint32_t strides0 = 1001;
+    size_t nthreads = 128128;uint32_t strides0 = 1001;
     uint32_t strides1 = 1;
     int stride_magic0 = 1098413215;
     int stride_magic1 = 1;
@@ -9281,18 +9281,18 @@ extern void resnet50_Broadcast_float_float_cuda_Broadcast_503_Call(const dim3 &g
 // Node name:	Convolution_379
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_375_0	type: float	shape: Shape{32, 512, 28, 28}
+//	- name: resnet50_Relu_375_0	type: float	shape: Shape{128, 512, 28, 28}
 //	- name: resnet50_Reshape_378_0	type: float	shape: Shape{256, 512, 1, 1}
 // Output:
-//	- name: resnet50_Convolution_379_0	type: float	shape: Shape{32, 256, 14, 14}
+//	- name: resnet50_Convolution_379_0	type: float	shape: Shape{128, 256, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_379(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 512, 1, 1));
@@ -9300,7 +9300,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_379(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -9347,9 +9347,9 @@ void Convolution_float_float_float_cuda_lib_Convolution_379(cudnnHandle_t cudnn_
 // Node name:	Sum_499
 // Description:	Sum
 // Input:
-//	- name: resnet50_Relu_498_0	type: float	shape: Shape{32, 2048, 7, 7}
+//	- name: resnet50_Relu_498_0	type: float	shape: Shape{128, 2048, 7, 7}
 // Output:
-//	- name: resnet50_Sum_499_0	type: float	shape: Shape{32, 2048}
+//	- name: resnet50_Sum_499_0	type: float	shape: Shape{128, 2048}
 extern "C" __launch_bounds__(32) __global__ void resnet50_Sum_float_float_cuda_Sum_499(float* input0, float* output0)
 {
 
@@ -9380,11 +9380,11 @@ extern void resnet50_Sum_float_float_cuda_Sum_499_Call(const dim3 &grids, const 
 // Input:
 //	- name: resnet50_Constant_129_0	type: float	shape: Shape{256}
 //	- name: resnet50_Constant_130_0	type: float	shape: Shape{256}
-//	- name: resnet50_Convolution_379_0	type: float	shape: Shape{32, 256, 14, 14}
+//	- name: resnet50_Convolution_379_0	type: float	shape: Shape{128, 256, 14, 14}
 //	- name: resnet50_Constant_131_0	type: float	shape: Shape{256}
 //	- name: resnet50_Constant_132_0	type: float	shape: Shape{256}
 // Output:
-//	- name: resnet50_BatchNormInference_381_0	type: float	shape: Shape{32, 256, 14, 14}
+//	- name: resnet50_BatchNormInference_381_0	type: float	shape: Shape{128, 256, 14, 14}
 extern "C" __launch_bounds__(196) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 14 * 14;
@@ -9461,11 +9461,11 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_383_Call(const dim3 &grids
 // Input:
 //	- name: resnet50_Constant_234_0	type: float	shape: Shape{2048}
 //	- name: resnet50_Constant_235_0	type: float	shape: Shape{2048}
-//	- name: resnet50_Convolution_469_0	type: float	shape: Shape{32, 2048, 7, 7}
+//	- name: resnet50_Convolution_469_0	type: float	shape: Shape{128, 2048, 7, 7}
 //	- name: resnet50_Constant_236_0	type: float	shape: Shape{2048}
 //	- name: resnet50_Constant_237_0	type: float	shape: Shape{2048}
 // Output:
-//	- name: resnet50_BatchNormInference_470_0	type: float	shape: Shape{32, 2048, 7, 7}
+//	- name: resnet50_BatchNormInference_470_0	type: float	shape: Shape{128, 2048, 7, 7}
 extern "C" __launch_bounds__(49) __global__ void resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 7 * 7;
@@ -9526,18 +9526,18 @@ extern void resnet50_Reshape_float_float_cuda_Reshape_295_Call(const dim3 &grids
 // Node name:	Convolution_384
 // Description:	Convolution
 // Input:
-//	- name: resnet50_Relu_382_0	type: float	shape: Shape{32, 256, 14, 14}
+//	- name: resnet50_Relu_382_0	type: float	shape: Shape{128, 256, 14, 14}
 //	- name: resnet50_Reshape_383_0	type: float	shape: Shape{256, 256, 3, 3}
 // Output:
-//	- name: resnet50_Convolution_384_0	type: float	shape: Shape{32, 256, 14, 14}
+//	- name: resnet50_Convolution_384_0	type: float	shape: Shape{128, 256, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_384(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 256, 3, 3));
@@ -9545,7 +9545,7 @@ void Convolution_float_float_float_cuda_lib_Convolution_384(cudnnHandle_t cudnn_
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -9778,17 +9778,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 3, 230, 230, 64, 3, 7, 7, 0, 0, 2, 2, 1, 1});
+    return std::vector<int>({128, 3, 230, 230, 64, 3, 7, 7, 0, 0, 2, 2, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_275(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 3, 230, 230));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 3, 230, 230));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 112, 112));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 3, 7, 7));
@@ -9796,7 +9796,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -9949,10 +9949,10 @@ std::vector<int> getArgs() override {
 {
     cudnnTensorDescriptor_t input_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 112, 112));
     cudnnTensorDescriptor_t output_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnPoolingDescriptor_t desc;
     cudnnCreatePoolingDescriptor(&desc);
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,3, 3, 0, 0, 2, 2));
@@ -10030,17 +10030,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 64, 56, 56, 64, 64, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 64, 56, 56, 64, 64, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_282(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 64, 1, 1));
@@ -10048,7 +10048,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -10194,17 +10194,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 64, 56, 56, 64, 64, 3, 3, 1, 1, 1, 1, 1, 1});
+    return std::vector<int>({128, 64, 56, 56, 64, 64, 3, 3, 1, 1, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_287(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 64, 3, 3));
@@ -10212,7 +10212,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -10322,17 +10322,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 64, 56, 56, 256, 64, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 64, 56, 56, 256, 64, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_291(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 64, 1, 1));
@@ -10340,7 +10340,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -10522,17 +10522,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 256, 56, 56, 64, 256, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 256, 56, 56, 64, 256, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_296(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 256, 1, 1));
@@ -10540,7 +10540,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -10650,17 +10650,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 256, 56, 56, 128, 256, 1, 1, 0, 0, 2, 2, 1, 1});
+    return std::vector<int>({128, 256, 56, 56, 128, 256, 1, 1, 0, 0, 2, 2, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_324(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 256, 1, 1));
@@ -10668,7 +10668,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -10814,17 +10814,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 128, 28, 28, 128, 128, 3, 3, 1, 1, 1, 1, 1, 1});
+    return std::vector<int>({128, 128, 28, 28, 128, 128, 3, 3, 1, 1, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_329(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 128, 3, 3));
@@ -10832,7 +10832,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -10942,17 +10942,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 128, 28, 28, 512, 128, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 128, 28, 28, 512, 128, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_333(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 128, 1, 1));
@@ -10960,7 +10960,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -11106,17 +11106,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 256, 56, 56, 512, 256, 1, 1, 0, 0, 2, 2, 1, 1});
+    return std::vector<int>({128, 256, 56, 56, 512, 256, 1, 1, 0, 0, 2, 2, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_322(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 256, 1, 1));
@@ -11124,7 +11124,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -11234,17 +11234,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 512, 28, 28, 128, 512, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 512, 28, 28, 128, 512, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_338(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 512, 1, 1));
@@ -11252,7 +11252,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -11362,17 +11362,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 512, 28, 28, 256, 512, 1, 1, 0, 0, 2, 2, 1, 1});
+    return std::vector<int>({128, 512, 28, 28, 256, 512, 1, 1, 0, 0, 2, 2, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_379(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 512, 1, 1));
@@ -11380,7 +11380,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -11526,17 +11526,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 256, 14, 14, 256, 256, 3, 3, 1, 1, 1, 1, 1, 1});
+    return std::vector<int>({128, 256, 14, 14, 256, 256, 3, 3, 1, 1, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_384(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 256, 3, 3));
@@ -11544,7 +11544,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -11654,17 +11654,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 256, 14, 14, 1024, 256, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 256, 14, 14, 1024, 256, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_388(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 1024, 256, 1, 1));
@@ -11672,7 +11672,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -11818,17 +11818,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 512, 28, 28, 1024, 512, 1, 1, 0, 0, 2, 2, 1, 1});
+    return std::vector<int>({128, 512, 28, 28, 1024, 512, 1, 1, 0, 0, 2, 2, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_377(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 1024, 512, 1, 1));
@@ -11836,7 +11836,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -11946,17 +11946,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 1024, 14, 14, 256, 1024, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 1024, 14, 14, 256, 1024, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_393(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 1024, 1, 1));
@@ -11964,7 +11964,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -12074,17 +12074,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 1024, 14, 14, 512, 1024, 1, 1, 0, 0, 2, 2, 1, 1});
+    return std::vector<int>({128, 1024, 14, 14, 512, 1024, 1, 1, 0, 0, 2, 2, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_460(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 1024, 1, 1));
@@ -12092,7 +12092,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -12238,17 +12238,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 512, 7, 7, 512, 512, 3, 3, 1, 1, 1, 1, 1, 1});
+    return std::vector<int>({128, 512, 7, 7, 512, 512, 3, 3, 1, 1, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_465(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 512, 3, 3));
@@ -12256,7 +12256,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 1, 1, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -12366,17 +12366,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 512, 7, 7, 2048, 512, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 512, 7, 7, 2048, 512, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_469(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 2048, 512, 1, 1));
@@ -12384,7 +12384,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -12530,17 +12530,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 1024, 14, 14, 2048, 1024, 1, 1, 0, 0, 2, 2, 1, 1});
+    return std::vector<int>({128, 1024, 14, 14, 2048, 1024, 1, 1, 0, 0, 2, 2, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_458(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 2048, 1024, 1, 1));
@@ -12548,7 +12548,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 2, 2, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -12658,17 +12658,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 2048, 7, 7, 512, 2048, 1, 1, 0, 0, 1, 1, 1, 1});
+    return std::vector<int>({128, 2048, 7, 7, 512, 2048, 1, 1, 0, 0, 1, 1, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_474(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 2048, 1, 1));
@@ -12676,7 +12676,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnCreateConvolutionDescriptor(&conv_desc));
     CUDNN_SAFE_CALL(cudnnSetConvolution2dDescriptor(conv_desc, 0, 0, 1, 1, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT));
 
-    static bool selected_algo = false;
+    static bool selected_algo = true;
     static cudnnConvolutionFwdAlgo_t conv_fwd_algo = CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
 
     if (!selected_algo) {
@@ -12824,7 +12824,7 @@ private:
 std::vector<int> getArgs() override {
     std::vector<int> ret(3);
     ret[0] = 1001;
-    ret[1] = 32;
+    ret[1] = 128;
     ret[2] = 2048;
     return ret;
 }
@@ -12833,7 +12833,7 @@ std::vector<int> getArgs() override {
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(mycublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 32, 2048, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 2048, &beta, static_cast<float*>(output0), 1001));
+    CUBLAS_SAFE_CALL(mycublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 128, 2048, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 2048, &beta, static_cast<float*>(output0), 1001));
 
 }
 
@@ -12951,221 +12951,221 @@ std::vector<int> getArgs() override {
     }
 };
 void Resnet50::gen_vector(float*  Parameter_0_0, float**  Result_505_0) {
-    kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_271_CallKernel(dim3(1, 3136, 32), dim3(16, 16, 1), 0, nullptr, std::move(Parameter_0_0), std::move(resnet50_Reshape_271_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Pad_float_float_float_cuda_Pad_273_CallKernel(dim3(79350, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(resnet50_Reshape_271_0), std::move(resnet50_Constant_272_0), std::move(resnet50_Pad_273_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_271_CallKernel(dim3(1, 3136, 128), dim3(16, 16, 1), 0, nullptr, std::move(Parameter_0_0), std::move(resnet50_Reshape_271_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Pad_float_float_float_cuda_Pad_273_CallKernel(dim3(317400, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(resnet50_Reshape_271_0), std::move(resnet50_Constant_272_0), std::move(resnet50_Pad_273_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_274_CallKernel(dim3(4, 3, 4), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_3_0), std::move(resnet50_Reshape_274_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_275Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Pad_273_0), std::move(resnet50_Reshape_274_0), std::move(resnet50_Convolution_275_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_CallKernel(dim3(2048, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_4_0), std::move(resnet50_Constant_5_0), std::move(resnet50_Convolution_275_0), std::move(resnet50_Constant_6_0), std::move(resnet50_Constant_7_0), std::move(resnet50_BatchNormInference_276_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_276_0), std::move(resnet50_Relu_277_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_4_0), std::move(resnet50_Constant_5_0), std::move(resnet50_Convolution_275_0), std::move(resnet50_Constant_6_0), std::move(resnet50_Constant_7_0), std::move(resnet50_BatchNormInference_276_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(200704, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_276_0), std::move(resnet50_Relu_277_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_MaxPool_float_float_cuda_lib_MaxPool_278Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_277_0), std::move(resnet50_MaxPool_278_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_281_CallKernel(dim3(4, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_13_0), std::move(resnet50_Reshape_281_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_282Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_MaxPool_278_0), std::move(resnet50_Reshape_281_0), std::move(resnet50_Convolution_282_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(2048, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_14_0), std::move(resnet50_Constant_15_0), std::move(resnet50_Convolution_282_0), std::move(resnet50_Constant_16_0), std::move(resnet50_Constant_17_0), std::move(resnet50_BatchNormInference_284_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_284_0), std::move(resnet50_Relu_285_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_14_0), std::move(resnet50_Constant_15_0), std::move(resnet50_Convolution_282_0), std::move(resnet50_Constant_16_0), std::move(resnet50_Constant_17_0), std::move(resnet50_BatchNormInference_284_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_284_0), std::move(resnet50_Relu_285_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_286_CallKernel(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_18_0), std::move(resnet50_Reshape_286_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_287Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_285_0), std::move(resnet50_Reshape_286_0), std::move(resnet50_Convolution_287_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(2048, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_19_0), std::move(resnet50_Constant_20_0), std::move(resnet50_Convolution_287_0), std::move(resnet50_Constant_21_0), std::move(resnet50_Constant_22_0), std::move(resnet50_BatchNormInference_288_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_288_0), std::move(resnet50_Relu_289_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_19_0), std::move(resnet50_Constant_20_0), std::move(resnet50_Convolution_287_0), std::move(resnet50_Constant_21_0), std::move(resnet50_Constant_22_0), std::move(resnet50_BatchNormInference_288_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_288_0), std::move(resnet50_Relu_289_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_290_CallKernel(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_23_0), std::move(resnet50_Reshape_290_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_291Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_289_0), std::move(resnet50_Reshape_290_0), std::move(resnet50_Convolution_291_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_24_0), std::move(resnet50_Constant_25_0), std::move(resnet50_Convolution_291_0), std::move(resnet50_Constant_26_0), std::move(resnet50_Constant_27_0), std::move(resnet50_BatchNormInference_292_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(32768, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_24_0), std::move(resnet50_Constant_25_0), std::move(resnet50_Convolution_291_0), std::move(resnet50_Constant_26_0), std::move(resnet50_Constant_27_0), std::move(resnet50_BatchNormInference_292_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_290_CallKernel(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_8_0), std::move(resnet50_Reshape_279_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_291Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_MaxPool_278_0), std::move(resnet50_Reshape_279_0), std::move(resnet50_Convolution_280_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_9_0), std::move(resnet50_Constant_10_0), std::move(resnet50_Convolution_280_0), std::move(resnet50_Constant_11_0), std::move(resnet50_Constant_12_0), std::move(resnet50_BatchNormInference_283_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_283_0), std::move(resnet50_BatchNormInference_292_0), std::move(resnet50_Relu_294_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(32768, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_9_0), std::move(resnet50_Constant_10_0), std::move(resnet50_Convolution_280_0), std::move(resnet50_Constant_11_0), std::move(resnet50_Constant_12_0), std::move(resnet50_BatchNormInference_283_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(200704, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_283_0), std::move(resnet50_BatchNormInference_292_0), std::move(resnet50_Relu_294_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_295_CallKernel(dim3(4, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_28_0), std::move(resnet50_Reshape_295_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_296Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_294_0), std::move(resnet50_Reshape_295_0), std::move(resnet50_Convolution_296_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(2048, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_29_0), std::move(resnet50_Constant_30_0), std::move(resnet50_Convolution_296_0), std::move(resnet50_Constant_31_0), std::move(resnet50_Constant_32_0), std::move(resnet50_BatchNormInference_297_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_297_0), std::move(resnet50_Relu_298_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_29_0), std::move(resnet50_Constant_30_0), std::move(resnet50_Convolution_296_0), std::move(resnet50_Constant_31_0), std::move(resnet50_Constant_32_0), std::move(resnet50_BatchNormInference_297_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_297_0), std::move(resnet50_Relu_298_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_286_CallKernel(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_33_0), std::move(resnet50_Reshape_299_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_287Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_298_0), std::move(resnet50_Reshape_299_0), std::move(resnet50_Convolution_300_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(2048, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_34_0), std::move(resnet50_Constant_35_0), std::move(resnet50_Convolution_300_0), std::move(resnet50_Constant_36_0), std::move(resnet50_Constant_37_0), std::move(resnet50_BatchNormInference_301_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_301_0), std::move(resnet50_Relu_302_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_34_0), std::move(resnet50_Constant_35_0), std::move(resnet50_Convolution_300_0), std::move(resnet50_Constant_36_0), std::move(resnet50_Constant_37_0), std::move(resnet50_BatchNormInference_301_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_301_0), std::move(resnet50_Relu_302_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_290_CallKernel(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_38_0), std::move(resnet50_Reshape_303_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_291Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_302_0), std::move(resnet50_Reshape_303_0), std::move(resnet50_Convolution_304_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_39_0), std::move(resnet50_Constant_40_0), std::move(resnet50_Convolution_304_0), std::move(resnet50_Constant_41_0), std::move(resnet50_Constant_42_0), std::move(resnet50_BatchNormInference_305_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_294_0), std::move(resnet50_BatchNormInference_305_0), std::move(resnet50_Relu_307_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(32768, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_39_0), std::move(resnet50_Constant_40_0), std::move(resnet50_Convolution_304_0), std::move(resnet50_Constant_41_0), std::move(resnet50_Constant_42_0), std::move(resnet50_BatchNormInference_305_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(200704, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_294_0), std::move(resnet50_BatchNormInference_305_0), std::move(resnet50_Relu_307_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_295_CallKernel(dim3(4, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_43_0), std::move(resnet50_Reshape_308_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_296Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_307_0), std::move(resnet50_Reshape_308_0), std::move(resnet50_Convolution_309_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(2048, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_44_0), std::move(resnet50_Constant_45_0), std::move(resnet50_Convolution_309_0), std::move(resnet50_Constant_46_0), std::move(resnet50_Constant_47_0), std::move(resnet50_BatchNormInference_310_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_310_0), std::move(resnet50_Relu_311_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_44_0), std::move(resnet50_Constant_45_0), std::move(resnet50_Convolution_309_0), std::move(resnet50_Constant_46_0), std::move(resnet50_Constant_47_0), std::move(resnet50_BatchNormInference_310_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_310_0), std::move(resnet50_Relu_311_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_286_CallKernel(dim3(4, 64, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_48_0), std::move(resnet50_Reshape_312_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_287Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_311_0), std::move(resnet50_Reshape_312_0), std::move(resnet50_Convolution_313_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(2048, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_49_0), std::move(resnet50_Constant_50_0), std::move(resnet50_Convolution_313_0), std::move(resnet50_Constant_51_0), std::move(resnet50_Constant_52_0), std::move(resnet50_BatchNormInference_314_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_314_0), std::move(resnet50_Relu_315_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_49_0), std::move(resnet50_Constant_50_0), std::move(resnet50_Convolution_313_0), std::move(resnet50_Constant_51_0), std::move(resnet50_Constant_52_0), std::move(resnet50_BatchNormInference_314_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_314_0), std::move(resnet50_Relu_315_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_290_CallKernel(dim3(16, 4, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_53_0), std::move(resnet50_Reshape_316_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_291Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_315_0), std::move(resnet50_Reshape_316_0), std::move(resnet50_Convolution_317_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(8192, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_54_0), std::move(resnet50_Constant_55_0), std::move(resnet50_Convolution_317_0), std::move(resnet50_Constant_56_0), std::move(resnet50_Constant_57_0), std::move(resnet50_BatchNormInference_318_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_307_0), std::move(resnet50_BatchNormInference_318_0), std::move(resnet50_Relu_320_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_CallKernel(dim3(32768, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_54_0), std::move(resnet50_Constant_55_0), std::move(resnet50_Convolution_317_0), std::move(resnet50_Constant_56_0), std::move(resnet50_Constant_57_0), std::move(resnet50_BatchNormInference_318_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(200704, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_307_0), std::move(resnet50_BatchNormInference_318_0), std::move(resnet50_Relu_320_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_323_CallKernel(dim3(8, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_63_0), std::move(resnet50_Reshape_323_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_324Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_320_0), std::move(resnet50_Reshape_323_0), std::move(resnet50_Convolution_324_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(4096, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_64_0), std::move(resnet50_Constant_65_0), std::move(resnet50_Convolution_324_0), std::move(resnet50_Constant_66_0), std::move(resnet50_Constant_67_0), std::move(resnet50_BatchNormInference_326_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_326_0), std::move(resnet50_Relu_327_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_64_0), std::move(resnet50_Constant_65_0), std::move(resnet50_Convolution_324_0), std::move(resnet50_Constant_66_0), std::move(resnet50_Constant_67_0), std::move(resnet50_BatchNormInference_326_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_326_0), std::move(resnet50_Relu_327_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_328_CallKernel(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_68_0), std::move(resnet50_Reshape_328_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_329Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_327_0), std::move(resnet50_Reshape_328_0), std::move(resnet50_Convolution_329_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(4096, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_69_0), std::move(resnet50_Constant_70_0), std::move(resnet50_Convolution_329_0), std::move(resnet50_Constant_71_0), std::move(resnet50_Constant_72_0), std::move(resnet50_BatchNormInference_330_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_330_0), std::move(resnet50_Relu_331_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_69_0), std::move(resnet50_Constant_70_0), std::move(resnet50_Convolution_329_0), std::move(resnet50_Constant_71_0), std::move(resnet50_Constant_72_0), std::move(resnet50_BatchNormInference_330_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_330_0), std::move(resnet50_Relu_331_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_332_CallKernel(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_73_0), std::move(resnet50_Reshape_332_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_333Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_331_0), std::move(resnet50_Reshape_332_0), std::move(resnet50_Convolution_333_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_74_0), std::move(resnet50_Constant_75_0), std::move(resnet50_Convolution_333_0), std::move(resnet50_Constant_76_0), std::move(resnet50_Constant_77_0), std::move(resnet50_BatchNormInference_334_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(65536, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_74_0), std::move(resnet50_Constant_75_0), std::move(resnet50_Convolution_333_0), std::move(resnet50_Constant_76_0), std::move(resnet50_Constant_77_0), std::move(resnet50_BatchNormInference_334_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_321_CallKernel(dim3(32, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_58_0), std::move(resnet50_Reshape_321_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_322Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_320_0), std::move(resnet50_Reshape_321_0), std::move(resnet50_Convolution_322_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_59_0), std::move(resnet50_Constant_60_0), std::move(resnet50_Convolution_322_0), std::move(resnet50_Constant_61_0), std::move(resnet50_Constant_62_0), std::move(resnet50_BatchNormInference_325_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_325_0), std::move(resnet50_BatchNormInference_334_0), std::move(resnet50_Relu_336_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(65536, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_59_0), std::move(resnet50_Constant_60_0), std::move(resnet50_Convolution_322_0), std::move(resnet50_Constant_61_0), std::move(resnet50_Constant_62_0), std::move(resnet50_BatchNormInference_325_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(100352, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_325_0), std::move(resnet50_BatchNormInference_334_0), std::move(resnet50_Relu_336_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_337_CallKernel(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_78_0), std::move(resnet50_Reshape_337_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_338Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_336_0), std::move(resnet50_Reshape_337_0), std::move(resnet50_Convolution_338_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(4096, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_79_0), std::move(resnet50_Constant_80_0), std::move(resnet50_Convolution_338_0), std::move(resnet50_Constant_81_0), std::move(resnet50_Constant_82_0), std::move(resnet50_BatchNormInference_339_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_339_0), std::move(resnet50_Relu_340_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_79_0), std::move(resnet50_Constant_80_0), std::move(resnet50_Convolution_338_0), std::move(resnet50_Constant_81_0), std::move(resnet50_Constant_82_0), std::move(resnet50_BatchNormInference_339_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_339_0), std::move(resnet50_Relu_340_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_328_CallKernel(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_83_0), std::move(resnet50_Reshape_341_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_329Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_340_0), std::move(resnet50_Reshape_341_0), std::move(resnet50_Convolution_342_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(4096, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_84_0), std::move(resnet50_Constant_85_0), std::move(resnet50_Convolution_342_0), std::move(resnet50_Constant_86_0), std::move(resnet50_Constant_87_0), std::move(resnet50_BatchNormInference_343_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_343_0), std::move(resnet50_Relu_344_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_84_0), std::move(resnet50_Constant_85_0), std::move(resnet50_Convolution_342_0), std::move(resnet50_Constant_86_0), std::move(resnet50_Constant_87_0), std::move(resnet50_BatchNormInference_343_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_343_0), std::move(resnet50_Relu_344_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_332_CallKernel(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_88_0), std::move(resnet50_Reshape_345_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_333Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_344_0), std::move(resnet50_Reshape_345_0), std::move(resnet50_Convolution_346_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_89_0), std::move(resnet50_Constant_90_0), std::move(resnet50_Convolution_346_0), std::move(resnet50_Constant_91_0), std::move(resnet50_Constant_92_0), std::move(resnet50_BatchNormInference_347_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_336_0), std::move(resnet50_BatchNormInference_347_0), std::move(resnet50_Relu_349_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(65536, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_89_0), std::move(resnet50_Constant_90_0), std::move(resnet50_Convolution_346_0), std::move(resnet50_Constant_91_0), std::move(resnet50_Constant_92_0), std::move(resnet50_BatchNormInference_347_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(100352, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_336_0), std::move(resnet50_BatchNormInference_347_0), std::move(resnet50_Relu_349_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_337_CallKernel(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_93_0), std::move(resnet50_Reshape_350_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_338Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_349_0), std::move(resnet50_Reshape_350_0), std::move(resnet50_Convolution_351_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(4096, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_94_0), std::move(resnet50_Constant_95_0), std::move(resnet50_Convolution_351_0), std::move(resnet50_Constant_96_0), std::move(resnet50_Constant_97_0), std::move(resnet50_BatchNormInference_352_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_352_0), std::move(resnet50_Relu_353_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_94_0), std::move(resnet50_Constant_95_0), std::move(resnet50_Convolution_351_0), std::move(resnet50_Constant_96_0), std::move(resnet50_Constant_97_0), std::move(resnet50_BatchNormInference_352_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_352_0), std::move(resnet50_Relu_353_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_328_CallKernel(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_98_0), std::move(resnet50_Reshape_354_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_329Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_353_0), std::move(resnet50_Reshape_354_0), std::move(resnet50_Convolution_355_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(4096, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_99_0), std::move(resnet50_Constant_100_0), std::move(resnet50_Convolution_355_0), std::move(resnet50_Constant_101_0), std::move(resnet50_Constant_102_0), std::move(resnet50_BatchNormInference_356_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_356_0), std::move(resnet50_Relu_357_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_99_0), std::move(resnet50_Constant_100_0), std::move(resnet50_Convolution_355_0), std::move(resnet50_Constant_101_0), std::move(resnet50_Constant_102_0), std::move(resnet50_BatchNormInference_356_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_356_0), std::move(resnet50_Relu_357_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_332_CallKernel(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_103_0), std::move(resnet50_Reshape_358_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_333Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_357_0), std::move(resnet50_Reshape_358_0), std::move(resnet50_Convolution_359_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_104_0), std::move(resnet50_Constant_105_0), std::move(resnet50_Convolution_359_0), std::move(resnet50_Constant_106_0), std::move(resnet50_Constant_107_0), std::move(resnet50_BatchNormInference_360_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_349_0), std::move(resnet50_BatchNormInference_360_0), std::move(resnet50_Relu_362_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(65536, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_104_0), std::move(resnet50_Constant_105_0), std::move(resnet50_Convolution_359_0), std::move(resnet50_Constant_106_0), std::move(resnet50_Constant_107_0), std::move(resnet50_BatchNormInference_360_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(100352, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_349_0), std::move(resnet50_BatchNormInference_360_0), std::move(resnet50_Relu_362_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_337_CallKernel(dim3(8, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_108_0), std::move(resnet50_Reshape_363_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_338Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_362_0), std::move(resnet50_Reshape_363_0), std::move(resnet50_Convolution_364_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(4096, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_109_0), std::move(resnet50_Constant_110_0), std::move(resnet50_Convolution_364_0), std::move(resnet50_Constant_111_0), std::move(resnet50_Constant_112_0), std::move(resnet50_BatchNormInference_365_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_365_0), std::move(resnet50_Relu_366_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_109_0), std::move(resnet50_Constant_110_0), std::move(resnet50_Convolution_364_0), std::move(resnet50_Constant_111_0), std::move(resnet50_Constant_112_0), std::move(resnet50_BatchNormInference_365_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_365_0), std::move(resnet50_Relu_366_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_328_CallKernel(dim3(8, 128, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_113_0), std::move(resnet50_Reshape_367_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_329Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_366_0), std::move(resnet50_Reshape_367_0), std::move(resnet50_Convolution_368_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(4096, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_114_0), std::move(resnet50_Constant_115_0), std::move(resnet50_Convolution_368_0), std::move(resnet50_Constant_116_0), std::move(resnet50_Constant_117_0), std::move(resnet50_BatchNormInference_369_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_369_0), std::move(resnet50_Relu_370_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_114_0), std::move(resnet50_Constant_115_0), std::move(resnet50_Convolution_368_0), std::move(resnet50_Constant_116_0), std::move(resnet50_Constant_117_0), std::move(resnet50_BatchNormInference_369_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_369_0), std::move(resnet50_Relu_370_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_332_CallKernel(dim3(32, 8, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_118_0), std::move(resnet50_Reshape_371_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_333Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_370_0), std::move(resnet50_Reshape_371_0), std::move(resnet50_Convolution_372_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(16384, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_119_0), std::move(resnet50_Constant_120_0), std::move(resnet50_Convolution_372_0), std::move(resnet50_Constant_121_0), std::move(resnet50_Constant_122_0), std::move(resnet50_BatchNormInference_373_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_362_0), std::move(resnet50_BatchNormInference_373_0), std::move(resnet50_Relu_375_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_CallKernel(dim3(65536, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Constant_119_0), std::move(resnet50_Constant_120_0), std::move(resnet50_Convolution_372_0), std::move(resnet50_Constant_121_0), std::move(resnet50_Constant_122_0), std::move(resnet50_BatchNormInference_373_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(100352, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_362_0), std::move(resnet50_BatchNormInference_373_0), std::move(resnet50_Relu_375_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_378_CallKernel(dim3(16, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_128_0), std::move(resnet50_Reshape_378_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_379Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_375_0), std::move(resnet50_Reshape_378_0), std::move(resnet50_Convolution_379_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_129_0), std::move(resnet50_Constant_130_0), std::move(resnet50_Convolution_379_0), std::move(resnet50_Constant_131_0), std::move(resnet50_Constant_132_0), std::move(resnet50_BatchNormInference_381_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_381_0), std::move(resnet50_Relu_382_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_129_0), std::move(resnet50_Constant_130_0), std::move(resnet50_Convolution_379_0), std::move(resnet50_Constant_131_0), std::move(resnet50_Constant_132_0), std::move(resnet50_BatchNormInference_381_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_381_0), std::move(resnet50_Relu_382_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_133_0), std::move(resnet50_Reshape_383_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_382_0), std::move(resnet50_Reshape_383_0), std::move(resnet50_Convolution_384_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_134_0), std::move(resnet50_Constant_135_0), std::move(resnet50_Convolution_384_0), std::move(resnet50_Constant_136_0), std::move(resnet50_Constant_137_0), std::move(resnet50_BatchNormInference_385_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_385_0), std::move(resnet50_Relu_386_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_134_0), std::move(resnet50_Constant_135_0), std::move(resnet50_Convolution_384_0), std::move(resnet50_Constant_136_0), std::move(resnet50_Constant_137_0), std::move(resnet50_BatchNormInference_385_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_385_0), std::move(resnet50_Relu_386_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_138_0), std::move(resnet50_Reshape_387_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_386_0), std::move(resnet50_Reshape_387_0), std::move(resnet50_Convolution_388_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_139_0), std::move(resnet50_Constant_140_0), std::move(resnet50_Convolution_388_0), std::move(resnet50_Constant_141_0), std::move(resnet50_Constant_142_0), std::move(resnet50_BatchNormInference_389_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(131072, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_139_0), std::move(resnet50_Constant_140_0), std::move(resnet50_Convolution_388_0), std::move(resnet50_Constant_141_0), std::move(resnet50_Constant_142_0), std::move(resnet50_BatchNormInference_389_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_376_CallKernel(dim3(64, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_123_0), std::move(resnet50_Reshape_376_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_377Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_375_0), std::move(resnet50_Reshape_376_0), std::move(resnet50_Convolution_377_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_124_0), std::move(resnet50_Constant_125_0), std::move(resnet50_Convolution_377_0), std::move(resnet50_Constant_126_0), std::move(resnet50_Constant_127_0), std::move(resnet50_BatchNormInference_380_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_380_0), std::move(resnet50_BatchNormInference_389_0), std::move(resnet50_Relu_391_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(131072, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_124_0), std::move(resnet50_Constant_125_0), std::move(resnet50_Convolution_377_0), std::move(resnet50_Constant_126_0), std::move(resnet50_Constant_127_0), std::move(resnet50_BatchNormInference_380_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_380_0), std::move(resnet50_BatchNormInference_389_0), std::move(resnet50_Relu_391_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_143_0), std::move(resnet50_Reshape_392_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_391_0), std::move(resnet50_Reshape_392_0), std::move(resnet50_Convolution_393_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_144_0), std::move(resnet50_Constant_145_0), std::move(resnet50_Convolution_393_0), std::move(resnet50_Constant_146_0), std::move(resnet50_Constant_147_0), std::move(resnet50_BatchNormInference_394_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_394_0), std::move(resnet50_Relu_395_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_144_0), std::move(resnet50_Constant_145_0), std::move(resnet50_Convolution_393_0), std::move(resnet50_Constant_146_0), std::move(resnet50_Constant_147_0), std::move(resnet50_BatchNormInference_394_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_394_0), std::move(resnet50_Relu_395_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_148_0), std::move(resnet50_Reshape_396_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_395_0), std::move(resnet50_Reshape_396_0), std::move(resnet50_Convolution_397_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_149_0), std::move(resnet50_Constant_150_0), std::move(resnet50_Convolution_397_0), std::move(resnet50_Constant_151_0), std::move(resnet50_Constant_152_0), std::move(resnet50_BatchNormInference_398_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_398_0), std::move(resnet50_Relu_399_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_149_0), std::move(resnet50_Constant_150_0), std::move(resnet50_Convolution_397_0), std::move(resnet50_Constant_151_0), std::move(resnet50_Constant_152_0), std::move(resnet50_BatchNormInference_398_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_398_0), std::move(resnet50_Relu_399_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_153_0), std::move(resnet50_Reshape_400_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_399_0), std::move(resnet50_Reshape_400_0), std::move(resnet50_Convolution_401_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_154_0), std::move(resnet50_Constant_155_0), std::move(resnet50_Convolution_401_0), std::move(resnet50_Constant_156_0), std::move(resnet50_Constant_157_0), std::move(resnet50_BatchNormInference_402_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_391_0), std::move(resnet50_BatchNormInference_402_0), std::move(resnet50_Relu_404_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(131072, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_154_0), std::move(resnet50_Constant_155_0), std::move(resnet50_Convolution_401_0), std::move(resnet50_Constant_156_0), std::move(resnet50_Constant_157_0), std::move(resnet50_BatchNormInference_402_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_391_0), std::move(resnet50_BatchNormInference_402_0), std::move(resnet50_Relu_404_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_158_0), std::move(resnet50_Reshape_405_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_404_0), std::move(resnet50_Reshape_405_0), std::move(resnet50_Convolution_406_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_159_0), std::move(resnet50_Constant_160_0), std::move(resnet50_Convolution_406_0), std::move(resnet50_Constant_161_0), std::move(resnet50_Constant_162_0), std::move(resnet50_BatchNormInference_407_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_407_0), std::move(resnet50_Relu_408_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_159_0), std::move(resnet50_Constant_160_0), std::move(resnet50_Convolution_406_0), std::move(resnet50_Constant_161_0), std::move(resnet50_Constant_162_0), std::move(resnet50_BatchNormInference_407_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_407_0), std::move(resnet50_Relu_408_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_163_0), std::move(resnet50_Reshape_409_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_408_0), std::move(resnet50_Reshape_409_0), std::move(resnet50_Convolution_410_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_164_0), std::move(resnet50_Constant_165_0), std::move(resnet50_Convolution_410_0), std::move(resnet50_Constant_166_0), std::move(resnet50_Constant_167_0), std::move(resnet50_BatchNormInference_411_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_411_0), std::move(resnet50_Relu_412_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_164_0), std::move(resnet50_Constant_165_0), std::move(resnet50_Convolution_410_0), std::move(resnet50_Constant_166_0), std::move(resnet50_Constant_167_0), std::move(resnet50_BatchNormInference_411_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_411_0), std::move(resnet50_Relu_412_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_168_0), std::move(resnet50_Reshape_413_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_412_0), std::move(resnet50_Reshape_413_0), std::move(resnet50_Convolution_414_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_169_0), std::move(resnet50_Constant_170_0), std::move(resnet50_Convolution_414_0), std::move(resnet50_Constant_171_0), std::move(resnet50_Constant_172_0), std::move(resnet50_BatchNormInference_415_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_404_0), std::move(resnet50_BatchNormInference_415_0), std::move(resnet50_Relu_417_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(131072, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_169_0), std::move(resnet50_Constant_170_0), std::move(resnet50_Convolution_414_0), std::move(resnet50_Constant_171_0), std::move(resnet50_Constant_172_0), std::move(resnet50_BatchNormInference_415_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_404_0), std::move(resnet50_BatchNormInference_415_0), std::move(resnet50_Relu_417_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_173_0), std::move(resnet50_Reshape_418_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_417_0), std::move(resnet50_Reshape_418_0), std::move(resnet50_Convolution_419_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_174_0), std::move(resnet50_Constant_175_0), std::move(resnet50_Convolution_419_0), std::move(resnet50_Constant_176_0), std::move(resnet50_Constant_177_0), std::move(resnet50_BatchNormInference_420_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_420_0), std::move(resnet50_Relu_421_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_174_0), std::move(resnet50_Constant_175_0), std::move(resnet50_Convolution_419_0), std::move(resnet50_Constant_176_0), std::move(resnet50_Constant_177_0), std::move(resnet50_BatchNormInference_420_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_420_0), std::move(resnet50_Relu_421_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_178_0), std::move(resnet50_Reshape_422_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_421_0), std::move(resnet50_Reshape_422_0), std::move(resnet50_Convolution_423_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_179_0), std::move(resnet50_Constant_180_0), std::move(resnet50_Convolution_423_0), std::move(resnet50_Constant_181_0), std::move(resnet50_Constant_182_0), std::move(resnet50_BatchNormInference_424_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_424_0), std::move(resnet50_Relu_425_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_179_0), std::move(resnet50_Constant_180_0), std::move(resnet50_Convolution_423_0), std::move(resnet50_Constant_181_0), std::move(resnet50_Constant_182_0), std::move(resnet50_BatchNormInference_424_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_424_0), std::move(resnet50_Relu_425_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_183_0), std::move(resnet50_Reshape_426_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_425_0), std::move(resnet50_Reshape_426_0), std::move(resnet50_Convolution_427_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_184_0), std::move(resnet50_Constant_185_0), std::move(resnet50_Convolution_427_0), std::move(resnet50_Constant_186_0), std::move(resnet50_Constant_187_0), std::move(resnet50_BatchNormInference_428_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_417_0), std::move(resnet50_BatchNormInference_428_0), std::move(resnet50_Relu_430_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(131072, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_184_0), std::move(resnet50_Constant_185_0), std::move(resnet50_Convolution_427_0), std::move(resnet50_Constant_186_0), std::move(resnet50_Constant_187_0), std::move(resnet50_BatchNormInference_428_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_417_0), std::move(resnet50_BatchNormInference_428_0), std::move(resnet50_Relu_430_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_188_0), std::move(resnet50_Reshape_431_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_430_0), std::move(resnet50_Reshape_431_0), std::move(resnet50_Convolution_432_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_189_0), std::move(resnet50_Constant_190_0), std::move(resnet50_Convolution_432_0), std::move(resnet50_Constant_191_0), std::move(resnet50_Constant_192_0), std::move(resnet50_BatchNormInference_433_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_433_0), std::move(resnet50_Relu_434_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_189_0), std::move(resnet50_Constant_190_0), std::move(resnet50_Convolution_432_0), std::move(resnet50_Constant_191_0), std::move(resnet50_Constant_192_0), std::move(resnet50_BatchNormInference_433_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_433_0), std::move(resnet50_Relu_434_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_193_0), std::move(resnet50_Reshape_435_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_434_0), std::move(resnet50_Reshape_435_0), std::move(resnet50_Convolution_436_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_194_0), std::move(resnet50_Constant_195_0), std::move(resnet50_Convolution_436_0), std::move(resnet50_Constant_196_0), std::move(resnet50_Constant_197_0), std::move(resnet50_BatchNormInference_437_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_437_0), std::move(resnet50_Relu_438_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_194_0), std::move(resnet50_Constant_195_0), std::move(resnet50_Convolution_436_0), std::move(resnet50_Constant_196_0), std::move(resnet50_Constant_197_0), std::move(resnet50_BatchNormInference_437_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_437_0), std::move(resnet50_Relu_438_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_198_0), std::move(resnet50_Reshape_439_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_438_0), std::move(resnet50_Reshape_439_0), std::move(resnet50_Convolution_440_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_199_0), std::move(resnet50_Constant_200_0), std::move(resnet50_Convolution_440_0), std::move(resnet50_Constant_201_0), std::move(resnet50_Constant_202_0), std::move(resnet50_BatchNormInference_441_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_430_0), std::move(resnet50_BatchNormInference_441_0), std::move(resnet50_Relu_443_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(131072, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_199_0), std::move(resnet50_Constant_200_0), std::move(resnet50_Convolution_440_0), std::move(resnet50_Constant_201_0), std::move(resnet50_Constant_202_0), std::move(resnet50_BatchNormInference_441_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_430_0), std::move(resnet50_BatchNormInference_441_0), std::move(resnet50_Relu_443_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_392_CallKernel(dim3(16, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_203_0), std::move(resnet50_Reshape_444_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_393Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_443_0), std::move(resnet50_Reshape_444_0), std::move(resnet50_Convolution_445_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_204_0), std::move(resnet50_Constant_205_0), std::move(resnet50_Convolution_445_0), std::move(resnet50_Constant_206_0), std::move(resnet50_Constant_207_0), std::move(resnet50_BatchNormInference_446_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_446_0), std::move(resnet50_Relu_447_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_204_0), std::move(resnet50_Constant_205_0), std::move(resnet50_Convolution_445_0), std::move(resnet50_Constant_206_0), std::move(resnet50_Constant_207_0), std::move(resnet50_BatchNormInference_446_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_446_0), std::move(resnet50_Relu_447_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_383_CallKernel(dim3(16, 256, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_208_0), std::move(resnet50_Reshape_448_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_384Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_447_0), std::move(resnet50_Reshape_448_0), std::move(resnet50_Convolution_449_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(8192, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_209_0), std::move(resnet50_Constant_210_0), std::move(resnet50_Convolution_449_0), std::move(resnet50_Constant_211_0), std::move(resnet50_Constant_212_0), std::move(resnet50_BatchNormInference_450_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(3136, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_450_0), std::move(resnet50_Relu_451_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_209_0), std::move(resnet50_Constant_210_0), std::move(resnet50_Convolution_449_0), std::move(resnet50_Constant_211_0), std::move(resnet50_Constant_212_0), std::move(resnet50_BatchNormInference_450_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_450_0), std::move(resnet50_Relu_451_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_387_CallKernel(dim3(64, 16, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_213_0), std::move(resnet50_Reshape_452_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_388Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_451_0), std::move(resnet50_Reshape_452_0), std::move(resnet50_Convolution_453_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(32768, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_214_0), std::move(resnet50_Constant_215_0), std::move(resnet50_Convolution_453_0), std::move(resnet50_Constant_216_0), std::move(resnet50_Constant_217_0), std::move(resnet50_BatchNormInference_454_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(12544, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_443_0), std::move(resnet50_BatchNormInference_454_0), std::move(resnet50_Relu_456_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_CallKernel(dim3(131072, 1, 1), dim3(196, 1, 1), 0, nullptr, std::move(resnet50_Constant_214_0), std::move(resnet50_Constant_215_0), std::move(resnet50_Convolution_453_0), std::move(resnet50_Constant_216_0), std::move(resnet50_Constant_217_0), std::move(resnet50_BatchNormInference_454_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(50176, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_443_0), std::move(resnet50_BatchNormInference_454_0), std::move(resnet50_Relu_456_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_459_CallKernel(dim3(32, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_223_0), std::move(resnet50_Reshape_459_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_460Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_456_0), std::move(resnet50_Reshape_459_0), std::move(resnet50_Convolution_460_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(16384, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_224_0), std::move(resnet50_Constant_225_0), std::move(resnet50_Convolution_460_0), std::move(resnet50_Constant_226_0), std::move(resnet50_Constant_227_0), std::move(resnet50_BatchNormInference_462_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_462_0), std::move(resnet50_Relu_463_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_224_0), std::move(resnet50_Constant_225_0), std::move(resnet50_Convolution_460_0), std::move(resnet50_Constant_226_0), std::move(resnet50_Constant_227_0), std::move(resnet50_BatchNormInference_462_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_462_0), std::move(resnet50_Relu_463_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_464_CallKernel(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_228_0), std::move(resnet50_Reshape_464_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_465Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_463_0), std::move(resnet50_Reshape_464_0), std::move(resnet50_Convolution_465_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(16384, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_229_0), std::move(resnet50_Constant_230_0), std::move(resnet50_Convolution_465_0), std::move(resnet50_Constant_231_0), std::move(resnet50_Constant_232_0), std::move(resnet50_BatchNormInference_466_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_466_0), std::move(resnet50_Relu_467_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_229_0), std::move(resnet50_Constant_230_0), std::move(resnet50_Convolution_465_0), std::move(resnet50_Constant_231_0), std::move(resnet50_Constant_232_0), std::move(resnet50_BatchNormInference_466_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_466_0), std::move(resnet50_Relu_467_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_468_CallKernel(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_233_0), std::move(resnet50_Reshape_468_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_469Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_467_0), std::move(resnet50_Reshape_468_0), std::move(resnet50_Convolution_469_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_234_0), std::move(resnet50_Constant_235_0), std::move(resnet50_Convolution_469_0), std::move(resnet50_Constant_236_0), std::move(resnet50_Constant_237_0), std::move(resnet50_BatchNormInference_470_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(262144, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_234_0), std::move(resnet50_Constant_235_0), std::move(resnet50_Convolution_469_0), std::move(resnet50_Constant_236_0), std::move(resnet50_Constant_237_0), std::move(resnet50_BatchNormInference_470_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_457_CallKernel(dim3(128, 64, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_218_0), std::move(resnet50_Reshape_457_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_458Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_456_0), std::move(resnet50_Reshape_457_0), std::move(resnet50_Convolution_458_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_219_0), std::move(resnet50_Constant_220_0), std::move(resnet50_Convolution_458_0), std::move(resnet50_Constant_221_0), std::move(resnet50_Constant_222_0), std::move(resnet50_BatchNormInference_461_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_461_0), std::move(resnet50_BatchNormInference_470_0), std::move(resnet50_Relu_472_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(262144, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_219_0), std::move(resnet50_Constant_220_0), std::move(resnet50_Convolution_458_0), std::move(resnet50_Constant_221_0), std::move(resnet50_Constant_222_0), std::move(resnet50_BatchNormInference_461_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_461_0), std::move(resnet50_BatchNormInference_470_0), std::move(resnet50_Relu_472_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_473_CallKernel(dim3(32, 128, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_238_0), std::move(resnet50_Reshape_473_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_474Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_472_0), std::move(resnet50_Reshape_473_0), std::move(resnet50_Convolution_474_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(16384, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_239_0), std::move(resnet50_Constant_240_0), std::move(resnet50_Convolution_474_0), std::move(resnet50_Constant_241_0), std::move(resnet50_Constant_242_0), std::move(resnet50_BatchNormInference_475_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_475_0), std::move(resnet50_Relu_476_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_239_0), std::move(resnet50_Constant_240_0), std::move(resnet50_Convolution_474_0), std::move(resnet50_Constant_241_0), std::move(resnet50_Constant_242_0), std::move(resnet50_BatchNormInference_475_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_475_0), std::move(resnet50_Relu_476_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_464_CallKernel(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_243_0), std::move(resnet50_Reshape_477_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_465Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_476_0), std::move(resnet50_Reshape_477_0), std::move(resnet50_Convolution_478_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(16384, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_244_0), std::move(resnet50_Constant_245_0), std::move(resnet50_Convolution_478_0), std::move(resnet50_Constant_246_0), std::move(resnet50_Constant_247_0), std::move(resnet50_BatchNormInference_479_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_479_0), std::move(resnet50_Relu_480_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_244_0), std::move(resnet50_Constant_245_0), std::move(resnet50_Convolution_478_0), std::move(resnet50_Constant_246_0), std::move(resnet50_Constant_247_0), std::move(resnet50_BatchNormInference_479_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_479_0), std::move(resnet50_Relu_480_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_468_CallKernel(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_248_0), std::move(resnet50_Reshape_481_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_469Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_480_0), std::move(resnet50_Reshape_481_0), std::move(resnet50_Convolution_482_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_249_0), std::move(resnet50_Constant_250_0), std::move(resnet50_Convolution_482_0), std::move(resnet50_Constant_251_0), std::move(resnet50_Constant_252_0), std::move(resnet50_BatchNormInference_483_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_472_0), std::move(resnet50_BatchNormInference_483_0), std::move(resnet50_Relu_485_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(262144, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_249_0), std::move(resnet50_Constant_250_0), std::move(resnet50_Convolution_482_0), std::move(resnet50_Constant_251_0), std::move(resnet50_Constant_252_0), std::move(resnet50_BatchNormInference_483_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_472_0), std::move(resnet50_BatchNormInference_483_0), std::move(resnet50_Relu_485_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_473_CallKernel(dim3(32, 128, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_253_0), std::move(resnet50_Reshape_486_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_474Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_485_0), std::move(resnet50_Reshape_486_0), std::move(resnet50_Convolution_487_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(16384, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_254_0), std::move(resnet50_Constant_255_0), std::move(resnet50_Convolution_487_0), std::move(resnet50_Constant_256_0), std::move(resnet50_Constant_257_0), std::move(resnet50_BatchNormInference_488_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_488_0), std::move(resnet50_Relu_489_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_254_0), std::move(resnet50_Constant_255_0), std::move(resnet50_Convolution_487_0), std::move(resnet50_Constant_256_0), std::move(resnet50_Constant_257_0), std::move(resnet50_BatchNormInference_488_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_488_0), std::move(resnet50_Relu_489_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_464_CallKernel(dim3(32, 512, 1), dim3(16, 1, 16), 0, nullptr, std::move(resnet50_Constant_258_0), std::move(resnet50_Reshape_490_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_465Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_489_0), std::move(resnet50_Reshape_490_0), std::move(resnet50_Convolution_491_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(16384, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_259_0), std::move(resnet50_Constant_260_0), std::move(resnet50_Convolution_491_0), std::move(resnet50_Constant_261_0), std::move(resnet50_Constant_262_0), std::move(resnet50_BatchNormInference_492_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(1568, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_492_0), std::move(resnet50_Relu_493_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_259_0), std::move(resnet50_Constant_260_0), std::move(resnet50_Convolution_491_0), std::move(resnet50_Constant_261_0), std::move(resnet50_Constant_262_0), std::move(resnet50_BatchNormInference_492_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Relu_float_float_cuda_Relu_277_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_BatchNormInference_492_0), std::move(resnet50_Relu_493_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Reshape_float_float_cuda_Reshape_468_CallKernel(dim3(128, 32, 1), dim3(16, 16, 1), 0, nullptr, std::move(resnet50_Constant_263_0), std::move(resnet50_Reshape_494_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Convolution_float_float_float_cuda_lib_Convolution_469Kernel(std::move(resnet50_cudnn_handle_0), std::move(resnet50_Relu_493_0), std::move(resnet50_Reshape_494_0), std::move(resnet50_Convolution_495_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(65536, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_264_0), std::move(resnet50_Constant_265_0), std::move(resnet50_Convolution_495_0), std::move(resnet50_Constant_266_0), std::move(resnet50_Constant_267_0), std::move(resnet50_BatchNormInference_496_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(6272, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_485_0), std::move(resnet50_BatchNormInference_496_0), std::move(resnet50_Relu_498_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Sum_float_float_cuda_Sum_499_CallKernel(dim3(65536, 1, 1), dim3(32, 1, 1), 0, nullptr, std::move(resnet50_Relu_498_0), std::move(resnet50_Sum_499_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Divide_float_float_float_cuda_Divide_501_CallKernel(dim3(128, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Sum_499_0), std::move(resnet50_Constant_500_0), std::move(resnet50_Divide_501_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_CallKernel(dim3(262144, 1, 1), dim3(49, 1, 1), 0, nullptr, std::move(resnet50_Constant_264_0), std::move(resnet50_Constant_265_0), std::move(resnet50_Convolution_495_0), std::move(resnet50_Constant_266_0), std::move(resnet50_Constant_267_0), std::move(resnet50_BatchNormInference_496_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_FusedKernel_float_float_float_cuda_Add_Relu_0_CallKernel(dim3(25088, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Relu_485_0), std::move(resnet50_BatchNormInference_496_0), std::move(resnet50_Relu_498_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Sum_float_float_cuda_Sum_499_CallKernel(dim3(262144, 1, 1), dim3(32, 1, 1), 0, nullptr, std::move(resnet50_Relu_498_0), std::move(resnet50_Sum_499_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Divide_float_float_float_cuda_Divide_501_CallKernel(dim3(512, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(resnet50_Sum_499_0), std::move(resnet50_Constant_500_0), std::move(resnet50_Divide_501_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Dot_float_float_float_cuda_lib_Dot_502Kernel(std::move(resnet50_cublas_handle_0), std::move(resnet50_Divide_501_0), std::move(resnet50_Constant_269_0), std::move(resnet50_Dot_502_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Broadcast_float_float_cuda_Broadcast_503_CallKernel(dim3(501, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(resnet50_Constant_270_0), std::move(resnet50_Broadcast_503_0), std::move(Parameter_0_0), std::move(Result_505_0)));
-    kernels.emplace_back(new resnet50_Add_float_float_float_cuda_Add_504_CallKernel(dim3(77, 1, 1), dim3(416, 1, 1), 0, nullptr, std::move(resnet50_Dot_502_0), std::move(resnet50_Broadcast_503_0), std::move(resnet50_Add_504_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Broadcast_float_float_cuda_Broadcast_503_CallKernel(dim3(2002, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(resnet50_Constant_270_0), std::move(resnet50_Broadcast_503_0), std::move(Parameter_0_0), std::move(Result_505_0)));
+    kernels.emplace_back(new resnet50_Add_float_float_float_cuda_Add_504_CallKernel(dim3(1001, 1, 1), dim3(128, 1, 1), 0, nullptr, std::move(resnet50_Dot_502_0), std::move(resnet50_Broadcast_503_0), std::move(resnet50_Add_504_0), std::move(Parameter_0_0), std::move(Result_505_0)));
     kernels.emplace_back(new resnet50_Result_float_float_cuda_lib_Result_505Kernel(std::move(resnet50_Add_504_0), std::move(Result_505_0), std::move(Parameter_0_0), std::move(Result_505_0)));
 }

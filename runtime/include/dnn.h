@@ -11,6 +11,7 @@
 #include <curand.h>
 #include <unordered_set>
 #include "header/tzgemm_header.h"
+#include "json.h"
 using namespace nvcuda;
 #define CUDNN_SAFE_CALL(func)                                                                      \
     do                                                                                             \
@@ -287,6 +288,8 @@ extern float *ori_wmma_results2;
 
 extern int batch_size;
 
+extern std::string MODEL_NAME;
+
 __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const void *alpha, const cudnnTensorDescriptor_t xDesc, const void *x, const cudnnFilterDescriptor_t wDesc, const void *w, const cudnnConvolutionDescriptor_t convDesc, cudnnConvolutionFwdAlgo_t algo, void *workSpace, size_t workSpaceSizeInBytes, const void *beta, const cudnnTensorDescriptor_t yDesc, void *y) {
     // printf("batch_size: %d\n", batch_size);
     // cudaEvent_t startKERNEL, stopKERNEL;
@@ -365,11 +368,11 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
     // printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
     MAX_COL_BUFFER = max(MAX_COL_BUFFER, col_n * col_c * col_h * col_w);
     MAX_BOTTOM = max(MAX_BOTTOM, input_n * input_c * input_h * input_w);
-    // printf("MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
+    printf("[MY-CUDNN]MAX_COL_BUFFER: %d, MAX_BOTTOM: %d\n", MAX_COL_BUFFER, MAX_BOTTOM);
     
     if (!im2col_malloced) {
-        MAX_COL_BUFFER = max(MAX_COL_BUFFER, col_n * col_c * col_h * col_w);
-        MAX_BOTTOM = max(MAX_BOTTOM, input_n * input_c * input_h * input_w);
+        MAX_COL_BUFFER = geti(MODEL_NAME, "MAX_COL_BUFFER");
+        MAX_BOTTOM = geti(MODEL_NAME, "MAX_BOTTOM");
         cudaErrCheck(cudaMalloc((void**)&bottom, MAX_BOTTOM * sizeof(float)));
         cudaErrCheck(cudaMalloc((void**)&col_buffer, MAX_COL_BUFFER * sizeof(float)));
         // curandGenerator_t gen;
@@ -456,9 +459,12 @@ __inline__ cudnnStatus_t mycudnnConvolutionForward(cudnnHandle_t handle, const v
     MAX_ORI_WMMA_A = max(MAX_ORI_WMMA_A, cur_ori_wmma_A);
     MAX_ORI_WMMA_B = max(MAX_ORI_WMMA_B, cur_ori_wmma_B);
     MAX_ORI_WMMA_C = max(MAX_ORI_WMMA_C, cur_ori_wmma_C);
-    // printf("MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
+    printf("[MY-CUDNN]MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
     if (!gemm_malloced) {
-        printf("[mycudnn]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", MAX_ORI_WMMA_A / 1024.0 / 1024.0, MAX_ORI_WMMA_B / 1024.0 / 1024.0, MAX_ORI_WMMA_C / 1024.0 / 1024.0);
+        MAX_ORI_WMMA_A = geti(MODEL_NAME, "MAX_ORI_WMMA_A");
+        MAX_ORI_WMMA_B = geti(MODEL_NAME, "MAX_ORI_WMMA_B");
+        MAX_ORI_WMMA_C = geti(MODEL_NAME, "MAX_ORI_WMMA_C");
+        // printf("[mycudnn]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", MAX_ORI_WMMA_A / 1024.0 / 1024.0, MAX_ORI_WMMA_B / 1024.0 / 1024.0, MAX_ORI_WMMA_C / 1024.0 / 1024.0);
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_A), MAX_ORI_WMMA_A * 2));
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_host_B), MAX_ORI_WMMA_B * 2));
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), MAX_ORI_WMMA_A));
@@ -559,9 +565,12 @@ __inline__ cublasStatus_t mycublasSgemm(cublasHandle_t handle, cublasOperation_t
     MAX_ORI_WMMA_A = max(MAX_ORI_WMMA_A, (long long)sizeof(half) * M_GLOBAL * K_GLOBAL);
     MAX_ORI_WMMA_B = max(MAX_ORI_WMMA_B, (long long)sizeof(half) * N_GLOBAL * K_GLOBAL);
     MAX_ORI_WMMA_C = max(MAX_ORI_WMMA_C, (long long)sizeof(float) * M_GLOBAL * N_GLOBAL);
-    // printf("MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
+    printf("[MY-SGEMM]MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
     if (!gemm_malloced) {
-        printf("[mycublas]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", MAX_ORI_WMMA_A / 1024.0 / 1024.0, MAX_ORI_WMMA_B / 1024.0 / 1024.0, MAX_ORI_WMMA_C / 1024.0 / 1024.0);
+        MAX_ORI_WMMA_A = geti(MODEL_NAME, "MAX_ORI_WMMA_A");
+        MAX_ORI_WMMA_B = geti(MODEL_NAME, "MAX_ORI_WMMA_B");
+        MAX_ORI_WMMA_C = geti(MODEL_NAME, "MAX_ORI_WMMA_C");
+        // printf("[mycublas]try to malloc ori_wmma_A->%f MB, ori_wmma_B->%f MB, ori_wmma_C->%f MB\n", MAX_ORI_WMMA_A / 1024.0 / 1024.0, MAX_ORI_WMMA_B / 1024.0 / 1024.0, MAX_ORI_WMMA_C / 1024.0 / 1024.0);
         // printf("MAX_ORI_WMMA_A: %lld, MAX_ORI_WMMA_B: %lld, MAX_ORI_WMMA_C: %lld\n", MAX_ORI_WMMA_A, MAX_ORI_WMMA_B, MAX_ORI_WMMA_C);
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_A), MAX_ORI_WMMA_A));
         cudaErrCheck(cudaMalloc(reinterpret_cast<void **>(&ori_wmma_B), MAX_ORI_WMMA_B));

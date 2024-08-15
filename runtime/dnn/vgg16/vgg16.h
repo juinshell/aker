@@ -16,12 +16,10 @@ public:
         initParams();
     }
     void initExecution() override{
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(float) * 2408448, cudaMemcpyHostToDevice));
+        CUDA_SAFE_CALL(cudaMemcpy(Input[0], InputHost[0], sizeof(float) * InputSize[0], cudaMemcpyHostToDevice));
     }
     void gen_vector(float*  Parameter_32_0, float**  Result_99_0);
     void initParams();  
-    float* Parameter_0_0;
-    float** Result_144_0;
-    float* Parameter_0_0_host;
+    int input_size = -1;
 
 };

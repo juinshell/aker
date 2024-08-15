@@ -1,3 +1,4 @@
+
 #include "Logger.h"
 #include "util.h"
 #include "TackerConfig.h"
@@ -10,23 +11,24 @@ extern Recorder recorder;
 
 void Resnet50::initParams() {
     resnet50_cuda_init();
+    
     //input argument
-    float* Parameter_270_0_host, *Parameter_270_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_270_0_host, sizeof(float)* 4816896));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_270_0, sizeof(float) * 4816896));
+    float* Parameter_0_0_host, *Parameter_0_0;
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_0_0_host, sizeof(float)* 19267584));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_0_0, sizeof(float) * 19267584));
+    for (int i = 0; i < 19267584; ++i) Parameter_0_0_host[i] = 1.0f;
+    printf("Parameter_0_0_host = %p, Parameter_0_0 = %p\n", Parameter_0_0_host, Parameter_0_0);
+    CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(float) * 19267584, cudaMemcpyHostToDevice));
+    this->Input[0] = Parameter_0_0;
+    this->InputHost[0] = Parameter_0_0_host;
+    this->InputSize[0] = 19267584;
 
     //output arguments
     float* Result_505_0_host, *Result_505_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_505_0_host, sizeof(float) * 32032));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_505_0_host, sizeof(float) * 128128));
 
-    // fill input values
-    for (int i = 0; i < 4816896; ++i) Parameter_270_0_host[i] = 1.0f;
+    this->Result = (void**)&Result_505_0;
 
-    CUDA_SAFE_CALL(cudaMemcpy(Parameter_270_0, Parameter_270_0_host, sizeof(float) * 4816896, cudaMemcpyHostToDevice));
-    this->Parameter_270_0 = Parameter_270_0;
-    this->Parameter_270_0_host = Parameter_270_0_host;
-    this->Result_505_0 = &Result_505_0;
-
-    // put all kernel
-    this->gen_vector(Parameter_270_0, &Result_505_0);
+    //fill input values
+    this->gen_vector(Parameter_0_0, (float**)Result);
 }
