@@ -223,17 +223,17 @@ cudnnHandle_t cudnn_handle_0;
 // Node name:	MaxPool_74
 // Description:	MaxPool
 // Input:
-//	- name: Relu_73_0	type: float	shape: Shape{64, 128, 112, 112}
+//	- name: Relu_73_0	type: float	shape: Shape{32, 128, 112, 112}
 // Output:
-//	- name: MaxPool_74_0	type: float	shape: Shape{64, 128, 56, 56}
+//	- name: MaxPool_74_0	type: float	shape: Shape{32, 128, 56, 56}
 void MaxPool_float_float_cuda_lib_MaxPool_74(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 112, 112));
     cudnnTensorDescriptor_t output_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 56, 56));
     cudnnPoolingDescriptor_t desc;
     cudnnCreatePoolingDescriptor(&desc);
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,2, 2, 0, 0, 2, 2));
@@ -250,10 +250,10 @@ void MaxPool_float_float_cuda_lib_MaxPool_74(cudnnHandle_t cudnn_handle, float* 
 // Input:
 //	- name: Constant_3_0	type: float	shape: Shape{64}
 // Output:
-//	- name: Broadcast_51_0	type: float	shape: Shape{64, 64, 224, 224}
+//	- name: Broadcast_51_0	type: float	shape: Shape{32, 64, 224, 224}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_51(float* input0, float* output0)
 {
-    size_t nthreads = 205520896;uint32_t strides0 = 3211264;
+    size_t nthreads = 102760448;uint32_t strides0 = 3211264;
     uint32_t strides1 = 50176;
     uint32_t strides2 = 224;
     uint32_t strides3 = 1;
@@ -295,18 +295,18 @@ extern void Broadcast_float_float_cuda_Broadcast_51_Call(const dim3 &grids, cons
 // Node name:	Convolution_56
 // Description:	Convolution
 // Input:
-//	- name: Relu_54_0	type: float	shape: Shape{64, 64, 224, 224}
+//	- name: Relu_54_0	type: float	shape: Shape{32, 64, 224, 224}
 //	- name: Reshape_55_0	type: float	shape: Shape{64, 64, 3, 3}
 // Output:
-//	- name: Convolution_56_0	type: float	shape: Shape{64, 64, 224, 224}
+//	- name: Convolution_56_0	type: float	shape: Shape{32, 64, 224, 224}
 void Convolution_float_float_float_cuda_lib_Convolution_56(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 224, 224));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 224, 224));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 224, 224));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 224, 224));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 64, 3, 3));
@@ -969,18 +969,18 @@ void Constant_float_cuda_Constant_20(cudaStream_t stream, float* output0)
 // Node name:	Convolution_69
 // Description:	Convolution
 // Input:
-//	- name: Relu_67_0	type: float	shape: Shape{64, 128, 112, 112}
+//	- name: Relu_67_0	type: float	shape: Shape{32, 128, 112, 112}
 //	- name: Reshape_68_0	type: float	shape: Shape{128, 128, 3, 3}
 // Output:
-//	- name: Convolution_69_0	type: float	shape: Shape{64, 128, 112, 112}
+//	- name: Convolution_69_0	type: float	shape: Shape{32, 128, 112, 112}
 void Convolution_float_float_float_cuda_lib_Convolution_69(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 112, 112));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 112, 112));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 128, 3, 3));
@@ -1092,18 +1092,18 @@ extern void Reshape_float_float_cuda_Reshape_100_Call(const dim3 &grids, const d
 // Node name:	Convolution_76
 // Description:	Convolution
 // Input:
-//	- name: MaxPool_74_0	type: float	shape: Shape{64, 128, 56, 56}
+//	- name: MaxPool_74_0	type: float	shape: Shape{32, 128, 56, 56}
 //	- name: Reshape_75_0	type: float	shape: Shape{256, 128, 3, 3}
 // Output:
-//	- name: Convolution_76_0	type: float	shape: Shape{64, 256, 56, 56}
+//	- name: Convolution_76_0	type: float	shape: Shape{32, 256, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_76(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 128, 3, 3));
@@ -1273,76 +1273,76 @@ extern void Reshape_float_float_cuda_Reshape_62_Call(const dim3 &grids, const di
 extern "C" void cuda_init()
 {
 CUDA_SAFE_CALL(cudaDeviceReset());
-// total memory:3058239424
+// total memory:1805846464
 CUDA_SAFE_CALL(cudaSetDevice(0));
-CUDA_SAFE_CALL(cudaMalloc((void**)&group_0_CUDA_GPU0_allocator_memory_pool,2504792832));
-CUDA_SAFE_CALL(cudaMemset((void*)group_0_CUDA_GPU0_allocator_memory_pool, 0, 2504792832));
+CUDA_SAFE_CALL(cudaMalloc((void**)&group_0_CUDA_GPU0_allocator_memory_pool,1252399872));
+CUDA_SAFE_CALL(cudaMemset((void*)group_0_CUDA_GPU0_allocator_memory_pool, 0, 1252399872));
 Reshape_48_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_49_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+38535168);
-Convolution_50_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+38542080);
-Broadcast_51_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+860625664);
-Relu_54_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1682709248);
+Reshape_49_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+19267584);
+Convolution_50_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+19274496);
+Broadcast_51_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+430316288);
+Relu_54_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+841358080);
 Reshape_55_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_56_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+147456);
-Broadcast_57_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+822231040);
-Relu_60_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1644314624);
+Broadcast_57_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411189248);
+Relu_60_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+822231040);
 MaxPool_61_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_62_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Convolution_63_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205815808);
-Broadcast_64_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+616857600);
-Relu_67_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1027899392);
+Reshape_62_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Convolution_63_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+103055360);
+Broadcast_64_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+308576256);
+Relu_67_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+514097152);
 Reshape_68_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_69_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+589824);
-Broadcast_70_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411631616);
-Relu_73_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+822673408);
+Broadcast_70_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+206110720);
+Relu_73_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411631616);
 MaxPool_74_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_75_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_76_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+103940096);
-Broadcast_77_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+309460992);
-Relu_80_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+514981888);
+Reshape_75_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_76_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+52559872);
+Broadcast_77_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+155320320);
+Relu_80_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+258080768);
 Reshape_81_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_82_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+2359296);
-Broadcast_83_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+207880192);
-Relu_86_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+413401088);
+Broadcast_83_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+105119744);
+Relu_86_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+207880192);
 Reshape_87_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_88_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+2359296);
-Broadcast_89_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+207880192);
-Relu_92_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+413401088);
+Broadcast_89_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+105119744);
+Relu_92_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+207880192);
 MaxPool_93_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_94_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-Convolution_95_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+56098816);
-Broadcast_96_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+158859264);
-Relu_99_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+261619712);
+Reshape_94_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+Convolution_95_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+30408704);
+Broadcast_96_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+81788928);
+Relu_99_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+133169152);
 Reshape_100_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_101_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+9437184);
-Broadcast_102_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+112197632);
-Relu_105_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+214958080);
+Broadcast_102_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+60817408);
+Relu_105_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+112197632);
 Reshape_106_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_107_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+9437184);
-Broadcast_108_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+112197632);
-Relu_111_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+214958080);
+Broadcast_108_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+60817408);
+Relu_111_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+112197632);
 MaxPool_112_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_113_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-Convolution_114_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+35127296);
+Reshape_113_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+Convolution_114_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+22282240);
 Broadcast_115_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Relu_118_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+60817408);
+Relu_118_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+35127296);
 Reshape_119_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_120_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+9437184);
-Broadcast_121_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+35127296);
-Relu_124_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+60817408);
+Broadcast_121_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+22282240);
+Relu_124_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+35127296);
 Reshape_125_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_126_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+9437184);
-Broadcast_127_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+35127296);
-Relu_130_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+60817408);
+Broadcast_127_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+22282240);
+Relu_130_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+35127296);
 MaxPool_131_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_132_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Dot_133_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+6422528);
+Dot_133_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+3211264);
 Relu_136_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Dot_137_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1048576);
+Dot_137_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+524288);
 Relu_140_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Dot_141_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1048576);
+Dot_141_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+524288);
 Broadcast_142_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Add_143_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1048576);
+Add_143_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+524288);
 CUDA_SAFE_CALL(cudaSetDevice(0));
 CUDA_SAFE_CALL(cudaMalloc((void**)&group_persist_CUDA_GPU0_allocator_memory_pool,553446592));
 CUDA_SAFE_CALL(cudaMemset((void*)group_persist_CUDA_GPU0_allocator_memory_pool, 0, 553446592));
@@ -1450,27 +1450,27 @@ Constant_float_cuda_Constant_47(0, Constant_47_0);
 // Node name:	Dot_141
 // Description:	Dot
 // Input:
-//	- name: Relu_140_0	type: float	shape: Shape{64, 4096}
+//	- name: Relu_140_0	type: float	shape: Shape{32, 4096}
 //	- name: Constant_46_0	type: float	shape: Shape{4096, 1001}
 // Output:
-//	- name: Dot_141_0	type: float	shape: Shape{64, 1001}
+//	- name: Dot_141_0	type: float	shape: Shape{32, 1001}
 void Dot_float_float_float_cuda_lib_Dot_141(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 64, 4096, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 4096, &beta, static_cast<float*>(output0), 1001));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 32, 4096, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 4096, &beta, static_cast<float*>(output0), 1001));
 
 }
 // Node name:	Add_143
 // Description:	Add
 // Input:
-//	- name: Dot_141_0	type: float	shape: Shape{64, 1001}
-//	- name: Broadcast_142_0	type: float	shape: Shape{64, 1001}
+//	- name: Dot_141_0	type: float	shape: Shape{32, 1001}
+//	- name: Broadcast_142_0	type: float	shape: Shape{32, 1001}
 // Output:
-//	- name: Add_143_0	type: float	shape: Shape{64, 1001}
-extern "C" __launch_bounds__(64) __global__ void Add_float_float_float_cuda_Add_143(float* input0, float* input1, float* output0)
+//	- name: Add_143_0	type: float	shape: Shape{32, 1001}
+extern "C" __launch_bounds__(416) __global__ void Add_float_float_float_cuda_Add_143(float* input0, float* input1, float* output0)
 {
-    output0[blockIdx.x * 64 + threadIdx.x] = add(input0[blockIdx.x * 64 + threadIdx.x], input1[blockIdx.x * 64 + threadIdx.x]);
+    output0[blockIdx.x * 416 + threadIdx.x] = add(input0[blockIdx.x * 416 + threadIdx.x], input1[blockIdx.x * 416 + threadIdx.x]);
 
 }
 extern void Add_float_float_float_cuda_Add_143_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* output0) {
@@ -1479,18 +1479,18 @@ extern void Add_float_float_float_cuda_Add_143_Call(const dim3 &grids, const dim
 // Node name:	Convolution_63
 // Description:	Convolution
 // Input:
-//	- name: MaxPool_61_0	type: float	shape: Shape{64, 64, 112, 112}
+//	- name: MaxPool_61_0	type: float	shape: Shape{32, 64, 112, 112}
 //	- name: Reshape_62_0	type: float	shape: Shape{128, 64, 3, 3}
 // Output:
-//	- name: Convolution_63_0	type: float	shape: Shape{64, 128, 112, 112}
+//	- name: Convolution_63_0	type: float	shape: Shape{32, 128, 112, 112}
 void Convolution_float_float_float_cuda_lib_Convolution_63(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 112, 112));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 128, 112, 112));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 64, 3, 3));
@@ -1545,17 +1545,17 @@ void Convolution_float_float_float_cuda_lib_Convolution_63(cudnnHandle_t cudnn_h
 // Node name:	MaxPool_93
 // Description:	MaxPool
 // Input:
-//	- name: Relu_92_0	type: float	shape: Shape{64, 256, 56, 56}
+//	- name: Relu_92_0	type: float	shape: Shape{32, 256, 56, 56}
 // Output:
-//	- name: MaxPool_93_0	type: float	shape: Shape{64, 256, 28, 28}
+//	- name: MaxPool_93_0	type: float	shape: Shape{32, 256, 28, 28}
 void MaxPool_float_float_cuda_lib_MaxPool_93(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
     cudnnTensorDescriptor_t output_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 28, 28));
     cudnnPoolingDescriptor_t desc;
     cudnnCreatePoolingDescriptor(&desc);
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,2, 2, 0, 0, 2, 2));
@@ -1627,17 +1627,17 @@ extern void Reshape_float_float_cuda_Reshape_81_Call(const dim3 &grids, const di
 // Node name:	MaxPool_61
 // Description:	MaxPool
 // Input:
-//	- name: Relu_60_0	type: float	shape: Shape{64, 64, 224, 224}
+//	- name: Relu_60_0	type: float	shape: Shape{32, 64, 224, 224}
 // Output:
-//	- name: MaxPool_61_0	type: float	shape: Shape{64, 64, 112, 112}
+//	- name: MaxPool_61_0	type: float	shape: Shape{32, 64, 112, 112}
 void MaxPool_float_float_cuda_lib_MaxPool_61(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 224, 224));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 224, 224));
     cudnnTensorDescriptor_t output_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 112, 112));
     cudnnPoolingDescriptor_t desc;
     cudnnCreatePoolingDescriptor(&desc);
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,2, 2, 0, 0, 2, 2));
@@ -1652,13 +1652,13 @@ void MaxPool_float_float_cuda_lib_MaxPool_61(cudnnHandle_t cudnn_handle, float* 
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: Constant_43_0	type: float	shape: Shape{4096}
-//	- name: Dot_133_0	type: float	shape: Shape{64, 4096}
+//	- name: Dot_133_0	type: float	shape: Shape{32, 4096}
 // Output:
-//	- name: Relu_136_0	type: float	shape: Shape{64, 4096}
+//	- name: Relu_136_0	type: float	shape: Shape{32, 4096}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_134<<<dim3(4096, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_43_0, Broadcast_134_0);
-// Add_float_float_float_cuda_Add_135<<<dim3(512, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_133_0, Broadcast_134_0, Add_135_0);
-// Relu_float_float_cuda_Relu_136<<<dim3(512, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_135_0, Relu_136_0);
+// Broadcast_float_float_cuda_Broadcast_134<<<dim3(2048, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_43_0, Broadcast_134_0);
+// Add_float_float_float_cuda_Add_135<<<dim3(256, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_133_0, Broadcast_134_0, Add_135_0);
+// Relu_float_float_cuda_Relu_136<<<dim3(256, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_135_0, Relu_136_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_cuda_Broadcast_Add_Relu_13(float* input0, float* input1, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -1731,9 +1731,9 @@ extern void Reshape_float_float_cuda_Reshape_49_Call(const dim3 &grids, const di
 // Node name:	Result_144
 // Description:	Result
 // Input:
-//	- name: Add_143_0	type: float	shape: Shape{64, 1001}
+//	- name: Add_143_0	type: float	shape: Shape{32, 1001}
 // Output:
-//	- name: Result_144_0	type: float	shape: Shape{64, 1001}
+//	- name: Result_144_0	type: float	shape: Shape{32, 1001}
 void Result_float_float_cuda_lib_Result_144(float* input0, float** output0)
 {
     *output0 = input0;
@@ -1741,9 +1741,9 @@ void Result_float_float_cuda_lib_Result_144(float* input0, float** output0)
 // Node name:	Reshape_48
 // Description:	Reshape
 // Input:
-//	- name: Parameter_0_0	type: float	shape: Shape{64, 224, 224, 3}
+//	- name: Parameter_0_0	type: float	shape: Shape{32, 224, 224, 3}
 // Output:
-//	- name: Reshape_48_0	type: float	shape: Shape{64, 3, 224, 224}
+//	- name: Reshape_48_0	type: float	shape: Shape{32, 3, 224, 224}
 extern "C" __launch_bounds__(256) __global__ void Reshape_float_float_cuda_Reshape_48(float* input0, float* output0)
 {
     uint32_t input_strides0 = 150528;
@@ -1754,7 +1754,7 @@ extern "C" __launch_bounds__(256) __global__ void Reshape_float_float_cuda_Resha
     uint32_t trans_strides2 = 50176;
     size_t nx = 3;
     size_t ny = 50176;
-    size_t nz = 64;
+    size_t nz = 32;
     __shared__ float tile[1][16][17];
     uint32_t base2 = blockIdx.x * blockDim.x;
     uint32_t base1 = blockIdx.y * blockDim.y;
@@ -1800,10 +1800,10 @@ extern void Reshape_float_float_cuda_Reshape_48_Call(const dim3 &grids, const di
 // Input:
 //	- name: Constant_9_0	type: float	shape: Shape{128}
 // Output:
-//	- name: Broadcast_64_0	type: float	shape: Shape{64, 128, 112, 112}
+//	- name: Broadcast_64_0	type: float	shape: Shape{32, 128, 112, 112}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_64(float* input0, float* output0)
 {
-    size_t nthreads = 102760448;uint32_t strides0 = 1605632;
+    size_t nthreads = 51380224;uint32_t strides0 = 1605632;
     uint32_t strides1 = 12544;
     uint32_t strides2 = 112;
     uint32_t strides3 = 1;
@@ -1902,18 +1902,18 @@ extern void Reshape_float_float_cuda_Reshape_55_Call(const dim3 &grids, const di
 // Node name:	Convolution_50
 // Description:	Convolution
 // Input:
-//	- name: Reshape_48_0	type: float	shape: Shape{64, 3, 224, 224}
+//	- name: Reshape_48_0	type: float	shape: Shape{32, 3, 224, 224}
 //	- name: Reshape_49_0	type: float	shape: Shape{64, 3, 3, 3}
 // Output:
-//	- name: Convolution_50_0	type: float	shape: Shape{64, 64, 224, 224}
+//	- name: Convolution_50_0	type: float	shape: Shape{32, 64, 224, 224}
 void Convolution_float_float_float_cuda_lib_Convolution_50(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 3, 224, 224));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 3, 224, 224));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 224, 224));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 64, 224, 224));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 3, 3, 3));
@@ -1968,18 +1968,18 @@ void Convolution_float_float_float_cuda_lib_Convolution_50(cudnnHandle_t cudnn_h
 // Node name:	Convolution_114
 // Description:	Convolution
 // Input:
-//	- name: MaxPool_112_0	type: float	shape: Shape{64, 512, 14, 14}
+//	- name: MaxPool_112_0	type: float	shape: Shape{32, 512, 14, 14}
 //	- name: Reshape_113_0	type: float	shape: Shape{512, 512, 3, 3}
 // Output:
-//	- name: Convolution_114_0	type: float	shape: Shape{64, 512, 14, 14}
+//	- name: Convolution_114_0	type: float	shape: Shape{32, 512, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_114(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 512, 3, 3));
@@ -2036,10 +2036,10 @@ void Convolution_float_float_float_cuda_lib_Convolution_114(cudnnHandle_t cudnn_
 // Input:
 //	- name: Constant_33_0	type: float	shape: Shape{512}
 // Output:
-//	- name: Broadcast_115_0	type: float	shape: Shape{64, 512, 14, 14}
+//	- name: Broadcast_115_0	type: float	shape: Shape{32, 512, 14, 14}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_115(float* input0, float* output0)
 {
-    size_t nthreads = 6422528;uint32_t strides0 = 100352;
+    size_t nthreads = 3211264;uint32_t strides0 = 100352;
     uint32_t strides1 = 196;
     uint32_t strides2 = 14;
     uint32_t strides3 = 1;
@@ -2081,15 +2081,15 @@ extern void Broadcast_float_float_cuda_Broadcast_115_Call(const dim3 &grids, con
 // Node name:	Dot_133
 // Description:	Dot
 // Input:
-//	- name: Reshape_132_0	type: float	shape: Shape{64, 25088}
+//	- name: Reshape_132_0	type: float	shape: Shape{32, 25088}
 //	- name: Constant_42_0	type: float	shape: Shape{25088, 4096}
 // Output:
-//	- name: Dot_133_0	type: float	shape: Shape{64, 4096}
+//	- name: Dot_133_0	type: float	shape: Shape{32, 4096}
 void Dot_float_float_float_cuda_lib_Dot_133(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 4096, 64, 25088, &alpha, static_cast<const float*>(input1), 4096, static_cast<const float*>(input0), 25088, &beta, static_cast<float*>(output0), 4096));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 4096, 32, 25088, &alpha, static_cast<const float*>(input1), 4096, static_cast<const float*>(input0), 25088, &beta, static_cast<float*>(output0), 4096));
 
 }
 // Node name:	Broadcast_77
@@ -2097,10 +2097,10 @@ void Dot_float_float_float_cuda_lib_Dot_133(cublasHandle_t cublas_handle, float*
 // Input:
 //	- name: Constant_15_0	type: float	shape: Shape{256}
 // Output:
-//	- name: Broadcast_77_0	type: float	shape: Shape{64, 256, 56, 56}
+//	- name: Broadcast_77_0	type: float	shape: Shape{32, 256, 56, 56}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_77(float* input0, float* output0)
 {
-    size_t nthreads = 51380224;uint32_t strides0 = 802816;
+    size_t nthreads = 25690112;uint32_t strides0 = 802816;
     uint32_t strides1 = 3136;
     uint32_t strides2 = 56;
     uint32_t strides3 = 1;
@@ -2142,32 +2142,32 @@ extern void Broadcast_float_float_cuda_Broadcast_77_Call(const dim3 &grids, cons
 // Node name:	Dot_137
 // Description:	Dot
 // Input:
-//	- name: Relu_136_0	type: float	shape: Shape{64, 4096}
+//	- name: Relu_136_0	type: float	shape: Shape{32, 4096}
 //	- name: Constant_44_0	type: float	shape: Shape{4096, 4096}
 // Output:
-//	- name: Dot_137_0	type: float	shape: Shape{64, 4096}
+//	- name: Dot_137_0	type: float	shape: Shape{32, 4096}
 void Dot_float_float_float_cuda_lib_Dot_137(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 4096, 64, 4096, &alpha, static_cast<const float*>(input1), 4096, static_cast<const float*>(input0), 4096, &beta, static_cast<float*>(output0), 4096));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 4096, 32, 4096, &alpha, static_cast<const float*>(input1), 4096, static_cast<const float*>(input0), 4096, &beta, static_cast<float*>(output0), 4096));
 
 }
 // Node name:	Convolution_82
 // Description:	Convolution
 // Input:
-//	- name: Relu_80_0	type: float	shape: Shape{64, 256, 56, 56}
+//	- name: Relu_80_0	type: float	shape: Shape{32, 256, 56, 56}
 //	- name: Reshape_81_0	type: float	shape: Shape{256, 256, 3, 3}
 // Output:
-//	- name: Convolution_82_0	type: float	shape: Shape{64, 256, 56, 56}
+//	- name: Convolution_82_0	type: float	shape: Shape{32, 256, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_82(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 256, 3, 3));
@@ -2222,17 +2222,17 @@ void Convolution_float_float_float_cuda_lib_Convolution_82(cudnnHandle_t cudnn_h
 // Node name:	MaxPool_112
 // Description:	MaxPool
 // Input:
-//	- name: Relu_111_0	type: float	shape: Shape{64, 512, 28, 28}
+//	- name: Relu_111_0	type: float	shape: Shape{32, 512, 28, 28}
 // Output:
-//	- name: MaxPool_112_0	type: float	shape: Shape{64, 512, 14, 14}
+//	- name: MaxPool_112_0	type: float	shape: Shape{32, 512, 14, 14}
 void MaxPool_float_float_cuda_lib_MaxPool_112(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
     cudnnTensorDescriptor_t output_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 14, 14));
     cudnnPoolingDescriptor_t desc;
     cudnnCreatePoolingDescriptor(&desc);
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,2, 2, 0, 0, 2, 2));
@@ -2247,17 +2247,17 @@ void MaxPool_float_float_cuda_lib_MaxPool_112(cudnnHandle_t cudnn_handle, float*
 // Node name:	MaxPool_131
 // Description:	MaxPool
 // Input:
-//	- name: Relu_130_0	type: float	shape: Shape{64, 512, 14, 14}
+//	- name: Relu_130_0	type: float	shape: Shape{32, 512, 14, 14}
 // Output:
-//	- name: MaxPool_131_0	type: float	shape: Shape{64, 512, 7, 7}
+//	- name: MaxPool_131_0	type: float	shape: Shape{32, 512, 7, 7}
 void MaxPool_float_float_cuda_lib_MaxPool_131(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 14, 14));
     cudnnTensorDescriptor_t output_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 7, 7));
     cudnnPoolingDescriptor_t desc;
     cudnnCreatePoolingDescriptor(&desc);
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,2, 2, 0, 0, 2, 2));
@@ -2274,10 +2274,10 @@ void MaxPool_float_float_cuda_lib_MaxPool_131(cudnnHandle_t cudnn_handle, float*
 // Input:
 //	- name: Constant_47_0	type: float	shape: Shape{1001}
 // Output:
-//	- name: Broadcast_142_0	type: float	shape: Shape{64, 1001}
+//	- name: Broadcast_142_0	type: float	shape: Shape{32, 1001}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_142(float* input0, float* output0)
 {
-    size_t nthreads = 64064;uint32_t strides0 = 1001;
+    size_t nthreads = 32032;uint32_t strides0 = 1001;
     uint32_t strides1 = 1;
     int stride_magic0 = 1098413215;
     int stride_magic1 = 1;
@@ -2307,10 +2307,10 @@ extern void Broadcast_float_float_cuda_Broadcast_142_Call(const dim3 &grids, con
 // Input:
 //	- name: Constant_24_0	type: float	shape: Shape{512}
 // Output:
-//	- name: Broadcast_96_0	type: float	shape: Shape{64, 512, 28, 28}
+//	- name: Broadcast_96_0	type: float	shape: Shape{32, 512, 28, 28}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_96(float* input0, float* output0)
 {
-    size_t nthreads = 25690112;uint32_t strides0 = 401408;
+    size_t nthreads = 12845056;uint32_t strides0 = 401408;
     uint32_t strides1 = 784;
     uint32_t strides2 = 28;
     uint32_t strides3 = 1;
@@ -2351,14 +2351,14 @@ extern void Broadcast_float_float_cuda_Broadcast_96_Call(const dim3 &grids, cons
 }
 // Node name:	 Elementwise Kernel Fusion
 // Input:
-//	- name: Convolution_50_0	type: float	shape: Shape{64, 64, 224, 224}
-//	- name: Broadcast_51_0	type: float	shape: Shape{64, 64, 224, 224}
+//	- name: Convolution_50_0	type: float	shape: Shape{32, 64, 224, 224}
+//	- name: Broadcast_51_0	type: float	shape: Shape{32, 64, 224, 224}
 // Output:
-//	- name: Relu_54_0	type: float	shape: Shape{64, 64, 224, 224}
+//	- name: Relu_54_0	type: float	shape: Shape{32, 64, 224, 224}
 // Fused functions:
-// Add_float_float_float_cuda_Add_52<<<dim3(401408, 1, 1), dim3(512, 1, 1), 0, 0>>>(Convolution_50_0, Broadcast_51_0, Add_52_0);
+// Add_float_float_float_cuda_Add_52<<<dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0>>>(Convolution_50_0, Broadcast_51_0, Add_52_0);
 // Reshape_float_float_cuda_lib_Reshape_53(Add_52_0, Reshape_53_0);
-// Relu_float_float_cuda_Relu_54<<<dim3(401408, 1, 1), dim3(512, 1, 1), 0, 0>>>(Reshape_53_0, Relu_54_0);
+// Relu_float_float_cuda_Relu_54<<<dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0>>>(Reshape_53_0, Relu_54_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0(float* input0, float* input1, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -2373,18 +2373,18 @@ extern void FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(const dim
 // Node name:	Convolution_101
 // Description:	Convolution
 // Input:
-//	- name: Relu_99_0	type: float	shape: Shape{64, 512, 28, 28}
+//	- name: Relu_99_0	type: float	shape: Shape{32, 512, 28, 28}
 //	- name: Reshape_100_0	type: float	shape: Shape{512, 512, 3, 3}
 // Output:
-//	- name: Convolution_101_0	type: float	shape: Shape{64, 512, 28, 28}
+//	- name: Convolution_101_0	type: float	shape: Shape{32, 512, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_101(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 512, 3, 3));
@@ -2439,18 +2439,18 @@ void Convolution_float_float_float_cuda_lib_Convolution_101(cudnnHandle_t cudnn_
 // Node name:	Convolution_95
 // Description:	Convolution
 // Input:
-//	- name: MaxPool_93_0	type: float	shape: Shape{64, 256, 28, 28}
+//	- name: MaxPool_93_0	type: float	shape: Shape{32, 256, 28, 28}
 //	- name: Reshape_94_0	type: float	shape: Shape{512, 256, 3, 3}
 // Output:
-//	- name: Convolution_95_0	type: float	shape: Shape{64, 512, 28, 28}
+//	- name: Convolution_95_0	type: float	shape: Shape{32, 512, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_95(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 256, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 512, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 256, 3, 3));
@@ -2622,9 +2622,9 @@ extern void Reshape_float_float_cuda_Reshape_94_Call(const dim3 &grids, const di
 #define NNFUSION_GRAPH_INPUT_NUM 1
 #define NNFUSION_GRAPH_OUTPUT_NUM 1
 #define NNFUSION_GRAPH_INPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_INPUT_SHAPE_0 {64, 224, 224, 3}
+#define NNFUSION_GRAPH_INPUT_SHAPE_0 {32, 224, 224, 3}
 #define NNFUSION_GRAPH_OUTPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {64, 1001}
+#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {32, 1001}
 #endif
 
 
@@ -2632,23 +2632,23 @@ extern "C" int kernel_entry(float* Parameter_0_0, float** Result_144_0)
 {
 // kernel_entry_init
  // name=transpose
-Reshape_float_float_cuda_Reshape_48_Call(dim3(1, 3136, 64), dim3(16, 16, 1), 0, 0, Parameter_0_0, Reshape_48_0);
+Reshape_float_float_cuda_Reshape_48_Call(dim3(1, 3136, 32), dim3(16, 16, 1), 0, 0, Parameter_0_0, Reshape_48_0);
  // name=Reshape_49
 Reshape_float_float_cuda_Reshape_49_Call(dim3(4, 3, 1), dim3(16, 1, 16), 0, 0, Constant_2_0, Reshape_49_0);
  // name=cg/conv0/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_50(cudnn_handle_0, Reshape_48_0, Reshape_49_0, Convolution_50_0);
  // name=Broadcast_51
-Broadcast_float_float_cuda_Broadcast_51_Call(dim3(3211264, 1, 1), dim3(64, 1, 1), 0, 0, Constant_3_0, Broadcast_51_0);
+Broadcast_float_float_cuda_Broadcast_51_Call(dim3(1605632, 1, 1), dim3(64, 1, 1), 0, 0, Constant_3_0, Broadcast_51_0);
  // name=fused_kernel_145
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(401408, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_50_0, Broadcast_51_0, Relu_54_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_50_0, Broadcast_51_0, Relu_54_0);
  // name=Reshape_55
 Reshape_float_float_cuda_Reshape_55_Call(dim3(4, 64, 1), dim3(16, 1, 16), 0, 0, Constant_5_0, Reshape_55_0);
  // name=cg/conv1/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_56(cudnn_handle_0, Relu_54_0, Reshape_55_0, Convolution_56_0);
  // name=Broadcast_57
-Broadcast_float_float_cuda_Broadcast_51_Call(dim3(3211264, 1, 1), dim3(64, 1, 1), 0, 0, Constant_6_0, Broadcast_57_0);
+Broadcast_float_float_cuda_Broadcast_51_Call(dim3(1605632, 1, 1), dim3(64, 1, 1), 0, 0, Constant_6_0, Broadcast_57_0);
  // name=fused_kernel_146
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(401408, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_56_0, Broadcast_57_0, Relu_60_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_56_0, Broadcast_57_0, Relu_60_0);
  // name=cg/mpool0/MaxPool
 MaxPool_float_float_cuda_lib_MaxPool_61(cudnn_handle_0, Relu_60_0, MaxPool_61_0);
  // name=Reshape_62
@@ -2656,17 +2656,17 @@ Reshape_float_float_cuda_Reshape_62_Call(dim3(8, 64, 1), dim3(16, 1, 16), 0, 0, 
  // name=cg/conv2/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_63(cudnn_handle_0, MaxPool_61_0, Reshape_62_0, Convolution_63_0);
  // name=Broadcast_64
-Broadcast_float_float_cuda_Broadcast_64_Call(dim3(1605632, 1, 1), dim3(64, 1, 1), 0, 0, Constant_9_0, Broadcast_64_0);
+Broadcast_float_float_cuda_Broadcast_64_Call(dim3(802816, 1, 1), dim3(64, 1, 1), 0, 0, Constant_9_0, Broadcast_64_0);
  // name=fused_kernel_147
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_63_0, Broadcast_64_0, Relu_67_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_63_0, Broadcast_64_0, Relu_67_0);
  // name=Reshape_68
 Reshape_float_float_cuda_Reshape_68_Call(dim3(8, 128, 1), dim3(16, 1, 16), 0, 0, Constant_11_0, Reshape_68_0);
  // name=cg/conv3/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_69(cudnn_handle_0, Relu_67_0, Reshape_68_0, Convolution_69_0);
  // name=Broadcast_70
-Broadcast_float_float_cuda_Broadcast_64_Call(dim3(1605632, 1, 1), dim3(64, 1, 1), 0, 0, Constant_12_0, Broadcast_70_0);
+Broadcast_float_float_cuda_Broadcast_64_Call(dim3(802816, 1, 1), dim3(64, 1, 1), 0, 0, Constant_12_0, Broadcast_70_0);
  // name=fused_kernel_148
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_69_0, Broadcast_70_0, Relu_73_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_69_0, Broadcast_70_0, Relu_73_0);
  // name=cg/mpool1/MaxPool
 MaxPool_float_float_cuda_lib_MaxPool_74(cudnn_handle_0, Relu_73_0, MaxPool_74_0);
  // name=Reshape_75
@@ -2674,25 +2674,25 @@ Reshape_float_float_cuda_Reshape_75_Call(dim3(16, 128, 1), dim3(16, 1, 16), 0, 0
  // name=cg/conv4/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_76(cudnn_handle_0, MaxPool_74_0, Reshape_75_0, Convolution_76_0);
  // name=Broadcast_77
-Broadcast_float_float_cuda_Broadcast_77_Call(dim3(802816, 1, 1), dim3(64, 1, 1), 0, 0, Constant_15_0, Broadcast_77_0);
+Broadcast_float_float_cuda_Broadcast_77_Call(dim3(401408, 1, 1), dim3(64, 1, 1), 0, 0, Constant_15_0, Broadcast_77_0);
  // name=fused_kernel_149
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_76_0, Broadcast_77_0, Relu_80_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_76_0, Broadcast_77_0, Relu_80_0);
  // name=Reshape_81
 Reshape_float_float_cuda_Reshape_81_Call(dim3(16, 256, 1), dim3(16, 1, 16), 0, 0, Constant_17_0, Reshape_81_0);
  // name=cg/conv5/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_82(cudnn_handle_0, Relu_80_0, Reshape_81_0, Convolution_82_0);
  // name=Broadcast_83
-Broadcast_float_float_cuda_Broadcast_77_Call(dim3(802816, 1, 1), dim3(64, 1, 1), 0, 0, Constant_18_0, Broadcast_83_0);
+Broadcast_float_float_cuda_Broadcast_77_Call(dim3(401408, 1, 1), dim3(64, 1, 1), 0, 0, Constant_18_0, Broadcast_83_0);
  // name=fused_kernel_150
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_82_0, Broadcast_83_0, Relu_86_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_82_0, Broadcast_83_0, Relu_86_0);
  // name=Reshape_87
 Reshape_float_float_cuda_Reshape_81_Call(dim3(16, 256, 1), dim3(16, 1, 16), 0, 0, Constant_20_0, Reshape_87_0);
  // name=cg/conv6/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_82(cudnn_handle_0, Relu_86_0, Reshape_87_0, Convolution_88_0);
  // name=Broadcast_89
-Broadcast_float_float_cuda_Broadcast_77_Call(dim3(802816, 1, 1), dim3(64, 1, 1), 0, 0, Constant_21_0, Broadcast_89_0);
+Broadcast_float_float_cuda_Broadcast_77_Call(dim3(401408, 1, 1), dim3(64, 1, 1), 0, 0, Constant_21_0, Broadcast_89_0);
  // name=fused_kernel_151
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_88_0, Broadcast_89_0, Relu_92_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_88_0, Broadcast_89_0, Relu_92_0);
  // name=cg/mpool2/MaxPool
 MaxPool_float_float_cuda_lib_MaxPool_93(cudnn_handle_0, Relu_92_0, MaxPool_93_0);
  // name=Reshape_94
@@ -2700,25 +2700,25 @@ Reshape_float_float_cuda_Reshape_94_Call(dim3(32, 256, 1), dim3(16, 1, 16), 0, 0
  // name=cg/conv7/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_95(cudnn_handle_0, MaxPool_93_0, Reshape_94_0, Convolution_95_0);
  // name=Broadcast_96
-Broadcast_float_float_cuda_Broadcast_96_Call(dim3(401408, 1, 1), dim3(64, 1, 1), 0, 0, Constant_24_0, Broadcast_96_0);
+Broadcast_float_float_cuda_Broadcast_96_Call(dim3(200704, 1, 1), dim3(64, 1, 1), 0, 0, Constant_24_0, Broadcast_96_0);
  // name=fused_kernel_152
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_95_0, Broadcast_96_0, Relu_99_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_95_0, Broadcast_96_0, Relu_99_0);
  // name=Reshape_100
 Reshape_float_float_cuda_Reshape_100_Call(dim3(32, 512, 1), dim3(16, 1, 16), 0, 0, Constant_26_0, Reshape_100_0);
  // name=cg/conv8/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_101(cudnn_handle_0, Relu_99_0, Reshape_100_0, Convolution_101_0);
  // name=Broadcast_102
-Broadcast_float_float_cuda_Broadcast_96_Call(dim3(401408, 1, 1), dim3(64, 1, 1), 0, 0, Constant_27_0, Broadcast_102_0);
+Broadcast_float_float_cuda_Broadcast_96_Call(dim3(200704, 1, 1), dim3(64, 1, 1), 0, 0, Constant_27_0, Broadcast_102_0);
  // name=fused_kernel_153
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_101_0, Broadcast_102_0, Relu_105_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_101_0, Broadcast_102_0, Relu_105_0);
  // name=Reshape_106
 Reshape_float_float_cuda_Reshape_100_Call(dim3(32, 512, 1), dim3(16, 1, 16), 0, 0, Constant_29_0, Reshape_106_0);
  // name=cg/conv9/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_101(cudnn_handle_0, Relu_105_0, Reshape_106_0, Convolution_107_0);
  // name=Broadcast_108
-Broadcast_float_float_cuda_Broadcast_96_Call(dim3(401408, 1, 1), dim3(64, 1, 1), 0, 0, Constant_30_0, Broadcast_108_0);
+Broadcast_float_float_cuda_Broadcast_96_Call(dim3(200704, 1, 1), dim3(64, 1, 1), 0, 0, Constant_30_0, Broadcast_108_0);
  // name=fused_kernel_154
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_107_0, Broadcast_108_0, Relu_111_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_107_0, Broadcast_108_0, Relu_111_0);
  // name=cg/mpool3/MaxPool
 MaxPool_float_float_cuda_lib_MaxPool_112(cudnn_handle_0, Relu_111_0, MaxPool_112_0);
  // name=Reshape_113
@@ -2726,25 +2726,25 @@ Reshape_float_float_cuda_Reshape_100_Call(dim3(32, 512, 1), dim3(16, 1, 16), 0, 
  // name=cg/conv10/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_114(cudnn_handle_0, MaxPool_112_0, Reshape_113_0, Convolution_114_0);
  // name=Broadcast_115
-Broadcast_float_float_cuda_Broadcast_115_Call(dim3(100352, 1, 1), dim3(64, 1, 1), 0, 0, Constant_33_0, Broadcast_115_0);
+Broadcast_float_float_cuda_Broadcast_115_Call(dim3(50176, 1, 1), dim3(64, 1, 1), 0, 0, Constant_33_0, Broadcast_115_0);
  // name=fused_kernel_155
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_114_0, Broadcast_115_0, Relu_118_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_114_0, Broadcast_115_0, Relu_118_0);
  // name=Reshape_119
 Reshape_float_float_cuda_Reshape_100_Call(dim3(32, 512, 1), dim3(16, 1, 16), 0, 0, Constant_35_0, Reshape_119_0);
  // name=cg/conv11/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_114(cudnn_handle_0, Relu_118_0, Reshape_119_0, Convolution_120_0);
  // name=Broadcast_121
-Broadcast_float_float_cuda_Broadcast_115_Call(dim3(100352, 1, 1), dim3(64, 1, 1), 0, 0, Constant_36_0, Broadcast_121_0);
+Broadcast_float_float_cuda_Broadcast_115_Call(dim3(50176, 1, 1), dim3(64, 1, 1), 0, 0, Constant_36_0, Broadcast_121_0);
  // name=fused_kernel_156
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_120_0, Broadcast_121_0, Relu_124_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_120_0, Broadcast_121_0, Relu_124_0);
  // name=Reshape_125
 Reshape_float_float_cuda_Reshape_100_Call(dim3(32, 512, 1), dim3(16, 1, 16), 0, 0, Constant_38_0, Reshape_125_0);
  // name=cg/conv12/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_114(cudnn_handle_0, Relu_124_0, Reshape_125_0, Convolution_126_0);
  // name=Broadcast_127
-Broadcast_float_float_cuda_Broadcast_115_Call(dim3(100352, 1, 1), dim3(64, 1, 1), 0, 0, Constant_39_0, Broadcast_127_0);
+Broadcast_float_float_cuda_Broadcast_115_Call(dim3(50176, 1, 1), dim3(64, 1, 1), 0, 0, Constant_39_0, Broadcast_127_0);
  // name=fused_kernel_157
-FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_126_0, Broadcast_127_0, Relu_130_0);
+FusedKernel_float_float_float_cuda_Add_Reshape_Relu_0_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, Convolution_126_0, Broadcast_127_0, Relu_130_0);
  // name=cg/mpool4/MaxPool
 MaxPool_float_float_cuda_lib_MaxPool_131(cudnn_handle_0, Relu_130_0, MaxPool_131_0);
  // name=cg/Reshape
@@ -2752,17 +2752,17 @@ MaxPool_float_float_cuda_lib_MaxPool_131(cudnn_handle_0, Relu_130_0, MaxPool_131
  // name=cg/affine0/xw_plus_b/MatMul
 Dot_float_float_float_cuda_lib_Dot_133(cublas_handle_0, Reshape_132_0, Constant_42_0, Dot_133_0);
  // name=fused_kernel_158
-FusedKernel_float_float_float_cuda_Broadcast_Add_Relu_13_Call(dim3(512, 1, 1), dim3(512, 1, 1), 0, 0, Constant_43_0, Dot_133_0, Relu_136_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_Relu_13_Call(dim3(256, 1, 1), dim3(512, 1, 1), 0, 0, Constant_43_0, Dot_133_0, Relu_136_0);
  // name=cg/affine1/xw_plus_b/MatMul
 Dot_float_float_float_cuda_lib_Dot_137(cublas_handle_0, Relu_136_0, Constant_44_0, Dot_137_0);
  // name=fused_kernel_159
-FusedKernel_float_float_float_cuda_Broadcast_Add_Relu_13_Call(dim3(512, 1, 1), dim3(512, 1, 1), 0, 0, Constant_45_0, Dot_137_0, Relu_140_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_Relu_13_Call(dim3(256, 1, 1), dim3(512, 1, 1), 0, 0, Constant_45_0, Dot_137_0, Relu_140_0);
  // name=cg/affine2/xw_plus_b/MatMul
 Dot_float_float_float_cuda_lib_Dot_141(cublas_handle_0, Relu_140_0, Constant_46_0, Dot_141_0);
  // name=Broadcast_142
-Broadcast_float_float_cuda_Broadcast_142_Call(dim3(1001, 1, 1), dim3(64, 1, 1), 0, 0, Constant_47_0, Broadcast_142_0);
+Broadcast_float_float_cuda_Broadcast_142_Call(dim3(501, 1, 1), dim3(64, 1, 1), 0, 0, Constant_47_0, Broadcast_142_0);
  // name=cg/affine2/xw_plus_b
-Add_float_float_float_cuda_Add_143_Call(dim3(1001, 1, 1), dim3(64, 1, 1), 0, 0, Dot_141_0, Broadcast_142_0, Add_143_0);
+Add_float_float_float_cuda_Add_143_Call(dim3(77, 1, 1), dim3(416, 1, 1), 0, 0, Dot_141_0, Broadcast_142_0, Add_143_0);
  // name=Result_144
 Result_float_float_cuda_lib_Result_144(Add_143_0, Result_144_0);
 return 0;

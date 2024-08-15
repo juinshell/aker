@@ -434,9 +434,9 @@ cuda_runtime_api.h
 crt/host_defines.h
 /usr/local/cuda/include/crt/host_defines.h
 
-/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-128/cuda_codegen/main_test.cpp
+/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-64/cuda_codegen/main_test.cpp
 nnfusion_rt.h
-/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-128/cuda_codegen/nnfusion_rt.h
+/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-64/cuda_codegen/nnfusion_rt.h
 stdlib.h
 -
 stdio.h
@@ -450,7 +450,7 @@ stdexcept
 limits
 -
 
-/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-128/cuda_codegen/nnfusion_rt.h
+/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-64/cuda_codegen/nnfusion_rt.h
 cuda.h
 -
 cuda_runtime.h

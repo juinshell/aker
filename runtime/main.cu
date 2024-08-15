@@ -737,6 +737,7 @@ int main(int argc, char* argv[]) {
     atexit (my_exit);
 
     read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + ".json");
+    read_common_json(ROOT_PATH + "/kinfo-common.json");
     // read_json(ROOT_PATH + "/kinfo.json");
 
     initCUDA(device_no);
@@ -757,6 +758,25 @@ int main(int argc, char* argv[]) {
     CUDA_SAFE_CALL(cudaStreamCreate(&streams[0]));
     CUDA_SAFE_CALL(cudaStreamCreate(&streams[1]));
 
+    // [Aker] fig3
+    auto cp_kernel = OriCPKernel(0);
+    auto cutcp_kernel = OriCUTCPKernel(0);
+    auto fft_kernel = OriFFTKernel(0);
+    auto mrif_kernel = OriMRIFKernel(0);
+    auto mriq_kernel = OriMRIQKernel(0);
+    auto sgemm_kernel = OriSGEMMKernel(0);
+    auto stencil_kernel = OriSTENCILKernel(0);
+    auto lbm_kernel = OriLBMKernel(0);
+    cp_kernel.execute(streams[0]);
+    cutcp_kernel.execute(streams[0]);
+    fft_kernel.execute(streams[0]);
+    mrif_kernel.execute(streams[0]);
+    mriq_kernel.execute(streams[0]);
+    sgemm_kernel.execute(streams[0]);
+    stencil_kernel.execute(streams[0]);
+    lbm_kernel.execute(streams[0]);
+    CUDA_SAFE_CALL(cudaStreamSynchronize(streams[0]));
+    
     // [Aker] nsight compute
     // auto mix_kernel = createMixKernel(sget_kernel_info("nsight_compute", "mix_kernel_name"));
     // mix_kernel->execute(stream);
@@ -814,18 +834,18 @@ int main(int argc, char* argv[]) {
     // taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
 
     // [Aker] throughput test(1:1 version)
-    auto lc_task = createTask(MODEL_NAME);
-    for (int i = 0; i < 5; ++i) {
-        lc_task->initExecution();
-        CUDA_SAFE_CALL(cudaDeviceSynchronize());
-        for (auto& kernel: lc_task->kernels) {
-            if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-            kernel->execute(nullptr);
-            CUDA_SAFE_CALL(cudaDeviceSynchronize());
-        }
-        CUDA_SAFE_CALL(cudaDeviceSynchronize());
-    }
-    cudaDeviceSynchronize();
+    // auto lc_task = createTask(MODEL_NAME);
+    // for (int i = 0; i < 5; ++i) {
+    //     lc_task->initExecution();
+    //     CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    //     for (auto& kernel: lc_task->kernels) {
+    //         if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //         kernel->execute(nullptr);
+    //         CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    //     }
+    //     CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    // }
+    // cudaDeviceSynchronize();
     // std::string a = sget_kernel_info("throughput_test", "a");
     // std::string b = sget_kernel_info("throughput_test", "b");
     // printf("[Result] cd: %s, dnn: %s\n", a.c_str(), MODEL_NAME.c_str());
@@ -870,15 +890,19 @@ int main(int argc, char* argv[]) {
     // cudaDeviceSynchronize();
     // cd_pair_profile(stream);
 
-    // // [Aker] moti
+    // [Aker] moti / fig2
     // auto lc_task = createTask(MODEL_NAME);
     // for (int i = 0; i < 5; ++i) {
     //     lc_task->initExecution();
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, streams[0]));
     //     for (auto& kernel: lc_task->kernels) {
     //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-    //         kernel->execute(stream);
+    //         kernel->execute(streams[0]);
     //     }
-    //     cudaStreamSynchronize(stream);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, streams[0]));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+    //     printf("[warmup]%s total time: %f\n", lc_task->taskName.c_str(), milliseconds);
     // }
     // cudaDeviceSynchronize();
     // vector<float> time_vec(lc_task->kernels.size(), 0);
@@ -886,22 +910,24 @@ int main(int argc, char* argv[]) {
     //     lc_task->initExecution();
     //     for (int j = 0; j < lc_task->kernels.size(); ++j) {
     //         auto start = clock();
-    //         lc_task->kernels[j]->execute(stream);
+    //         lc_task->kernels[j]->execute(streams[0]);
     //         cudaDeviceSynchronize();
-    //         cudaStreamSynchronize(stream);
+    //         cudaStreamSynchronize(streams[0]);
     //         auto end = clock();
     //         auto duration = float(end - start) * 1000 / CLOCKS_PER_SEC;
     //         time_vec[j] += duration;
     //     }
-    //     cudaStreamSynchronize(stream);
+    //     cudaStreamSynchronize(streams[0]);
     // }
     // // cal total avg time
     // float total_time = 0.0f;
     // float tensor_core_time = 0.0f;
     // for (int i = 0; i < time_vec.size(); ++i) {
     //     total_time += time_vec[i];
+    //     // printf("kernel name: %s, time: %f\n", lc_task->kernels[i]->kernelName.c_str(), time_vec[i] / 5);
     // }
-    // printf("total time: %f\n", total_time / 5);
+    // total_time /= 5;
+    // printf("total time: %f\n", total_time);
 
     // int tensor_kernel_count = 0;
     // for (int k_idx = 0; k_idx < lc_task->kernels.size(); ++k_idx) {
@@ -912,7 +938,7 @@ int main(int argc, char* argv[]) {
     //         tensor_kernel_count++;
     //     }
     // }
-    // printf("tensor core time: %f, kernel count: %d\n", tensor_core_time, tensor_kernel_count);
+    // printf("tensor core time, cuda kernel time, tc kernel count: %f %f %d\n", tensor_core_time, total_time - tensor_core_time, tensor_kernel_count);
 
 
     // [sys] Table for ptb resource usage

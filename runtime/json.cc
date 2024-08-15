@@ -2,6 +2,8 @@
 #include "Logger.h"
 boost::property_tree::ptree ptr;
 
+boost::property_tree::ptree common_ptr;
+
 extern Logger logger;
 
 int get_kernel_info(const std::string &kernel_name, const std::string &key){
@@ -77,59 +79,59 @@ void build_json(const std::string &filename)
   file.close();
 }
 
-int geti(const std::string &keys, ...)
+void read_common_json(const std::string &filename)
 {
-    va_list args;
-    va_start(args, keys);
-    auto tmp = ptr;
-    for (const char *key = keys.c_str(); key != NULL; key = va_arg(args, const char *))
-    {
-        if (tmp.get_child_optional(key))
-        {
-            tmp = tmp.get_child(key);
-        }
-        else
-        {
-            return JSON_NOT_FOUND;
-        }
-    }
-    return tmp.get_value<int>();
+  std::ifstream file(filename);
+  if (!file.is_open())
+  {
+    std::cerr << "Error: file not found" << std::endl;
+    exit(1);
+  }
+  std::string str;
+  std::string line;
+  while (std::getline(file, line))
+  {
+    str += line;
+  }
+  file.close();
+  common_ptr = boost::property_tree::ptree();
+  std::stringstream ss;
+  ss << str;
+  boost::property_tree::read_json(ss, common_ptr);
+  logger.INFO("Read json file: " + filename);
 }
 
-float getf(const std::string &keys, ...)
+long long geti(int count, const char* keys...)
 {
     va_list args;
     va_start(args, keys);
-    auto tmp = ptr;
-    for (const char *key = keys.c_str(); key != NULL; key = va_arg(args, const char *))
-    {
-        if (tmp.get_child_optional(key))
-        {
-            tmp = tmp.get_child(key);
-        }
-        else
-        {
-            return JSON_NOT_FOUND;
-        }
-    }
-    return tmp.get_value<float>();
-}
+    
+    boost::property_tree::ptree tmp = common_ptr;
+    long long result = 0;
+    std::vector<const char*> key_list;
 
-std::string gets(const std::string &keys, ...)
-{
-    va_list args;
-    va_start(args, keys);
-    auto tmp = ptr;
-    for (const char *key = keys.c_str(); key != NULL; key = va_arg(args, const char *))
+    for (int i = 0; i < count; i++)
     {
+        const char* key = (!i) ? keys : va_arg(args, const char*);
+        key_list.push_back(key);
+
         if (tmp.get_child_optional(key))
         {
             tmp = tmp.get_child(key);
+            if (i == count - 1)
+            {
+                result = tmp.get_value<long long>();
+                va_end(args);
+                return result;
+            }
         }
-        else
-        {
-            return "";
+        else {
+            // Handle the case where the key is not found
+            printf("key chain: ");
+            for (auto key : key_list)
+                printf("%s -> ", key);
+            printf("END, not found!\n");
+            exit(1);
         }
     }
-    return tmp.get_value<std::string>();
 }

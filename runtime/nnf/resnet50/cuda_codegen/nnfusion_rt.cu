@@ -696,9 +696,9 @@ typedef unsigned long int uint64_t;
 #define NNFUSION_GRAPH_INPUT_NUM 1
 #define NNFUSION_GRAPH_OUTPUT_NUM 1
 #define NNFUSION_GRAPH_INPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_INPUT_SHAPE_0 {128, 224, 224, 3}
+#define NNFUSION_GRAPH_INPUT_SHAPE_0 {64, 224, 224, 3}
 #define NNFUSION_GRAPH_OUTPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {128, 1001}
+#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {64, 1001}
 #endif
 
 // Node name:	Reshape_376
@@ -747,18 +747,18 @@ extern void Reshape_float_float_cuda_Reshape_376_Call(const dim3 &grids, const d
 // Node name:	Convolution_393
 // Description:	Convolution
 // Input:
-//	- name: Relu_391_0	type: float	shape: Shape{128, 1024, 14, 14}
+//	- name: Relu_391_0	type: float	shape: Shape{64, 1024, 14, 14}
 //	- name: Reshape_392_0	type: float	shape: Shape{256, 1024, 1, 1}
 // Output:
-//	- name: Convolution_393_0	type: float	shape: Shape{128, 256, 14, 14}
+//	- name: Convolution_393_0	type: float	shape: Shape{64, 256, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_393(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 1024, 1, 1));
@@ -856,18 +856,18 @@ extern void Reshape_float_float_cuda_Reshape_332_Call(const dim3 &grids, const d
 // Node name:	Convolution_465
 // Description:	Convolution
 // Input:
-//	- name: Relu_463_0	type: float	shape: Shape{128, 512, 7, 7}
+//	- name: Relu_463_0	type: float	shape: Shape{64, 512, 7, 7}
 //	- name: Reshape_464_0	type: float	shape: Shape{512, 512, 3, 3}
 // Output:
-//	- name: Convolution_465_0	type: float	shape: Shape{128, 512, 7, 7}
+//	- name: Convolution_465_0	type: float	shape: Shape{64, 512, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_465(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 512, 3, 3));
@@ -4647,7 +4647,7 @@ void Constant_float_cuda_Constant_90(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_500_0	type: float	shape: Shape{128, 2048}
+//	- name: Constant_500_0	type: float	shape: Shape{64, 2048}
 void Constant_float_cuda_Constant_500(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_500_0.bin" , std::ios::in | std::ios::binary);
@@ -4656,9 +4656,9 @@ void Constant_float_cuda_Constant_500(cudaStream_t stream, float* output0)
     	printf("Load Constant_500_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[1048576];
-    bin_file.read(tmp_mem, 1048576);
-    cudaMemcpyAsync(output0, tmp_mem, 1048576, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[524288];
+    bin_file.read(tmp_mem, 524288);
+    cudaMemcpyAsync(output0, tmp_mem, 524288, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -6078,11 +6078,11 @@ extern void Reshape_float_float_cuda_Reshape_468_Call(const dim3 &grids, const d
 // Input:
 //	- name: Constant_4_0	type: float	shape: Shape{64}
 //	- name: Constant_5_0	type: float	shape: Shape{64}
-//	- name: Convolution_275_0	type: float	shape: Shape{128, 64, 112, 112}
+//	- name: Convolution_275_0	type: float	shape: Shape{64, 64, 112, 112}
 //	- name: Constant_6_0	type: float	shape: Shape{64}
 //	- name: Constant_7_0	type: float	shape: Shape{64}
 // Output:
-//	- name: BatchNormInference_276_0	type: float	shape: Shape{128, 64, 112, 112}
+//	- name: BatchNormInference_276_0	type: float	shape: Shape{64, 64, 112, 112}
 extern "C" __launch_bounds__(512) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 112 * 112;
@@ -6100,10 +6100,10 @@ extern void BatchNormInference_float_float_float_float_float_float_cuda_BatchNor
 // Node name:	Divide_501
 // Description:	Divide
 // Input:
-//	- name: Sum_499_0	type: float	shape: Shape{128, 2048}
-//	- name: Constant_500_0	type: float	shape: Shape{128, 2048}
+//	- name: Sum_499_0	type: float	shape: Shape{64, 2048}
+//	- name: Constant_500_0	type: float	shape: Shape{64, 2048}
 // Output:
-//	- name: Divide_501_0	type: float	shape: Shape{128, 2048}
+//	- name: Divide_501_0	type: float	shape: Shape{64, 2048}
 extern "C" __launch_bounds__(512) __global__ void Divide_float_float_float_cuda_Divide_501(float* input0, float* input1, float* output0)
 {
     output0[blockIdx.x * 512 + threadIdx.x] = fdividef(input0[blockIdx.x * 512 + threadIdx.x], input1[blockIdx.x * 512 + threadIdx.x]);
@@ -6115,18 +6115,18 @@ extern void Divide_float_float_float_cuda_Divide_501_Call(const dim3 &grids, con
 // Node name:	Convolution_291
 // Description:	Convolution
 // Input:
-//	- name: Relu_289_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: Relu_289_0	type: float	shape: Shape{64, 64, 56, 56}
 //	- name: Reshape_290_0	type: float	shape: Shape{256, 64, 1, 1}
 // Output:
-//	- name: Convolution_291_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: Convolution_291_0	type: float	shape: Shape{64, 256, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_291(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 64, 1, 1));
@@ -6181,18 +6181,18 @@ void Convolution_float_float_float_cuda_lib_Convolution_291(cudnnHandle_t cudnn_
 // Node name:	Convolution_324
 // Description:	Convolution
 // Input:
-//	- name: Relu_320_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: Relu_320_0	type: float	shape: Shape{64, 256, 56, 56}
 //	- name: Reshape_323_0	type: float	shape: Shape{128, 256, 1, 1}
 // Output:
-//	- name: Convolution_324_0	type: float	shape: Shape{128, 128, 28, 28}
+//	- name: Convolution_324_0	type: float	shape: Shape{64, 128, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_324(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 256, 1, 1));
@@ -6248,10 +6248,10 @@ void Convolution_float_float_float_cuda_lib_Convolution_324(cudnnHandle_t cudnn_
 extern "C" void cuda_init()
 {
 CUDA_SAFE_CALL(cudaDeviceReset());
-// total memory:1542209280
+// total memory:822361856
 CUDA_SAFE_CALL(cudaSetDevice(0));
-CUDA_SAFE_CALL(cudaMalloc((void**)&group_persist_CUDA_GPU0_allocator_memory_pool,103497472));
-CUDA_SAFE_CALL(cudaMemset((void*)group_persist_CUDA_GPU0_allocator_memory_pool, 0, 103497472));
+CUDA_SAFE_CALL(cudaMalloc((void**)&group_persist_CUDA_GPU0_allocator_memory_pool,102973184));
+CUDA_SAFE_CALL(cudaMemset((void*)group_persist_CUDA_GPU0_allocator_memory_pool, 0, 102973184));
 Constant_272_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+0);
 Constant_3_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+64);
 Constant_7_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+37696);
@@ -6519,226 +6519,226 @@ Constant_266_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+94220096
 Constant_264_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+94228288);
 Constant_265_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+94236480);
 Constant_500_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+94244672);
-Constant_269_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+95293248);
-Constant_270_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+103493440);
+Constant_269_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+94768960);
+Constant_270_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+102969152);
 CUDA_SAFE_CALL(cudaSetDevice(0));
-CUDA_SAFE_CALL(cudaMalloc((void**)&group_0_CUDA_GPU0_allocator_memory_pool,1438711808));
-CUDA_SAFE_CALL(cudaMemset((void*)group_0_CUDA_GPU0_allocator_memory_pool, 0, 1438711808));
+CUDA_SAFE_CALL(cudaMalloc((void**)&group_0_CUDA_GPU0_allocator_memory_pool,719388672));
+CUDA_SAFE_CALL(cudaMemset((void*)group_0_CUDA_GPU0_allocator_memory_pool, 0, 719388672));
 Reshape_271_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Pad_273_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+77070336);
+Pad_273_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+38535168);
 Reshape_274_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_275_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+158324736);
-BatchNormInference_276_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+569366528);
-Relu_277_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+569366528);
+Convolution_275_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+79162368);
+BatchNormInference_276_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+284683264);
+Relu_277_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+284683264);
 MaxPool_278_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_281_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_282_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102776832);
-BatchNormInference_284_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205537280);
-Relu_285_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205537280);
-Reshape_286_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_287_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+308297728);
-BatchNormInference_288_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Relu_289_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Reshape_290_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Convolution_291_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205586432);
-BatchNormInference_292_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+616628224);
-Reshape_279_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_280_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102825984);
-BatchNormInference_283_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1027670016);
+Reshape_281_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_282_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51396608);
+BatchNormInference_284_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102776832);
+Relu_285_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102776832);
+Reshape_286_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_287_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+154157056);
+BatchNormInference_288_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Relu_289_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Reshape_290_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Convolution_291_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102825984);
+BatchNormInference_292_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+308346880);
+Reshape_279_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_280_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51445760);
+BatchNormInference_283_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+513867776);
 Relu_294_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_295_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
-Convolution_296_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411107328);
-BatchNormInference_297_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+513867776);
-Relu_298_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+513867776);
-Reshape_299_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
-Convolution_300_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+616628224);
-BatchNormInference_301_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
-Relu_302_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
-Reshape_303_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+513802240);
-Convolution_304_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+513867776);
-BatchNormInference_305_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+924909568);
-Relu_307_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
+Reshape_295_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Convolution_296_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205586432);
+BatchNormInference_297_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+256966656);
+Relu_298_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+256966656);
+Reshape_299_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Convolution_300_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+308346880);
+BatchNormInference_301_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Relu_302_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Reshape_303_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+256901120);
+Convolution_304_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+256966656);
+BatchNormInference_305_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+462487552);
+Relu_307_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
 Reshape_308_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_309_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-BatchNormInference_310_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102825984);
-Relu_311_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102825984);
+BatchNormInference_310_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51445760);
+Relu_311_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51445760);
 Reshape_312_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_313_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205586432);
+Convolution_313_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102825984);
 BatchNormInference_314_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_315_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_316_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_317_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+822083584);
+Reshape_316_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_317_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
 BatchNormInference_318_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Relu_320_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+822083584);
+Relu_320_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
 Reshape_323_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_324_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
-BatchNormInference_326_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51511296);
-Relu_327_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51511296);
+BatchNormInference_326_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25821184);
+Relu_327_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25821184);
 Reshape_328_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_329_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102891520);
+Convolution_329_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51511296);
 BatchNormInference_330_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_331_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_332_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-Convolution_333_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51642368);
-BatchNormInference_334_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+257163264);
+Reshape_332_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+Convolution_333_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25952256);
+BatchNormInference_334_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+128712704);
 Reshape_321_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_322_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+524288);
-BatchNormInference_325_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+462684160);
+BatchNormInference_325_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+231473152);
 Relu_336_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_337_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Convolution_338_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205783040);
-BatchNormInference_339_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+257163264);
-Relu_340_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+257163264);
-Reshape_341_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Convolution_342_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+308543488);
-BatchNormInference_343_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Relu_344_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Reshape_345_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+256901120);
-Convolution_346_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+257163264);
-BatchNormInference_347_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+462684160);
-Relu_349_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Reshape_337_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Convolution_338_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+103022592);
+BatchNormInference_339_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+128712704);
+Relu_340_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+128712704);
+Reshape_341_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Convolution_342_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+154402816);
+BatchNormInference_343_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Relu_344_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Reshape_345_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+128450560);
+Convolution_346_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+128712704);
+BatchNormInference_347_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+231473152);
+Relu_349_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 Reshape_350_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_351_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
-BatchNormInference_352_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51642368);
-Relu_353_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51642368);
+BatchNormInference_352_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25952256);
+Relu_353_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25952256);
 Reshape_354_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_355_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+103022592);
+Convolution_355_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51642368);
 BatchNormInference_356_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_357_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_358_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-Convolution_359_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
+Reshape_358_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+Convolution_359_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
 BatchNormInference_360_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Relu_362_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+411041792);
+Relu_362_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
 Reshape_363_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_364_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
-BatchNormInference_365_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51642368);
-Relu_366_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51642368);
+BatchNormInference_365_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25952256);
+Relu_366_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25952256);
 Reshape_367_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_368_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+103022592);
+Convolution_368_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51642368);
 BatchNormInference_369_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_370_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_371_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-Convolution_372_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51642368);
-BatchNormInference_373_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+616562688);
+Reshape_371_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+Convolution_372_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25952256);
+BatchNormInference_373_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+308281344);
 Relu_375_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_378_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Convolution_379_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+206045184);
-BatchNormInference_381_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+231735296);
-Relu_382_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+231735296);
-Reshape_383_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Convolution_384_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+257425408);
-BatchNormInference_385_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Relu_386_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Reshape_387_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+231211008);
-Convolution_388_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+232259584);
-BatchNormInference_389_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+335020032);
-Reshape_376_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
-Convolution_377_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+207618048);
+Reshape_378_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Convolution_379_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+103284736);
+BatchNormInference_381_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+116129792);
+Relu_382_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+116129792);
+Reshape_383_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Convolution_384_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+128974848);
+BatchNormInference_385_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Relu_386_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Reshape_387_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+115605504);
+Convolution_388_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+116654080);
+BatchNormInference_389_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+168034304);
+Reshape_376_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Convolution_377_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+104857600);
 BatchNormInference_380_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Relu_391_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Relu_391_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
 Reshape_392_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_393_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1048576);
-BatchNormInference_394_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
-Relu_395_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+BatchNormInference_394_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+Relu_395_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
 Reshape_396_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_397_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+52428800);
+Convolution_397_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
 BatchNormInference_398_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_399_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_400_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-Convolution_401_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Reshape_400_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+Convolution_401_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 BatchNormInference_402_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Relu_404_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Relu_404_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 Reshape_405_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_406_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1048576);
-BatchNormInference_407_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
-Relu_408_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+BatchNormInference_407_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+Relu_408_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
 Reshape_409_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_410_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+52428800);
+Convolution_410_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
 BatchNormInference_411_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_412_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_413_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-Convolution_414_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
-BatchNormInference_415_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+308281344);
+Reshape_413_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+Convolution_414_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+BatchNormInference_415_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+154140672);
 Relu_417_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_418_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_419_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+103809024);
-BatchNormInference_420_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+129499136);
-Relu_421_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+129499136);
-Reshape_422_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_423_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+155189248);
-BatchNormInference_424_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Relu_425_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Reshape_426_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+128450560);
-Convolution_427_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+129499136);
-BatchNormInference_428_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+232259584);
-Relu_430_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Reshape_418_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_419_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+52428800);
+BatchNormInference_420_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65273856);
+Relu_421_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65273856);
+Reshape_422_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_423_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+78118912);
+BatchNormInference_424_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Relu_425_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Reshape_426_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+64225280);
+Convolution_427_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65273856);
+BatchNormInference_428_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+116654080);
+Relu_430_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
 Reshape_431_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_432_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1048576);
-BatchNormInference_433_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
-Relu_434_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+BatchNormInference_433_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+Relu_434_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
 Reshape_435_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_436_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+52428800);
+Convolution_436_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
 BatchNormInference_437_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_438_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_439_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-Convolution_440_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Reshape_439_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+Convolution_440_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 BatchNormInference_441_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Relu_443_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+205520896);
+Relu_443_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
 Reshape_444_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_445_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1048576);
-BatchNormInference_446_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
-Relu_447_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
+BatchNormInference_446_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+Relu_447_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
 Reshape_448_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_449_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+52428800);
+Convolution_449_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
 BatchNormInference_450_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_451_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_452_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
-Convolution_453_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+26738688);
-BatchNormInference_454_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+308281344);
+Reshape_452_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+12845056);
+Convolution_453_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+13893632);
+BatchNormInference_454_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+154140672);
 Relu_456_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_459_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_460_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+104857600);
-BatchNormInference_462_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+117702656);
-Relu_463_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+117702656);
-Reshape_464_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_465_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+130547712);
-BatchNormInference_466_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Relu_467_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Reshape_468_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+115605504);
-Convolution_469_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+119799808);
-BatchNormInference_470_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+171180032);
-Reshape_457_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
-Convolution_458_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+111149056);
+Reshape_459_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_460_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+53477376);
+BatchNormInference_462_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+59899904);
+Relu_463_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+59899904);
+Reshape_464_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+66322432);
+Convolution_465_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+BatchNormInference_466_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+57802752);
+Relu_467_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+57802752);
+Reshape_468_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_469_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+64225280);
+BatchNormInference_470_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+89915392);
+Reshape_457_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Convolution_458_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+59768832);
 BatchNormInference_461_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Relu_472_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Relu_472_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
 Reshape_473_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_474_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+4194304);
-BatchNormInference_475_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+17039360);
-Relu_476_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+17039360);
+BatchNormInference_475_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+10616832);
+Relu_476_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+10616832);
 Reshape_477_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_478_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+29884416);
+Convolution_478_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+17039360);
 BatchNormInference_479_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_480_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_481_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+12845056);
-Convolution_482_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Reshape_481_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+6422528);
+Convolution_482_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
 BatchNormInference_483_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Relu_485_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+102760448);
+Relu_485_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
 Reshape_486_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Convolution_487_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+4194304);
-BatchNormInference_488_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+17039360);
-Relu_489_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+17039360);
+BatchNormInference_488_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+10616832);
+Relu_489_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+10616832);
 Reshape_490_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Convolution_491_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+29884416);
+Convolution_491_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+17039360);
 BatchNormInference_492_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Relu_493_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_494_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+12845056);
-Convolution_495_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+17039360);
-BatchNormInference_496_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+154140672);
+Reshape_494_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+6422528);
+Convolution_495_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+10616832);
+BatchNormInference_496_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+77070336);
 Relu_498_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Sum_499_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
-Divide_501_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+51380224);
+Sum_499_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
+Divide_501_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+25690112);
 Dot_502_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Broadcast_503_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+512512);
+Broadcast_503_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+256256);
 Add_504_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 // create streams/handles
 CUBLAS_SAFE_CALL(cublasCreate(&cublas_handle_0));
@@ -7287,18 +7287,18 @@ CUDA_SAFE_CALL(cudaDeviceGetAttribute(&num_SMs, cudaDevAttrMultiProcessorCount, 
 // Node name:	Convolution_296
 // Description:	Convolution
 // Input:
-//	- name: Relu_294_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: Relu_294_0	type: float	shape: Shape{64, 256, 56, 56}
 //	- name: Reshape_295_0	type: float	shape: Shape{64, 256, 1, 1}
 // Output:
-//	- name: Convolution_296_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: Convolution_296_0	type: float	shape: Shape{64, 64, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_296(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 256, 1, 1));
@@ -7355,11 +7355,11 @@ void Convolution_float_float_float_cuda_lib_Convolution_296(cudnnHandle_t cudnn_
 // Input:
 //	- name: Constant_14_0	type: float	shape: Shape{64}
 //	- name: Constant_15_0	type: float	shape: Shape{64}
-//	- name: Convolution_282_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: Convolution_282_0	type: float	shape: Shape{64, 64, 56, 56}
 //	- name: Constant_16_0	type: float	shape: Shape{64}
 //	- name: Constant_17_0	type: float	shape: Shape{64}
 // Output:
-//	- name: BatchNormInference_284_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: BatchNormInference_284_0	type: float	shape: Shape{64, 64, 56, 56}
 extern "C" __launch_bounds__(512) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 56 * 56;
@@ -7436,11 +7436,11 @@ extern void Reshape_float_float_cuda_Reshape_274_Call(const dim3 &grids, const d
 // Input:
 //	- name: Constant_74_0	type: float	shape: Shape{512}
 //	- name: Constant_75_0	type: float	shape: Shape{512}
-//	- name: Convolution_333_0	type: float	shape: Shape{128, 512, 28, 28}
+//	- name: Convolution_333_0	type: float	shape: Shape{64, 512, 28, 28}
 //	- name: Constant_76_0	type: float	shape: Shape{512}
 //	- name: Constant_77_0	type: float	shape: Shape{512}
 // Output:
-//	- name: BatchNormInference_334_0	type: float	shape: Shape{128, 512, 28, 28}
+//	- name: BatchNormInference_334_0	type: float	shape: Shape{64, 512, 28, 28}
 extern "C" __launch_bounds__(512) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 28 * 28;
@@ -7458,19 +7458,19 @@ extern void BatchNormInference_float_float_float_float_float_float_cuda_BatchNor
 // Node name:	Pad_273
 // Description:	Pad
 // Input:
-//	- name: Reshape_271_0	type: float	shape: Shape{128, 3, 224, 224}
+//	- name: Reshape_271_0	type: float	shape: Shape{64, 3, 224, 224}
 //	- name: Constant_272_0	type: float	shape: Shape{}
 // Output:
-//	- name: Pad_273_0	type: float	shape: Shape{128, 3, 230, 230}
+//	- name: Pad_273_0	type: float	shape: Shape{64, 3, 230, 230}
 extern "C" __launch_bounds__(64) __global__ void Pad_float_float_float_cuda_Pad_273(float* input0, float* input1, float* output0)
 {
     uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     float* in = input0;
     float* pad = input1;
     float* out = output0;
-    if (tid < 20313600)
+    if (tid < 10156800)
     {
-        size_t input_shape0 = 128;
+        size_t input_shape0 = 64;
         size_t input_shape1 = 3;
         size_t input_shape2 = 224;
         size_t input_shape3 = 224;
@@ -7527,18 +7527,18 @@ extern void Pad_float_float_float_cuda_Pad_273_Call(const dim3 &grids, const dim
 // Node name:	Convolution_275
 // Description:	Convolution
 // Input:
-//	- name: Pad_273_0	type: float	shape: Shape{128, 3, 230, 230}
+//	- name: Pad_273_0	type: float	shape: Shape{64, 3, 230, 230}
 //	- name: Reshape_274_0	type: float	shape: Shape{64, 3, 7, 7}
 // Output:
-//	- name: Convolution_275_0	type: float	shape: Shape{128, 64, 112, 112}
+//	- name: Convolution_275_0	type: float	shape: Shape{64, 64, 112, 112}
 void Convolution_float_float_float_cuda_lib_Convolution_275(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 3, 230, 230));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 3, 230, 230));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 112, 112));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 3, 7, 7));
@@ -7736,9 +7736,9 @@ extern void Reshape_float_float_cuda_Reshape_392_Call(const dim3 &grids, const d
 // Node name:	Reshape_271
 // Description:	Reshape
 // Input:
-//	- name: Parameter_0_0	type: float	shape: Shape{128, 224, 224, 3}
+//	- name: Parameter_0_0	type: float	shape: Shape{64, 224, 224, 3}
 // Output:
-//	- name: Reshape_271_0	type: float	shape: Shape{128, 3, 224, 224}
+//	- name: Reshape_271_0	type: float	shape: Shape{64, 3, 224, 224}
 extern "C" __launch_bounds__(256) __global__ void Reshape_float_float_cuda_Reshape_271(float* input0, float* output0)
 {
     uint32_t input_strides0 = 150528;
@@ -7749,7 +7749,7 @@ extern "C" __launch_bounds__(256) __global__ void Reshape_float_float_cuda_Resha
     uint32_t trans_strides2 = 50176;
     size_t nx = 3;
     size_t ny = 50176;
-    size_t nz = 128;
+    size_t nz = 64;
     __shared__ float tile[1][16][17];
     uint32_t base2 = blockIdx.x * blockDim.x;
     uint32_t base1 = blockIdx.y * blockDim.y;
@@ -7793,18 +7793,18 @@ extern void Reshape_float_float_cuda_Reshape_271_Call(const dim3 &grids, const d
 // Node name:	Convolution_287
 // Description:	Convolution
 // Input:
-//	- name: Relu_285_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: Relu_285_0	type: float	shape: Shape{64, 64, 56, 56}
 //	- name: Reshape_286_0	type: float	shape: Shape{64, 64, 3, 3}
 // Output:
-//	- name: Convolution_287_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: Convolution_287_0	type: float	shape: Shape{64, 64, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_287(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 64, 3, 3));
@@ -7859,17 +7859,17 @@ void Convolution_float_float_float_cuda_lib_Convolution_287(cudnnHandle_t cudnn_
 // Node name:	MaxPool_278
 // Description:	MaxPool
 // Input:
-//	- name: Relu_277_0	type: float	shape: Shape{128, 64, 112, 112}
+//	- name: Relu_277_0	type: float	shape: Shape{64, 64, 112, 112}
 // Output:
-//	- name: MaxPool_278_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: MaxPool_278_0	type: float	shape: Shape{64, 64, 56, 56}
 void MaxPool_float_float_cuda_lib_MaxPool_278(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 112, 112));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 112, 112));
     cudnnTensorDescriptor_t output_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 56, 56));
     cudnnPoolingDescriptor_t desc;
     cudnnCreatePoolingDescriptor(&desc);
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,3, 3, 0, 0, 2, 2));
@@ -7940,13 +7940,13 @@ extern void Reshape_float_float_cuda_Reshape_286_Call(const dim3 &grids, const d
 }
 // Node name:	 Elementwise Kernel Fusion
 // Input:
-//	- name: BatchNormInference_283_0	type: float	shape: Shape{128, 256, 56, 56}
-//	- name: BatchNormInference_292_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: BatchNormInference_283_0	type: float	shape: Shape{64, 256, 56, 56}
+//	- name: BatchNormInference_292_0	type: float	shape: Shape{64, 256, 56, 56}
 // Output:
-//	- name: Relu_294_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: Relu_294_0	type: float	shape: Shape{64, 256, 56, 56}
 // Fused functions:
-// Add_float_float_float_cuda_Add_293<<<dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0>>>(BatchNormInference_283_0, BatchNormInference_292_0, Add_293_0);
-// Relu_float_float_cuda_Relu_294<<<dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_293_0, Relu_294_0);
+// Add_float_float_float_cuda_Add_293<<<dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0>>>(BatchNormInference_283_0, BatchNormInference_292_0, Add_293_0);
+// Relu_float_float_cuda_Relu_294<<<dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_293_0, Relu_294_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_cuda_Add_Relu_0(float* input0, float* input1, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -8004,18 +8004,18 @@ extern void Reshape_float_float_cuda_Reshape_473_Call(const dim3 &grids, const d
 // Node name:	Convolution_329
 // Description:	Convolution
 // Input:
-//	- name: Relu_327_0	type: float	shape: Shape{128, 128, 28, 28}
+//	- name: Relu_327_0	type: float	shape: Shape{64, 128, 28, 28}
 //	- name: Reshape_328_0	type: float	shape: Shape{128, 128, 3, 3}
 // Output:
-//	- name: Convolution_329_0	type: float	shape: Shape{128, 128, 28, 28}
+//	- name: Convolution_329_0	type: float	shape: Shape{64, 128, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_329(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 128, 3, 3));
@@ -8072,11 +8072,11 @@ void Convolution_float_float_float_cuda_lib_Convolution_329(cudnnHandle_t cudnn_
 // Input:
 //	- name: Constant_139_0	type: float	shape: Shape{1024}
 //	- name: Constant_140_0	type: float	shape: Shape{1024}
-//	- name: Convolution_388_0	type: float	shape: Shape{128, 1024, 14, 14}
+//	- name: Convolution_388_0	type: float	shape: Shape{64, 1024, 14, 14}
 //	- name: Constant_141_0	type: float	shape: Shape{1024}
 //	- name: Constant_142_0	type: float	shape: Shape{1024}
 // Output:
-//	- name: BatchNormInference_389_0	type: float	shape: Shape{128, 1024, 14, 14}
+//	- name: BatchNormInference_389_0	type: float	shape: Shape{64, 1024, 14, 14}
 extern "C" __launch_bounds__(196) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 14 * 14;
@@ -8094,9 +8094,9 @@ extern void BatchNormInference_float_float_float_float_float_float_cuda_BatchNor
 // Node name:	Result_505
 // Description:	Result
 // Input:
-//	- name: Add_504_0	type: float	shape: Shape{128, 1001}
+//	- name: Add_504_0	type: float	shape: Shape{64, 1001}
 // Output:
-//	- name: Result_505_0	type: float	shape: Shape{128, 1001}
+//	- name: Result_505_0	type: float	shape: Shape{64, 1001}
 void Result_float_float_cuda_lib_Result_505(float* input0, float** output0)
 {
     *output0 = input0;
@@ -8104,18 +8104,18 @@ void Result_float_float_cuda_lib_Result_505(float* input0, float** output0)
 // Node name:	Convolution_282
 // Description:	Convolution
 // Input:
-//	- name: MaxPool_278_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: MaxPool_278_0	type: float	shape: Shape{64, 64, 56, 56}
 //	- name: Reshape_281_0	type: float	shape: Shape{64, 64, 1, 1}
 // Output:
-//	- name: Convolution_282_0	type: float	shape: Shape{128, 64, 56, 56}
+//	- name: Convolution_282_0	type: float	shape: Shape{64, 64, 56, 56}
 void Convolution_float_float_float_cuda_lib_Convolution_282(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 64, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 64, 56, 56));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 64, 64, 1, 1));
@@ -8213,18 +8213,18 @@ extern void Reshape_float_float_cuda_Reshape_457_Call(const dim3 &grids, const d
 // Node name:	Convolution_460
 // Description:	Convolution
 // Input:
-//	- name: Relu_456_0	type: float	shape: Shape{128, 1024, 14, 14}
+//	- name: Relu_456_0	type: float	shape: Shape{64, 1024, 14, 14}
 //	- name: Reshape_459_0	type: float	shape: Shape{512, 1024, 1, 1}
 // Output:
-//	- name: Convolution_460_0	type: float	shape: Shape{128, 512, 7, 7}
+//	- name: Convolution_460_0	type: float	shape: Shape{64, 512, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_460(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 1024, 1, 1));
@@ -8279,18 +8279,18 @@ void Convolution_float_float_float_cuda_lib_Convolution_460(cudnnHandle_t cudnn_
 // Node name:	Convolution_458
 // Description:	Convolution
 // Input:
-//	- name: Relu_456_0	type: float	shape: Shape{128, 1024, 14, 14}
+//	- name: Relu_456_0	type: float	shape: Shape{64, 1024, 14, 14}
 //	- name: Reshape_457_0	type: float	shape: Shape{2048, 1024, 1, 1}
 // Output:
-//	- name: Convolution_458_0	type: float	shape: Shape{128, 2048, 7, 7}
+//	- name: Convolution_458_0	type: float	shape: Shape{64, 2048, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_458(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 1024, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 2048, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 2048, 1024, 1, 1));
@@ -8388,18 +8388,18 @@ extern void Reshape_float_float_cuda_Reshape_459_Call(const dim3 &grids, const d
 // Node name:	Convolution_377
 // Description:	Convolution
 // Input:
-//	- name: Relu_375_0	type: float	shape: Shape{128, 512, 28, 28}
+//	- name: Relu_375_0	type: float	shape: Shape{64, 512, 28, 28}
 //	- name: Reshape_376_0	type: float	shape: Shape{1024, 512, 1, 1}
 // Output:
-//	- name: Convolution_377_0	type: float	shape: Shape{128, 1024, 14, 14}
+//	- name: Convolution_377_0	type: float	shape: Shape{64, 1024, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_377(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 1024, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 1024, 512, 1, 1));
@@ -8454,18 +8454,18 @@ void Convolution_float_float_float_cuda_lib_Convolution_377(cudnnHandle_t cudnn_
 // Node name:	Convolution_469
 // Description:	Convolution
 // Input:
-//	- name: Relu_467_0	type: float	shape: Shape{128, 512, 7, 7}
+//	- name: Relu_467_0	type: float	shape: Shape{64, 512, 7, 7}
 //	- name: Reshape_468_0	type: float	shape: Shape{2048, 512, 1, 1}
 // Output:
-//	- name: Convolution_469_0	type: float	shape: Shape{128, 2048, 7, 7}
+//	- name: Convolution_469_0	type: float	shape: Shape{64, 2048, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_469(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 2048, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 2048, 512, 1, 1));
@@ -8563,18 +8563,18 @@ extern void Reshape_float_float_cuda_Reshape_290_Call(const dim3 &grids, const d
 // Node name:	Convolution_322
 // Description:	Convolution
 // Input:
-//	- name: Relu_320_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: Relu_320_0	type: float	shape: Shape{64, 256, 56, 56}
 //	- name: Reshape_321_0	type: float	shape: Shape{512, 256, 1, 1}
 // Output:
-//	- name: Convolution_322_0	type: float	shape: Shape{128, 512, 28, 28}
+//	- name: Convolution_322_0	type: float	shape: Shape{64, 512, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_322(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 56, 56));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 56, 56));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 256, 1, 1));
@@ -8674,11 +8674,11 @@ extern void Reshape_float_float_cuda_Reshape_281_Call(const dim3 &grids, const d
 // Input:
 //	- name: Constant_24_0	type: float	shape: Shape{256}
 //	- name: Constant_25_0	type: float	shape: Shape{256}
-//	- name: Convolution_291_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: Convolution_291_0	type: float	shape: Shape{64, 256, 56, 56}
 //	- name: Constant_26_0	type: float	shape: Shape{256}
 //	- name: Constant_27_0	type: float	shape: Shape{256}
 // Output:
-//	- name: BatchNormInference_292_0	type: float	shape: Shape{128, 256, 56, 56}
+//	- name: BatchNormInference_292_0	type: float	shape: Shape{64, 256, 56, 56}
 extern "C" __launch_bounds__(512) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 56 * 56;
@@ -8739,32 +8739,32 @@ extern void Reshape_float_float_cuda_Reshape_323_Call(const dim3 &grids, const d
 // Node name:	Dot_502
 // Description:	Dot
 // Input:
-//	- name: Divide_501_0	type: float	shape: Shape{128, 2048}
+//	- name: Divide_501_0	type: float	shape: Shape{64, 2048}
 //	- name: Constant_269_0	type: float	shape: Shape{2048, 1001}
 // Output:
-//	- name: Dot_502_0	type: float	shape: Shape{128, 1001}
+//	- name: Dot_502_0	type: float	shape: Shape{64, 1001}
 void Dot_float_float_float_cuda_lib_Dot_502(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 128, 2048, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 2048, &beta, static_cast<float*>(output0), 1001));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 64, 2048, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 2048, &beta, static_cast<float*>(output0), 1001));
 
 }
 // Node name:	Convolution_388
 // Description:	Convolution
 // Input:
-//	- name: Relu_386_0	type: float	shape: Shape{128, 256, 14, 14}
+//	- name: Relu_386_0	type: float	shape: Shape{64, 256, 14, 14}
 //	- name: Reshape_387_0	type: float	shape: Shape{1024, 256, 1, 1}
 // Output:
-//	- name: Convolution_388_0	type: float	shape: Shape{128, 1024, 14, 14}
+//	- name: Convolution_388_0	type: float	shape: Shape{64, 1024, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_388(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1024, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 1024, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 1024, 256, 1, 1));
@@ -8821,11 +8821,11 @@ void Convolution_float_float_float_cuda_lib_Convolution_388(cudnnHandle_t cudnn_
 // Input:
 //	- name: Constant_64_0	type: float	shape: Shape{128}
 //	- name: Constant_65_0	type: float	shape: Shape{128}
-//	- name: Convolution_324_0	type: float	shape: Shape{128, 128, 28, 28}
+//	- name: Convolution_324_0	type: float	shape: Shape{64, 128, 28, 28}
 //	- name: Constant_66_0	type: float	shape: Shape{128}
 //	- name: Constant_67_0	type: float	shape: Shape{128}
 // Output:
-//	- name: BatchNormInference_326_0	type: float	shape: Shape{128, 128, 28, 28}
+//	- name: BatchNormInference_326_0	type: float	shape: Shape{64, 128, 28, 28}
 extern "C" __launch_bounds__(512) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 28 * 28;
@@ -8843,18 +8843,18 @@ extern void BatchNormInference_float_float_float_float_float_float_cuda_BatchNor
 // Node name:	Convolution_333
 // Description:	Convolution
 // Input:
-//	- name: Relu_331_0	type: float	shape: Shape{128, 128, 28, 28}
+//	- name: Relu_331_0	type: float	shape: Shape{64, 128, 28, 28}
 //	- name: Reshape_332_0	type: float	shape: Shape{512, 128, 1, 1}
 // Output:
-//	- name: Convolution_333_0	type: float	shape: Shape{128, 512, 28, 28}
+//	- name: Convolution_333_0	type: float	shape: Shape{64, 512, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_333(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 128, 1, 1));
@@ -8909,13 +8909,13 @@ void Convolution_float_float_float_cuda_lib_Convolution_333(cudnnHandle_t cudnn_
 // Node name:	Add_504
 // Description:	Add
 // Input:
-//	- name: Dot_502_0	type: float	shape: Shape{128, 1001}
-//	- name: Broadcast_503_0	type: float	shape: Shape{128, 1001}
+//	- name: Dot_502_0	type: float	shape: Shape{64, 1001}
+//	- name: Broadcast_503_0	type: float	shape: Shape{64, 1001}
 // Output:
-//	- name: Add_504_0	type: float	shape: Shape{128, 1001}
-extern "C" __launch_bounds__(128) __global__ void Add_float_float_float_cuda_Add_504(float* input0, float* input1, float* output0)
+//	- name: Add_504_0	type: float	shape: Shape{64, 1001}
+extern "C" __launch_bounds__(64) __global__ void Add_float_float_float_cuda_Add_504(float* input0, float* input1, float* output0)
 {
-    output0[blockIdx.x * 128 + threadIdx.x] = add(input0[blockIdx.x * 128 + threadIdx.x], input1[blockIdx.x * 128 + threadIdx.x]);
+    output0[blockIdx.x * 64 + threadIdx.x] = add(input0[blockIdx.x * 64 + threadIdx.x], input1[blockIdx.x * 64 + threadIdx.x]);
 
 }
 extern void Add_float_float_float_cuda_Add_504_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* output0) {
@@ -8983,11 +8983,11 @@ extern void Reshape_float_float_cuda_Reshape_464_Call(const dim3 &grids, const d
 // Input:
 //	- name: Constant_224_0	type: float	shape: Shape{512}
 //	- name: Constant_225_0	type: float	shape: Shape{512}
-//	- name: Convolution_460_0	type: float	shape: Shape{128, 512, 7, 7}
+//	- name: Convolution_460_0	type: float	shape: Shape{64, 512, 7, 7}
 //	- name: Constant_226_0	type: float	shape: Shape{512}
 //	- name: Constant_227_0	type: float	shape: Shape{512}
 // Output:
-//	- name: BatchNormInference_462_0	type: float	shape: Shape{128, 512, 7, 7}
+//	- name: BatchNormInference_462_0	type: float	shape: Shape{64, 512, 7, 7}
 extern "C" __launch_bounds__(49) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 7 * 7;
@@ -9048,18 +9048,18 @@ extern void Reshape_float_float_cuda_Reshape_321_Call(const dim3 &grids, const d
 // Node name:	Convolution_474
 // Description:	Convolution
 // Input:
-//	- name: Relu_472_0	type: float	shape: Shape{128, 2048, 7, 7}
+//	- name: Relu_472_0	type: float	shape: Shape{64, 2048, 7, 7}
 //	- name: Reshape_473_0	type: float	shape: Shape{512, 2048, 1, 1}
 // Output:
-//	- name: Convolution_474_0	type: float	shape: Shape{128, 512, 7, 7}
+//	- name: Convolution_474_0	type: float	shape: Shape{64, 512, 7, 7}
 void Convolution_float_float_float_cuda_lib_Convolution_474(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 2048, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 2048, 7, 7));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 7, 7));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 7, 7));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 512, 2048, 1, 1));
@@ -9157,18 +9157,18 @@ extern void Reshape_float_float_cuda_Reshape_337_Call(const dim3 &grids, const d
 // Node name:	Convolution_338
 // Description:	Convolution
 // Input:
-//	- name: Relu_336_0	type: float	shape: Shape{128, 512, 28, 28}
+//	- name: Relu_336_0	type: float	shape: Shape{64, 512, 28, 28}
 //	- name: Reshape_337_0	type: float	shape: Shape{128, 512, 1, 1}
 // Output:
-//	- name: Convolution_338_0	type: float	shape: Shape{128, 128, 28, 28}
+//	- name: Convolution_338_0	type: float	shape: Shape{64, 128, 28, 28}
 void Convolution_float_float_float_cuda_lib_Convolution_338(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 128, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 128, 28, 28));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 128, 512, 1, 1));
@@ -9223,9 +9223,9 @@ void Convolution_float_float_float_cuda_lib_Convolution_338(cudnnHandle_t cudnn_
 // Node name:	Relu_277
 // Description:	Relu
 // Input:
-//	- name: BatchNormInference_276_0	type: float	shape: Shape{128, 64, 112, 112}
+//	- name: BatchNormInference_276_0	type: float	shape: Shape{64, 64, 112, 112}
 // Output:
-//	- name: Relu_277_0	type: float	shape: Shape{128, 64, 112, 112}
+//	- name: Relu_277_0	type: float	shape: Shape{64, 64, 112, 112}
 extern "C" __launch_bounds__(512) __global__ void Relu_float_float_cuda_Relu_277(float* input0, float* output0)
 {
     output0[blockIdx.x * 512 + threadIdx.x] = relu(input0[blockIdx.x * 512 + threadIdx.x]);
@@ -9239,10 +9239,10 @@ extern void Relu_float_float_cuda_Relu_277_Call(const dim3 &grids, const dim3 &b
 // Input:
 //	- name: Constant_270_0	type: float	shape: Shape{1001}
 // Output:
-//	- name: Broadcast_503_0	type: float	shape: Shape{128, 1001}
+//	- name: Broadcast_503_0	type: float	shape: Shape{64, 1001}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_503(float* input0, float* output0)
 {
-    size_t nthreads = 128128;uint32_t strides0 = 1001;
+    size_t nthreads = 64064;uint32_t strides0 = 1001;
     uint32_t strides1 = 1;
     int stride_magic0 = 1098413215;
     int stride_magic1 = 1;
@@ -9270,18 +9270,18 @@ extern void Broadcast_float_float_cuda_Broadcast_503_Call(const dim3 &grids, con
 // Node name:	Convolution_379
 // Description:	Convolution
 // Input:
-//	- name: Relu_375_0	type: float	shape: Shape{128, 512, 28, 28}
+//	- name: Relu_375_0	type: float	shape: Shape{64, 512, 28, 28}
 //	- name: Reshape_378_0	type: float	shape: Shape{256, 512, 1, 1}
 // Output:
-//	- name: Convolution_379_0	type: float	shape: Shape{128, 256, 14, 14}
+//	- name: Convolution_379_0	type: float	shape: Shape{64, 256, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_379(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 512, 28, 28));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 512, 28, 28));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 512, 1, 1));
@@ -9336,9 +9336,9 @@ void Convolution_float_float_float_cuda_lib_Convolution_379(cudnnHandle_t cudnn_
 // Node name:	Sum_499
 // Description:	Sum
 // Input:
-//	- name: Relu_498_0	type: float	shape: Shape{128, 2048, 7, 7}
+//	- name: Relu_498_0	type: float	shape: Shape{64, 2048, 7, 7}
 // Output:
-//	- name: Sum_499_0	type: float	shape: Shape{128, 2048}
+//	- name: Sum_499_0	type: float	shape: Shape{64, 2048}
 extern "C" __launch_bounds__(32) __global__ void Sum_float_float_cuda_Sum_499(float* input0, float* output0)
 {
 
@@ -9369,11 +9369,11 @@ extern void Sum_float_float_cuda_Sum_499_Call(const dim3 &grids, const dim3 &blo
 // Input:
 //	- name: Constant_129_0	type: float	shape: Shape{256}
 //	- name: Constant_130_0	type: float	shape: Shape{256}
-//	- name: Convolution_379_0	type: float	shape: Shape{128, 256, 14, 14}
+//	- name: Convolution_379_0	type: float	shape: Shape{64, 256, 14, 14}
 //	- name: Constant_131_0	type: float	shape: Shape{256}
 //	- name: Constant_132_0	type: float	shape: Shape{256}
 // Output:
-//	- name: BatchNormInference_381_0	type: float	shape: Shape{128, 256, 14, 14}
+//	- name: BatchNormInference_381_0	type: float	shape: Shape{64, 256, 14, 14}
 extern "C" __launch_bounds__(196) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 14 * 14;
@@ -9450,11 +9450,11 @@ extern void Reshape_float_float_cuda_Reshape_383_Call(const dim3 &grids, const d
 // Input:
 //	- name: Constant_234_0	type: float	shape: Shape{2048}
 //	- name: Constant_235_0	type: float	shape: Shape{2048}
-//	- name: Convolution_469_0	type: float	shape: Shape{128, 2048, 7, 7}
+//	- name: Convolution_469_0	type: float	shape: Shape{64, 2048, 7, 7}
 //	- name: Constant_236_0	type: float	shape: Shape{2048}
 //	- name: Constant_237_0	type: float	shape: Shape{2048}
 // Output:
-//	- name: BatchNormInference_470_0	type: float	shape: Shape{128, 2048, 7, 7}
+//	- name: BatchNormInference_470_0	type: float	shape: Shape{64, 2048, 7, 7}
 extern "C" __launch_bounds__(49) __global__ void BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     const int st = blockIdx.x * 7 * 7;
@@ -9515,18 +9515,18 @@ extern void Reshape_float_float_cuda_Reshape_295_Call(const dim3 &grids, const d
 // Node name:	Convolution_384
 // Description:	Convolution
 // Input:
-//	- name: Relu_382_0	type: float	shape: Shape{128, 256, 14, 14}
+//	- name: Relu_382_0	type: float	shape: Shape{64, 256, 14, 14}
 //	- name: Reshape_383_0	type: float	shape: Shape{256, 256, 3, 3}
 // Output:
-//	- name: Convolution_384_0	type: float	shape: Shape{128, 256, 14, 14}
+//	- name: Convolution_384_0	type: float	shape: Shape{64, 256, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_384(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 14, 14));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 256, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 64, 256, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 256, 256, 3, 3));
@@ -9626,17 +9626,17 @@ extern "C" int kernel_entry(float* Parameter_0_0, float** Result_505_0)
 {
 // kernel_entry_init
  // name=transpose
-Reshape_float_float_cuda_Reshape_271_Call(dim3(1, 3136, 128), dim3(16, 16, 1), 0, 0, Parameter_0_0, Reshape_271_0);
+Reshape_float_float_cuda_Reshape_271_Call(dim3(1, 3136, 64), dim3(16, 16, 1), 0, 0, Parameter_0_0, Reshape_271_0);
  // name=cg/conv0/Pad
-Pad_float_float_float_cuda_Pad_273_Call(dim3(317400, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_271_0, Constant_272_0, Pad_273_0);
+Pad_float_float_float_cuda_Pad_273_Call(dim3(158700, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_271_0, Constant_272_0, Pad_273_0);
  // name=Reshape_274
 Reshape_float_float_cuda_Reshape_274_Call(dim3(4, 3, 4), dim3(16, 1, 16), 0, 0, Constant_3_0, Reshape_274_0);
  // name=cg/conv0/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_275(cudnn_handle_0, Pad_273_0, Reshape_274_0, Convolution_275_0);
  // name=cg/conv0/batchnorm0/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_4_0, Constant_5_0, Convolution_275_0, Constant_6_0, Constant_7_0, BatchNormInference_276_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_276_Call(dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0, Constant_4_0, Constant_5_0, Convolution_275_0, Constant_6_0, Constant_7_0, BatchNormInference_276_0);
  // name=cg/conv0/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_276_0, Relu_277_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_276_0, Relu_277_0);
  // name=cg/mpool0/MaxPool
 MaxPool_float_float_cuda_lib_MaxPool_278(cudnn_handle_0, Relu_277_0, MaxPool_278_0);
  // name=Reshape_281
@@ -9644,419 +9644,419 @@ Reshape_float_float_cuda_Reshape_281_Call(dim3(4, 4, 1), dim3(16, 16, 1), 0, 0, 
  // name=cg/resnet_v10/conv2/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_282(cudnn_handle_0, MaxPool_278_0, Reshape_281_0, Convolution_282_0);
  // name=cg/resnet_v10/conv2/batchnorm2/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_14_0, Constant_15_0, Convolution_282_0, Constant_16_0, Constant_17_0, BatchNormInference_284_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0, Constant_14_0, Constant_15_0, Convolution_282_0, Constant_16_0, Constant_17_0, BatchNormInference_284_0);
  // name=cg/resnet_v10/conv2/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_284_0, Relu_285_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_284_0, Relu_285_0);
  // name=Reshape_286
 Reshape_float_float_cuda_Reshape_286_Call(dim3(4, 64, 1), dim3(16, 1, 16), 0, 0, Constant_18_0, Reshape_286_0);
  // name=cg/resnet_v10/conv3/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_287(cudnn_handle_0, Relu_285_0, Reshape_286_0, Convolution_287_0);
  // name=cg/resnet_v10/conv3/batchnorm3/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_19_0, Constant_20_0, Convolution_287_0, Constant_21_0, Constant_22_0, BatchNormInference_288_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0, Constant_19_0, Constant_20_0, Convolution_287_0, Constant_21_0, Constant_22_0, BatchNormInference_288_0);
  // name=cg/resnet_v10/conv3/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_288_0, Relu_289_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_288_0, Relu_289_0);
  // name=Reshape_290
 Reshape_float_float_cuda_Reshape_290_Call(dim3(16, 4, 1), dim3(16, 16, 1), 0, 0, Constant_23_0, Reshape_290_0);
  // name=cg/resnet_v10/conv4/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_291(cudnn_handle_0, Relu_289_0, Reshape_290_0, Convolution_291_0);
  // name=cg/resnet_v10/conv4/batchnorm4/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_24_0, Constant_25_0, Convolution_291_0, Constant_26_0, Constant_27_0, BatchNormInference_292_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_24_0, Constant_25_0, Convolution_291_0, Constant_26_0, Constant_27_0, BatchNormInference_292_0);
  // name=Reshape_279
 Reshape_float_float_cuda_Reshape_290_Call(dim3(16, 4, 1), dim3(16, 16, 1), 0, 0, Constant_8_0, Reshape_279_0);
  // name=cg/resnet_v10/conv1/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_291(cudnn_handle_0, MaxPool_278_0, Reshape_279_0, Convolution_280_0);
  // name=cg/resnet_v10/conv1/batchnorm1/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_9_0, Constant_10_0, Convolution_280_0, Constant_11_0, Constant_12_0, BatchNormInference_283_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_9_0, Constant_10_0, Convolution_280_0, Constant_11_0, Constant_12_0, BatchNormInference_283_0);
  // name=fused_kernel_506
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_283_0, BatchNormInference_292_0, Relu_294_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_283_0, BatchNormInference_292_0, Relu_294_0);
  // name=Reshape_295
 Reshape_float_float_cuda_Reshape_295_Call(dim3(4, 16, 1), dim3(16, 16, 1), 0, 0, Constant_28_0, Reshape_295_0);
  // name=cg/resnet_v11/conv5/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_296(cudnn_handle_0, Relu_294_0, Reshape_295_0, Convolution_296_0);
  // name=cg/resnet_v11/conv5/batchnorm5/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_29_0, Constant_30_0, Convolution_296_0, Constant_31_0, Constant_32_0, BatchNormInference_297_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0, Constant_29_0, Constant_30_0, Convolution_296_0, Constant_31_0, Constant_32_0, BatchNormInference_297_0);
  // name=cg/resnet_v11/conv5/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_297_0, Relu_298_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_297_0, Relu_298_0);
  // name=Reshape_299
 Reshape_float_float_cuda_Reshape_286_Call(dim3(4, 64, 1), dim3(16, 1, 16), 0, 0, Constant_33_0, Reshape_299_0);
  // name=cg/resnet_v11/conv6/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_287(cudnn_handle_0, Relu_298_0, Reshape_299_0, Convolution_300_0);
  // name=cg/resnet_v11/conv6/batchnorm6/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_34_0, Constant_35_0, Convolution_300_0, Constant_36_0, Constant_37_0, BatchNormInference_301_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0, Constant_34_0, Constant_35_0, Convolution_300_0, Constant_36_0, Constant_37_0, BatchNormInference_301_0);
  // name=cg/resnet_v11/conv6/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_301_0, Relu_302_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_301_0, Relu_302_0);
  // name=Reshape_303
 Reshape_float_float_cuda_Reshape_290_Call(dim3(16, 4, 1), dim3(16, 16, 1), 0, 0, Constant_38_0, Reshape_303_0);
  // name=cg/resnet_v11/conv7/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_291(cudnn_handle_0, Relu_302_0, Reshape_303_0, Convolution_304_0);
  // name=cg/resnet_v11/conv7/batchnorm7/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_39_0, Constant_40_0, Convolution_304_0, Constant_41_0, Constant_42_0, BatchNormInference_305_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_39_0, Constant_40_0, Convolution_304_0, Constant_41_0, Constant_42_0, BatchNormInference_305_0);
  // name=fused_kernel_507
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0, Relu_294_0, BatchNormInference_305_0, Relu_307_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Relu_294_0, BatchNormInference_305_0, Relu_307_0);
  // name=Reshape_308
 Reshape_float_float_cuda_Reshape_295_Call(dim3(4, 16, 1), dim3(16, 16, 1), 0, 0, Constant_43_0, Reshape_308_0);
  // name=cg/resnet_v12/conv8/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_296(cudnn_handle_0, Relu_307_0, Reshape_308_0, Convolution_309_0);
  // name=cg/resnet_v12/conv8/batchnorm8/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_44_0, Constant_45_0, Convolution_309_0, Constant_46_0, Constant_47_0, BatchNormInference_310_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0, Constant_44_0, Constant_45_0, Convolution_309_0, Constant_46_0, Constant_47_0, BatchNormInference_310_0);
  // name=cg/resnet_v12/conv8/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_310_0, Relu_311_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_310_0, Relu_311_0);
  // name=Reshape_312
 Reshape_float_float_cuda_Reshape_286_Call(dim3(4, 64, 1), dim3(16, 1, 16), 0, 0, Constant_48_0, Reshape_312_0);
  // name=cg/resnet_v12/conv9/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_287(cudnn_handle_0, Relu_311_0, Reshape_312_0, Convolution_313_0);
  // name=cg/resnet_v12/conv9/batchnorm9/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_49_0, Constant_50_0, Convolution_313_0, Constant_51_0, Constant_52_0, BatchNormInference_314_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_284_Call(dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0, Constant_49_0, Constant_50_0, Convolution_313_0, Constant_51_0, Constant_52_0, BatchNormInference_314_0);
  // name=cg/resnet_v12/conv9/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_314_0, Relu_315_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_314_0, Relu_315_0);
  // name=Reshape_316
 Reshape_float_float_cuda_Reshape_290_Call(dim3(16, 4, 1), dim3(16, 16, 1), 0, 0, Constant_53_0, Reshape_316_0);
  // name=cg/resnet_v12/conv10/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_291(cudnn_handle_0, Relu_315_0, Reshape_316_0, Convolution_317_0);
  // name=cg/resnet_v12/conv10/batchnorm10/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_54_0, Constant_55_0, Convolution_317_0, Constant_56_0, Constant_57_0, BatchNormInference_318_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_292_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_54_0, Constant_55_0, Convolution_317_0, Constant_56_0, Constant_57_0, BatchNormInference_318_0);
  // name=fused_kernel_508
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(200704, 1, 1), dim3(512, 1, 1), 0, 0, Relu_307_0, BatchNormInference_318_0, Relu_320_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Relu_307_0, BatchNormInference_318_0, Relu_320_0);
  // name=Reshape_323
 Reshape_float_float_cuda_Reshape_323_Call(dim3(8, 16, 1), dim3(16, 16, 1), 0, 0, Constant_63_0, Reshape_323_0);
  // name=cg/resnet_v13/conv12/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_324(cudnn_handle_0, Relu_320_0, Reshape_323_0, Convolution_324_0);
  // name=cg/resnet_v13/conv12/batchnorm12/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_64_0, Constant_65_0, Convolution_324_0, Constant_66_0, Constant_67_0, BatchNormInference_326_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_64_0, Constant_65_0, Convolution_324_0, Constant_66_0, Constant_67_0, BatchNormInference_326_0);
  // name=cg/resnet_v13/conv12/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_326_0, Relu_327_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_326_0, Relu_327_0);
  // name=Reshape_328
 Reshape_float_float_cuda_Reshape_328_Call(dim3(8, 128, 1), dim3(16, 1, 16), 0, 0, Constant_68_0, Reshape_328_0);
  // name=cg/resnet_v13/conv13/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_329(cudnn_handle_0, Relu_327_0, Reshape_328_0, Convolution_329_0);
  // name=cg/resnet_v13/conv13/batchnorm13/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_69_0, Constant_70_0, Convolution_329_0, Constant_71_0, Constant_72_0, BatchNormInference_330_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_69_0, Constant_70_0, Convolution_329_0, Constant_71_0, Constant_72_0, BatchNormInference_330_0);
  // name=cg/resnet_v13/conv13/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_330_0, Relu_331_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_330_0, Relu_331_0);
  // name=Reshape_332
 Reshape_float_float_cuda_Reshape_332_Call(dim3(32, 8, 1), dim3(16, 16, 1), 0, 0, Constant_73_0, Reshape_332_0);
  // name=cg/resnet_v13/conv14/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_333(cudnn_handle_0, Relu_331_0, Reshape_332_0, Convolution_333_0);
  // name=cg/resnet_v13/conv14/batchnorm14/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_74_0, Constant_75_0, Convolution_333_0, Constant_76_0, Constant_77_0, BatchNormInference_334_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_74_0, Constant_75_0, Convolution_333_0, Constant_76_0, Constant_77_0, BatchNormInference_334_0);
  // name=Reshape_321
 Reshape_float_float_cuda_Reshape_321_Call(dim3(32, 16, 1), dim3(16, 16, 1), 0, 0, Constant_58_0, Reshape_321_0);
  // name=cg/resnet_v13/conv11/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_322(cudnn_handle_0, Relu_320_0, Reshape_321_0, Convolution_322_0);
  // name=cg/resnet_v13/conv11/batchnorm11/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_59_0, Constant_60_0, Convolution_322_0, Constant_61_0, Constant_62_0, BatchNormInference_325_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_59_0, Constant_60_0, Convolution_322_0, Constant_61_0, Constant_62_0, BatchNormInference_325_0);
  // name=fused_kernel_509
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_325_0, BatchNormInference_334_0, Relu_336_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_325_0, BatchNormInference_334_0, Relu_336_0);
  // name=Reshape_337
 Reshape_float_float_cuda_Reshape_337_Call(dim3(8, 32, 1), dim3(16, 16, 1), 0, 0, Constant_78_0, Reshape_337_0);
  // name=cg/resnet_v14/conv15/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_338(cudnn_handle_0, Relu_336_0, Reshape_337_0, Convolution_338_0);
  // name=cg/resnet_v14/conv15/batchnorm15/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_79_0, Constant_80_0, Convolution_338_0, Constant_81_0, Constant_82_0, BatchNormInference_339_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_79_0, Constant_80_0, Convolution_338_0, Constant_81_0, Constant_82_0, BatchNormInference_339_0);
  // name=cg/resnet_v14/conv15/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_339_0, Relu_340_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_339_0, Relu_340_0);
  // name=Reshape_341
 Reshape_float_float_cuda_Reshape_328_Call(dim3(8, 128, 1), dim3(16, 1, 16), 0, 0, Constant_83_0, Reshape_341_0);
  // name=cg/resnet_v14/conv16/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_329(cudnn_handle_0, Relu_340_0, Reshape_341_0, Convolution_342_0);
  // name=cg/resnet_v14/conv16/batchnorm16/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_84_0, Constant_85_0, Convolution_342_0, Constant_86_0, Constant_87_0, BatchNormInference_343_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_84_0, Constant_85_0, Convolution_342_0, Constant_86_0, Constant_87_0, BatchNormInference_343_0);
  // name=cg/resnet_v14/conv16/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_343_0, Relu_344_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_343_0, Relu_344_0);
  // name=Reshape_345
 Reshape_float_float_cuda_Reshape_332_Call(dim3(32, 8, 1), dim3(16, 16, 1), 0, 0, Constant_88_0, Reshape_345_0);
  // name=cg/resnet_v14/conv17/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_333(cudnn_handle_0, Relu_344_0, Reshape_345_0, Convolution_346_0);
  // name=cg/resnet_v14/conv17/batchnorm17/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_89_0, Constant_90_0, Convolution_346_0, Constant_91_0, Constant_92_0, BatchNormInference_347_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_89_0, Constant_90_0, Convolution_346_0, Constant_91_0, Constant_92_0, BatchNormInference_347_0);
  // name=fused_kernel_510
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Relu_336_0, BatchNormInference_347_0, Relu_349_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Relu_336_0, BatchNormInference_347_0, Relu_349_0);
  // name=Reshape_350
 Reshape_float_float_cuda_Reshape_337_Call(dim3(8, 32, 1), dim3(16, 16, 1), 0, 0, Constant_93_0, Reshape_350_0);
  // name=cg/resnet_v15/conv18/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_338(cudnn_handle_0, Relu_349_0, Reshape_350_0, Convolution_351_0);
  // name=cg/resnet_v15/conv18/batchnorm18/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_94_0, Constant_95_0, Convolution_351_0, Constant_96_0, Constant_97_0, BatchNormInference_352_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_94_0, Constant_95_0, Convolution_351_0, Constant_96_0, Constant_97_0, BatchNormInference_352_0);
  // name=cg/resnet_v15/conv18/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_352_0, Relu_353_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_352_0, Relu_353_0);
  // name=Reshape_354
 Reshape_float_float_cuda_Reshape_328_Call(dim3(8, 128, 1), dim3(16, 1, 16), 0, 0, Constant_98_0, Reshape_354_0);
  // name=cg/resnet_v15/conv19/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_329(cudnn_handle_0, Relu_353_0, Reshape_354_0, Convolution_355_0);
  // name=cg/resnet_v15/conv19/batchnorm19/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_99_0, Constant_100_0, Convolution_355_0, Constant_101_0, Constant_102_0, BatchNormInference_356_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_99_0, Constant_100_0, Convolution_355_0, Constant_101_0, Constant_102_0, BatchNormInference_356_0);
  // name=cg/resnet_v15/conv19/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_356_0, Relu_357_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_356_0, Relu_357_0);
  // name=Reshape_358
 Reshape_float_float_cuda_Reshape_332_Call(dim3(32, 8, 1), dim3(16, 16, 1), 0, 0, Constant_103_0, Reshape_358_0);
  // name=cg/resnet_v15/conv20/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_333(cudnn_handle_0, Relu_357_0, Reshape_358_0, Convolution_359_0);
  // name=cg/resnet_v15/conv20/batchnorm20/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_104_0, Constant_105_0, Convolution_359_0, Constant_106_0, Constant_107_0, BatchNormInference_360_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_104_0, Constant_105_0, Convolution_359_0, Constant_106_0, Constant_107_0, BatchNormInference_360_0);
  // name=fused_kernel_511
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Relu_349_0, BatchNormInference_360_0, Relu_362_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Relu_349_0, BatchNormInference_360_0, Relu_362_0);
  // name=Reshape_363
 Reshape_float_float_cuda_Reshape_337_Call(dim3(8, 32, 1), dim3(16, 16, 1), 0, 0, Constant_108_0, Reshape_363_0);
  // name=cg/resnet_v16/conv21/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_338(cudnn_handle_0, Relu_362_0, Reshape_363_0, Convolution_364_0);
  // name=cg/resnet_v16/conv21/batchnorm21/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_109_0, Constant_110_0, Convolution_364_0, Constant_111_0, Constant_112_0, BatchNormInference_365_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_109_0, Constant_110_0, Convolution_364_0, Constant_111_0, Constant_112_0, BatchNormInference_365_0);
  // name=cg/resnet_v16/conv21/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_365_0, Relu_366_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_365_0, Relu_366_0);
  // name=Reshape_367
 Reshape_float_float_cuda_Reshape_328_Call(dim3(8, 128, 1), dim3(16, 1, 16), 0, 0, Constant_113_0, Reshape_367_0);
  // name=cg/resnet_v16/conv22/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_329(cudnn_handle_0, Relu_366_0, Reshape_367_0, Convolution_368_0);
  // name=cg/resnet_v16/conv22/batchnorm22/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Constant_114_0, Constant_115_0, Convolution_368_0, Constant_116_0, Constant_117_0, BatchNormInference_369_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_326_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Constant_114_0, Constant_115_0, Convolution_368_0, Constant_116_0, Constant_117_0, BatchNormInference_369_0);
  // name=cg/resnet_v16/conv22/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_369_0, Relu_370_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_369_0, Relu_370_0);
  // name=Reshape_371
 Reshape_float_float_cuda_Reshape_332_Call(dim3(32, 8, 1), dim3(16, 16, 1), 0, 0, Constant_118_0, Reshape_371_0);
  // name=cg/resnet_v16/conv23/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_333(cudnn_handle_0, Relu_370_0, Reshape_371_0, Convolution_372_0);
  // name=cg/resnet_v16/conv23/batchnorm23/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_119_0, Constant_120_0, Convolution_372_0, Constant_121_0, Constant_122_0, BatchNormInference_373_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_334_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_119_0, Constant_120_0, Convolution_372_0, Constant_121_0, Constant_122_0, BatchNormInference_373_0);
  // name=fused_kernel_512
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(100352, 1, 1), dim3(512, 1, 1), 0, 0, Relu_362_0, BatchNormInference_373_0, Relu_375_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Relu_362_0, BatchNormInference_373_0, Relu_375_0);
  // name=Reshape_378
 Reshape_float_float_cuda_Reshape_378_Call(dim3(16, 32, 1), dim3(16, 16, 1), 0, 0, Constant_128_0, Reshape_378_0);
  // name=cg/resnet_v17/conv25/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_379(cudnn_handle_0, Relu_375_0, Reshape_378_0, Convolution_379_0);
  // name=cg/resnet_v17/conv25/batchnorm25/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_129_0, Constant_130_0, Convolution_379_0, Constant_131_0, Constant_132_0, BatchNormInference_381_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_129_0, Constant_130_0, Convolution_379_0, Constant_131_0, Constant_132_0, BatchNormInference_381_0);
  // name=cg/resnet_v17/conv25/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_381_0, Relu_382_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_381_0, Relu_382_0);
  // name=Reshape_383
 Reshape_float_float_cuda_Reshape_383_Call(dim3(16, 256, 1), dim3(16, 1, 16), 0, 0, Constant_133_0, Reshape_383_0);
  // name=cg/resnet_v17/conv26/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_384(cudnn_handle_0, Relu_382_0, Reshape_383_0, Convolution_384_0);
  // name=cg/resnet_v17/conv26/batchnorm26/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_134_0, Constant_135_0, Convolution_384_0, Constant_136_0, Constant_137_0, BatchNormInference_385_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_134_0, Constant_135_0, Convolution_384_0, Constant_136_0, Constant_137_0, BatchNormInference_385_0);
  // name=cg/resnet_v17/conv26/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_385_0, Relu_386_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_385_0, Relu_386_0);
  // name=Reshape_387
 Reshape_float_float_cuda_Reshape_387_Call(dim3(64, 16, 1), dim3(16, 16, 1), 0, 0, Constant_138_0, Reshape_387_0);
  // name=cg/resnet_v17/conv27/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_388(cudnn_handle_0, Relu_386_0, Reshape_387_0, Convolution_388_0);
  // name=cg/resnet_v17/conv27/batchnorm27/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(131072, 1, 1), dim3(196, 1, 1), 0, 0, Constant_139_0, Constant_140_0, Convolution_388_0, Constant_141_0, Constant_142_0, BatchNormInference_389_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(65536, 1, 1), dim3(196, 1, 1), 0, 0, Constant_139_0, Constant_140_0, Convolution_388_0, Constant_141_0, Constant_142_0, BatchNormInference_389_0);
  // name=Reshape_376
 Reshape_float_float_cuda_Reshape_376_Call(dim3(64, 32, 1), dim3(16, 16, 1), 0, 0, Constant_123_0, Reshape_376_0);
  // name=cg/resnet_v17/conv24/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_377(cudnn_handle_0, Relu_375_0, Reshape_376_0, Convolution_377_0);
  // name=cg/resnet_v17/conv24/batchnorm24/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(131072, 1, 1), dim3(196, 1, 1), 0, 0, Constant_124_0, Constant_125_0, Convolution_377_0, Constant_126_0, Constant_127_0, BatchNormInference_380_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(65536, 1, 1), dim3(196, 1, 1), 0, 0, Constant_124_0, Constant_125_0, Convolution_377_0, Constant_126_0, Constant_127_0, BatchNormInference_380_0);
  // name=fused_kernel_513
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_380_0, BatchNormInference_389_0, Relu_391_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_380_0, BatchNormInference_389_0, Relu_391_0);
  // name=Reshape_392
 Reshape_float_float_cuda_Reshape_392_Call(dim3(16, 64, 1), dim3(16, 16, 1), 0, 0, Constant_143_0, Reshape_392_0);
  // name=cg/resnet_v18/conv28/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_393(cudnn_handle_0, Relu_391_0, Reshape_392_0, Convolution_393_0);
  // name=cg/resnet_v18/conv28/batchnorm28/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_144_0, Constant_145_0, Convolution_393_0, Constant_146_0, Constant_147_0, BatchNormInference_394_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_144_0, Constant_145_0, Convolution_393_0, Constant_146_0, Constant_147_0, BatchNormInference_394_0);
  // name=cg/resnet_v18/conv28/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_394_0, Relu_395_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_394_0, Relu_395_0);
  // name=Reshape_396
 Reshape_float_float_cuda_Reshape_383_Call(dim3(16, 256, 1), dim3(16, 1, 16), 0, 0, Constant_148_0, Reshape_396_0);
  // name=cg/resnet_v18/conv29/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_384(cudnn_handle_0, Relu_395_0, Reshape_396_0, Convolution_397_0);
  // name=cg/resnet_v18/conv29/batchnorm29/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_149_0, Constant_150_0, Convolution_397_0, Constant_151_0, Constant_152_0, BatchNormInference_398_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_149_0, Constant_150_0, Convolution_397_0, Constant_151_0, Constant_152_0, BatchNormInference_398_0);
  // name=cg/resnet_v18/conv29/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_398_0, Relu_399_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_398_0, Relu_399_0);
  // name=Reshape_400
 Reshape_float_float_cuda_Reshape_387_Call(dim3(64, 16, 1), dim3(16, 16, 1), 0, 0, Constant_153_0, Reshape_400_0);
  // name=cg/resnet_v18/conv30/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_388(cudnn_handle_0, Relu_399_0, Reshape_400_0, Convolution_401_0);
  // name=cg/resnet_v18/conv30/batchnorm30/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(131072, 1, 1), dim3(196, 1, 1), 0, 0, Constant_154_0, Constant_155_0, Convolution_401_0, Constant_156_0, Constant_157_0, BatchNormInference_402_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(65536, 1, 1), dim3(196, 1, 1), 0, 0, Constant_154_0, Constant_155_0, Convolution_401_0, Constant_156_0, Constant_157_0, BatchNormInference_402_0);
  // name=fused_kernel_514
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Relu_391_0, BatchNormInference_402_0, Relu_404_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Relu_391_0, BatchNormInference_402_0, Relu_404_0);
  // name=Reshape_405
 Reshape_float_float_cuda_Reshape_392_Call(dim3(16, 64, 1), dim3(16, 16, 1), 0, 0, Constant_158_0, Reshape_405_0);
  // name=cg/resnet_v19/conv31/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_393(cudnn_handle_0, Relu_404_0, Reshape_405_0, Convolution_406_0);
  // name=cg/resnet_v19/conv31/batchnorm31/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_159_0, Constant_160_0, Convolution_406_0, Constant_161_0, Constant_162_0, BatchNormInference_407_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_159_0, Constant_160_0, Convolution_406_0, Constant_161_0, Constant_162_0, BatchNormInference_407_0);
  // name=cg/resnet_v19/conv31/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_407_0, Relu_408_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_407_0, Relu_408_0);
  // name=Reshape_409
 Reshape_float_float_cuda_Reshape_383_Call(dim3(16, 256, 1), dim3(16, 1, 16), 0, 0, Constant_163_0, Reshape_409_0);
  // name=cg/resnet_v19/conv32/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_384(cudnn_handle_0, Relu_408_0, Reshape_409_0, Convolution_410_0);
  // name=cg/resnet_v19/conv32/batchnorm32/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_164_0, Constant_165_0, Convolution_410_0, Constant_166_0, Constant_167_0, BatchNormInference_411_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_164_0, Constant_165_0, Convolution_410_0, Constant_166_0, Constant_167_0, BatchNormInference_411_0);
  // name=cg/resnet_v19/conv32/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_411_0, Relu_412_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_411_0, Relu_412_0);
  // name=Reshape_413
 Reshape_float_float_cuda_Reshape_387_Call(dim3(64, 16, 1), dim3(16, 16, 1), 0, 0, Constant_168_0, Reshape_413_0);
  // name=cg/resnet_v19/conv33/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_388(cudnn_handle_0, Relu_412_0, Reshape_413_0, Convolution_414_0);
  // name=cg/resnet_v19/conv33/batchnorm33/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(131072, 1, 1), dim3(196, 1, 1), 0, 0, Constant_169_0, Constant_170_0, Convolution_414_0, Constant_171_0, Constant_172_0, BatchNormInference_415_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(65536, 1, 1), dim3(196, 1, 1), 0, 0, Constant_169_0, Constant_170_0, Convolution_414_0, Constant_171_0, Constant_172_0, BatchNormInference_415_0);
  // name=fused_kernel_515
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Relu_404_0, BatchNormInference_415_0, Relu_417_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Relu_404_0, BatchNormInference_415_0, Relu_417_0);
  // name=Reshape_418
 Reshape_float_float_cuda_Reshape_392_Call(dim3(16, 64, 1), dim3(16, 16, 1), 0, 0, Constant_173_0, Reshape_418_0);
  // name=cg/resnet_v110/conv34/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_393(cudnn_handle_0, Relu_417_0, Reshape_418_0, Convolution_419_0);
  // name=cg/resnet_v110/conv34/batchnorm34/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_174_0, Constant_175_0, Convolution_419_0, Constant_176_0, Constant_177_0, BatchNormInference_420_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_174_0, Constant_175_0, Convolution_419_0, Constant_176_0, Constant_177_0, BatchNormInference_420_0);
  // name=cg/resnet_v110/conv34/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_420_0, Relu_421_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_420_0, Relu_421_0);
  // name=Reshape_422
 Reshape_float_float_cuda_Reshape_383_Call(dim3(16, 256, 1), dim3(16, 1, 16), 0, 0, Constant_178_0, Reshape_422_0);
  // name=cg/resnet_v110/conv35/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_384(cudnn_handle_0, Relu_421_0, Reshape_422_0, Convolution_423_0);
  // name=cg/resnet_v110/conv35/batchnorm35/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_179_0, Constant_180_0, Convolution_423_0, Constant_181_0, Constant_182_0, BatchNormInference_424_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_179_0, Constant_180_0, Convolution_423_0, Constant_181_0, Constant_182_0, BatchNormInference_424_0);
  // name=cg/resnet_v110/conv35/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_424_0, Relu_425_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_424_0, Relu_425_0);
  // name=Reshape_426
 Reshape_float_float_cuda_Reshape_387_Call(dim3(64, 16, 1), dim3(16, 16, 1), 0, 0, Constant_183_0, Reshape_426_0);
  // name=cg/resnet_v110/conv36/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_388(cudnn_handle_0, Relu_425_0, Reshape_426_0, Convolution_427_0);
  // name=cg/resnet_v110/conv36/batchnorm36/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(131072, 1, 1), dim3(196, 1, 1), 0, 0, Constant_184_0, Constant_185_0, Convolution_427_0, Constant_186_0, Constant_187_0, BatchNormInference_428_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(65536, 1, 1), dim3(196, 1, 1), 0, 0, Constant_184_0, Constant_185_0, Convolution_427_0, Constant_186_0, Constant_187_0, BatchNormInference_428_0);
  // name=fused_kernel_516
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Relu_417_0, BatchNormInference_428_0, Relu_430_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Relu_417_0, BatchNormInference_428_0, Relu_430_0);
  // name=Reshape_431
 Reshape_float_float_cuda_Reshape_392_Call(dim3(16, 64, 1), dim3(16, 16, 1), 0, 0, Constant_188_0, Reshape_431_0);
  // name=cg/resnet_v111/conv37/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_393(cudnn_handle_0, Relu_430_0, Reshape_431_0, Convolution_432_0);
  // name=cg/resnet_v111/conv37/batchnorm37/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_189_0, Constant_190_0, Convolution_432_0, Constant_191_0, Constant_192_0, BatchNormInference_433_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_189_0, Constant_190_0, Convolution_432_0, Constant_191_0, Constant_192_0, BatchNormInference_433_0);
  // name=cg/resnet_v111/conv37/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_433_0, Relu_434_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_433_0, Relu_434_0);
  // name=Reshape_435
 Reshape_float_float_cuda_Reshape_383_Call(dim3(16, 256, 1), dim3(16, 1, 16), 0, 0, Constant_193_0, Reshape_435_0);
  // name=cg/resnet_v111/conv38/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_384(cudnn_handle_0, Relu_434_0, Reshape_435_0, Convolution_436_0);
  // name=cg/resnet_v111/conv38/batchnorm38/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_194_0, Constant_195_0, Convolution_436_0, Constant_196_0, Constant_197_0, BatchNormInference_437_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_194_0, Constant_195_0, Convolution_436_0, Constant_196_0, Constant_197_0, BatchNormInference_437_0);
  // name=cg/resnet_v111/conv38/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_437_0, Relu_438_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_437_0, Relu_438_0);
  // name=Reshape_439
 Reshape_float_float_cuda_Reshape_387_Call(dim3(64, 16, 1), dim3(16, 16, 1), 0, 0, Constant_198_0, Reshape_439_0);
  // name=cg/resnet_v111/conv39/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_388(cudnn_handle_0, Relu_438_0, Reshape_439_0, Convolution_440_0);
  // name=cg/resnet_v111/conv39/batchnorm39/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(131072, 1, 1), dim3(196, 1, 1), 0, 0, Constant_199_0, Constant_200_0, Convolution_440_0, Constant_201_0, Constant_202_0, BatchNormInference_441_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(65536, 1, 1), dim3(196, 1, 1), 0, 0, Constant_199_0, Constant_200_0, Convolution_440_0, Constant_201_0, Constant_202_0, BatchNormInference_441_0);
  // name=fused_kernel_517
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Relu_430_0, BatchNormInference_441_0, Relu_443_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Relu_430_0, BatchNormInference_441_0, Relu_443_0);
  // name=Reshape_444
 Reshape_float_float_cuda_Reshape_392_Call(dim3(16, 64, 1), dim3(16, 16, 1), 0, 0, Constant_203_0, Reshape_444_0);
  // name=cg/resnet_v112/conv40/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_393(cudnn_handle_0, Relu_443_0, Reshape_444_0, Convolution_445_0);
  // name=cg/resnet_v112/conv40/batchnorm40/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_204_0, Constant_205_0, Convolution_445_0, Constant_206_0, Constant_207_0, BatchNormInference_446_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_204_0, Constant_205_0, Convolution_445_0, Constant_206_0, Constant_207_0, BatchNormInference_446_0);
  // name=cg/resnet_v112/conv40/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_446_0, Relu_447_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_446_0, Relu_447_0);
  // name=Reshape_448
 Reshape_float_float_cuda_Reshape_383_Call(dim3(16, 256, 1), dim3(16, 1, 16), 0, 0, Constant_208_0, Reshape_448_0);
  // name=cg/resnet_v112/conv41/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_384(cudnn_handle_0, Relu_447_0, Reshape_448_0, Convolution_449_0);
  // name=cg/resnet_v112/conv41/batchnorm41/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(32768, 1, 1), dim3(196, 1, 1), 0, 0, Constant_209_0, Constant_210_0, Convolution_449_0, Constant_211_0, Constant_212_0, BatchNormInference_450_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_381_Call(dim3(16384, 1, 1), dim3(196, 1, 1), 0, 0, Constant_209_0, Constant_210_0, Convolution_449_0, Constant_211_0, Constant_212_0, BatchNormInference_450_0);
  // name=cg/resnet_v112/conv41/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_450_0, Relu_451_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_450_0, Relu_451_0);
  // name=Reshape_452
 Reshape_float_float_cuda_Reshape_387_Call(dim3(64, 16, 1), dim3(16, 16, 1), 0, 0, Constant_213_0, Reshape_452_0);
  // name=cg/resnet_v112/conv42/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_388(cudnn_handle_0, Relu_451_0, Reshape_452_0, Convolution_453_0);
  // name=cg/resnet_v112/conv42/batchnorm42/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(131072, 1, 1), dim3(196, 1, 1), 0, 0, Constant_214_0, Constant_215_0, Convolution_453_0, Constant_216_0, Constant_217_0, BatchNormInference_454_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_389_Call(dim3(65536, 1, 1), dim3(196, 1, 1), 0, 0, Constant_214_0, Constant_215_0, Convolution_453_0, Constant_216_0, Constant_217_0, BatchNormInference_454_0);
  // name=fused_kernel_518
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(50176, 1, 1), dim3(512, 1, 1), 0, 0, Relu_443_0, BatchNormInference_454_0, Relu_456_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Relu_443_0, BatchNormInference_454_0, Relu_456_0);
  // name=Reshape_459
 Reshape_float_float_cuda_Reshape_459_Call(dim3(32, 64, 1), dim3(16, 16, 1), 0, 0, Constant_223_0, Reshape_459_0);
  // name=cg/resnet_v113/conv44/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_460(cudnn_handle_0, Relu_456_0, Reshape_459_0, Convolution_460_0);
  // name=cg/resnet_v113/conv44/batchnorm44/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(65536, 1, 1), dim3(49, 1, 1), 0, 0, Constant_224_0, Constant_225_0, Convolution_460_0, Constant_226_0, Constant_227_0, BatchNormInference_462_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(32768, 1, 1), dim3(49, 1, 1), 0, 0, Constant_224_0, Constant_225_0, Convolution_460_0, Constant_226_0, Constant_227_0, BatchNormInference_462_0);
  // name=cg/resnet_v113/conv44/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_462_0, Relu_463_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(3136, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_462_0, Relu_463_0);
  // name=Reshape_464
 Reshape_float_float_cuda_Reshape_464_Call(dim3(32, 512, 1), dim3(16, 1, 16), 0, 0, Constant_228_0, Reshape_464_0);
  // name=cg/resnet_v113/conv45/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_465(cudnn_handle_0, Relu_463_0, Reshape_464_0, Convolution_465_0);
  // name=cg/resnet_v113/conv45/batchnorm45/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(65536, 1, 1), dim3(49, 1, 1), 0, 0, Constant_229_0, Constant_230_0, Convolution_465_0, Constant_231_0, Constant_232_0, BatchNormInference_466_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(32768, 1, 1), dim3(49, 1, 1), 0, 0, Constant_229_0, Constant_230_0, Convolution_465_0, Constant_231_0, Constant_232_0, BatchNormInference_466_0);
  // name=cg/resnet_v113/conv45/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_466_0, Relu_467_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(3136, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_466_0, Relu_467_0);
  // name=Reshape_468
 Reshape_float_float_cuda_Reshape_468_Call(dim3(128, 32, 1), dim3(16, 16, 1), 0, 0, Constant_233_0, Reshape_468_0);
  // name=cg/resnet_v113/conv46/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_469(cudnn_handle_0, Relu_467_0, Reshape_468_0, Convolution_469_0);
  // name=cg/resnet_v113/conv46/batchnorm46/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(dim3(262144, 1, 1), dim3(49, 1, 1), 0, 0, Constant_234_0, Constant_235_0, Convolution_469_0, Constant_236_0, Constant_237_0, BatchNormInference_470_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(dim3(131072, 1, 1), dim3(49, 1, 1), 0, 0, Constant_234_0, Constant_235_0, Convolution_469_0, Constant_236_0, Constant_237_0, BatchNormInference_470_0);
  // name=Reshape_457
 Reshape_float_float_cuda_Reshape_457_Call(dim3(128, 64, 1), dim3(16, 16, 1), 0, 0, Constant_218_0, Reshape_457_0);
  // name=cg/resnet_v113/conv43/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_458(cudnn_handle_0, Relu_456_0, Reshape_457_0, Convolution_458_0);
  // name=cg/resnet_v113/conv43/batchnorm43/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(dim3(262144, 1, 1), dim3(49, 1, 1), 0, 0, Constant_219_0, Constant_220_0, Convolution_458_0, Constant_221_0, Constant_222_0, BatchNormInference_461_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(dim3(131072, 1, 1), dim3(49, 1, 1), 0, 0, Constant_219_0, Constant_220_0, Convolution_458_0, Constant_221_0, Constant_222_0, BatchNormInference_461_0);
  // name=fused_kernel_519
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_461_0, BatchNormInference_470_0, Relu_472_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_461_0, BatchNormInference_470_0, Relu_472_0);
  // name=Reshape_473
 Reshape_float_float_cuda_Reshape_473_Call(dim3(32, 128, 1), dim3(16, 16, 1), 0, 0, Constant_238_0, Reshape_473_0);
  // name=cg/resnet_v114/conv47/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_474(cudnn_handle_0, Relu_472_0, Reshape_473_0, Convolution_474_0);
  // name=cg/resnet_v114/conv47/batchnorm47/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(65536, 1, 1), dim3(49, 1, 1), 0, 0, Constant_239_0, Constant_240_0, Convolution_474_0, Constant_241_0, Constant_242_0, BatchNormInference_475_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(32768, 1, 1), dim3(49, 1, 1), 0, 0, Constant_239_0, Constant_240_0, Convolution_474_0, Constant_241_0, Constant_242_0, BatchNormInference_475_0);
  // name=cg/resnet_v114/conv47/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_475_0, Relu_476_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(3136, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_475_0, Relu_476_0);
  // name=Reshape_477
 Reshape_float_float_cuda_Reshape_464_Call(dim3(32, 512, 1), dim3(16, 1, 16), 0, 0, Constant_243_0, Reshape_477_0);
  // name=cg/resnet_v114/conv48/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_465(cudnn_handle_0, Relu_476_0, Reshape_477_0, Convolution_478_0);
  // name=cg/resnet_v114/conv48/batchnorm48/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(65536, 1, 1), dim3(49, 1, 1), 0, 0, Constant_244_0, Constant_245_0, Convolution_478_0, Constant_246_0, Constant_247_0, BatchNormInference_479_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(32768, 1, 1), dim3(49, 1, 1), 0, 0, Constant_244_0, Constant_245_0, Convolution_478_0, Constant_246_0, Constant_247_0, BatchNormInference_479_0);
  // name=cg/resnet_v114/conv48/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_479_0, Relu_480_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(3136, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_479_0, Relu_480_0);
  // name=Reshape_481
 Reshape_float_float_cuda_Reshape_468_Call(dim3(128, 32, 1), dim3(16, 16, 1), 0, 0, Constant_248_0, Reshape_481_0);
  // name=cg/resnet_v114/conv49/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_469(cudnn_handle_0, Relu_480_0, Reshape_481_0, Convolution_482_0);
  // name=cg/resnet_v114/conv49/batchnorm49/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(dim3(262144, 1, 1), dim3(49, 1, 1), 0, 0, Constant_249_0, Constant_250_0, Convolution_482_0, Constant_251_0, Constant_252_0, BatchNormInference_483_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(dim3(131072, 1, 1), dim3(49, 1, 1), 0, 0, Constant_249_0, Constant_250_0, Convolution_482_0, Constant_251_0, Constant_252_0, BatchNormInference_483_0);
  // name=fused_kernel_520
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Relu_472_0, BatchNormInference_483_0, Relu_485_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, Relu_472_0, BatchNormInference_483_0, Relu_485_0);
  // name=Reshape_486
 Reshape_float_float_cuda_Reshape_473_Call(dim3(32, 128, 1), dim3(16, 16, 1), 0, 0, Constant_253_0, Reshape_486_0);
  // name=cg/resnet_v115/conv50/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_474(cudnn_handle_0, Relu_485_0, Reshape_486_0, Convolution_487_0);
  // name=cg/resnet_v115/conv50/batchnorm50/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(65536, 1, 1), dim3(49, 1, 1), 0, 0, Constant_254_0, Constant_255_0, Convolution_487_0, Constant_256_0, Constant_257_0, BatchNormInference_488_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(32768, 1, 1), dim3(49, 1, 1), 0, 0, Constant_254_0, Constant_255_0, Convolution_487_0, Constant_256_0, Constant_257_0, BatchNormInference_488_0);
  // name=cg/resnet_v115/conv50/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_488_0, Relu_489_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(3136, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_488_0, Relu_489_0);
  // name=Reshape_490
 Reshape_float_float_cuda_Reshape_464_Call(dim3(32, 512, 1), dim3(16, 1, 16), 0, 0, Constant_258_0, Reshape_490_0);
  // name=cg/resnet_v115/conv51/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_465(cudnn_handle_0, Relu_489_0, Reshape_490_0, Convolution_491_0);
  // name=cg/resnet_v115/conv51/batchnorm51/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(65536, 1, 1), dim3(49, 1, 1), 0, 0, Constant_259_0, Constant_260_0, Convolution_491_0, Constant_261_0, Constant_262_0, BatchNormInference_492_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_462_Call(dim3(32768, 1, 1), dim3(49, 1, 1), 0, 0, Constant_259_0, Constant_260_0, Convolution_491_0, Constant_261_0, Constant_262_0, BatchNormInference_492_0);
  // name=cg/resnet_v115/conv51/Relu
-Relu_float_float_cuda_Relu_277_Call(dim3(6272, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_492_0, Relu_493_0);
+Relu_float_float_cuda_Relu_277_Call(dim3(3136, 1, 1), dim3(512, 1, 1), 0, 0, BatchNormInference_492_0, Relu_493_0);
  // name=Reshape_494
 Reshape_float_float_cuda_Reshape_468_Call(dim3(128, 32, 1), dim3(16, 16, 1), 0, 0, Constant_263_0, Reshape_494_0);
  // name=cg/resnet_v115/conv52/conv2d/Conv2D
 Convolution_float_float_float_cuda_lib_Convolution_469(cudnn_handle_0, Relu_493_0, Reshape_494_0, Convolution_495_0);
  // name=cg/resnet_v115/conv52/batchnorm52/FusedBatchNorm
-BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(dim3(262144, 1, 1), dim3(49, 1, 1), 0, 0, Constant_264_0, Constant_265_0, Convolution_495_0, Constant_266_0, Constant_267_0, BatchNormInference_496_0);
+BatchNormInference_float_float_float_float_float_float_cuda_BatchNormInference_470_Call(dim3(131072, 1, 1), dim3(49, 1, 1), 0, 0, Constant_264_0, Constant_265_0, Convolution_495_0, Constant_266_0, Constant_267_0, BatchNormInference_496_0);
  // name=fused_kernel_521
-FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(25088, 1, 1), dim3(512, 1, 1), 0, 0, Relu_485_0, BatchNormInference_496_0, Relu_498_0);
+FusedKernel_float_float_float_cuda_Add_Relu_0_Call(dim3(12544, 1, 1), dim3(512, 1, 1), 0, 0, Relu_485_0, BatchNormInference_496_0, Relu_498_0);
  // name=Sum_499
-Sum_float_float_cuda_Sum_499_Call(dim3(262144, 1, 1), dim3(32, 1, 1), 0, 0, Relu_498_0, Sum_499_0);
+Sum_float_float_cuda_Sum_499_Call(dim3(131072, 1, 1), dim3(32, 1, 1), 0, 0, Relu_498_0, Sum_499_0);
  // name=cg/spatial_mean0
-Divide_float_float_float_cuda_Divide_501_Call(dim3(512, 1, 1), dim3(512, 1, 1), 0, 0, Sum_499_0, Constant_500_0, Divide_501_0);
+Divide_float_float_float_cuda_Divide_501_Call(dim3(256, 1, 1), dim3(512, 1, 1), 0, 0, Sum_499_0, Constant_500_0, Divide_501_0);
  // name=cg/affine0/xw_plus_b/MatMul
 Dot_float_float_float_cuda_lib_Dot_502(cublas_handle_0, Divide_501_0, Constant_269_0, Dot_502_0);
  // name=Broadcast_503
-Broadcast_float_float_cuda_Broadcast_503_Call(dim3(2002, 1, 1), dim3(64, 1, 1), 0, 0, Constant_270_0, Broadcast_503_0);
+Broadcast_float_float_cuda_Broadcast_503_Call(dim3(1001, 1, 1), dim3(64, 1, 1), 0, 0, Constant_270_0, Broadcast_503_0);
  // name=cg/affine0/xw_plus_b
-Add_float_float_float_cuda_Add_504_Call(dim3(1001, 1, 1), dim3(128, 1, 1), 0, 0, Dot_502_0, Broadcast_503_0, Add_504_0);
+Add_float_float_float_cuda_Add_504_Call(dim3(1001, 1, 1), dim3(64, 1, 1), 0, 0, Dot_502_0, Broadcast_503_0, Add_504_0);
  // name=Result_505
 Result_float_float_cuda_lib_Result_505(Add_504_0, Result_505_0);
 return 0;

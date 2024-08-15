@@ -58,18 +58,18 @@ endif()
 
 # Set these up as variables to make reading the generated file easier
 set(CMAKE_COMMAND "/usr/bin/cmake") # path
-set(source_file "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-128/cuda_codegen/nnfusion_rt.cu") # path
-set(NVCC_generated_dependency_file "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-128/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//nnfusion_naive_rt_generated_nnfusion_rt.cu.o.NVCC-depend") # path
-set(cmake_dependency_file "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-128/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//nnfusion_naive_rt_generated_nnfusion_rt.cu.o.depend") # path
-set(CUDA_make2cmake "/usr/share/cmake-3.16/Modules/FindCUDA/make2cmake.cmake") # path
-set(CUDA_parse_cubin "/usr/share/cmake-3.16/Modules/FindCUDA/parse_cubin.cmake") # path
+set(source_file "/workspace/tacker/runtime/nnf/bert/cuda_codegen/nnfusion_rt.cu") # path
+set(NVCC_generated_dependency_file "/workspace/tacker/runtime/nnf/bert/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//nnfusion_naive_rt_generated_nnfusion_rt.cu.o.NVCC-depend") # path
+set(cmake_dependency_file "/workspace/tacker/runtime/nnf/bert/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//nnfusion_naive_rt_generated_nnfusion_rt.cu.o.depend") # path
+set(CUDA_make2cmake "/usr/share/cmake-3.18/Modules/FindCUDA/make2cmake.cmake") # path
+set(CUDA_parse_cubin "/usr/share/cmake-3.18/Modules/FindCUDA/parse_cubin.cmake") # path
 set(build_cubin OFF) # bool
 set(CUDA_HOST_COMPILER "/usr/bin/cc") # path
 # We won't actually use these variables for now, but we need to set this, in
 # order to force this file to be run again if it changes.
-set(generated_file_path "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-128/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//.") # path
-set(generated_file_internal "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-128/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//./nnfusion_naive_rt_generated_nnfusion_rt.cu.o") # path
-set(generated_cubin_file_internal "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-128/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//./nnfusion_naive_rt_generated_nnfusion_rt.cu.o.cubin.txt") # path
+set(generated_file_path "/workspace/tacker/runtime/nnf/bert/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//.") # path
+set(generated_file_internal "/workspace/tacker/runtime/nnf/bert/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//./nnfusion_naive_rt_generated_nnfusion_rt.cu.o") # path
+set(generated_cubin_file_internal "/workspace/tacker/runtime/nnf/bert/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir//./nnfusion_naive_rt_generated_nnfusion_rt.cu.o.cubin.txt") # path
 
 set(CUDA_NVCC_EXECUTABLE "/usr/local/cuda/bin/nvcc") # path
 set(CUDA_NVCC_FLAGS  -gencode arch=compute_60,code=sm_60 -gencode arch=compute_61,code=sm_61 -gencode arch=compute_70,code=sm_70 -gencode arch=compute_75,code=sm_75 -O2 -cudart shared ;; ) # list
@@ -182,13 +182,13 @@ endmacro()
 # Delete the target file
 cuda_execute_process(
   "Removing ${generated_file}"
-  COMMAND "${CMAKE_COMMAND}" -E remove "${generated_file}"
+  COMMAND "${CMAKE_COMMAND}" -E rm -f "${generated_file}"
   )
 
 # For CUDA 2.3 and below, -G -M doesn't work, so remove the -G flag
 # for dependency generation and hope for the best.
 set(depends_CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}")
-set(CUDA_VERSION 12.1)
+set(CUDA_VERSION 10.2)
 if(CUDA_VERSION VERSION_LESS "3.0")
   # Note that this will remove all occurrences of -G.
   list(REMOVE_ITEM depends_CUDA_NVCC_FLAGS "-G")
@@ -249,7 +249,7 @@ endif()
 # Delete the temporary file
 cuda_execute_process(
   "Removing ${cmake_dependency_file}.tmp and ${NVCC_generated_dependency_file}"
-  COMMAND "${CMAKE_COMMAND}" -E remove "${cmake_dependency_file}.tmp" "${NVCC_generated_dependency_file}"
+  COMMAND "${CMAKE_COMMAND}" -E rm -f "${cmake_dependency_file}.tmp" "${NVCC_generated_dependency_file}"
   )
 
 if(CUDA_result)
@@ -275,7 +275,7 @@ if(CUDA_result)
   # Since nvcc can sometimes leave half done files make sure that we delete the output file.
   cuda_execute_process(
     "Removing ${generated_file}"
-    COMMAND "${CMAKE_COMMAND}" -E remove "${generated_file}"
+    COMMAND "${CMAKE_COMMAND}" -E rm -f "${generated_file}"
     )
   message(FATAL_ERROR "Error generating file ${generated_file}")
 else()

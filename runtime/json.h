@@ -14,6 +14,6 @@ void add_kernel_info(const std::string &kernel_name, const std::string &key, con
 void build_json(const std::string &filename);
 std::string sget_kernel_info(const std::string &kernel_name, const std::string &key);
 
-int geti(const std::string &key, ...);
-float getf(const std::string &key, ...);
-std::string gets(const std::string &key, ...);
+
+long long geti(int count, const char* keys...);
+void read_common_json(const std::string &filename);

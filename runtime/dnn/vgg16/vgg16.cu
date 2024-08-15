@@ -14,17 +14,17 @@ void VGG16::initParams() {
     
     //input argument
     float* Parameter_0_0_host, *Parameter_0_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_0_0_host, sizeof(float)* 9633792));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_0_0, sizeof(float) * 9633792));
-    for (int i = 0; i < 9633792; ++i) Parameter_0_0_host[i] = 1.0f;
-    CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(float) * 9633792, cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_0_0_host, sizeof(float)* 4816896));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_0_0, sizeof(float) * 4816896));
+    for (int i = 0; i < 4816896; ++i) Parameter_0_0_host[i] = 1.0f;
+    CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(float) * 4816896, cudaMemcpyHostToDevice));
     this->Input[0] = Parameter_0_0;
     this->InputHost[0] = Parameter_0_0_host;
-    this->InputSize[0] = 9633792;
+    this->InputSize[0] = 4816896;
 
     //output arguments
     float* Result_144_0_host, *Result_144_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_144_0_host, sizeof(float) * 64064));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_144_0_host, sizeof(float) * 32032));
 
     this->Result = (void**)&Result_144_0;
 

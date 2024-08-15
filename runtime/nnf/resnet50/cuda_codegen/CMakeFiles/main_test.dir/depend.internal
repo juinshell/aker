@@ -57,5 +57,5 @@ CMakeFiles/main_test.dir/main_test.cpp.o
  /usr/local/cuda/include/vector_functions.h
  /usr/local/cuda/include/vector_functions.hpp
  /usr/local/cuda/include/vector_types.h
- /workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-128/cuda_codegen/main_test.cpp
- /workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-128/cuda_codegen/nnfusion_rt.h
+ /workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-64/cuda_codegen/main_test.cpp
+ /workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-64/cuda_codegen/nnfusion_rt.h

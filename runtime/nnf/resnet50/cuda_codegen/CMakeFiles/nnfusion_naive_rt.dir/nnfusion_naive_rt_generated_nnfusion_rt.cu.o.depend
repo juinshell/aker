@@ -289,7 +289,7 @@ SET(CUDA_NVCC_DEPEND
  "/usr/local/cuda/include/vector_functions.h"
  "/usr/local/cuda/include/vector_functions.hpp"
  "/usr/local/cuda/include/vector_types.h"
- "/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-128/cuda_codegen/nnfusion_rt.cu"
- "/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-128/cuda_codegen/nnfusion_rt.h"
+ "/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-64/cuda_codegen/nnfusion_rt.cu"
+ "/workspace/tacker/runtime/nnf/nnf_tf_freezer/resnet50-64/cuda_codegen/nnfusion_rt.h"
 )
 

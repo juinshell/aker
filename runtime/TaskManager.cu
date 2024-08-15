@@ -16,11 +16,10 @@
 extern Logger logger;
 extern Recorder recorder;
 
-int batch_size = 32;
+int batch_size = -1;
 
-// int MAX_M_GLOBAL = 401408;
 long long MAX_ORI_WMMA_A = 0;
-long long MAX_ORI_WMMA_B = 0; // 4718592
+long long MAX_ORI_WMMA_B = 0;
 long long MAX_ORI_WMMA_C = 0;
 int MAX_M_GLOBAL = 802816;
 int MAX_N_GLOBAL = 128;

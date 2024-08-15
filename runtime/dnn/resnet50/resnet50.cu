@@ -14,18 +14,17 @@ void Resnet50::initParams() {
     
     //input argument
     float* Parameter_0_0_host, *Parameter_0_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_0_0_host, sizeof(float)* 19267584));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_0_0, sizeof(float) * 19267584));
-    for (int i = 0; i < 19267584; ++i) Parameter_0_0_host[i] = 1.0f;
-    printf("Parameter_0_0_host = %p, Parameter_0_0 = %p\n", Parameter_0_0_host, Parameter_0_0);
-    CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(float) * 19267584, cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_0_0_host, sizeof(float)* 9633792));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_0_0, sizeof(float) * 9633792));
+    for (int i = 0; i < 9633792; ++i) Parameter_0_0_host[i] = 1.0f;
+    CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(float) * 9633792, cudaMemcpyHostToDevice));
     this->Input[0] = Parameter_0_0;
     this->InputHost[0] = Parameter_0_0_host;
-    this->InputSize[0] = 19267584;
+    this->InputSize[0] = 9633792;
 
     //output arguments
     float* Result_505_0_host, *Result_505_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_505_0_host, sizeof(float) * 128128));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_505_0_host, sizeof(float) * 64064));
 
     this->Result = (void**)&Result_505_0;
 
