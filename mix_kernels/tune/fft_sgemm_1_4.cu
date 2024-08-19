@@ -55,8 +55,10 @@ void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
 #define VOLSIZEX 40960
 #define VOLSIZEY 4096
 #define ATOMCOUNT 4000
+#define SM_NUM 142
 
 int main(int argc, char* argv[]) {
+    static_assert(SM_NUM == 142, "SM_NUM should be 142");
     int errors = 0;
     float ori_sum_time = 0.0f;
 
@@ -264,9 +266,9 @@ int main(int argc, char* argv[]) {
         //printf("[PTB] sgemm took %f ms\n\n", kernel_time);
     // ---------------------------------------------------------------------------------------
 
-        int mix_fft_task_blk_num = 20400;
+        int mix_fft_task_blk_num = 113600;
         int solo_fft_task_blk_num = fft_grid_dim_x - mix_fft_task_blk_num;
-        int mix_sgemm_task_blk_num = ori_sgemm_grid.x * ori_sgemm_grid.y * sgemm_iter;
+        int mix_sgemm_task_blk_num = ori_sgemm_grid.x * ori_sgemm_grid.y * sgemm_iter * 4;
         // printf("mix_fft_task_blk_num: %d\n", mix_fft_task_blk_num);
         // printf("solo_fft_task_blk_num: %d\n", solo_fft_task_blk_num);
 

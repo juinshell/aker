@@ -55,8 +55,10 @@ void curandErrCheck_(curandStatus_t stat, const char *file, int line) {
 #define VOLSIZEX 40960
 #define VOLSIZEY 4096
 #define ATOMCOUNT 4000
+#define SM_NUM 142
 
 int main(int argc, char* argv[]) {
+    static_assert(SM_NUM == 142, "SM_NUM should be 142");
     int errors = 0;
     float ori_sum_time = 0.0f;
 
@@ -268,7 +270,7 @@ int main(int argc, char* argv[]) {
         int scaling_rate = 25;
         int ori_fft_task_blk_num = ori_fft_grid.x * ori_fft_grid.y * ori_fft_grid.z;
         int ori_sgemm_task_blk_num = ori_sgemm_grid.x * ori_sgemm_grid.y * ori_sgemm_grid.z;
-        int mix_sgemm_task_blk_num = 1156;
+        int mix_sgemm_task_blk_num = 9656;
         int mix_fft_task_blk_num = int(scaling_rate * mix_sgemm_task_blk_num * load_ratio);
 
         std::vector<float> time_vec;

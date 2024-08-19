@@ -194,7 +194,117 @@ extern float* ori_wmma_results2;
 extern float* ori_wmma_C;
 extern float* cublas_wmma_C;
 
+void tzgemm_fft_fig_9_10a() {
+    auto gptb_fft_kernel = createKernel("fft");
+    std::string mix_kernel_name = "tzgemm_fft";
+    int NORMAL_M = 128 * 1000;
+    int NORMAL_N = 512 * 10;
+    int NORMAL_K = 128;
+    int M_GLOBAL = (NORMAL_M < 128) ? 128 : (NORMAL_M / 128) * 128;
+	int N_GLOBAL = (NORMAL_N < 128) ? 128 : (NORMAL_N / 128) * 128;
+	int K_GLOBAL = (NORMAL_K < 128) ? 128 : (NORMAL_K / 128) * 128;
 
+    auto ori_tzgemm_kernel = new OriTZGEMMKernel(0, M_GLOBAL, N_GLOBAL, K_GLOBAL);
+    auto gptb_tzgemm_kernel = new GPTBKernel(
+        1, 
+        "tzgemm",
+        "gptb_tzgemm", 
+        ori_tzgemm_kernel,
+        dim3(getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3], 1, 1), 
+        dim3(128, 1, 1), 
+        0,
+        getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]
+    );
+
+    // printf("getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]: %d\n", getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]);
+    int mix_fft_blk_num = geti(2, "ratio_test", "mix_fft_blk_num");
+    int mix_tzgemm_blk_num = geti(2, "ratio_test", "mix_tzgemm_blk_num");
+
+    gptb_fft_kernel->gptbParams.ptb_end_block_pos = mix_fft_blk_num;
+    gptb_tzgemm_kernel->gptbParams.ptb_end_block_pos = mix_tzgemm_blk_num;
+
+    float kernel_time;
+    cudaEvent_t startKERNEL;
+    cudaEvent_t stopKERNEL;
+    CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+    CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
+
+    auto time_vec = std::vector<float>();
+    
+    // test ori time, cal load ratio
+    gptb_fft_kernel->launchGridDim.x = gptb_fft_kernel->gptbParams.ptb_end_block_pos; // work in gptb version
+
+    // ori fft
+    for (int i = 0; i < 20; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+        gptb_fft_kernel->execute(nullptr);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+    float ori_fft_time = 0.0f;
+    std::sort(time_vec.begin(), time_vec.end());
+    for(int i = 5; i < 15; ++i) {
+        ori_fft_time += time_vec[i];
+    }
+    ori_fft_time /= 10.0f;
+    time_vec.clear();
+
+    // ori tzgemm
+    for (int i = 0; i < 20; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+        gptb_tzgemm_kernel->execute(nullptr);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+    float ori_tzgemm_time = 0.0f;
+    std::sort(time_vec.begin(), time_vec.end());
+    for(int i = 5; i < 15; ++i) {
+        ori_tzgemm_time += time_vec[i];
+    }
+    ori_tzgemm_time /= 10.0f;
+    time_vec.clear();
+
+    // mix
+    auto mix_kernel = new MixKernel(
+        1, 
+        mix_kernel_name, 
+        gptb_fft_kernel,
+        gptb_tzgemm_kernel,
+        dim3(SM_NUM * get_kernel_info(mix_kernel_name, "gridsize"), 1, 1),
+        dim3(get_kernel_info(mix_kernel_name, "blocksize"), 1, 1),
+        0,
+        mix_fft_blk_num,
+        0,
+        mix_tzgemm_blk_num
+    );
+
+    for (int i = 0; i < 50; ++i) {
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL));
+        mix_kernel->execute(nullptr);
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+        time_vec.push_back(kernel_time);
+    }
+    float mix_time = 0.0f;
+    std::sort(time_vec.begin(), time_vec.end());
+    for(int i = 20; i < 30; ++i) {
+        mix_time += time_vec[i];
+    }
+    mix_time /= 10.0f;
+    time_vec.clear();
+
+    float load_ratio = ori_fft_time / ori_tzgemm_time;
+    printf("load_ratio: %f\n", load_ratio);
+    printf("mix_duration: %f\n", mix_time);
+    printf("sgemm gptb time: %f, fft gptb time: %f, sgemm_blk_num: %d, fft_blk_num: %d\n", 
+                ori_tzgemm_time, ori_fft_time, mix_tzgemm_blk_num, mix_fft_blk_num);
+
+}
 void tzgemm_cd_profile(int m, int k) {
     // 测试fig10，tzgemm-cd load ratio
     auto gptb_cd_kernel = createKernel(sget_kernel_info("ratio_test", "cd_kernel_name"));
@@ -758,24 +868,9 @@ int main(int argc, char* argv[]) {
     CUDA_SAFE_CALL(cudaStreamCreate(&streams[0]));
     CUDA_SAFE_CALL(cudaStreamCreate(&streams[1]));
 
-    // [Aker] fig3
-    auto cp_kernel = OriCPKernel(0);
-    auto cutcp_kernel = OriCUTCPKernel(0);
-    auto fft_kernel = OriFFTKernel(0);
-    auto mrif_kernel = OriMRIFKernel(0);
-    auto mriq_kernel = OriMRIQKernel(0);
-    auto sgemm_kernel = OriSGEMMKernel(0);
-    auto stencil_kernel = OriSTENCILKernel(0);
-    auto lbm_kernel = OriLBMKernel(0);
-    cp_kernel.execute(streams[0]);
-    cutcp_kernel.execute(streams[0]);
-    fft_kernel.execute(streams[0]);
-    mrif_kernel.execute(streams[0]);
-    mriq_kernel.execute(streams[0]);
-    sgemm_kernel.execute(streams[0]);
-    stencil_kernel.execute(streams[0]);
-    lbm_kernel.execute(streams[0]);
-    CUDA_SAFE_CALL(cudaStreamSynchronize(streams[0]));
+    // [Aker] fig9
+    tzgemm_fft_fig_9_10a();
+
     
     // [Aker] nsight compute
     // auto mix_kernel = createMixKernel(sget_kernel_info("nsight_compute", "mix_kernel_name"));

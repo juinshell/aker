@@ -33,7 +33,7 @@ def run():
 
 
     data_dic_list = []
-    for i in range(30):
+    for i in range(10):
         try:
             output = subprocess.check_output(command, shell=True, text=True, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -41,9 +41,9 @@ def run():
             exit(1)
         data_dic_list.append(extract_data(output))
     
-    # 对mix_duration进行排序，取中间10次的平均值
+    # 对mix_duration进行排序，取中间5次的平均值
     data_dic_list.sort(key=lambda x: x['mix_duration'])
-    data_dic_list = data_dic_list[10:20]
+    data_dic_list = data_dic_list[2:7]
     load_ratio = sum([x['load_ratio'] for x in data_dic_list]) / len(data_dic_list)
     mix_duration = sum([x['mix_duration'] for x in data_dic_list]) / len(data_dic_list)
     fft_gptb_time = sum([x['fft_gptb_time'] for x in data_dic_list]) / len(data_dic_list)
@@ -87,11 +87,11 @@ def write_to_excel(output_file):
     df.to_excel(output_file, index=False)
 
 if __name__ == "__main__":
-    max_sgemm_blks = int(774 * 1.5)
+    max_sgemm_blks = int(142 * 17 * 4)
     load_ratios = [0.35, 0.72, 1.06, 1.41]
     for load_ratio in load_ratios:
         for i in range(1, max_sgemm_blks + 1):
-            if i % (68) == 0:
+            if i % (142 * 4) == 0:
                 print(f"--- {i} ---")
                 compile(load_ratio, i)
                 ret = run()
@@ -101,6 +101,6 @@ if __name__ == "__main__":
         # input("Press Enter to continue...")
 
     # Replace 'output.xlsx' with your desired output Excel file name
-    output_file = 'fft_sgemm_load_ratio_data_fig11.xlsx'
+    output_file = '[Aker]fig10b.xlsx'
     write_to_excel(output_file)
 

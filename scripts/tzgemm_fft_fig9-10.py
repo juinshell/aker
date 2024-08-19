@@ -1,26 +1,21 @@
 import re
 import subprocess
 import sys
+import json
 
-compile_command = "make fft_sgemm_mix -j $(nproc)"
-command = "./fft_sgemm_1_4_mix"
+f = open('../runtime/kinfo-common.json', 'r')
+content = f.read()
+a = json.loads(content)
+f.close()
 
-def compile(mix_fft_task_blk_num):
-    with open('fft_sgemm_1_4.cu', 'r') as f:
-        content = f.read()
-        content = re.sub(r'int mix_fft_task_blk_num = \d+;', f'int mix_fft_task_blk_num = {mix_fft_task_blk_num};', content)
+command = "../runtime/build/tacker -s tacker -m resnet50"
 
-    
-    # 将修改后的内容写回文件
-    with open('fft_sgemm_1_4.cu', 'w') as f:
-        f.write(content)
+def compile(mix_fft_blk_num, mix_tzgemm_blk_num):
+    with open('../runtime/kinfo-common.json', 'w') as f:
+        a["ratio_test"]["mix_fft_blk_num"] = mix_fft_blk_num
+        a["ratio_test"]["mix_tzgemm_blk_num"] = mix_tzgemm_blk_num
+        f.write(json.dumps(a, indent=4))
 
-    # 编译
-    try:
-        output = subprocess.check_output(compile_command, shell=True, text=True, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        print(f"Error compile, Error: ---\n{e.output}\n---\n, Exit!", file=sys.stderr)
-        exit(1)
 
 def run():
     # 运行
@@ -65,9 +60,11 @@ data = []
 
 def extract_data(data_content):
     data_ = []
-    pattern = r'load_ratio:\s+(\d+\.\d+)\s+mix_duration:\s+(\d+\.\d+)\s+.*sgemm gptb time:\s+(\d+\.\d+), fft gptb time:\s+(\d+\.\d+), sgemm_blk_num:\s+(\d+),\s+fft_blk_num:\s+(\d+)'
+    pattern = r'\s+load_ratio:\s+(\d+\.\d+)\s+mix_duration:\s+(\d+\.\d+)\s+.*sgemm gptb time:\s+(\d+\.\d+), fft gptb time:\s+(\d+\.\d+), sgemm_blk_num:\s+(\d+),\s+fft_blk_num:\s+(\d+)'
 
     matches = re.findall(pattern, data_content, re.MULTILINE)
+
+    assert len(matches) == 1
 
     for match in matches:
         data_.append({
@@ -86,19 +83,48 @@ def write_to_excel(output_file):
 
 if __name__ == "__main__":
     max_fft_blks = 10240 * 20
-    for i in range(142 * 50, max_fft_blks + 1):
-        if i % (142 * 50) == 0:
-            print(f"--- {i} ---")
-            compile(i)
-            output = run()
-            if output['load_ratio'] > 1.2:
-                break
-            print(output)
-            data.append(output)
+    max_tzgemm_blks = 160000
+    fft_blks = 0
+    tzgemm_blks = 0
+    SM_NUM = 142
+    fig = input("choose to gen fig9 or fig10")
+    if fig == "9":
+        # fig9
+        tzgemm_blks = 51200 * 2
+        for i in range(SM_NUM * 50, max_fft_blks + 1):
+            if i % (SM_NUM * 30) == 0:
+                print(f"--- fft_blks: {i}, tzgemm_blks: {tzgemm_blks} ---")
+                compile(i, tzgemm_blks)
+                output = run()
+                if output['load_ratio'] > 1.2:
+                    break
+                print(output)
+                data.append(output)
         
-        # input("Press Enter to continue...")
+        output_file = '[Aker]fig9-fft-tzgemm.xlsx'
+        write_to_excel(output_file)
+    elif fig == "10":
+        # fig10
+        scaling_rate = 3
+        load_ratios = [0.35, 0.72, 1.06, 1.41]
+        for load_ratio in load_ratios:
+            points_num = 0
+            for i in range(1, max_tzgemm_blks + 1):
+                if i % (SM_NUM * 50) == 0:
+                    if points_num > 15:
+                        break
+                    fft_blks = int(i * load_ratio * scaling_rate)
+                    tzgemm_blks = i
+                    print(f"--- fft_blks: {fft_blks}, tzgemm_blks: {tzgemm_blks} ---")
+                    compile(fft_blks, tzgemm_blks)
+                    output = run()
+                    print(output)
+                    data.append(output)
+                    points_num += 1
+        
+        output_file = '[Aker]fig10-a.xlsx'
+        write_to_excel(output_file)
 
-    # Replace 'output.xlsx' with your desired output Excel file name
-    output_file = '[Aker]fig9-fft-sgemm.xlsx'
-    write_to_excel(output_file)
+
+
 
