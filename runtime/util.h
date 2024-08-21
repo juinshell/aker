@@ -26,6 +26,12 @@ using namespace nvcuda;
 
 #include "header/pets_common.h"
 
+#define DIAGONAL do { \
+    static int id = 0; \
+    std::cout << "File: " << __FILE__ << ", Line: " << __LINE__ \
+              << ", Column: " << __COUNTER__ << ", ID: " << id++ << std::endl; \
+} while(0);
+
 #define CU_SAFE_CALL(err) __checkCudaErrors(err, __FILE__, __LINE__)
 // These are the inline versions for all of the SDK helper functions
 inline void __checkCudaErrors(CUresult err, const char *file, const int line) \

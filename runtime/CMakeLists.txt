@@ -10,7 +10,7 @@ message(STATUS "CUDA_LIBRARIES: " ${CUDA_LIBRARIES})
 
 SET(CMAKE_CXX_COMPILER "/usr/local/cuda/bin/nvcc")
 
-set(CUDA_NVCC_FLAGS "-arch=sm_89 -Xptxas -dlcm=ca -w -cudart shared ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75, -cudart, not -lcudart
+set(CUDA_NVCC_FLAGS "-arch=sm_89 -Xptxas -dlcm=ca -w -cudart shared --expt-relaxed-constexpr ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75, -cudart, not -lcudart
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
   set(CMAKE_CUDA_ARCHITECTURES 89)
@@ -41,7 +41,7 @@ find_library(CUDNN_LIBRARY cudnn
     PATH_SUFFIXES lib lib64 cuda/lib cuda/lib64 lib/x64)
 
 set(SRC_LIST main.cu Logger.cc TaskManager.cu Task.cu ModuleCenter.cu readatom.c Recorder.cc json.cc Creator.cu 
-  ./dnn/inception3/inception3.cu ./dnn/resnet50/resnet50.cu ./dnn/bert/bert.cu ./dnn/vgg11/vgg11.cu ./dnn/vgg16/vgg16.cu)
+  ./dnn/inception3/inception3.cu ./dnn/resnet50/resnet50.cu ./dnn/bert/bert.cu ./dnn/vgg11/vgg11.cu ./dnn/vgg16/vgg16.cu ./dnn/vit/vit.cu)
 
 string(TIMESTAMP COMPILE_TIME %Y%m%d-%H%M%S)
 configure_file(TackerConfig.h.in TackerConfig.h)

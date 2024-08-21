@@ -2,12 +2,16 @@
 
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
+# python3 example.py --model_name=bert --frozen_graph=bert-256.pb --run_graph
 # python3 example.py --model_name=vgg16 --frozen_graph=vgg16.pb --run_graph
 # python3 example.py --model_name= --frozen_graph=vgg16.pb --const_folding --run_graph --run_const_folded_graph
 
 from nnf_tf_freezer import nnf_tf_freezer
 import argparse
 import tensorflow as tf
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
 gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
 tf.config.experimental.set_visible_devices(devices=gpus[0:1], device_type='GPU')
 import sys
@@ -204,7 +208,7 @@ elif args.model_name == 'lstm':
 #         outputs = [tf.identity(logits, name="logits")]
 elif args.model_name == 'bert':
     print('>> Converting graph bert')
-    batch_size = 128
+    batch_size = 256
     seq_len = 128
     num_layers = 2
     bert_config = BertConfig(

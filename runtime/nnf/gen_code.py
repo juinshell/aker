@@ -80,7 +80,8 @@ class KernelClassCppGenerator:
             "lstm": "LSTM",
             "resnet50": "Resnet50",
             "vgg11": "VGG11",
-            "vgg16": "VGG16"
+            "vgg16": "VGG16",
+            "vit": "ViT"
         }
         return dic[self.model_name]
 
@@ -113,7 +114,7 @@ class KernelClassCppGenerator:
     #     return cuda_init
 
     def extract_function_calls(self, body)->list[tuple[str, list[str]]]:
-        function_call_pattern = re.compile(r'\b(\w+)\s*\(([^;]*?)\)\s*;')
+        function_call_pattern = re.compile(r'\n(\w+)\s*\(([^;]*?)\)\s*;')
         function_calls = re.findall(function_call_pattern, body)
         processed_calls = []
 
@@ -131,6 +132,7 @@ class KernelClassCppGenerator:
 
         function_calls = self.extract_function_calls(body)
         entry_params_list = extrace_args(entry_params)
+        # print("function_calls:", function_calls)
         
         return function_calls, entry_params_list
 
@@ -250,13 +252,15 @@ bin_dir = './{model_name}/cuda_codegen/Constant'
 code_file = './{model_name}/cuda_codegen/nnfusion_rt.cu'
 code_dir = './{model_name}/cuda_codegen'
 gen_dir = '../dnn'
-dnn_list = ["inception3", "resnet50", "vgg11", "vgg16", "bert"]
+# dnn_list = ["inception3", "resnet50", "vgg11", "vgg16", "bert"]
+dnn_list = ["bert"]
 dnn_class_dict = {
     "inception3": "Inception3",
     "resnet50": "Resnet50",
     "vgg11": "VGG11",
     "vgg16": "VGG16",
-    "bert": "Bert"
+    "bert": "Bert",
+    "vit": "ViT"
 }
 result = {}
 

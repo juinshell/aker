@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
         // float exclcutoff = 1.f;	    /* Radius for exclusion */
         float padding = 0.5f;		/* Bounding box padding distance */
         
-        const char *pqrfilename = "/home/jxdeng/workspace/tacker/0_mybench/file_t/cutcp_input.pqr";
+        const char *pqrfilename = "/workspace/tacker/0_mybench/file_t/cutcp_input.pqr";
         if (!(atom = read_atom_file(pqrfilename))) {
             fprintf(stderr, "read_atom_file() failed\n");
             exit(1);

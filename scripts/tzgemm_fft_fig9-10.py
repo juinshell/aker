@@ -2,6 +2,8 @@ import re
 import subprocess
 import sys
 import json
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 f = open('../runtime/kinfo-common.json', 'r')
 content = f.read()
@@ -105,19 +107,20 @@ if __name__ == "__main__":
         write_to_excel(output_file)
     elif fig == "10":
         # fig10
-        scaling_rate = 3
+        scaling_rate = 2
         load_ratios = [0.35, 0.72, 1.06, 1.41]
         for load_ratio in load_ratios:
             points_num = 0
             for i in range(1, max_tzgemm_blks + 1):
                 if i % (SM_NUM * 50) == 0:
-                    if points_num > 15:
+                    if points_num > 17:
                         break
                     fft_blks = int(i * load_ratio * scaling_rate)
                     tzgemm_blks = i
                     print(f"--- fft_blks: {fft_blks}, tzgemm_blks: {tzgemm_blks} ---")
                     compile(fft_blks, tzgemm_blks)
                     output = run()
+                    output['load_ratio'] = load_ratio
                     print(output)
                     data.append(output)
                     points_num += 1

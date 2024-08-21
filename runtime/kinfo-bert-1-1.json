@@ -104,7 +104,7 @@
     },
     "tzgemm_mrif": {
         "gridsize": 1,
-        "blocksize": 384,
+        "blocksize": 512,
         "block_ratio": 0.88,
         "best_block_ratio": 0.88,
         "shared_memory": 0,
@@ -118,7 +118,7 @@
     },
     "tzgemm_mriq": {
         "gridsize": 1,
-        "blocksize": 384,
+        "blocksize": 512,
         "block_ratio": 111110.05,
         "best_block_ratio": 0.05,
         "shared_memory": 0,

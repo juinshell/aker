@@ -56,7 +56,8 @@
 #include "dnn/bert/bert.h"
 #include "dnn/inception3/inception3.h"
 #include "dnn/vgg11/vgg11.h"
- #include "dnn/vgg16/vgg16.h"
+#include "dnn/vgg16/vgg16.h"
+#include "dnn/vit/vit.h"
 
 #include "gptb_kernel/tzgemm_kernel.cu"
 #include "tzgemm_kernel.h"
@@ -820,6 +821,8 @@ Task* createTask(std::string taskName) {
         return new VGG11(1000);
     } else if (taskName == "vgg16") {
         return new VGG16(1000);
+    } else if (taskName == "vit") {
+        return new ViT(1000);
     } else {
         logger.ERROR("Task name not found");
         exit(EXIT_FAILURE);
@@ -869,7 +872,7 @@ int main(int argc, char* argv[]) {
     CUDA_SAFE_CALL(cudaStreamCreate(&streams[1]));
 
     // [Aker] fig9
-    tzgemm_fft_fig_9_10a();
+    // tzgemm_fft_fig_9_10a();
 
     
     // [Aker] nsight compute
@@ -909,24 +912,24 @@ int main(int argc, char* argv[]) {
     // printf("tzgemm blks: %d\n", getTZGEMMGridDim(m, n, k)[3]);
     // printf("tzgemm duration: %f\n", milliseconds);
 
-    // [Aker] throughput test
-    // auto lc_task = createTask(MODEL_NAME);
-    // for (int i = 0; i < 5; ++i) {
-    //     lc_task->initExecution();
-    //     for (auto& kernel: lc_task->kernels) {
-    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-    //         kernel->execute(nullptr);
-    //     }
-    //     cudaDeviceSynchronize();
-    // }
-    // cudaDeviceSynchronize();
-    // std::string a = sget_kernel_info("throughput_test", "a");
-    // std::string b = sget_kernel_info("throughput_test", "b");
-    // printf("[Result] cd1: %s, cd2: %s, dnn: %s\n", a.c_str(), b.c_str(), MODEL_NAME.c_str());
-    // TaskManager taskManager(lc_task, a, b);
+    // [Aker] throughput test fig15
+    auto lc_task = createTask(MODEL_NAME);
+    for (int i = 0; i < 5; ++i) {
+        lc_task->initExecution();
+        for (auto& kernel: lc_task->kernels) {
+            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+            kernel->execute(nullptr);
+        }
+        cudaDeviceSynchronize();
+    }
+    cudaDeviceSynchronize();
+    std::string a = sget_kernel_info("throughput_test", "a");
+    std::string b = sget_kernel_info("throughput_test", "b");
+    printf("[Result] cd1: %s, cd2: %s, dnn: %s\n", a.c_str(), b.c_str(), MODEL_NAME.c_str());
+    TaskManager taskManager(lc_task, a, b);
     
-    // taskManager.executeAllTasks(ExecutionMode::Aker, stream);
-    // taskManager.executeAllTasks(ExecutionMode::Tacker, stream);
+    taskManager.executeAllTasks(ExecutionMode::Aker, streams[0]);
+    taskManager.executeAllTasks(ExecutionMode::Tacker, streams[1]);
 
     // [Aker] throughput test(1:1 version)
     // auto lc_task = createTask(MODEL_NAME);
@@ -984,6 +987,54 @@ int main(int argc, char* argv[]) {
     // }
     // cudaDeviceSynchronize();
     // cd_pair_profile(stream);
+
+    // [Aker] fig21 makespan reduction
+    // auto be_name1 = sget_kernel_info("makespan_reduction", "be_name1");
+    // auto be_name2 = sget_kernel_info("makespan_reduction", "be_name2");
+    // auto be_task1 = createKernel(be_name1);
+    // auto be_task2 = createKernel(be_name2);
+
+    // float be_task1_ori_time = 0.0f, be_task2_ori_time = 0.0f;
+    // init cd
+    // be_task1->kernel_->initParams();
+    // be_task2->kernel_->initParams();
+    
+    // ori sum time
+    // warmup
+    // for (int i = 0; i < 10; ++i) {
+    //     be_task1->execute(streams[0]);
+    //     be_task2->execute(streams[0]);
+    // }
+    // CUDA_SAFE_CALL(cudaDeviceSynchronize());
+
+    // CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, streams[0]));
+    // be_task1->execute(streams[0]);
+    // CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, streams[0]));
+    // CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    // CUDA_SAFE_CALL(cudaEventElapsedTime(&be_task1_ori_time, startKERNEL, stopKERNEL));
+
+    // CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, streams[0]));
+    // be_task2->execute(streams[0]);
+    // CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, streams[0]));
+    // CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    // CUDA_SAFE_CALL(cudaEventElapsedTime(&be_task2_ori_time, startKERNEL, stopKERNEL));
+    // auto mix_be_name = be_task1->kernelName[0] < be_task2->kernelName[0] ? be_task1->kernelName + "_" + be_task2->kernelName : be_task2->kernelName + "_" + be_task1->kernelName;
+    // auto be_mix = createMixKernel(mix_be_name);
+
+    // float mix_be_time = 0.0f;
+    // for (int i = 0; i < 10; ++i) {
+    //     float tmp_time = 0.0f;
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, streams[0]));
+    //     be_mix->execute(streams[0]);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, streams[0]));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&tmp_time, startKERNEL, stopKERNEL));
+    //     mix_be_time += tmp_time;
+    // }
+    // mix_be_time /= 10;
+    // printf("[Ori] BE task1 + task2 took %f ms to execute.\n", be_task1_ori_time + be_task2_ori_time);
+    // printf("[Mix] BE task1 + task2 took %f ms to execute.\n", mix_be_time);
+    // printf("[Result] %s Makespan reduction: %f\n", mix_be_name.c_str(), (be_task1_ori_time + be_task2_ori_time - mix_be_time) * 100.0 / (be_task1_ori_time + be_task2_ori_time));
 
     // [Aker] moti / fig2
     // auto lc_task = createTask(MODEL_NAME);

@@ -124,6 +124,7 @@ void mixcudnnConvolutionForward(std::vector<int>& cudnn_args, GPTBKernel* gptb_c
     // float milliseconds = 0;
 
     // cudaErrCheck(cudaEventRecord(startKERNEL));
+    
 
     // img2col参数
     int input_n = cudnn_args[0];
@@ -414,6 +415,8 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     int be1_kernel_idx = 0;
     int be2_kernel_idx = 0;
 
+    
+
     vector<float> lc_kernel_time_vec(lc_task->kernels.size(), 0.0f);
     float lc_kernel_time = 0.0f;
     float tmp_time = 0.0f;
@@ -425,14 +428,19 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     }
     char foo;
 
+    
+
     GPTBKernel * be_kernel1 = createKernel(be_task1_name);
     be_kernel1->kernel_->initParams();
     int mixable_times = 0;
+
+    
     // test ori
     for (int i = 0; i < 10; ++i) {
         lc_task->initExecution();
         int lc_kernel_idx = 0;
         for (auto& lc_kernel : lc_task->kernels) {
+            // printf("exec %s...\n", lc_kernel->kernelName.c_str());
             auto start = clock();
             if ((!i) && lc_kernel->mixable != 0) mixable_times++;
             if (lc_kernel->mixable == 1) { // cublassgemm
@@ -521,10 +529,17 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     auto be_task2 = createKernel(be_task2_name);
 
     float be_task1_ori_time = 0.0f, be_task2_ori_time = 0.0f;
-    // // init cd
+    // init cd
     // be_task1->kernel_->initParams();
     // be_task2->kernel_->initParams();
-    // // ori sum time
+
+    // ori sum time
+    // warmup
+    for (int i = 0; i < 10; ++i) {
+        be_task1->execute(stream);
+        be_task2->execute(stream);
+    }
+    CUDA_SAFE_CALL(cudaDeviceSynchronize());
 
     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, 0));
     be_task1->execute(stream);
@@ -546,7 +561,7 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     float time_earned = 0.0f;
     for (int i = 0; i < 5; ++i) {
         lc_task->initExecution();
-        qos_headroom = 50.0f;
+        qos_headroom = 40.0f;
         long long cd_block_num_executed = 0;
         int lc_kernel_idx = 0;
         mix_times = 0;
@@ -810,7 +825,7 @@ void TaskManager::execute_with_one_cd_kernel(ExecutionMode mode, cudaStream_t st
     float time_earned = 0.0f;
     for (int i = 0; i < 5; ++i) {
         lc_task->initExecution();
-        qos_headroom = 50.0f;
+        qos_headroom = 40.0f;
         long long cd_block_num_executed = 0;
         int lc_kernel_idx = 0;
         mix_times = 0;
