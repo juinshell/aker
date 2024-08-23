@@ -425,27 +425,27 @@ float* Constant_112_0;
 #define NNFUSION_GRAPH_INPUT_NUM 3
 #define NNFUSION_GRAPH_OUTPUT_NUM 1
 #define NNFUSION_GRAPH_INPUT_DTYPE_0 int32_t
-#define NNFUSION_GRAPH_INPUT_SHAPE_0 {128, 128}
+#define NNFUSION_GRAPH_INPUT_SHAPE_0 {256, 128}
 #define NNFUSION_GRAPH_INPUT_DTYPE_1 int32_t
-#define NNFUSION_GRAPH_INPUT_SHAPE_1 {128, 128}
+#define NNFUSION_GRAPH_INPUT_SHAPE_1 {256, 128}
 #define NNFUSION_GRAPH_INPUT_DTYPE_2 int32_t
-#define NNFUSION_GRAPH_INPUT_SHAPE_2 {128, 128}
+#define NNFUSION_GRAPH_INPUT_SHAPE_2 {256, 128}
 #define NNFUSION_GRAPH_OUTPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {128, 1001}
+#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {256, 1001}
 #endif
 
 // Node name:	Dot_390
 // Description:	Dot
 // Input:
-//	- name: Tanh_389_0	type: float	shape: Shape{128, 1024}
+//	- name: Tanh_389_0	type: float	shape: Shape{256, 1024}
 //	- name: Constant_111_0	type: float	shape: Shape{1024, 1001}
 // Output:
-//	- name: Dot_390_0	type: float	shape: Shape{128, 1001}
+//	- name: Dot_390_0	type: float	shape: Shape{256, 1001}
 void Dot_float_float_float_cuda_lib_Dot_390(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 128, 1024, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 1024, &beta, static_cast<float*>(output0), 1001));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1001, 256, 1024, &alpha, static_cast<const float*>(input1), 1001, static_cast<const float*>(input0), 1024, &beta, static_cast<float*>(output0), 1001));
 
 }
 // Node name:	Constant_27
@@ -470,12 +470,12 @@ void Constant_float_cuda_Constant_27(cudaStream_t stream, float* output0)
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: Constant_32_0	type: float	shape: Shape{1024}
-//	- name: Dot_179_0	type: float	shape: Shape{16384, 1024}
+//	- name: Dot_179_0	type: float	shape: Shape{32768, 1024}
 // Output:
-//	- name: Add_185_0	type: float	shape: Shape{16384, 1024}
+//	- name: Add_185_0	type: float	shape: Shape{32768, 1024}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_184<<<dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_32_0, Broadcast_184_0);
-// Add_float_float_float_cuda_Add_185<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_179_0, Broadcast_184_0, Add_185_0);
+// Broadcast_float_float_cuda_Broadcast_184<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_32_0, Broadcast_184_0);
+// Add_float_float_float_cuda_Add_185<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_179_0, Broadcast_184_0, Add_185_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_cuda_Broadcast_Add_7(float* input0, float* input1, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -490,9 +490,9 @@ extern void FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(const dim3 &
 // Node name:	Sum_149
 // Description:	Sum
 // Input:
-//	- name: Add_142_0	type: float	shape: Shape{128, 128, 1024}
+//	- name: Add_142_0	type: float	shape: Shape{256, 128, 1024}
 // Output:
-//	- name: Sum_149_0	type: float	shape: Shape{128, 128}
+//	- name: Sum_149_0	type: float	shape: Shape{256, 128}
 extern "C" __launch_bounds__(512) __global__ void Sum_float_float_cuda_Sum_149(float* input0, float* output0)
 {
 
@@ -521,12 +521,12 @@ extern void Sum_float_float_cuda_Sum_149_Call(const dim3 &grids, const dim3 &blo
 // Node name:	Broadcast_127
 // Description:	Broadcast
 // Input:
-//	- name: Reshape_126_0	type: float	shape: Shape{128, 128}
+//	- name: Reshape_126_0	type: float	shape: Shape{256, 128}
 // Output:
-//	- name: Broadcast_127_0	type: float	shape: Shape{128, 128, 128}
+//	- name: Broadcast_127_0	type: float	shape: Shape{256, 128, 128}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_127(float* input0, float* output0)
 {
-    size_t nthreads = 2097152;uint32_t strides0 = 16384;
+    size_t nthreads = 4194304;uint32_t strides0 = 16384;
     uint32_t strides1 = 128;
     uint32_t strides2 = 1;
     int stride_magic0 = 1;
@@ -561,12 +561,12 @@ extern void Broadcast_float_float_cuda_Broadcast_127_Call(const dim3 &grids, con
 // Node name:	Broadcast_196
 // Description:	Broadcast
 // Input:
-//	- name: Reshape_195_0	type: float	shape: Shape{128, 128, 128}
+//	- name: Reshape_195_0	type: float	shape: Shape{256, 128, 128}
 // Output:
-//	- name: Broadcast_196_0	type: float	shape: Shape{128, 16, 128, 128}
+//	- name: Broadcast_196_0	type: float	shape: Shape{256, 16, 128, 128}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_196(float* input0, float* output0)
 {
-    size_t nthreads = 33554432;uint32_t strides0 = 262144;
+    size_t nthreads = 67108864;uint32_t strides0 = 262144;
     uint32_t strides1 = 16384;
     uint32_t strides2 = 128;
     uint32_t strides3 = 1;
@@ -610,10 +610,10 @@ extern void Broadcast_float_float_cuda_Broadcast_196_Call(const dim3 &grids, con
 // Input:
 //	- name: Constant_25_0	type: float	shape: Shape{}
 // Output:
-//	- name: Broadcast_116_0	type: float	shape: Shape{128, 128, 1}
+//	- name: Broadcast_116_0	type: float	shape: Shape{256, 128, 1}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_116(float* input0, float* output0)
 {
-    size_t nthreads = 16384;uint32_t strides0 = 128;
+    size_t nthreads = 32768;uint32_t strides0 = 128;
     uint32_t strides1 = 1;
     uint32_t strides2 = 1;
     int stride_magic0 = 1;
@@ -916,10 +916,10 @@ void Constant_float_cuda_Constant_98(cudaStream_t stream, float* output0)
 // Input:
 //	- name: Constant_112_0	type: float	shape: Shape{1001}
 // Output:
-//	- name: Broadcast_391_0	type: float	shape: Shape{128, 1001}
+//	- name: Broadcast_391_0	type: float	shape: Shape{256, 1001}
 extern "C" __launch_bounds__(64) __global__ void Broadcast_float_float_cuda_Broadcast_391(float* input0, float* output0)
 {
-    size_t nthreads = 128128;uint32_t strides0 = 1001;
+    size_t nthreads = 256256;uint32_t strides0 = 1001;
     uint32_t strides1 = 1;
     int stride_magic0 = 1098413215;
     int stride_magic1 = 1;
@@ -948,7 +948,7 @@ extern void Broadcast_float_float_cuda_Broadcast_391_Call(const dim3 &grids, con
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_357_0	type: float	shape: Shape{16384}
+//	- name: Constant_357_0	type: float	shape: Shape{32768}
 void Constant_float_cuda_Constant_357(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_357_0.bin" , std::ios::in | std::ios::binary);
@@ -957,9 +957,9 @@ void Constant_float_cuda_Constant_357(cudaStream_t stream, float* output0)
     	printf("Load Constant_357_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -967,7 +967,7 @@ void Constant_float_cuda_Constant_357(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_158_0	type: float	shape: Shape{128, 128}
+//	- name: Constant_158_0	type: float	shape: Shape{256, 128}
 void Constant_float_cuda_Constant_158(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_158_0.bin" , std::ios::in | std::ios::binary);
@@ -976,9 +976,9 @@ void Constant_float_cuda_Constant_158(cudaStream_t stream, float* output0)
     	printf("Load Constant_158_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -1005,7 +1005,7 @@ void Constant_float_cuda_Constant_92(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_318_0	type: float	shape: Shape{16384}
+//	- name: Constant_318_0	type: float	shape: Shape{32768}
 void Constant_float_cuda_Constant_318(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_318_0.bin" , std::ios::in | std::ios::binary);
@@ -1014,9 +1014,9 @@ void Constant_float_cuda_Constant_318(cudaStream_t stream, float* output0)
     	printf("Load Constant_318_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -1347,7 +1347,7 @@ void Constant_float_cuda_Constant_66(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_150_0	type: float	shape: Shape{128, 128}
+//	- name: Constant_150_0	type: float	shape: Shape{256, 128}
 void Constant_float_cuda_Constant_150(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_150_0.bin" , std::ios::in | std::ios::binary);
@@ -1356,9 +1356,9 @@ void Constant_float_cuda_Constant_150(cudaStream_t stream, float* output0)
     	printf("Load Constant_150_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -1404,7 +1404,7 @@ void Constant_float_cuda_Constant_69(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_215_0	type: float	shape: Shape{16384}
+//	- name: Constant_215_0	type: float	shape: Shape{32768}
 void Constant_float_cuda_Constant_215(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_215_0.bin" , std::ios::in | std::ios::binary);
@@ -1413,9 +1413,9 @@ void Constant_float_cuda_Constant_215(cudaStream_t stream, float* output0)
     	printf("Load Constant_215_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -1460,22 +1460,22 @@ void Constant_float_cuda_Constant_70(cudaStream_t stream, float* output0)
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: Constant_18_0	type: float	shape: Shape{1024}
-//	- name: Reshape_153_0	type: float	shape: Shape{128, 128}
-//	- name: Reshape_165_0	type: float	shape: Shape{128, 128}
+//	- name: Reshape_153_0	type: float	shape: Shape{256, 128}
+//	- name: Reshape_165_0	type: float	shape: Shape{256, 128}
 //	- name: Constant_19_0	type: float	shape: Shape{1024}
-//	- name: Add_142_0	type: float	shape: Shape{128, 128, 1024}
+//	- name: Add_142_0	type: float	shape: Shape{256, 128, 1024}
 // Output:
-//	- name: Add_175_0	type: float	shape: Shape{128, 128, 1024}
+//	- name: Add_175_0	type: float	shape: Shape{256, 128, 1024}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_173<<<dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_18_0, Broadcast_173_0);
-// Broadcast_float_float_cuda_Broadcast_154<<<dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_153_0, Broadcast_154_0);
-// Broadcast_float_float_cuda_Broadcast_166<<<dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_165_0, Broadcast_166_0);
-// Broadcast_float_float_cuda_Broadcast_167<<<dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_19_0, Broadcast_167_0);
-// Multiply_float_float_float_cuda_Multiply_168<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_166_0, Broadcast_167_0, Multiply_168_0);
-// Multiply_float_float_float_cuda_Multiply_172<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_154_0, Multiply_168_0, Multiply_172_0);
-// Subtract_float_float_float_cuda_Subtract_174<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_173_0, Multiply_172_0, Subtract_174_0);
-// Multiply_float_float_float_cuda_Multiply_169<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_142_0, Multiply_168_0, Multiply_169_0);
-// Add_float_float_float_cuda_Add_175<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Multiply_169_0, Subtract_174_0, Add_175_0);
+// Broadcast_float_float_cuda_Broadcast_173<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_18_0, Broadcast_173_0);
+// Broadcast_float_float_cuda_Broadcast_154<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_153_0, Broadcast_154_0);
+// Broadcast_float_float_cuda_Broadcast_166<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_165_0, Broadcast_166_0);
+// Broadcast_float_float_cuda_Broadcast_167<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_19_0, Broadcast_167_0);
+// Multiply_float_float_float_cuda_Multiply_168<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_166_0, Broadcast_167_0, Multiply_168_0);
+// Multiply_float_float_float_cuda_Multiply_172<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_154_0, Multiply_168_0, Multiply_172_0);
+// Subtract_float_float_float_cuda_Subtract_174<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_173_0, Multiply_172_0, Subtract_174_0);
+// Multiply_float_float_float_cuda_Multiply_169<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_142_0, Multiply_168_0, Multiply_169_0);
+// Add_float_float_float_cuda_Add_175<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Multiply_169_0, Subtract_174_0, Add_175_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4(float* input0, float* input1, float* input2, float* input3, float* input4, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -1593,7 +1593,7 @@ void Constant_float_cuda_Constant_45(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_207_0	type: float	shape: Shape{16384}
+//	- name: Constant_207_0	type: float	shape: Shape{32768}
 void Constant_float_cuda_Constant_207(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_207_0.bin" , std::ios::in | std::ios::binary);
@@ -1602,9 +1602,9 @@ void Constant_float_cuda_Constant_207(cudaStream_t stream, float* output0)
     	printf("Load Constant_207_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -1650,7 +1650,7 @@ void Constant_float_cuda_Constant_99(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_262_0	type: float	shape: Shape{16384}
+//	- name: Constant_262_0	type: float	shape: Shape{32768}
 void Constant_float_cuda_Constant_262(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_262_0.bin" , std::ios::in | std::ios::binary);
@@ -1659,9 +1659,9 @@ void Constant_float_cuda_Constant_262(cudaStream_t stream, float* output0)
     	printf("Load Constant_262_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -1764,7 +1764,7 @@ void Constant_float_cuda_Constant_71(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_254_0	type: float	shape: Shape{16384}
+//	- name: Constant_254_0	type: float	shape: Shape{32768}
 void Constant_float_cuda_Constant_254(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_254_0.bin" , std::ios::in | std::ios::binary);
@@ -1773,9 +1773,9 @@ void Constant_float_cuda_Constant_254(cudaStream_t stream, float* output0)
     	printf("Load Constant_254_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -1839,14 +1839,14 @@ void Constant_float_cuda_Constant_94(cudaStream_t stream, float* output0)
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: Constant_37_0	type: float	shape: Shape{}
-//	- name: BatchMatMul_192_0	type: float	shape: Shape{128, 16, 128, 128}
-//	- name: Broadcast_196_0	type: float	shape: Shape{128, 16, 128, 128}
+//	- name: BatchMatMul_192_0	type: float	shape: Shape{256, 16, 128, 128}
+//	- name: Broadcast_196_0	type: float	shape: Shape{256, 16, 128, 128}
 // Output:
-//	- name: Add_197_0	type: float	shape: Shape{128, 16, 128, 128}
+//	- name: Add_197_0	type: float	shape: Shape{256, 16, 128, 128}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_193<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_37_0, Broadcast_193_0);
-// Multiply_float_float_float_cuda_Multiply_194<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(BatchMatMul_192_0, Broadcast_193_0, Multiply_194_0);
-// Add_float_float_float_cuda_Add_197<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Multiply_194_0, Broadcast_196_0, Add_197_0);
+// Broadcast_float_float_cuda_Broadcast_193<<<dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_37_0, Broadcast_193_0);
+// Multiply_float_float_float_cuda_Multiply_194<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(BatchMatMul_192_0, Broadcast_193_0, Multiply_194_0);
+// Add_float_float_float_cuda_Add_197<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Multiply_194_0, Broadcast_196_0, Add_197_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_float_cuda_Broadcast_Multiply_Add_8(float* input0, float* input1, float* input2, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -1901,7 +1901,7 @@ void Constant_float_cuda_Constant_53(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_310_0	type: float	shape: Shape{16384}
+//	- name: Constant_310_0	type: float	shape: Shape{32768}
 void Constant_float_cuda_Constant_310(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_310_0.bin" , std::ios::in | std::ios::binary);
@@ -1910,9 +1910,9 @@ void Constant_float_cuda_Constant_310(cudaStream_t stream, float* output0)
     	printf("Load Constant_310_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -1938,15 +1938,15 @@ void Constant_float_cuda_Constant_40(cudaStream_t stream, float* output0)
 // Node name:	OneHot_118
 // Description:	OneHot
 // Input:
-//	- name: Reshape_114_0	type: int32_t	shape: Shape{16384}
+//	- name: Reshape_114_0	type: int32_t	shape: Shape{32768}
 // Output:
-//	- name: OneHot_118_0	type: float	shape: Shape{16384, 2}
+//	- name: OneHot_118_0	type: float	shape: Shape{32768, 2}
 extern "C" __launch_bounds__(64) __global__ void OneHot_int32_t_float_cuda_OneHot_118(int32_t* input0, float* output0)
 {
     {
 
             int idx = blockIdx.x * blockDim.x + threadIdx.x;
-            if (idx >= 16384)
+            if (idx >= 32768)
                 return;
             for (int i = 0; i < 2; ++i)
                 output0[idx * 2 + i] = 0.000000000000000000000000e+00;
@@ -1960,14 +1960,14 @@ extern void OneHot_int32_t_float_cuda_OneHot_118_Call(const dim3 &grids, const d
 }
 // Node name:	 Elementwise Kernel Fusion
 // Input:
-//	- name: Reshape_153_0	type: float	shape: Shape{128, 128}
-//	- name: Add_142_0	type: float	shape: Shape{128, 128, 1024}
+//	- name: Reshape_153_0	type: float	shape: Shape{256, 128}
+//	- name: Add_142_0	type: float	shape: Shape{256, 128, 1024}
 // Output:
-//	- name: Multiply_156_0	type: float	shape: Shape{128, 128, 1024}
+//	- name: Multiply_156_0	type: float	shape: Shape{256, 128, 1024}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_154<<<dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_153_0, Broadcast_154_0);
-// Subtract_float_float_float_cuda_Subtract_155<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_142_0, Broadcast_154_0, Subtract_155_0);
-// Multiply_float_float_float_cuda_Multiply_156<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Subtract_155_0, Subtract_155_0, Multiply_156_0);
+// Broadcast_float_float_cuda_Broadcast_154<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_153_0, Broadcast_154_0);
+// Subtract_float_float_float_cuda_Subtract_155<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_142_0, Broadcast_154_0, Subtract_155_0);
+// Multiply_float_float_float_cuda_Multiply_156<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Subtract_155_0, Subtract_155_0, Multiply_156_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2(float* input0, float* input1, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -1983,17 +1983,17 @@ extern void FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Cal
 // Node name:	Softmax_393
 // Description:	Softmax
 // Input:
-//	- name: Add_392_0	type: float	shape: Shape{128, 1001}
+//	- name: Add_392_0	type: float	shape: Shape{256, 1001}
 // Output:
-//	- name: Softmax_393_0	type: float	shape: Shape{128, 1001}
+//	- name: Softmax_393_0	type: float	shape: Shape{256, 1001}
 void Softmax_float_float_cuda_lib_Softmax_393(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_tensor_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_tensor_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_tensor_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1, 1, 1001));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_tensor_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 256, 1, 1, 1001));
     cudnnTensorDescriptor_t output_tensor_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_tensor_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_tensor_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 128, 1, 1, 1001));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_tensor_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 256, 1, 1, 1001));
     const float alpha = 1.0;
     const float beta = 0.0;
     CUDNN_SAFE_CALL(cudnnSoftmaxForward(cudnn_handle, CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_INSTANCE, &alpha, input_tensor_desc, input0, &beta, output_tensor_desc, output0));
@@ -2023,10 +2023,10 @@ void Constant_float_cuda_Constant_25(cudaStream_t stream, float* output0)
 // Node name:	BatchMatMul_192
 // Description:	BatchMatMul
 // Input:
-//	- name: Reshape_189_0	type: float	shape: Shape{128, 16, 128, 64}
-//	- name: Reshape_190_0	type: float	shape: Shape{128, 16, 128, 64}
+//	- name: Reshape_189_0	type: float	shape: Shape{256, 16, 128, 64}
+//	- name: Reshape_190_0	type: float	shape: Shape{256, 16, 128, 64}
 // Output:
-//	- name: BatchMatMul_192_0	type: float	shape: Shape{128, 16, 128, 128}
+//	- name: BatchMatMul_192_0	type: float	shape: Shape{256, 16, 128, 128}
 void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_192(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     {
@@ -2037,24 +2037,24 @@ void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_192(cublasHandle_t cubla
                                 CUBLAS_SAFE_CALL(cublasSgemmStridedBatched(
                                     cublas_handle, CUBLAS_OP_T, CUBLAS_OP_N, 128, 128, 64,
                                     &alpha, input1, 64, 8192, input0, 64, 8192,
-                                    &beta, output0, 128, 16384, 2048));
+                                    &beta, output0, 128, 16384, 4096));
                             
     }
 
 }
 // Node name:	 Elementwise Kernel Fusion
 // Input:
-//	- name: GatherV2_121_0	type: float	shape: Shape{16384, 1024}
-//	- name: Dot_122_0	type: float	shape: Shape{16384, 1024}
+//	- name: GatherV2_121_0	type: float	shape: Shape{32768, 1024}
+//	- name: Dot_122_0	type: float	shape: Shape{32768, 1024}
 //	- name: Reshape_140_0	type: float	shape: Shape{128, 1024}
 // Output:
-//	- name: Add_142_0	type: float	shape: Shape{128, 128, 1024}
+//	- name: Add_142_0	type: float	shape: Shape{256, 128, 1024}
 // Fused functions:
 // Reshape_float_float_cuda_lib_Reshape_129(GatherV2_121_0, Reshape_129_0);
 // Reshape_float_float_cuda_lib_Reshape_130(Dot_122_0, Reshape_130_0);
-// Add_float_float_float_cuda_Add_133<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Reshape_129_0, Reshape_130_0, Add_133_0);
-// Broadcast_float_float_cuda_Broadcast_141<<<dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_140_0, Broadcast_141_0);
-// Add_float_float_float_cuda_Add_142<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_133_0, Broadcast_141_0, Add_142_0);
+// Add_float_float_float_cuda_Add_133<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Reshape_129_0, Reshape_130_0, Add_133_0);
+// Broadcast_float_float_cuda_Broadcast_141<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_140_0, Broadcast_141_0);
+// Add_float_float_float_cuda_Add_142<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_133_0, Broadcast_141_0, Add_142_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_float_cuda_Reshape_Reshape_Add_Broadcast_Add_0(float* input0, float* input1, float* input2, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -2070,15 +2070,15 @@ extern void FusedKernel_float_float_float_float_cuda_Reshape_Reshape_Add_Broadca
 // Node name:	Dot_179
 // Description:	Dot
 // Input:
-//	- name: Reshape_176_0	type: float	shape: Shape{16384, 1024}
+//	- name: Reshape_176_0	type: float	shape: Shape{32768, 1024}
 //	- name: Constant_31_0	type: float	shape: Shape{1024, 1024}
 // Output:
-//	- name: Dot_179_0	type: float	shape: Shape{16384, 1024}
+//	- name: Dot_179_0	type: float	shape: Shape{32768, 1024}
 void Dot_float_float_float_cuda_lib_Dot_179(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1024, 16384, 1024, &alpha, static_cast<const float*>(input1), 1024, static_cast<const float*>(input0), 1024, &beta, static_cast<float*>(output0), 1024));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1024, 32768, 1024, &alpha, static_cast<const float*>(input1), 1024, static_cast<const float*>(input0), 1024, &beta, static_cast<float*>(output0), 1024));
 
 }
 // Node name:	Constant_31
@@ -2103,9 +2103,9 @@ void Constant_float_cuda_Constant_31(cudaStream_t stream, float* output0)
 // Node name:	Result_394
 // Description:	Result
 // Input:
-//	- name: Softmax_393_0	type: float	shape: Shape{128, 1001}
+//	- name: Softmax_393_0	type: float	shape: Shape{256, 1001}
 // Output:
-//	- name: Result_394_0	type: float	shape: Shape{128, 1001}
+//	- name: Result_394_0	type: float	shape: Shape{256, 1001}
 void Result_float_float_cuda_lib_Result_394(float* input0, float** output0)
 {
     *output0 = input0;
@@ -2132,9 +2132,9 @@ void Constant_float_cuda_Constant_18(cudaStream_t stream, float* output0)
 // Node name:	Reshape_191
 // Description:	Reshape
 // Input:
-//	- name: Reshape_188_0	type: float	shape: Shape{128, 128, 16, 64}
+//	- name: Reshape_188_0	type: float	shape: Shape{256, 128, 16, 64}
 // Output:
-//	- name: Reshape_191_0	type: float	shape: Shape{128, 16, 128, 64}
+//	- name: Reshape_191_0	type: float	shape: Shape{256, 16, 128, 64}
 extern "C" __launch_bounds__(64) __global__ void Reshape_float_float_cuda_Reshape_191(float* input0, float* output0)
 {
     uint32_t input_strides0 = 131072;
@@ -2145,7 +2145,7 @@ extern "C" __launch_bounds__(64) __global__ void Reshape_float_float_cuda_Reshap
     uint32_t trans_strides1 = 64;
     uint32_t trans_strides2 = 8192;
     uint32_t trans_strides3 = 1;
-    size_t n = 16777216;
+    size_t n = 33554432;
     uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     if (tid < n)
     {
@@ -2168,10 +2168,10 @@ extern void Reshape_float_float_cuda_Reshape_191_Call(const dim3 &grids, const d
 // Node name:	Divide_151
 // Description:	Divide
 // Input:
-//	- name: Sum_149_0	type: float	shape: Shape{128, 128}
-//	- name: Constant_150_0	type: float	shape: Shape{128, 128}
+//	- name: Sum_149_0	type: float	shape: Shape{256, 128}
+//	- name: Constant_150_0	type: float	shape: Shape{256, 128}
 // Output:
-//	- name: Divide_151_0	type: float	shape: Shape{128, 128}
+//	- name: Divide_151_0	type: float	shape: Shape{256, 128}
 extern "C" __launch_bounds__(512) __global__ void Divide_float_float_float_cuda_Divide_151(float* input0, float* input1, float* output0)
 {
     output0[blockIdx.x * 512 + threadIdx.x] = fdividef(input0[blockIdx.x * 512 + threadIdx.x], input1[blockIdx.x * 512 + threadIdx.x]);
@@ -2184,16 +2184,16 @@ extern void Divide_float_float_float_cuda_Divide_151_Call(const dim3 &grids, con
 // Description:	GatherV2
 // Input:
 //	- name: Constant_4_0	type: float	shape: Shape{30522, 1024}
-//	- name: Reshape_117_0	type: int32_t	shape: Shape{16384}
+//	- name: Reshape_117_0	type: int32_t	shape: Shape{32768}
 // Output:
-//	- name: GatherV2_121_0	type: float	shape: Shape{16384, 1024}
+//	- name: GatherV2_121_0	type: float	shape: Shape{32768, 1024}
 extern "C" __launch_bounds__(64) __global__ void GatherV2_float_int32_t_float_cuda_GatherV2_121(float* input0, int32_t* input1, float* output0)
 {
     float* params = input0;
     int32_t* indices = input1;
     float* out = output0;
     uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < 16777216)
+    if (i < 33554432)
     {
         uint32_t batch_i = 0;
         uint32_t indices_i = 0;
@@ -2221,26 +2221,26 @@ extern void GatherV2_float_int32_t_float_cuda_GatherV2_121_Call(const dim3 &grid
 //	- name: Constant_56_0	type: float	shape: Shape{}
 //	- name: Constant_55_0	type: float	shape: Shape{}
 //	- name: Constant_53_0	type: float	shape: Shape{4096}
-//	- name: Dot_233_0	type: float	shape: Shape{16384, 4096}
+//	- name: Dot_233_0	type: float	shape: Shape{32768, 4096}
 //	- name: Constant_54_0	type: float	shape: Shape{}
 // Output:
-//	- name: Multiply_248_0	type: float	shape: Shape{16384, 4096}
+//	- name: Multiply_248_0	type: float	shape: Shape{32768, 4096}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_246<<<dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_58_0, Broadcast_246_0);
-// Broadcast_float_float_cuda_Broadcast_244<<<dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_57_0, Broadcast_244_0);
-// Broadcast_float_float_cuda_Broadcast_241<<<dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_56_0, Broadcast_241_0);
-// Broadcast_float_float_cuda_Broadcast_238<<<dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_55_0, Broadcast_238_0);
-// Broadcast_float_float_cuda_Broadcast_234<<<dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_53_0, Broadcast_234_0);
-// Add_float_float_float_cuda_Add_235<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_233_0, Broadcast_234_0, Add_235_0);
-// Broadcast_float_float_cuda_Broadcast_236<<<dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_54_0, Broadcast_236_0);
-// Power_float_float_float_cuda_Power_237<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_235_0, Broadcast_236_0, Power_237_0);
-// Multiply_float_float_float_cuda_Multiply_239<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_238_0, Power_237_0, Multiply_239_0);
-// Add_float_float_float_cuda_Add_240<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_235_0, Multiply_239_0, Add_240_0);
-// Multiply_float_float_float_cuda_Multiply_242<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_241_0, Add_240_0, Multiply_242_0);
-// Tanh_float_float_cuda_Tanh_243<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Multiply_242_0, Tanh_243_0);
-// Add_float_float_float_cuda_Add_245<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_244_0, Tanh_243_0, Add_245_0);
-// Multiply_float_float_float_cuda_Multiply_247<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_246_0, Add_245_0, Multiply_247_0);
-// Multiply_float_float_float_cuda_Multiply_248<<<dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_235_0, Multiply_247_0, Multiply_248_0);
+// Broadcast_float_float_cuda_Broadcast_246<<<dim3(2097152, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_58_0, Broadcast_246_0);
+// Broadcast_float_float_cuda_Broadcast_244<<<dim3(2097152, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_57_0, Broadcast_244_0);
+// Broadcast_float_float_cuda_Broadcast_241<<<dim3(2097152, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_56_0, Broadcast_241_0);
+// Broadcast_float_float_cuda_Broadcast_238<<<dim3(2097152, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_55_0, Broadcast_238_0);
+// Broadcast_float_float_cuda_Broadcast_234<<<dim3(2097152, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_53_0, Broadcast_234_0);
+// Add_float_float_float_cuda_Add_235<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_233_0, Broadcast_234_0, Add_235_0);
+// Broadcast_float_float_cuda_Broadcast_236<<<dim3(2097152, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_54_0, Broadcast_236_0);
+// Power_float_float_float_cuda_Power_237<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_235_0, Broadcast_236_0, Power_237_0);
+// Multiply_float_float_float_cuda_Multiply_239<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_238_0, Power_237_0, Multiply_239_0);
+// Add_float_float_float_cuda_Add_240<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_235_0, Multiply_239_0, Add_240_0);
+// Multiply_float_float_float_cuda_Multiply_242<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_241_0, Add_240_0, Multiply_242_0);
+// Tanh_float_float_cuda_Tanh_243<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Multiply_242_0, Tanh_243_0);
+// Add_float_float_float_cuda_Add_245<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_244_0, Tanh_243_0, Add_245_0);
+// Multiply_float_float_float_cuda_Multiply_247<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_246_0, Add_245_0, Multiply_247_0);
+// Multiply_float_float_float_cuda_Multiply_248<<<dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_235_0, Multiply_247_0, Multiply_248_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Broadcast_Add_Broadcast_Power_Multiply_Add_Multiply_Tanh_Add_Multiply_Multiply_13(float* input0, float* input1, float* input2, float* input3, float* input4, float* input5, float* input6, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -2287,14 +2287,14 @@ void Constant_float_cuda_Constant_8(cudaStream_t stream, float* output0)
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: Constant_46_0	type: float	shape: Shape{1024}
-//	- name: Dot_202_0	type: float	shape: Shape{16384, 1024}
-//	- name: Reshape_176_0	type: float	shape: Shape{16384, 1024}
+//	- name: Dot_202_0	type: float	shape: Shape{32768, 1024}
+//	- name: Reshape_176_0	type: float	shape: Shape{32768, 1024}
 // Output:
-//	- name: Add_205_0	type: float	shape: Shape{16384, 1024}
+//	- name: Add_205_0	type: float	shape: Shape{32768, 1024}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_203<<<dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_46_0, Broadcast_203_0);
-// Add_float_float_float_cuda_Add_204<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_202_0, Broadcast_203_0, Add_204_0);
-// Add_float_float_float_cuda_Add_205<<<dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_204_0, Reshape_176_0, Add_205_0);
+// Broadcast_float_float_cuda_Broadcast_203<<<dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_46_0, Broadcast_203_0);
+// Add_float_float_float_cuda_Add_204<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_202_0, Broadcast_203_0, Add_204_0);
+// Add_float_float_float_cuda_Add_205<<<dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_204_0, Reshape_176_0, Add_205_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9(float* input0, float* input1, float* input2, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -2329,13 +2329,13 @@ void Constant_float_cuda_Constant_39(cudaStream_t stream, float* output0)
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: Constant_110_0	type: float	shape: Shape{1024}
-//	- name: Dot_386_0	type: float	shape: Shape{128, 1024}
+//	- name: Dot_386_0	type: float	shape: Shape{256, 1024}
 // Output:
-//	- name: Tanh_389_0	type: float	shape: Shape{128, 1024}
+//	- name: Tanh_389_0	type: float	shape: Shape{256, 1024}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_387<<<dim3(2048, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_110_0, Broadcast_387_0);
-// Add_float_float_float_cuda_Add_388<<<dim3(256, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_386_0, Broadcast_387_0, Add_388_0);
-// Tanh_float_float_cuda_Tanh_389<<<dim3(256, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_388_0, Tanh_389_0);
+// Broadcast_float_float_cuda_Broadcast_387<<<dim3(4096, 1, 1), dim3(64, 1, 1), 0, 0>>>(Constant_110_0, Broadcast_387_0);
+// Add_float_float_float_cuda_Add_388<<<dim3(512, 1, 1), dim3(512, 1, 1), 0, 0>>>(Dot_386_0, Broadcast_387_0, Add_388_0);
+// Tanh_float_float_cuda_Tanh_389<<<dim3(512, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_388_0, Tanh_389_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_cuda_Broadcast_Add_Tanh_31(float* input0, float* input1, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -2351,9 +2351,9 @@ extern void FusedKernel_float_float_float_cuda_Broadcast_Add_Tanh_31_Call(const 
 // Node name:	Convert_120
 // Description:	Convert
 // Input:
-//	- name: Reshape_115_0	type: int32_t	shape: Shape{128, 1, 128}
+//	- name: Reshape_115_0	type: int32_t	shape: Shape{256, 1, 128}
 // Output:
-//	- name: Convert_120_0	type: float	shape: Shape{128, 1, 128}
+//	- name: Convert_120_0	type: float	shape: Shape{256, 1, 128}
 extern "C" __launch_bounds__(512) __global__ void Convert_int32_t_float_cuda_Convert_120(int32_t* input0, float* output0)
 {
     output0[blockIdx.x * 512 + threadIdx.x] = convert(input0[blockIdx.x * 512 + threadIdx.x]);
@@ -2365,26 +2365,26 @@ extern void Convert_int32_t_float_cuda_Convert_120_Call(const dim3 &grids, const
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: Reshape_134_0	type: float	shape: Shape{1}
-//	- name: Reshape_124_0	type: float	shape: Shape{128, 128}
-//	- name: Broadcast_127_0	type: float	shape: Shape{128, 128, 128}
+//	- name: Reshape_124_0	type: float	shape: Shape{256, 128}
+//	- name: Broadcast_127_0	type: float	shape: Shape{256, 128, 128}
 //	- name: Reshape_143_0	type: float	shape: Shape{1}
 //	- name: Reshape_137_0	type: float	shape: Shape{1}
 //	- name: Reshape_146_0	type: float	shape: Shape{1}
 // Output:
-//	- name: Multiply_148_0	type: float	shape: Shape{128, 1, 128, 128}
-//	- name: Multiply_145_0	type: float	shape: Shape{128, 1, 128, 128}
+//	- name: Multiply_148_0	type: float	shape: Shape{256, 1, 128, 128}
+//	- name: Multiply_145_0	type: float	shape: Shape{256, 1, 128, 128}
 // Fused functions:
-// Broadcast_float_float_cuda_Broadcast_135<<<dim3(32768, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_134_0, Broadcast_135_0);
-// Broadcast_float_float_cuda_Broadcast_125<<<dim3(32768, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_124_0, Broadcast_125_0);
-// Multiply_float_float_float_cuda_Multiply_128<<<dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_125_0, Broadcast_127_0, Multiply_128_0);
+// Broadcast_float_float_cuda_Broadcast_135<<<dim3(65536, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_134_0, Broadcast_135_0);
+// Broadcast_float_float_cuda_Broadcast_125<<<dim3(65536, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_124_0, Broadcast_125_0);
+// Multiply_float_float_float_cuda_Multiply_128<<<dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_125_0, Broadcast_127_0, Multiply_128_0);
 // Reshape_float_float_cuda_lib_Reshape_131(Multiply_128_0, Reshape_131_0);
-// Subtract_float_float_float_cuda_Subtract_136<<<dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_135_0, Reshape_131_0, Subtract_136_0);
-// Broadcast_float_float_cuda_Broadcast_144<<<dim3(32768, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_143_0, Broadcast_144_0);
-// Multiply_float_float_float_cuda_Multiply_145<<<dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0>>>(Subtract_136_0, Broadcast_144_0, Multiply_145_0);
-// Broadcast_float_float_cuda_Broadcast_138<<<dim3(32768, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_137_0, Broadcast_138_0);
-// Subtract_float_float_float_cuda_Subtract_139<<<dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_138_0, Reshape_131_0, Subtract_139_0);
-// Broadcast_float_float_cuda_Broadcast_147<<<dim3(32768, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_146_0, Broadcast_147_0);
-// Multiply_float_float_float_cuda_Multiply_148<<<dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0>>>(Subtract_139_0, Broadcast_147_0, Multiply_148_0);
+// Subtract_float_float_float_cuda_Subtract_136<<<dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_135_0, Reshape_131_0, Subtract_136_0);
+// Broadcast_float_float_cuda_Broadcast_144<<<dim3(65536, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_143_0, Broadcast_144_0);
+// Multiply_float_float_float_cuda_Multiply_145<<<dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0>>>(Subtract_136_0, Broadcast_144_0, Multiply_145_0);
+// Broadcast_float_float_cuda_Broadcast_138<<<dim3(65536, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_137_0, Broadcast_138_0);
+// Subtract_float_float_float_cuda_Subtract_139<<<dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0>>>(Broadcast_138_0, Reshape_131_0, Subtract_139_0);
+// Broadcast_float_float_cuda_Broadcast_147<<<dim3(65536, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_146_0, Broadcast_147_0);
+// Multiply_float_float_float_cuda_Multiply_148<<<dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0>>>(Subtract_139_0, Broadcast_147_0, Multiply_148_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Multiply_Reshape_Subtract_Broadcast_Multiply_Broadcast_Subtract_Broadcast_Multiply_1(float* input0, float* input1, float* input2, float* input3, float* input4, float* input5, float* output0, float* output1)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -2427,15 +2427,15 @@ void Constant_float_cuda_Constant_54(cudaStream_t stream, float* output0)
 // Node name:	Dot_386
 // Description:	Dot
 // Input:
-//	- name: Reshape_385_0	type: float	shape: Shape{128, 1024}
+//	- name: Reshape_385_0	type: float	shape: Shape{256, 1024}
 //	- name: Constant_109_0	type: float	shape: Shape{1024, 1024}
 // Output:
-//	- name: Dot_386_0	type: float	shape: Shape{128, 1024}
+//	- name: Dot_386_0	type: float	shape: Shape{256, 1024}
 void Dot_float_float_float_cuda_lib_Dot_386(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1024, 128, 1024, &alpha, static_cast<const float*>(input1), 1024, static_cast<const float*>(input0), 1024, &beta, static_cast<float*>(output0), 1024));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1024, 256, 1024, &alpha, static_cast<const float*>(input1), 1024, static_cast<const float*>(input0), 1024, &beta, static_cast<float*>(output0), 1024));
 
 }
 // Node name:	Constant_29
@@ -2460,17 +2460,17 @@ void Constant_float_cuda_Constant_29(cudaStream_t stream, float* output0)
 // Node name:	Softmax_198
 // Description:	Softmax
 // Input:
-//	- name: Add_197_0	type: float	shape: Shape{128, 16, 128, 128}
+//	- name: Add_197_0	type: float	shape: Shape{256, 16, 128, 128}
 // Output:
-//	- name: Softmax_198_0	type: float	shape: Shape{128, 16, 128, 128}
+//	- name: Softmax_198_0	type: float	shape: Shape{256, 16, 128, 128}
 void Softmax_float_float_cuda_lib_Softmax_198(cudnnHandle_t cudnn_handle, float* input0, float* output0)
 {
     cudnnTensorDescriptor_t input_tensor_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&input_tensor_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_tensor_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 262144, 1, 1, 128));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(input_tensor_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 524288, 1, 1, 128));
     cudnnTensorDescriptor_t output_tensor_desc;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&output_tensor_desc));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_tensor_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 262144, 1, 1, 128));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(output_tensor_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 524288, 1, 1, 128));
     const float alpha = 1.0;
     const float beta = 0.0;
     CUDNN_SAFE_CALL(cudnnSoftmaxForward(cudnn_handle, CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_INSTANCE, &alpha, input_tensor_desc, input0, &beta, output_tensor_desc, output0));
@@ -2481,30 +2481,30 @@ void Softmax_float_float_cuda_lib_Softmax_198(cudnnHandle_t cudnn_handle, float*
 // Node name:	Dot_122
 // Description:	Dot
 // Input:
-//	- name: OneHot_118_0	type: float	shape: Shape{16384, 2}
+//	- name: OneHot_118_0	type: float	shape: Shape{32768, 2}
 //	- name: Constant_8_0	type: float	shape: Shape{2, 1024}
 // Output:
-//	- name: Dot_122_0	type: float	shape: Shape{16384, 1024}
+//	- name: Dot_122_0	type: float	shape: Shape{32768, 1024}
 void Dot_float_float_float_cuda_lib_Dot_122(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1024, 16384, 2, &alpha, static_cast<const float*>(input1), 1024, static_cast<const float*>(input0), 2, &beta, static_cast<float*>(output0), 1024));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1024, 32768, 2, &alpha, static_cast<const float*>(input1), 1024, static_cast<const float*>(input0), 2, &beta, static_cast<float*>(output0), 1024));
 
 }
 // Node name:	 Elementwise Kernel Fusion
 // Input:
-//	- name: Sum_157_0	type: float	shape: Shape{128, 128}
-//	- name: Constant_158_0	type: float	shape: Shape{128, 128}
+//	- name: Sum_157_0	type: float	shape: Shape{256, 128}
+//	- name: Constant_158_0	type: float	shape: Shape{256, 128}
 //	- name: Reshape_161_0	type: float	shape: Shape{1}
 // Output:
-//	- name: Rsqrt_164_0	type: float	shape: Shape{128, 128, 1}
+//	- name: Rsqrt_164_0	type: float	shape: Shape{256, 128, 1}
 // Fused functions:
-// Divide_float_float_float_cuda_Divide_159<<<dim3(32, 1, 1), dim3(512, 1, 1), 0, 0>>>(Sum_157_0, Constant_158_0, Divide_159_0);
+// Divide_float_float_float_cuda_Divide_159<<<dim3(64, 1, 1), dim3(512, 1, 1), 0, 0>>>(Sum_157_0, Constant_158_0, Divide_159_0);
 // Reshape_float_float_cuda_lib_Reshape_160(Divide_159_0, Reshape_160_0);
-// Broadcast_float_float_cuda_Broadcast_162<<<dim3(256, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_161_0, Broadcast_162_0);
-// Add_float_float_float_cuda_Add_163<<<dim3(32, 1, 1), dim3(512, 1, 1), 0, 0>>>(Reshape_160_0, Broadcast_162_0, Add_163_0);
-// Rsqrt_float_float_cuda_Rsqrt_164<<<dim3(32, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_163_0, Rsqrt_164_0);
+// Broadcast_float_float_cuda_Broadcast_162<<<dim3(512, 1, 1), dim3(64, 1, 1), 0, 0>>>(Reshape_161_0, Broadcast_162_0);
+// Add_float_float_float_cuda_Add_163<<<dim3(64, 1, 1), dim3(512, 1, 1), 0, 0>>>(Reshape_160_0, Broadcast_162_0, Add_163_0);
+// Rsqrt_float_float_cuda_Rsqrt_164<<<dim3(64, 1, 1), dim3(512, 1, 1), 0, 0>>>(Add_163_0, Rsqrt_164_0);
 extern "C" __launch_bounds__(512) __global__ void FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3(float* input0, float* input1, float* input2, float* output0)
 {
     int tid = blockIdx.x * 512 + threadIdx.x;
@@ -2521,26 +2521,26 @@ extern void FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Ad
 // Node name:	Reshape_114
 // Description:	Reshape
 // Input:
-//	- name: Parameter_2_0	type: int32_t	shape: Shape{128, 128}
+//	- name: Parameter_2_0	type: int32_t	shape: Shape{256, 128}
 // Output:
-//	- name: Reshape_114_0	type: int32_t	shape: Shape{16384}
+//	- name: Reshape_114_0	type: int32_t	shape: Shape{32768}
 void Reshape_int32_t_int32_t_cuda_lib_Reshape_114(cudaStream_t stream, int32_t* input0, int32_t* output0)
 {
     if (input0 != output0) {
-       cudaMemcpyAsync(output0, input0, 16384 * sizeof(int32_t), cudaMemcpyDeviceToDevice, stream);
+       cudaMemcpyAsync(output0, input0, 32768 * sizeof(int32_t), cudaMemcpyDeviceToDevice, stream);
     }
 
 }
 // Node name:	Slice_384
 // Description:	Slice
 // Input:
-//	- name: Reshape_383_0	type: float	shape: Shape{128, 128, 1024}
+//	- name: Reshape_383_0	type: float	shape: Shape{256, 128, 1024}
 // Output:
-//	- name: Slice_384_0	type: float	shape: Shape{128, 1, 1024}
+//	- name: Slice_384_0	type: float	shape: Shape{256, 1, 1024}
 extern "C" __launch_bounds__(64) __global__ void Slice_float_float_cuda_Slice_384(float* input0, float* output0)
 {
     uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
-    if (tid < 131072)
+    if (tid < 262144)
     {
         uint32_t input_strides[] = {131072, 1024, 1};
         uint32_t output_strides[] = {1024, 1024, 1};
@@ -2564,7 +2564,7 @@ extern void Slice_float_float_cuda_Slice_384_Call(const dim3 &grids, const dim3 
 // Description:	Constant
 // Input:
 // Output:
-//	- name: Constant_365_0	type: float	shape: Shape{16384}
+//	- name: Constant_365_0	type: float	shape: Shape{32768}
 void Constant_float_cuda_Constant_365(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("./Constant/Constant_365_0.bin" , std::ios::in | std::ios::binary);
@@ -2573,33 +2573,33 @@ void Constant_float_cuda_Constant_365(cudaStream_t stream, float* output0)
     	printf("Load Constant_365_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[65536];
-    bin_file.read(tmp_mem, 65536);
-    cudaMemcpyAsync(output0, tmp_mem, 65536, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[131072];
+    bin_file.read(tmp_mem, 131072);
+    cudaMemcpyAsync(output0, tmp_mem, 131072, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
 // Node name:	Dot_249
 // Description:	Dot
 // Input:
-//	- name: Multiply_248_0	type: float	shape: Shape{16384, 4096}
+//	- name: Multiply_248_0	type: float	shape: Shape{32768, 4096}
 //	- name: Constant_59_0	type: float	shape: Shape{4096, 1024}
 // Output:
-//	- name: Dot_249_0	type: float	shape: Shape{16384, 1024}
+//	- name: Dot_249_0	type: float	shape: Shape{32768, 1024}
 void Dot_float_float_float_cuda_lib_Dot_249(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1024, 16384, 4096, &alpha, static_cast<const float*>(input1), 1024, static_cast<const float*>(input0), 4096, &beta, static_cast<float*>(output0), 1024));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 1024, 32768, 4096, &alpha, static_cast<const float*>(input1), 1024, static_cast<const float*>(input0), 4096, &beta, static_cast<float*>(output0), 1024));
 
 }
 // Node name:	BatchMatMul_199
 // Description:	BatchMatMul
 // Input:
-//	- name: Softmax_198_0	type: float	shape: Shape{128, 16, 128, 128}
-//	- name: Reshape_191_0	type: float	shape: Shape{128, 16, 128, 64}
+//	- name: Softmax_198_0	type: float	shape: Shape{256, 16, 128, 128}
+//	- name: Reshape_191_0	type: float	shape: Shape{256, 16, 128, 64}
 // Output:
-//	- name: BatchMatMul_199_0	type: float	shape: Shape{128, 16, 128, 64}
+//	- name: BatchMatMul_199_0	type: float	shape: Shape{256, 16, 128, 64}
 void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_199(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     {
@@ -2610,7 +2610,7 @@ void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_199(cublasHandle_t cubla
                                 CUBLAS_SAFE_CALL(cublasSgemmStridedBatched(
                                     cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 64, 128, 128,
                                     &alpha, input1, 64, 8192, input0, 128, 16384,
-                                    &beta, output0, 64, 8192, 2048));
+                                    &beta, output0, 64, 8192, 4096));
                             
     }
 
@@ -2618,9 +2618,9 @@ void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_199(cublasHandle_t cubla
 // Node name:	Reshape_200
 // Description:	Reshape
 // Input:
-//	- name: BatchMatMul_199_0	type: float	shape: Shape{128, 16, 128, 64}
+//	- name: BatchMatMul_199_0	type: float	shape: Shape{256, 16, 128, 64}
 // Output:
-//	- name: Reshape_200_0	type: float	shape: Shape{128, 128, 16, 64}
+//	- name: Reshape_200_0	type: float	shape: Shape{256, 128, 16, 64}
 extern "C" __launch_bounds__(64) __global__ void Reshape_float_float_cuda_Reshape_200(float* input0, float* output0)
 {
     uint32_t input_strides0 = 131072;
@@ -2631,7 +2631,7 @@ extern "C" __launch_bounds__(64) __global__ void Reshape_float_float_cuda_Reshap
     uint32_t trans_strides1 = 64;
     uint32_t trans_strides2 = 1024;
     uint32_t trans_strides3 = 1;
-    size_t n = 16777216;
+    size_t n = 33554432;
     uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     if (tid < n)
     {
@@ -2673,13 +2673,13 @@ void Constant_float_cuda_Constant_62(cudaStream_t stream, float* output0)
 // Node name:	Add_392
 // Description:	Add
 // Input:
-//	- name: Dot_390_0	type: float	shape: Shape{128, 1001}
-//	- name: Broadcast_391_0	type: float	shape: Shape{128, 1001}
+//	- name: Dot_390_0	type: float	shape: Shape{256, 1001}
+//	- name: Broadcast_391_0	type: float	shape: Shape{256, 1001}
 // Output:
-//	- name: Add_392_0	type: float	shape: Shape{128, 1001}
-extern "C" __launch_bounds__(128) __global__ void Add_float_float_float_cuda_Add_392(float* input0, float* input1, float* output0)
+//	- name: Add_392_0	type: float	shape: Shape{256, 1001}
+extern "C" __launch_bounds__(256) __global__ void Add_float_float_float_cuda_Add_392(float* input0, float* input1, float* output0)
 {
-    output0[blockIdx.x * 128 + threadIdx.x] = add(input0[blockIdx.x * 128 + threadIdx.x], input1[blockIdx.x * 128 + threadIdx.x]);
+    output0[blockIdx.x * 256 + threadIdx.x] = add(input0[blockIdx.x * 256 + threadIdx.x], input1[blockIdx.x * 256 + threadIdx.x]);
 
 }
 extern void Add_float_float_float_cuda_Add_392_Call(const dim3 &grids, const dim3 &blocks, unsigned mem, cudaStream_t stream, float* input0, float* input1, float* output0) {
@@ -2688,150 +2688,150 @@ extern void Add_float_float_float_cuda_Add_392_Call(const dim3 &grids, const dim
 // Node name:	Dot_233
 // Description:	Dot
 // Input:
-//	- name: Add_232_0	type: float	shape: Shape{16384, 1024}
+//	- name: Add_232_0	type: float	shape: Shape{32768, 1024}
 //	- name: Constant_52_0	type: float	shape: Shape{1024, 4096}
 // Output:
-//	- name: Dot_233_0	type: float	shape: Shape{16384, 4096}
+//	- name: Dot_233_0	type: float	shape: Shape{32768, 4096}
 void Dot_float_float_float_cuda_lib_Dot_233(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 4096, 16384, 1024, &alpha, static_cast<const float*>(input1), 4096, static_cast<const float*>(input0), 1024, &beta, static_cast<float*>(output0), 4096));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 4096, 32768, 1024, &alpha, static_cast<const float*>(input1), 4096, static_cast<const float*>(input0), 1024, &beta, static_cast<float*>(output0), 4096));
 
 }
 
 extern "C" void cuda_init()
 {
 CUDA_SAFE_CALL(cudaDeviceReset());
-// total memory:933311808
+// total memory:1630418240
 CUDA_SAFE_CALL(cudaSetDevice(0));
-CUDA_SAFE_CALL(cudaMalloc((void**)&group_0_CUDA_GPU0_allocator_memory_pool,696451072));
-CUDA_SAFE_CALL(cudaMemset((void*)group_0_CUDA_GPU0_allocator_memory_pool, 0, 696451072));
+CUDA_SAFE_CALL(cudaMalloc((void**)&group_0_CUDA_GPU0_allocator_memory_pool,1392902144));
+CUDA_SAFE_CALL(cudaMemset((void*)group_0_CUDA_GPU0_allocator_memory_pool, 0, 1392902144));
 Reshape_114_0 = (int32_t*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-OneHot_118_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Dot_122_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+196608);
+OneHot_118_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Dot_122_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+393216);
 Reshape_113_0 = (int32_t*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_117_0 = (int32_t*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-GatherV2_121_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67305472);
-Add_142_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134414336);
+GatherV2_121_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134610944);
+Add_142_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268828672);
 Sum_149_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Divide_151_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_152_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_153_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Multiply_156_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Sum_157_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67174400);
-Rsqrt_164_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Reshape_165_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Add_175_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
-Reshape_176_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
-Dot_179_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Add_185_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
-Reshape_188_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
-Reshape_191_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Dot_178_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
-Add_183_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+201457664);
-Reshape_187_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+201457664);
-Reshape_190_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
-Dot_177_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+201457664);
-Add_181_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268566528);
-Reshape_186_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268566528);
-Reshape_189_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+201457664);
-BatchMatMul_192_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268566528);
+Multiply_156_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Sum_157_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
+Rsqrt_164_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Reshape_165_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Add_175_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
+Reshape_176_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
+Dot_179_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Add_185_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
+Reshape_188_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
+Reshape_191_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Dot_178_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
+Add_183_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+402915328);
+Reshape_187_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+402915328);
+Reshape_190_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
+Dot_177_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+402915328);
+Add_181_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+537133056);
+Reshape_186_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+537133056);
+Reshape_189_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+402915328);
+BatchMatMul_192_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+537133056);
 Broadcast_116_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_124_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Reshape_115_0 = (int32_t*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Convert_120_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
-Reshape_126_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
-Broadcast_127_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134414336);
-Multiply_145_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+142802944);
-Multiply_148_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+151191552);
-Reshape_195_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+142802944);
-Broadcast_196_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+402784256);
-Add_197_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+537001984);
-Softmax_198_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+537001984);
-BatchMatMul_199_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
-Reshape_200_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Reshape_201_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Dot_202_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
-Add_205_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
+Reshape_115_0 = (int32_t*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Convert_120_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
+Reshape_126_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
+Broadcast_127_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268828672);
+Multiply_145_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+285605888);
+Multiply_148_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+302383104);
+Reshape_195_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+285605888);
+Broadcast_196_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+805568512);
+Add_197_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1074003968);
+Softmax_198_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1074003968);
+BatchMatMul_199_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
+Reshape_200_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Reshape_201_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Dot_202_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
+Add_205_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
 Sum_206_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Divide_208_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_209_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_210_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Multiply_213_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Sum_214_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67174400);
-Rsqrt_221_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Reshape_222_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Add_232_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
-Dot_233_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
-Multiply_248_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+428015616);
-Dot_249_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Add_252_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
+Multiply_213_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Sum_214_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
+Rsqrt_221_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Reshape_222_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Add_232_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
+Dot_233_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
+Multiply_248_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+856031232);
+Dot_249_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Add_252_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
 Sum_253_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Divide_255_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_256_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_257_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Multiply_260_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Sum_261_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67174400);
-Rsqrt_268_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Reshape_269_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Add_279_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
-Dot_282_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Add_288_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
-Reshape_291_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
-Reshape_294_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Dot_281_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
-Add_286_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+226689024);
-Reshape_290_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+226689024);
-Reshape_293_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
-Dot_280_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+226689024);
-Add_284_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+293797888);
-Reshape_289_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+293797888);
-Reshape_292_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+226689024);
-BatchMatMul_295_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+293797888);
-Reshape_298_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+151191552);
-Broadcast_299_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+159580160);
-Add_300_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+428015616);
-Softmax_301_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+428015616);
-BatchMatMul_302_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
-Reshape_303_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Reshape_304_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Dot_305_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
-Add_308_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
+Multiply_260_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Sum_261_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
+Rsqrt_268_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Reshape_269_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Add_279_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
+Dot_282_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Add_288_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
+Reshape_291_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
+Reshape_294_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Dot_281_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
+Add_286_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+453378048);
+Reshape_290_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+453378048);
+Reshape_293_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
+Dot_280_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+453378048);
+Add_284_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+587595776);
+Reshape_289_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+587595776);
+Reshape_292_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+453378048);
+BatchMatMul_295_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+587595776);
+Reshape_298_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+302383104);
+Broadcast_299_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+319160320);
+Add_300_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+856031232);
+Softmax_301_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+856031232);
+BatchMatMul_302_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
+Reshape_303_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Reshape_304_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Dot_305_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
+Add_308_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
 Sum_309_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Divide_311_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_312_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_313_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Multiply_316_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Sum_317_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67174400);
-Rsqrt_324_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Reshape_325_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Add_335_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
-Dot_336_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Multiply_351_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+335675392);
-Dot_352_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Add_355_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
+Multiply_316_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Sum_317_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
+Rsqrt_324_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Reshape_325_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Add_335_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
+Dot_336_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Multiply_351_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+671350784);
+Dot_352_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Add_355_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+268697600);
 Sum_356_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Divide_358_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_359_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
 Reshape_360_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Multiply_363_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Sum_364_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67174400);
-Rsqrt_371_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Reshape_372_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+65536);
-Add_382_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
-Reshape_383_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
-Slice_384_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
-Reshape_385_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+67239936);
+Multiply_363_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Sum_364_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134348800);
+Rsqrt_371_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Reshape_372_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+131072);
+Add_382_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
+Reshape_383_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+262144);
+Slice_384_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
+Reshape_385_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+134479872);
 Dot_386_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Tanh_389_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+524288);
+Tanh_389_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1048576);
 Dot_390_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Broadcast_391_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+512512);
+Broadcast_391_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1025024);
 Add_392_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+0);
-Softmax_393_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+512512);
+Softmax_393_0 = (float*)(group_0_CUDA_GPU0_allocator_memory_pool+1025024);
 CUDA_SAFE_CALL(cudaSetDevice(0));
-CUDA_SAFE_CALL(cudaMalloc((void**)&group_persist_CUDA_GPU0_allocator_memory_pool,236860736));
-CUDA_SAFE_CALL(cudaMemset((void*)group_persist_CUDA_GPU0_allocator_memory_pool, 0, 236860736));
+CUDA_SAFE_CALL(cudaMalloc((void**)&group_persist_CUDA_GPU0_allocator_memory_pool,237516096));
+CUDA_SAFE_CALL(cudaMemset((void*)group_persist_CUDA_GPU0_allocator_memory_pool, 0, 237516096));
 Constant_110_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+0);
 Constant_109_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+4096);
 Constant_46_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+4198400);
@@ -2846,77 +2846,77 @@ Reshape_140_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+133427200
 Constant_19_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135524352);
 Constant_18_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135528448);
 Constant_150_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135532544);
-Constant_22_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135598080);
-Reshape_161_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135598080);
-Constant_158_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135598144);
-Constant_37_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135663680);
-Constant_30_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135663744);
-Constant_29_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135667840);
-Constant_28_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+139862144);
-Constant_27_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+139866240);
-Constant_79_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060544);
-Reshape_146_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060544);
-Constant_40_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060608);
-Reshape_143_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060608);
-Constant_78_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060672);
-Reshape_137_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060672);
-Constant_39_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060736);
-Reshape_134_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060736);
-Constant_25_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060800);
-Constant_45_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144060864);
-Constant_48_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148255168);
-Constant_47_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148259264);
-Constant_207_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148263360);
-Constant_51_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148328896);
-Reshape_218_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148328896);
-Constant_215_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148328960);
-Constant_60_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148394496);
-Constant_58_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148398592);
-Constant_56_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148398656);
-Constant_55_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148398720);
-Constant_53_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148398784);
-Constant_57_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148415168);
-Constant_54_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148415232);
-Constant_52_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148415296);
-Constant_59_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+165192512);
-Constant_62_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+181969728);
-Constant_61_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+181973824);
-Constant_254_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+181977920);
-Constant_65_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182043456);
-Reshape_265_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182043456);
-Constant_262_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182043520);
-Constant_85_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182109056);
-Constant_71_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182113152);
-Constant_70_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182117248);
-Constant_76_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+186311552);
-Constant_69_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+186311616);
-Constant_68_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+186315712);
-Constant_67_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+190510016);
-Constant_66_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+190514112);
-Constant_84_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+194708416);
-Constant_87_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+198902720);
-Constant_86_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+198906816);
-Constant_310_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+198910912);
-Constant_90_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+198976448);
-Reshape_321_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+198976448);
-Constant_318_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+198976512);
-Constant_99_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199042048);
-Constant_97_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199046144);
-Constant_95_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199046208);
-Constant_94_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199046272);
-Constant_92_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199046336);
-Constant_96_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199062720);
-Constant_93_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199062784);
-Constant_91_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199062848);
-Constant_98_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+215840064);
-Constant_101_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+232617280);
-Constant_100_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+232621376);
-Constant_357_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+232625472);
-Constant_104_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+232691008);
-Reshape_368_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+232691008);
-Constant_365_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+232691072);
-Constant_111_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+232756608);
-Constant_112_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+236856704);
+Constant_22_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135663616);
+Reshape_161_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135663616);
+Constant_158_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135663680);
+Constant_37_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135794752);
+Constant_30_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135794816);
+Constant_29_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+135798912);
+Constant_28_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+139993216);
+Constant_27_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+139997312);
+Constant_79_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191616);
+Reshape_146_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191616);
+Constant_40_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191680);
+Reshape_143_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191680);
+Constant_78_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191744);
+Reshape_137_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191744);
+Constant_39_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191808);
+Reshape_134_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191808);
+Constant_25_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191872);
+Constant_45_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+144191936);
+Constant_48_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148386240);
+Constant_47_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148390336);
+Constant_207_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148394432);
+Constant_51_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148525504);
+Reshape_218_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148525504);
+Constant_215_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148525568);
+Constant_60_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148656640);
+Constant_58_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148660736);
+Constant_56_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148660800);
+Constant_55_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148660864);
+Constant_53_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148660928);
+Constant_57_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148677312);
+Constant_54_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148677376);
+Constant_52_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+148677440);
+Constant_59_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+165454656);
+Constant_62_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182231872);
+Constant_61_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182235968);
+Constant_254_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182240064);
+Constant_65_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182371136);
+Reshape_265_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182371136);
+Constant_262_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182371200);
+Constant_85_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182502272);
+Constant_71_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182506368);
+Constant_70_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+182510464);
+Constant_76_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+186704768);
+Constant_69_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+186704832);
+Constant_68_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+186708928);
+Constant_67_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+190903232);
+Constant_66_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+190907328);
+Constant_84_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+195101632);
+Constant_87_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199295936);
+Constant_86_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199300032);
+Constant_310_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199304128);
+Constant_90_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199435200);
+Reshape_321_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199435200);
+Constant_318_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199435264);
+Constant_99_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199566336);
+Constant_97_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199570432);
+Constant_95_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199570496);
+Constant_94_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199570560);
+Constant_92_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199570624);
+Constant_96_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199587008);
+Constant_93_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199587072);
+Constant_91_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+199587136);
+Constant_98_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+216364352);
+Constant_101_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+233141568);
+Constant_100_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+233145664);
+Constant_357_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+233149760);
+Constant_104_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+233280832);
+Reshape_368_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+233280832);
+Constant_365_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+233280896);
+Constant_111_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+233411968);
+Constant_112_0 = (float*)(group_persist_CUDA_GPU0_allocator_memory_pool+237512064);
 // create streams/handles
 CUDNN_SAFE_CALL(cudnnCreate(&cudnn_handle_0));
 CUBLAS_SAFE_CALL(cublasCreate(&cublas_handle_0));
@@ -3076,7 +3076,7 @@ extern "C" int kernel_entry(int32_t* Parameter_0_0, int32_t* Parameter_1_0, int3
  // name=bert/embeddings/Reshape_2
 Reshape_int32_t_int32_t_cuda_lib_Reshape_114(0, Parameter_2_0, Reshape_114_0);
  // name=bert/embeddings/one_hot
-OneHot_int32_t_float_cuda_OneHot_118_Call(dim3(256, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_114_0, OneHot_118_0);
+OneHot_int32_t_float_cuda_OneHot_118_Call(dim3(512, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_114_0, OneHot_118_0);
  // name=bert/embeddings/MatMul
 Dot_float_float_float_cuda_lib_Dot_122(cublas_handle_0, OneHot_118_0, Constant_8_0, Dot_122_0);
  // name=bert/embeddings/ExpandDims
@@ -3084,7 +3084,7 @@ Reshape_int32_t_int32_t_cuda_lib_Reshape_114(0, Parameter_0_0, Reshape_113_0);
  // name=bert/embeddings/Reshape
 // eliminated
  // name=bert/embeddings/GatherV2
-GatherV2_float_int32_t_float_cuda_GatherV2_121_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, Constant_4_0, Reshape_117_0, GatherV2_121_0);
+GatherV2_float_int32_t_float_cuda_GatherV2_121_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Constant_4_0, Reshape_117_0, GatherV2_121_0);
  // name=bert/embeddings/Slice
 // eliminated
  // name=bert/embeddings/Reshape_4
@@ -3092,53 +3092,53 @@ GatherV2_float_int32_t_float_cuda_GatherV2_121_Call(dim3(262144, 1, 1), dim3(64,
  // name=Reshape_140
 // eliminated
  // name=fused_kernel_395
-FusedKernel_float_float_float_float_cuda_Reshape_Reshape_Add_Broadcast_Add_0_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, GatherV2_121_0, Dot_122_0, Reshape_140_0, Add_142_0);
+FusedKernel_float_float_float_float_cuda_Reshape_Reshape_Add_Broadcast_Add_0_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, GatherV2_121_0, Dot_122_0, Reshape_140_0, Add_142_0);
  // name=Sum_149
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Add_142_0, Sum_149_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Add_142_0, Sum_149_0);
  // name=Divide_151
-Divide_float_float_float_cuda_Divide_151_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_149_0, Constant_150_0, Divide_151_0);
+Divide_float_float_float_cuda_Divide_151_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_149_0, Constant_150_0, Divide_151_0);
  // name=bert/embeddings/LayerNorm/moments/mean
 // eliminated
  // name=Reshape_153
 // eliminated
  // name=fused_kernel_397
-FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_153_0, Add_142_0, Multiply_156_0);
+FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_153_0, Add_142_0, Multiply_156_0);
  // name=Sum_157
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_156_0, Sum_157_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_156_0, Sum_157_0);
  // name=Reshape_161
 // eliminated
  // name=fused_kernel_398
-FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_157_0, Constant_158_0, Reshape_161_0, Rsqrt_164_0);
+FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_157_0, Constant_158_0, Reshape_161_0, Rsqrt_164_0);
  // name=Reshape_165
 // eliminated
  // name=fused_kernel_399
-FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_18_0, Reshape_153_0, Reshape_165_0, Constant_19_0, Add_142_0, Add_175_0);
+FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_18_0, Reshape_153_0, Reshape_165_0, Constant_19_0, Add_142_0, Add_175_0);
  // name=bert/encoder/Reshape_1
 // eliminated
  // name=bert/encoder/layer_0/attention/self/value/MatMul
 Dot_float_float_float_cuda_lib_Dot_179(cublas_handle_0, Reshape_176_0, Constant_31_0, Dot_179_0);
  // name=fused_kernel_402
-FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_32_0, Dot_179_0, Add_185_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_32_0, Dot_179_0, Add_185_0);
  // name=bert/encoder/layer_0/attention/self/Reshape_2
 // eliminated
  // name=bert/encoder/layer_0/attention/self/transpose_2
-Reshape_float_float_cuda_Reshape_191_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_188_0, Reshape_191_0);
+Reshape_float_float_cuda_Reshape_191_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_188_0, Reshape_191_0);
  // name=bert/encoder/layer_0/attention/self/key/MatMul
 Dot_float_float_float_cuda_lib_Dot_179(cublas_handle_0, Reshape_176_0, Constant_29_0, Dot_178_0);
  // name=fused_kernel_401
-FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_30_0, Dot_178_0, Add_183_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_30_0, Dot_178_0, Add_183_0);
  // name=bert/encoder/layer_0/attention/self/Reshape_1
 // eliminated
  // name=bert/encoder/layer_0/attention/self/transpose_1
-Reshape_float_float_cuda_Reshape_191_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_187_0, Reshape_190_0);
+Reshape_float_float_cuda_Reshape_191_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_187_0, Reshape_190_0);
  // name=bert/encoder/layer_0/attention/self/query/MatMul
 Dot_float_float_float_cuda_lib_Dot_179(cublas_handle_0, Reshape_176_0, Constant_27_0, Dot_177_0);
  // name=fused_kernel_400
-FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_28_0, Dot_177_0, Add_181_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_28_0, Dot_177_0, Add_181_0);
  // name=bert/encoder/layer_0/attention/self/Reshape
 // eliminated
  // name=bert/encoder/layer_0/attention/self/transpose
-Reshape_float_float_cuda_Reshape_191_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_186_0, Reshape_189_0);
+Reshape_float_float_cuda_Reshape_191_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_186_0, Reshape_189_0);
  // name=bert/encoder/layer_0/attention/self/MatMul
 BatchMatMul_float_float_float_cuda_lib_BatchMatMul_192(cublas_handle_0, Reshape_189_0, Reshape_190_0, BatchMatMul_192_0);
  // name=Reshape_146
@@ -3150,193 +3150,193 @@ BatchMatMul_float_float_float_cuda_lib_BatchMatMul_192(cublas_handle_0, Reshape_
  // name=Reshape_134
 // eliminated
  // name=bert/encoder/ones
-Broadcast_float_float_cuda_Broadcast_116_Call(dim3(256, 1, 1), dim3(64, 1, 1), 0, 0, Constant_25_0, Broadcast_116_0);
+Broadcast_float_float_cuda_Broadcast_116_Call(dim3(512, 1, 1), dim3(64, 1, 1), 0, 0, Constant_25_0, Broadcast_116_0);
  // name=Reshape_124
 // eliminated
  // name=bert/encoder/Reshape
 Reshape_int32_t_int32_t_cuda_lib_Reshape_114(0, Parameter_1_0, Reshape_115_0);
  // name=bert/encoder/Cast
-Convert_int32_t_float_cuda_Convert_120_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_115_0, Convert_120_0);
+Convert_int32_t_float_cuda_Convert_120_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_115_0, Convert_120_0);
  // name=Reshape_126
 // eliminated
  // name=Broadcast_127
-Broadcast_float_float_cuda_Broadcast_127_Call(dim3(32768, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_126_0, Broadcast_127_0);
+Broadcast_float_float_cuda_Broadcast_127_Call(dim3(65536, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_126_0, Broadcast_127_0);
  // name=fused_kernel_396
-FusedKernel_float_float_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Multiply_Reshape_Subtract_Broadcast_Multiply_Broadcast_Subtract_Broadcast_Multiply_1_Call(dim3(4096, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_134_0, Reshape_124_0, Broadcast_127_0, Reshape_143_0, Reshape_137_0, Reshape_146_0, Multiply_148_0, Multiply_145_0);
+FusedKernel_float_float_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Multiply_Reshape_Subtract_Broadcast_Multiply_Broadcast_Subtract_Broadcast_Multiply_1_Call(dim3(8192, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_134_0, Reshape_124_0, Broadcast_127_0, Reshape_143_0, Reshape_137_0, Reshape_146_0, Multiply_148_0, Multiply_145_0);
  // name=Reshape_195
 // eliminated
  // name=Broadcast_196
-Broadcast_float_float_cuda_Broadcast_196_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_195_0, Broadcast_196_0);
+Broadcast_float_float_cuda_Broadcast_196_Call(dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_195_0, Broadcast_196_0);
  // name=fused_kernel_403
-FusedKernel_float_float_float_float_cuda_Broadcast_Multiply_Add_8_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_37_0, BatchMatMul_192_0, Broadcast_196_0, Add_197_0);
+FusedKernel_float_float_float_float_cuda_Broadcast_Multiply_Add_8_Call(dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0, Constant_37_0, BatchMatMul_192_0, Broadcast_196_0, Add_197_0);
  // name=bert/encoder/layer_0/attention/self/Softmax
 Softmax_float_float_cuda_lib_Softmax_198(cudnn_handle_0, Add_197_0, Softmax_198_0);
  // name=bert/encoder/layer_0/attention/self/MatMul_1
 BatchMatMul_float_float_float_cuda_lib_BatchMatMul_199(cublas_handle_0, Softmax_198_0, Reshape_191_0, BatchMatMul_199_0);
  // name=bert/encoder/layer_0/attention/self/transpose_3
-Reshape_float_float_cuda_Reshape_200_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, BatchMatMul_199_0, Reshape_200_0);
+Reshape_float_float_cuda_Reshape_200_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, BatchMatMul_199_0, Reshape_200_0);
  // name=bert/encoder/layer_0/attention/self/Reshape_3
 // eliminated
  // name=bert/encoder/layer_0/attention/output/dense/MatMul
 Dot_float_float_float_cuda_lib_Dot_179(cublas_handle_0, Reshape_201_0, Constant_45_0, Dot_202_0);
  // name=fused_kernel_404
-FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_46_0, Dot_202_0, Reshape_176_0, Add_205_0);
+FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_46_0, Dot_202_0, Reshape_176_0, Add_205_0);
  // name=Sum_206
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Add_205_0, Sum_206_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Add_205_0, Sum_206_0);
  // name=Divide_208
-Divide_float_float_float_cuda_Divide_151_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_206_0, Constant_207_0, Divide_208_0);
+Divide_float_float_float_cuda_Divide_151_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_206_0, Constant_207_0, Divide_208_0);
  // name=bert/encoder/layer_0/attention/output/LayerNorm/moments/mean
 // eliminated
  // name=Reshape_210
 // eliminated
  // name=fused_kernel_405
-FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_210_0, Add_205_0, Multiply_213_0);
+FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_210_0, Add_205_0, Multiply_213_0);
  // name=Sum_214
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_213_0, Sum_214_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_213_0, Sum_214_0);
  // name=Reshape_218
 // eliminated
  // name=fused_kernel_406
-FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_214_0, Constant_215_0, Reshape_218_0, Rsqrt_221_0);
+FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_214_0, Constant_215_0, Reshape_218_0, Rsqrt_221_0);
  // name=Reshape_222
 // eliminated
  // name=fused_kernel_407
-FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_47_0, Reshape_210_0, Reshape_222_0, Constant_48_0, Add_205_0, Add_232_0);
+FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_47_0, Reshape_210_0, Reshape_222_0, Constant_48_0, Add_205_0, Add_232_0);
  // name=bert/encoder/layer_0/intermediate/dense/MatMul
 Dot_float_float_float_cuda_lib_Dot_233(cublas_handle_0, Add_232_0, Constant_52_0, Dot_233_0);
  // name=fused_kernel_408
-FusedKernel_float_float_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Broadcast_Add_Broadcast_Power_Multiply_Add_Multiply_Tanh_Add_Multiply_Multiply_13_Call(dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0, Constant_58_0, Constant_57_0, Constant_56_0, Constant_55_0, Constant_53_0, Dot_233_0, Constant_54_0, Multiply_248_0);
+FusedKernel_float_float_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Broadcast_Add_Broadcast_Power_Multiply_Add_Multiply_Tanh_Add_Multiply_Multiply_13_Call(dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0, Constant_58_0, Constant_57_0, Constant_56_0, Constant_55_0, Constant_53_0, Dot_233_0, Constant_54_0, Multiply_248_0);
  // name=bert/encoder/layer_0/output/dense/MatMul
 Dot_float_float_float_cuda_lib_Dot_249(cublas_handle_0, Multiply_248_0, Constant_59_0, Dot_249_0);
  // name=fused_kernel_409
-FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_60_0, Dot_249_0, Add_232_0, Add_252_0);
+FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_60_0, Dot_249_0, Add_232_0, Add_252_0);
  // name=Sum_253
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Add_252_0, Sum_253_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Add_252_0, Sum_253_0);
  // name=Divide_255
-Divide_float_float_float_cuda_Divide_151_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_253_0, Constant_254_0, Divide_255_0);
+Divide_float_float_float_cuda_Divide_151_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_253_0, Constant_254_0, Divide_255_0);
  // name=bert/encoder/layer_0/output/LayerNorm/moments/mean
 // eliminated
  // name=Reshape_257
 // eliminated
  // name=fused_kernel_410
-FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_257_0, Add_252_0, Multiply_260_0);
+FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_257_0, Add_252_0, Multiply_260_0);
  // name=Sum_261
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_260_0, Sum_261_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_260_0, Sum_261_0);
  // name=Reshape_265
 // eliminated
  // name=fused_kernel_411
-FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_261_0, Constant_262_0, Reshape_265_0, Rsqrt_268_0);
+FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_261_0, Constant_262_0, Reshape_265_0, Rsqrt_268_0);
  // name=Reshape_269
 // eliminated
  // name=fused_kernel_412
-FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_61_0, Reshape_257_0, Reshape_269_0, Constant_62_0, Add_252_0, Add_279_0);
+FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_61_0, Reshape_257_0, Reshape_269_0, Constant_62_0, Add_252_0, Add_279_0);
  // name=bert/encoder/layer_1/attention/self/value/MatMul
 Dot_float_float_float_cuda_lib_Dot_179(cublas_handle_0, Add_279_0, Constant_70_0, Dot_282_0);
  // name=fused_kernel_415
-FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_71_0, Dot_282_0, Add_288_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_71_0, Dot_282_0, Add_288_0);
  // name=bert/encoder/layer_1/attention/self/Reshape_2
 // eliminated
  // name=bert/encoder/layer_1/attention/self/transpose_2
-Reshape_float_float_cuda_Reshape_191_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_291_0, Reshape_294_0);
+Reshape_float_float_cuda_Reshape_191_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_291_0, Reshape_294_0);
  // name=bert/encoder/layer_1/attention/self/key/MatMul
 Dot_float_float_float_cuda_lib_Dot_179(cublas_handle_0, Add_279_0, Constant_68_0, Dot_281_0);
  // name=fused_kernel_414
-FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_69_0, Dot_281_0, Add_286_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_69_0, Dot_281_0, Add_286_0);
  // name=bert/encoder/layer_1/attention/self/Reshape_1
 // eliminated
  // name=bert/encoder/layer_1/attention/self/transpose_1
-Reshape_float_float_cuda_Reshape_191_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_290_0, Reshape_293_0);
+Reshape_float_float_cuda_Reshape_191_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_290_0, Reshape_293_0);
  // name=bert/encoder/layer_1/attention/self/query/MatMul
 Dot_float_float_float_cuda_lib_Dot_179(cublas_handle_0, Add_279_0, Constant_66_0, Dot_280_0);
  // name=fused_kernel_413
-FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_67_0, Dot_280_0, Add_284_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_7_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_67_0, Dot_280_0, Add_284_0);
  // name=bert/encoder/layer_1/attention/self/Reshape
 // eliminated
  // name=bert/encoder/layer_1/attention/self/transpose
-Reshape_float_float_cuda_Reshape_191_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_289_0, Reshape_292_0);
+Reshape_float_float_cuda_Reshape_191_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_289_0, Reshape_292_0);
  // name=bert/encoder/layer_1/attention/self/MatMul
 BatchMatMul_float_float_float_cuda_lib_BatchMatMul_192(cublas_handle_0, Reshape_292_0, Reshape_293_0, BatchMatMul_295_0);
  // name=Reshape_298
 // eliminated
  // name=Broadcast_299
-Broadcast_float_float_cuda_Broadcast_196_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_298_0, Broadcast_299_0);
+Broadcast_float_float_cuda_Broadcast_196_Call(dim3(1048576, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_298_0, Broadcast_299_0);
  // name=fused_kernel_416
-FusedKernel_float_float_float_float_cuda_Broadcast_Multiply_Add_8_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_76_0, BatchMatMul_295_0, Broadcast_299_0, Add_300_0);
+FusedKernel_float_float_float_float_cuda_Broadcast_Multiply_Add_8_Call(dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0, Constant_76_0, BatchMatMul_295_0, Broadcast_299_0, Add_300_0);
  // name=bert/encoder/layer_1/attention/self/Softmax
 Softmax_float_float_cuda_lib_Softmax_198(cudnn_handle_0, Add_300_0, Softmax_301_0);
  // name=bert/encoder/layer_1/attention/self/MatMul_1
 BatchMatMul_float_float_float_cuda_lib_BatchMatMul_199(cublas_handle_0, Softmax_301_0, Reshape_294_0, BatchMatMul_302_0);
  // name=bert/encoder/layer_1/attention/self/transpose_3
-Reshape_float_float_cuda_Reshape_200_Call(dim3(262144, 1, 1), dim3(64, 1, 1), 0, 0, BatchMatMul_302_0, Reshape_303_0);
+Reshape_float_float_cuda_Reshape_200_Call(dim3(524288, 1, 1), dim3(64, 1, 1), 0, 0, BatchMatMul_302_0, Reshape_303_0);
  // name=bert/encoder/layer_1/attention/self/Reshape_3
 // eliminated
  // name=bert/encoder/layer_1/attention/output/dense/MatMul
 Dot_float_float_float_cuda_lib_Dot_179(cublas_handle_0, Reshape_304_0, Constant_84_0, Dot_305_0);
  // name=fused_kernel_417
-FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_85_0, Dot_305_0, Add_279_0, Add_308_0);
+FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_85_0, Dot_305_0, Add_279_0, Add_308_0);
  // name=Sum_309
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Add_308_0, Sum_309_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Add_308_0, Sum_309_0);
  // name=Divide_311
-Divide_float_float_float_cuda_Divide_151_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_309_0, Constant_310_0, Divide_311_0);
+Divide_float_float_float_cuda_Divide_151_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_309_0, Constant_310_0, Divide_311_0);
  // name=bert/encoder/layer_1/attention/output/LayerNorm/moments/mean
 // eliminated
  // name=Reshape_313
 // eliminated
  // name=fused_kernel_418
-FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_313_0, Add_308_0, Multiply_316_0);
+FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_313_0, Add_308_0, Multiply_316_0);
  // name=Sum_317
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_316_0, Sum_317_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_316_0, Sum_317_0);
  // name=Reshape_321
 // eliminated
  // name=fused_kernel_419
-FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_317_0, Constant_318_0, Reshape_321_0, Rsqrt_324_0);
+FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_317_0, Constant_318_0, Reshape_321_0, Rsqrt_324_0);
  // name=Reshape_325
 // eliminated
  // name=fused_kernel_420
-FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_86_0, Reshape_313_0, Reshape_325_0, Constant_87_0, Add_308_0, Add_335_0);
+FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_86_0, Reshape_313_0, Reshape_325_0, Constant_87_0, Add_308_0, Add_335_0);
  // name=bert/encoder/layer_1/intermediate/dense/MatMul
 Dot_float_float_float_cuda_lib_Dot_233(cublas_handle_0, Add_335_0, Constant_91_0, Dot_336_0);
  // name=fused_kernel_421
-FusedKernel_float_float_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Broadcast_Add_Broadcast_Power_Multiply_Add_Multiply_Tanh_Add_Multiply_Multiply_13_Call(dim3(131072, 1, 1), dim3(512, 1, 1), 0, 0, Constant_97_0, Constant_96_0, Constant_95_0, Constant_94_0, Constant_92_0, Dot_336_0, Constant_93_0, Multiply_351_0);
+FusedKernel_float_float_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Broadcast_Add_Broadcast_Power_Multiply_Add_Multiply_Tanh_Add_Multiply_Multiply_13_Call(dim3(262144, 1, 1), dim3(512, 1, 1), 0, 0, Constant_97_0, Constant_96_0, Constant_95_0, Constant_94_0, Constant_92_0, Dot_336_0, Constant_93_0, Multiply_351_0);
  // name=bert/encoder/layer_1/output/dense/MatMul
 Dot_float_float_float_cuda_lib_Dot_249(cublas_handle_0, Multiply_351_0, Constant_98_0, Dot_352_0);
  // name=fused_kernel_422
-FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_99_0, Dot_352_0, Add_335_0, Add_355_0);
+FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_99_0, Dot_352_0, Add_335_0, Add_355_0);
  // name=Sum_356
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Add_355_0, Sum_356_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Add_355_0, Sum_356_0);
  // name=Divide_358
-Divide_float_float_float_cuda_Divide_151_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_356_0, Constant_357_0, Divide_358_0);
+Divide_float_float_float_cuda_Divide_151_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_356_0, Constant_357_0, Divide_358_0);
  // name=bert/encoder/layer_1/output/LayerNorm/moments/mean
 // eliminated
  // name=Reshape_360
 // eliminated
  // name=fused_kernel_423
-FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_360_0, Add_355_0, Multiply_363_0);
+FusedKernel_float_float_float_cuda_Broadcast_Subtract_Multiply_2_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Reshape_360_0, Add_355_0, Multiply_363_0);
  // name=Sum_364
-Sum_float_float_cuda_Sum_149_Call(dim3(16384, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_363_0, Sum_364_0);
+Sum_float_float_cuda_Sum_149_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Multiply_363_0, Sum_364_0);
  // name=Reshape_368
 // eliminated
  // name=fused_kernel_424
-FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(32, 1, 1), dim3(512, 1, 1), 0, 0, Sum_364_0, Constant_365_0, Reshape_368_0, Rsqrt_371_0);
+FusedKernel_float_float_float_float_cuda_Divide_Reshape_Broadcast_Add_Rsqrt_3_Call(dim3(64, 1, 1), dim3(512, 1, 1), 0, 0, Sum_364_0, Constant_365_0, Reshape_368_0, Rsqrt_371_0);
  // name=Reshape_372
 // eliminated
  // name=fused_kernel_425
-FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(32768, 1, 1), dim3(512, 1, 1), 0, 0, Constant_100_0, Reshape_360_0, Reshape_372_0, Constant_101_0, Add_355_0, Add_382_0);
+FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Multiply_Multiply_Subtract_Multiply_Add_4_Call(dim3(65536, 1, 1), dim3(512, 1, 1), 0, 0, Constant_100_0, Reshape_360_0, Reshape_372_0, Constant_101_0, Add_355_0, Add_382_0);
  // name=bert/encoder/Reshape_3
 // eliminated
  // name=bert/pooler/strided_slice
-Slice_float_float_cuda_Slice_384_Call(dim3(2048, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_383_0, Slice_384_0);
+Slice_float_float_cuda_Slice_384_Call(dim3(4096, 1, 1), dim3(64, 1, 1), 0, 0, Reshape_383_0, Slice_384_0);
  // name=bert/pooler/Squeeze
 // eliminated
  // name=bert/pooler/dense/MatMul
 Dot_float_float_float_cuda_lib_Dot_386(cublas_handle_0, Reshape_385_0, Constant_109_0, Dot_386_0);
  // name=fused_kernel_426
-FusedKernel_float_float_float_cuda_Broadcast_Add_Tanh_31_Call(dim3(256, 1, 1), dim3(512, 1, 1), 0, 0, Constant_110_0, Dot_386_0, Tanh_389_0);
+FusedKernel_float_float_float_cuda_Broadcast_Add_Tanh_31_Call(dim3(512, 1, 1), dim3(512, 1, 1), 0, 0, Constant_110_0, Dot_386_0, Tanh_389_0);
  // name=dense/MatMul
 Dot_float_float_float_cuda_lib_Dot_390(cublas_handle_0, Tanh_389_0, Constant_111_0, Dot_390_0);
  // name=Broadcast_391
-Broadcast_float_float_cuda_Broadcast_391_Call(dim3(2002, 1, 1), dim3(64, 1, 1), 0, 0, Constant_112_0, Broadcast_391_0);
+Broadcast_float_float_cuda_Broadcast_391_Call(dim3(4004, 1, 1), dim3(64, 1, 1), 0, 0, Constant_112_0, Broadcast_391_0);
  // name=dense/BiasAdd
-Add_float_float_float_cuda_Add_392_Call(dim3(1001, 1, 1), dim3(128, 1, 1), 0, 0, Dot_390_0, Broadcast_391_0, Add_392_0);
+Add_float_float_float_cuda_Add_392_Call(dim3(1001, 1, 1), dim3(256, 1, 1), 0, 0, Dot_390_0, Broadcast_391_0, Add_392_0);
  // name=dense/Softmax
 Softmax_float_float_cuda_lib_Softmax_393(cudnn_handle_0, Add_392_0, Softmax_393_0);
  // name=Result_394

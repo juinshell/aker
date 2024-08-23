@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/workspace/tacker/runtime/nnf/bert/cuda_codegen/main_test.cpp" "/workspace/tacker/runtime/nnf/bert/cuda_codegen/CMakeFiles/main_test.dir/main_test.cpp.o"
+  "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-256/cuda_codegen/main_test.cpp" "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-256/cuda_codegen/CMakeFiles/main_test.dir/main_test.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -15,7 +15,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/workspace/tacker/runtime/nnf/bert/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir/DependInfo.cmake"
+  "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-256/cuda_codegen/CMakeFiles/nnfusion_naive_rt.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

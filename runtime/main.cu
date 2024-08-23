@@ -913,23 +913,23 @@ int main(int argc, char* argv[]) {
     // printf("tzgemm duration: %f\n", milliseconds);
 
     // [Aker] throughput test fig15
-    auto lc_task = createTask(MODEL_NAME);
-    for (int i = 0; i < 5; ++i) {
-        lc_task->initExecution();
-        for (auto& kernel: lc_task->kernels) {
-            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-            kernel->execute(nullptr);
-        }
-        cudaDeviceSynchronize();
-    }
-    cudaDeviceSynchronize();
-    std::string a = sget_kernel_info("throughput_test", "a");
-    std::string b = sget_kernel_info("throughput_test", "b");
-    printf("[Result] cd1: %s, cd2: %s, dnn: %s\n", a.c_str(), b.c_str(), MODEL_NAME.c_str());
-    TaskManager taskManager(lc_task, a, b);
+    // auto lc_task = createTask(MODEL_NAME);
+    // for (int i = 0; i < 5; ++i) {
+    //     lc_task->initExecution();
+    //     for (auto& kernel: lc_task->kernels) {
+    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+    //         kernel->execute(nullptr);
+    //     }
+    //     cudaDeviceSynchronize();
+    // }
+    // cudaDeviceSynchronize();
+    // std::string a = sget_kernel_info("throughput_test", "a");
+    // std::string b = sget_kernel_info("throughput_test", "b");
+    // printf("[Result] cd1: %s, cd2: %s, dnn: %s\n", a.c_str(), b.c_str(), MODEL_NAME.c_str());
+    // TaskManager taskManager(lc_task, a, b);
     
-    taskManager.executeAllTasks(ExecutionMode::Aker, streams[0]);
-    taskManager.executeAllTasks(ExecutionMode::Tacker, streams[1]);
+    // taskManager.executeAllTasks(ExecutionMode::Aker, streams[0]);
+    // taskManager.executeAllTasks(ExecutionMode::Tacker, streams[1]);
 
     // [Aker] throughput test(1:1 version)
     // auto lc_task = createTask(MODEL_NAME);
@@ -1037,54 +1037,54 @@ int main(int argc, char* argv[]) {
     // printf("[Result] %s Makespan reduction: %f\n", mix_be_name.c_str(), (be_task1_ori_time + be_task2_ori_time - mix_be_time) * 100.0 / (be_task1_ori_time + be_task2_ori_time));
 
     // [Aker] moti / fig2
-    // auto lc_task = createTask(MODEL_NAME);
-    // for (int i = 0; i < 5; ++i) {
-    //     lc_task->initExecution();
-    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, streams[0]));
-    //     for (auto& kernel: lc_task->kernels) {
-    //         // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
-    //         kernel->execute(streams[0]);
-    //     }
-    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, streams[0]));
-    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
-    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
-    //     printf("[warmup]%s total time: %f\n", lc_task->taskName.c_str(), milliseconds);
-    // }
-    // cudaDeviceSynchronize();
-    // vector<float> time_vec(lc_task->kernels.size(), 0);
-    // for (int i = 0; i < 5; ++i) {
-    //     lc_task->initExecution();
-    //     for (int j = 0; j < lc_task->kernels.size(); ++j) {
-    //         auto start = clock();
-    //         lc_task->kernels[j]->execute(streams[0]);
-    //         cudaDeviceSynchronize();
-    //         cudaStreamSynchronize(streams[0]);
-    //         auto end = clock();
-    //         auto duration = float(end - start) * 1000 / CLOCKS_PER_SEC;
-    //         time_vec[j] += duration;
-    //     }
-    //     cudaStreamSynchronize(streams[0]);
-    // }
-    // // cal total avg time
-    // float total_time = 0.0f;
-    // float tensor_core_time = 0.0f;
-    // for (int i = 0; i < time_vec.size(); ++i) {
-    //     total_time += time_vec[i];
-    //     // printf("kernel name: %s, time: %f\n", lc_task->kernels[i]->kernelName.c_str(), time_vec[i] / 5);
-    // }
-    // total_time /= 5;
-    // printf("total time: %f\n", total_time);
+    auto lc_task = createTask(MODEL_NAME);
+    for (int i = 0; i < 5; ++i) {
+        lc_task->initExecution();
+        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, streams[0]));
+        for (auto& kernel: lc_task->kernels) {
+            // if (!i) printf("Exec kernel: %s\n", kernel->kernelName.c_str());
+            kernel->execute(streams[0]);
+        }
+        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, streams[0]));
+        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+        CUDA_SAFE_CALL(cudaEventElapsedTime(&milliseconds, startKERNEL, stopKERNEL));
+        printf("[warmup]%s total time: %f\n", lc_task->taskName.c_str(), milliseconds);
+    }
+    cudaDeviceSynchronize();
+    vector<float> time_vec(lc_task->kernels.size(), 0);
+    for (int i = 0; i < 5; ++i) {
+        lc_task->initExecution();
+        for (int j = 0; j < lc_task->kernels.size(); ++j) {
+            auto start = clock();
+            lc_task->kernels[j]->execute(streams[0]);
+            cudaDeviceSynchronize();
+            cudaStreamSynchronize(streams[0]);
+            auto end = clock();
+            auto duration = float(end - start) * 1000 / CLOCKS_PER_SEC;
+            time_vec[j] += duration;
+        }
+        cudaStreamSynchronize(streams[0]);
+    }
+    // cal total avg time
+    float total_time = 0.0f;
+    float tensor_core_time = 0.0f;
+    for (int i = 0; i < time_vec.size(); ++i) {
+        total_time += time_vec[i];
+        // printf("kernel name: %s, time: %f\n", lc_task->kernels[i]->kernelName.c_str(), time_vec[i] / 5);
+    }
+    total_time /= 5;
+    printf("total time: %f\n", total_time);
 
-    // int tensor_kernel_count = 0;
-    // for (int k_idx = 0; k_idx < lc_task->kernels.size(); ++k_idx) {
-    //     auto kernel = lc_task->kernels[k_idx];
-    //     // printf("kernel name: %s, time: %f\n", kernel->kernelName.c_str(), time_vec[k_idx] / 5);
-    //     if (kernel->mixable != 0) {
-    //         tensor_core_time += time_vec[k_idx] / 5;
-    //         tensor_kernel_count++;
-    //     }
-    // }
-    // printf("tensor core time, cuda kernel time, tc kernel count: %f %f %d\n", tensor_core_time, total_time - tensor_core_time, tensor_kernel_count);
+    int tensor_kernel_count = 0;
+    for (int k_idx = 0; k_idx < lc_task->kernels.size(); ++k_idx) {
+        auto kernel = lc_task->kernels[k_idx];
+        // printf("kernel name: %s, time: %f\n", kernel->kernelName.c_str(), time_vec[k_idx] / 5);
+        if (kernel->mixable != 0) {
+            tensor_core_time += time_vec[k_idx] / 5;
+            tensor_kernel_count++;
+        }
+    }
+    printf("tensor core time, cuda kernel time, tc kernel count: %f %f %d\n", tensor_core_time, total_time - tensor_core_time, tensor_kernel_count);
 
 
     // [sys] Table for ptb resource usage

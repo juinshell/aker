@@ -38,3 +38,11 @@ RUN wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz && \
     ln -s /usr/local/bin/python3.10 /usr/bin/python3 && \
     cd .. && \
     rm -rf Python-3.10.0 Python-3.10.0.tgz
+
+# Install boost json
+RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.gz && \
+    tar -zxvf boost_1_84_0.tar.gz && \
+    cd boost_1_84_0  && \
+    ./bootstrap.sh --with-libraries=json && \
+    ./b2 && \
+    sudo ./b2 install

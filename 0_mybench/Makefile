@@ -1,5 +1,5 @@
 cp:
-	nvcc -o cp_out -arch=sm_89 -lm -lpthread --ptxas-options=-v my_cp.cu
+	nvcc -o cp_out -G -gencode -arch=sm_89,code=sm_89 -lm -lpthread --ptxas-options=-v my_cp.cu
 tc:
 	nvcc -o tcgemm_out -arch=sm_89 -lcublas -lcurand --ptxas-options=-v -Xptxas -dlcm=ca my_tcgemm.cu
 tz:

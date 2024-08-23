@@ -252,8 +252,8 @@ bin_dir = './{model_name}/cuda_codegen/Constant'
 code_file = './{model_name}/cuda_codegen/nnfusion_rt.cu'
 code_dir = './{model_name}/cuda_codegen'
 gen_dir = '../dnn'
-# dnn_list = ["inception3", "resnet50", "vgg11", "vgg16", "bert"]
-dnn_list = ["bert"]
+# dnn_list = ["inception3", "resnet50", "vgg11", "vgg16", "bert", "vit"]
+dnn_list = ["vit"]
 dnn_class_dict = {
     "inception3": "Inception3",
     "resnet50": "Resnet50",
@@ -336,6 +336,7 @@ typedef unsigned long int uint64_t;
             down_dict = {}
             for name, _ in func_list:
                 if "_Call" in name and name not in down_dict:
+                    raw_code = raw_code.replace("__global__  void ", "__global__ void ")
                     raw_code = raw_code.replace("__global__ void " + name.replace("_Call", ""), "__global__ void " + model_name + "_" + name.replace("_Call", ""))
                     # print(f"{name.replace('_Call', '')}<<< --> {model_name + '_' + name.replace('_Call', '')}<<<")
                     raw_code = raw_code.replace(name.replace("_Call", "") + "<<<", model_name + "_" + name.replace("_Call", "") + "<<<")
@@ -359,9 +360,11 @@ typedef unsigned long int uint64_t;
             raw_code = raw_code.replace("static bool selected_algo = false;", f'static bool selected_algo = true;')
             f.write(raw_code)
     # 将Constant文件夹拷贝到dnn文件夹下
-    # import shutil
-    # for model_name in dnn_list:
-    #     shutil.copytree(f'{bin_dir.format(model_name=model_name)}', f'{gen_dir}/{model_name}/Constant')
+    import shutil
+    for model_name in dnn_list:
+        # 删除{gen_dir}/{model_name}/Constant
+        shutil.rmtree(f'{gen_dir}/{model_name}/Constant', ignore_errors=True)
+        shutil.copytree(f'{bin_dir.format(model_name=model_name)}', f'{gen_dir}/{model_name}/Constant')
 
         # 更新{gen_dir}/{model_name}.cu
         # step1: 读取main_test.cpp

@@ -73,7 +73,7 @@ optimizer = None
 #         outputs = [tf.identity(logits, name="logits")]
 if args.model_name == 'resnet50':
     print('>> Converting graph resnet50')
-    batch_size = 64
+    batch_size = 64 * 0.75
     model = resnet_model.create_resnet50_model(None)
     model.batch_size = batch_size
     input_shapes = model.get_input_shapes('validation')
@@ -88,7 +88,7 @@ if args.model_name == 'resnet50':
         outputs = [tf.identity(logits, name="logits")]
 elif args.model_name == 'inception3':
     print('>> Converting graph inception3')
-    batch_size = 32
+    batch_size = 64 * 0.75
     model = Inceptionv3Model()
     model.batch_size = batch_size
     input_shapes = model.get_input_shapes('validation')

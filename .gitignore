@@ -24,3 +24,5 @@ log/
 /1_mixwarp
 /2_mps
 *.pb
+*.onnx
+*.tar

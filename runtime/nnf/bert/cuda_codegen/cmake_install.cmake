@@ -1,4 +1,4 @@
-# Install script for directory: /workspace/tacker/runtime/nnf/bert/cuda_codegen
+# Install script for directory: /workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-256/cuda_codegen
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/workspace/tacker/runtime/nnf/bert/cuda_codegen/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/workspace/tacker/runtime/nnf/nnf_tf_freezer/bert-256/cuda_codegen/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

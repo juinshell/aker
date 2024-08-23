@@ -20,6 +20,8 @@ CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/cuda_device_ru
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/cuda_profiler_api.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/cuda_runtime.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/cuda_runtime_api.h
+CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/cuda_surface_types.h
+CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/cuda_texture_types.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/device_atomic_functions.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/device_atomic_functions.hpp
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/device_launch_parameters.h
@@ -44,8 +46,10 @@ CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/sm_60_atomic_f
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/sm_60_atomic_functions.hpp
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/sm_61_intrinsics.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/sm_61_intrinsics.hpp
+CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/surface_functions.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/surface_indirect_functions.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/surface_types.h
+CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/texture_fetch_functions.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/texture_indirect_functions.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/texture_types.h
 CMakeFiles/main_test.dir/main_test.cpp.o: /usr/local/cuda/include/vector_functions.h

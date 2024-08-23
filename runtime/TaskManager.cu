@@ -561,7 +561,7 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     float time_earned = 0.0f;
     for (int i = 0; i < 5; ++i) {
         lc_task->initExecution();
-        qos_headroom = 40.0f;
+        qos_headroom = 50.0f;
         long long cd_block_num_executed = 0;
         int lc_kernel_idx = 0;
         mix_times = 0;
@@ -631,9 +631,9 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
                 time_earned += lc_kernel_time_vec[lc_kernel_idx] + be_task1_ori_time * cd_block_num / be_kernel1->gptbParams.ptb_end_block_pos - duration;
                 improve = (lc_kernel_time_vec[lc_kernel_idx] + be_task1_ori_time * cd_block_num / be_kernel1->gptbParams.ptb_end_block_pos - duration) / (lc_kernel_time_vec[lc_kernel_idx] + be_task1_ori_time * cd_block_num / be_kernel1->gptbParams.ptb_end_block_pos);
             }
-            if (i == 4 && lc_kernel_idx < lc_kernel_time_vec.size() && lc_kernel->mixable != 0)  {
-                printf("[%s]--[kernel]: %s, [ori_time]: %f, [mix_time]: %f, [qos_headroom]: %f, [improve]: %f%\n", do_mix ? "Yes" : "No",  lc_kernel->kernelName.c_str(), lc_kernel_time_vec[lc_kernel_idx], duration, qos_headroom, improve * 100);
-            }
+            // if (i == 4 && lc_kernel_idx < lc_kernel_time_vec.size() && lc_kernel->mixable != 0)  {
+            //     printf("[%s]--[kernel]: %s, [ori_time]: %f, [mix_time]: %f, [qos_headroom]: %f, [improve]: %f%\n", do_mix ? "Yes" : "No",  lc_kernel->kernelName.c_str(), lc_kernel_time_vec[lc_kernel_idx], duration, qos_headroom, improve * 100);
+            // }
             lc_kernel_idx ++;
         }
         cudaProfilerStop();
@@ -658,8 +658,8 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     // mix cd pair
     // ori sum time
     printf("[Ori] be_task1: %s, be_task2: %s\n", be_task1_name.c_str(), be_task2_name.c_str());
-    printf("[Ori] task1 blks range: %d - %d, task2 blks range: %d - %d\n", be_task1->gptbParams.ptb_start_block_pos, be_task1->gptbParams.ptb_end_block_pos, be_task2->gptbParams.ptb_start_block_pos, be_task2->gptbParams.ptb_end_block_pos);
-    printf("[Ori] BE task1 cost %f ms, BE task2 cost %f ms\n", be_task1_ori_time, be_task2_ori_time);
+    // printf("[Ori] task1 blks range: %d - %d, task2 blks range: %d - %d\n", be_task1->gptbParams.ptb_start_block_pos, be_task1->gptbParams.ptb_end_block_pos, be_task2->gptbParams.ptb_start_block_pos, be_task2->gptbParams.ptb_end_block_pos);
+    // printf("[Ori] BE task1 cost %f ms, BE task2 cost %f ms\n", be_task1_ori_time, be_task2_ori_time);
     printf("[Ori] BE task1 + task2 took %f ms to execute.\n", be_task1_ori_time + be_task2_ori_time);
 
     float stage1_be_time = 0.0f, stage2_be_time = 0.0f;
@@ -825,7 +825,7 @@ void TaskManager::execute_with_one_cd_kernel(ExecutionMode mode, cudaStream_t st
     float time_earned = 0.0f;
     for (int i = 0; i < 5; ++i) {
         lc_task->initExecution();
-        qos_headroom = 40.0f;
+        qos_headroom = 50.0f;
         long long cd_block_num_executed = 0;
         int lc_kernel_idx = 0;
         mix_times = 0;

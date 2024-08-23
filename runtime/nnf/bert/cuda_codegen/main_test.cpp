@@ -28,43 +28,43 @@ int main(void){
 
     //input argument
     int32_t* Parameter_0_0_host, *Parameter_0_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_0_0_host, sizeof(int32_t)* 16384));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_0_0, sizeof(int32_t) * 16384));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_0_0_host, sizeof(int32_t)* 32768));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_0_0, sizeof(int32_t) * 32768));
     //input argument
     int32_t* Parameter_1_0_host, *Parameter_1_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_1_0_host, sizeof(int32_t)* 16384));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_1_0, sizeof(int32_t) * 16384));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_1_0_host, sizeof(int32_t)* 32768));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_1_0, sizeof(int32_t) * 32768));
     //input argument
     int32_t* Parameter_2_0_host, *Parameter_2_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_2_0_host, sizeof(int32_t)* 16384));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_2_0, sizeof(int32_t) * 16384));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Parameter_2_0_host, sizeof(int32_t)* 32768));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&Parameter_2_0, sizeof(int32_t) * 32768));
 
     //output arguments
     float* Result_394_0_host, *Result_394_0;
-    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_394_0_host, sizeof(float) * 128128));
+    CUDA_SAFE_CALL(cudaMallocHost((void**)&Result_394_0_host, sizeof(float) * 256256));
 
     // fill input values
-    for (int i = 0; i < 16384; ++i) Parameter_0_0_host[i] = 1.0f;
-    for (int i = 0; i < 16384; ++i) Parameter_1_0_host[i] = 1.0f;
-    for (int i = 0; i < 16384; ++i) Parameter_2_0_host[i] = 1.0f;
+    for (int i = 0; i < 32768; ++i) Parameter_0_0_host[i] = 1.0f;
+    for (int i = 0; i < 32768; ++i) Parameter_1_0_host[i] = 1.0f;
+    for (int i = 0; i < 32768; ++i) Parameter_2_0_host[i] = 1.0f;
 
-    CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
-    CUDA_SAFE_CALL(cudaMemcpy(Parameter_1_0, Parameter_1_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
-    CUDA_SAFE_CALL(cudaMemcpy(Parameter_2_0, Parameter_2_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy(Parameter_1_0, Parameter_1_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy(Parameter_2_0, Parameter_2_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
 
 
     //warm up for 5 iters:
     for(int i_=0; i_< 5; i_++)
     {
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_1_0, Parameter_1_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_2_0, Parameter_2_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
+        CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
+        CUDA_SAFE_CALL(cudaMemcpy(Parameter_1_0, Parameter_1_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
+        CUDA_SAFE_CALL(cudaMemcpy(Parameter_2_0, Parameter_2_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
         kernel_entry(Parameter_0_0, Parameter_1_0, Parameter_2_0, &Result_394_0);
-        CUDA_SAFE_CALL(cudaMemcpy(Result_394_0_host, Result_394_0,  sizeof(float) * 128128, cudaMemcpyDeviceToHost));
+        CUDA_SAFE_CALL(cudaMemcpy(Result_394_0_host, Result_394_0,  sizeof(float) * 256256, cudaMemcpyDeviceToHost));
         CUDA_SAFE_CALL(cudaDeviceSynchronize()); 
         printf("%s \n", "Result_394_0:");
         for (int i = 0; i < 10; ++i) printf("%e ", (float)Result_394_0_host[i]); 
-        printf(" .. (size = 128128, ends with %e);\n", (float)Result_394_0_host[128127]);
+        printf(" .. (size = 256256, ends with %e);\n", (float)Result_394_0_host[256255]);
     }
 
     //GPU time measurement
@@ -86,9 +86,9 @@ int main(void){
     for (int i_=0; i_<steps; i_++)
     {
         cudaEventRecord(start_i, 0);
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_1_0, Parameter_1_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
-        CUDA_SAFE_CALL(cudaMemcpy(Parameter_2_0, Parameter_2_0_host, sizeof(int32_t) * 16384, cudaMemcpyHostToDevice));
+        CUDA_SAFE_CALL(cudaMemcpy(Parameter_0_0, Parameter_0_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
+        CUDA_SAFE_CALL(cudaMemcpy(Parameter_1_0, Parameter_1_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
+        CUDA_SAFE_CALL(cudaMemcpy(Parameter_2_0, Parameter_2_0_host, sizeof(int32_t) * 32768, cudaMemcpyHostToDevice));
         kernel_entry(Parameter_0_0, Parameter_1_0, Parameter_2_0, &Result_394_0);
         cudaEventRecord(stop_i, 0);
         cudaEventSynchronize(stop_i);

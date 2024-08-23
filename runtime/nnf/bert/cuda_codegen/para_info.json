@@ -4,7 +4,7 @@
             "id": "((int32_t*)(inputs[0]))",
             "name": "Parameter_0_0",
             "shape": [
-                128,
+                256,
                 128
             ]
         },
@@ -12,7 +12,7 @@
             "id": "((int32_t*)(inputs[1]))",
             "name": "Parameter_1_0",
             "shape": [
-                128,
+                256,
                 128
             ]
         },
@@ -20,7 +20,7 @@
             "id": "((int32_t*)(inputs[2]))",
             "name": "Parameter_2_0",
             "shape": [
-                128,
+                256,
                 128
             ]
         }
@@ -30,7 +30,7 @@
             "id": "((float*)(outputs[0]))",
             "name": "Result_394_0",
             "shape": [
-                128,
+                256,
                 1001
             ]
         }
