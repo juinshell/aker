@@ -26,3 +26,4 @@ log/
 *.pb
 *.onnx
 *.tar
+*.run
