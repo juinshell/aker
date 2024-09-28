@@ -17,7 +17,7 @@
         "register": 33,
         "shared_memory": 2048,
         "blocksize": 128,
-        "ori_blks": 1700,
+        "ori_blks": 10240,
         "real_ori_blks": 10240
     },
     "lbm": {
@@ -83,8 +83,8 @@
     },
     "tzgemm_fft": {
         "gridsize": 1,
-        "blocksize": 512,
-        "block_ratio": 0.01,
+        "blocksize": 256,
+        "block_ratio": 10.0,
         "best_block_ratio": 1.0,
         "shared_memory": 0,
         "128": 0.3,
@@ -103,7 +103,7 @@
     },
     "tzgemm_mrif": {
         "gridsize": 1,
-        "blocksize": 512,
+        "blocksize": 384,
         "block_ratio": 0.88,
         "best_block_ratio": 0.88,
         "shared_memory": 0,
@@ -117,7 +117,7 @@
     },
     "tzgemm_mriq": {
         "gridsize": 1,
-        "blocksize": 512,
+        "blocksize": 384,
         "block_ratio": 111110.05,
         "best_block_ratio": 0.05,
         "shared_memory": 0,

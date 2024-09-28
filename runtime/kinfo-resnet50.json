@@ -17,7 +17,7 @@
         "register": 33,
         "shared_memory": 2048,
         "blocksize": 128,
-        "ori_blks": 5100,
+        "ori_blks": 8000,
         "real_ori_blks": 10240
     },
     "lbm": {
@@ -38,7 +38,7 @@
         "register": 31,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 408,
+        "ori_blks": 200,
         "real_ori_blks": 2048
     },
     "sgemm": {
@@ -54,6 +54,57 @@
         "blocksize": 128,
         "ori_blks": 1020,
         "real_ori_blks": 2048
+    },
+    "hot3d": {
+        "ori_blks": 21600,
+        "real_ori_blks": 524288,
+        "tzgemm_test": 150000
+    },
+    "tzgemm_hot3d": {
+        "gridsize": 1,
+        "blocksize": 384,
+        "4096": 5
+    },
+    "lava": {
+        "ori_blks": 10000,
+        "real_ori_blks": 216000,
+        "tzgemm_test": 10000
+    },
+    "tzgemm_lava": {
+        "gridsize": 1,
+        "blocksize": 256,
+        "4096": 2.5
+    },
+    "nn": {
+        "ori_blks": 2000000,
+        "real_ori_blks": 2560000,
+        "tzgemm_test": 1000000
+    },
+    "tzgemm_nn": {
+        "gridsize": 1,
+        "blocksize": 256,
+        "4096": 500
+    },
+    "path": {
+        "ori_blks": 20000,
+        "real_ori_blks": 20000,
+        "tzgemm_test": 20000
+    },
+    "tzgemm_path": {
+        "gridsize": 1,
+        "blocksize": 384,
+        "4096": 5
+    },
+    "cd_pair_accuracy": {
+        "a_name": "fft",
+        "b_name": "cp",
+        "a_blk_num": 1420,
+        "b_blk_num": 710
+    },
+    "solo_gptb_accuracy": {
+        "name": "path",
+        "blk_num": 31240,
+        "m": 9216
     },
     "tzgemm_cp": {
         "gridsize": 1,
@@ -83,7 +134,7 @@
     },
     "tzgemm_fft": {
         "gridsize": 1,
-        "blocksize": 512,
+        "blocksize": 256,
         "block_ratio": 0.01,
         "best_block_ratio": 1.0,
         "shared_memory": 0,
@@ -103,7 +154,7 @@
     },
     "tzgemm_mrif": {
         "gridsize": 1,
-        "blocksize": 512,
+        "blocksize": 384,
         "block_ratio": 0.88,
         "best_block_ratio": 0.88,
         "shared_memory": 0,
@@ -117,7 +168,7 @@
     },
     "tzgemm_mriq": {
         "gridsize": 1,
-        "blocksize": 512,
+        "blocksize": 384,
         "block_ratio": 111110.05,
         "best_block_ratio": 0.05,
         "shared_memory": 0,
@@ -161,12 +212,6 @@
         "512": 50176,
         "128": 100352
     },
-    "cd_pair_ratio_profile": {
-        "a_name": "cp",
-        "b_name": "cutcp",
-        "a_blk_num": 1,
-        "b_blk_num": 1
-    },
     "MAX_ORI_WMMA_A": {
         "vgg16": 822083584
     },
@@ -193,11 +238,11 @@
         "shared_memory": 0
     },
     "throughput_test": {
-        "a": "mrif",
-        "b": "stencil"
+        "a": "hot3d",
+        "b": "lava"
     },
     "nsight_compute": {
-        "mix_kernel_name": "mrif_stencil"
+        "mix_kernel_name": "cp_fft"
     },
     "makespan_reduction": {
         "be_name1": "sgemm",

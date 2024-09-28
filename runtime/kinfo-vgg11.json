@@ -27,13 +27,8 @@
         "register": 33,
         "shared_memory": 2048,
         "blocksize": 128,
-        "ori_blks": 6800,
-        "real_ori_blks": 10240,
-        "128": 128,
-        "512": 512,
-        "1152": 1152,
-        "2304": 2304,
-        "4608": 4608
+        "ori_blks": 30000,
+        "real_ori_blks": 10240
     },
     "lbm": {
         "register": 61,
@@ -51,7 +46,7 @@
         "register": 32,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 450,
+        "ori_blks": 4000,
         "real_ori_blks": 2048,
         "128": 128,
         "512": 512,
@@ -82,7 +77,7 @@
         "register": 38,
         "shared_memory": 1024,
         "blocksize": 128,
-        "ori_blks": 680,
+        "ori_blks": 2048,
         "real_ori_blks": 2048,
         "128": 128,
         "512": 512,
@@ -118,7 +113,7 @@
     },
     "tzgemm_fft": {
         "gridsize": 1,
-        "blocksize": 512,
+        "blocksize": 256,
         "block_ratio": 0.01,
         "best_block_ratio": 1.0,
         "shared_memory": 0,
@@ -138,21 +133,16 @@
     },
     "tzgemm_mrif": {
         "gridsize": 1,
-        "blocksize": 512,
+        "blocksize": 384,
         "block_ratio": 0.88,
         "best_block_ratio": 0.88,
         "shared_memory": 0,
         "real_shared_memory": 36864,
-        "128": 0.02,
-        "512": 0.08,
-        "1152": 0.21,
-        "2304": 0.43,
-        "4096": 0.64,
-        "4608": 0.86
+        "4096": 5
     },
     "tzgemm_mriq": {
         "gridsize": 1,
-        "blocksize": 512,
+        "blocksize": 384,
         "block_ratio": 111110.05,
         "best_block_ratio": 0.05,
         "shared_memory": 0,

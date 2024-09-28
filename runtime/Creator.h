@@ -7,6 +7,12 @@
 #include "mriq_kernel.h"
 #include "sgemm_kernel.h"
 #include "stencil_kernel.h"
+#include "tzgemm_kernel.h"
+
+#include "lava_kernel.h"
+#include "hot3d_kernel.h"
+#include "nn_kernel.h"
+#include "path_kernel.h"
 
 #include "GPTBKernel.h"
 #include "MixKernel.h"

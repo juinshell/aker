@@ -45,4 +45,4 @@ RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_
     cd boost_1_84_0  && \
     ./bootstrap.sh --with-libraries=json && \
     ./b2 && \
-    sudo ./b2 install
+    ./b2 install

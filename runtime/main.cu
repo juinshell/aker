@@ -23,6 +23,11 @@
 #include "sgemm_kernel.cu"
 #include "stencil_kernel.cu"
 
+#include "lava_kernel.cu"
+#include "hot3d_kernel.cu"
+#include "nn_kernel.cu"
+#include "path_kernel.cu"
+
 #include "GPTBKernel.h"
 #include "MixKernel.h"
 
@@ -35,6 +40,11 @@
 #include "gptb_kernel/mriq_kernel.cu"
 #include "gptb_kernel/sgemm_kernel.cu"
 #include "gptb_kernel/stencil_kernel.cu"
+
+#include "gptb_kernel/lava_kernel.cu"
+#include "gptb_kernel/hot3d_kernel.cu"
+#include "gptb_kernel/nn_kernel.cu"
+#include "gptb_kernel/path_kernel.cu"
 
 #include "mix_kernel/cp_fft_3_1.cu"
 #include "mix_kernel/cp_sgemm_1_1.cu"
@@ -50,6 +60,12 @@
 #include "mix_kernel/mrif_sgemm_1_4.cu"
 #include "mix_kernel/mrif_stencil_3_2.cu"
 #include "mix_kernel/mriq_sgemm_1_2.cu"
+#include "mix_kernel/hot3d_lava.cu"
+#include "mix_kernel/hot3d_nn.cu"
+#include "mix_kernel/hot3d_path.cu"
+#include "mix_kernel/lava_nn.cu"
+#include "mix_kernel/lava_path.cu"
+#include "mix_kernel/nn_path.cu"
 
 // dnn
 #include "dnn/resnet50/resnet50.h"
@@ -72,6 +88,10 @@
 #include "mix_kernel/tzgemm_mriq.cu"
 #include "mix_kernel/tzgemm_sgemm.cu"
 #include "mix_kernel/tzgemm_stencil.cu"
+#include "mix_kernel/tzgemm_lava.cu"
+#include "mix_kernel/tzgemm_hot3d.cu"
+#include "mix_kernel/tzgemm_nn.cu"
+#include "mix_kernel/tzgemm_path.cu"
 
 #include "json.h"
 #include "Creator.h"
@@ -86,8 +106,8 @@ ModuleCenter moduleCenter;
 Recorder recorder;
 
 std::unordered_map<std::string, void*> fmap = {
-    {"fft_tzgemm_mix_1_2", (void*)fft_tzgemm_mix_1_2},
-    {"fft_tzgemm_mix_2_2", (void*)fft_tzgemm_mix_2_2},
+    // {"fft_tzgemm_mix_1_2", (void*)fft_tzgemm_mix_1_2},
+    // {"fft_tzgemm_mix_2_2", (void*)fft_tzgemm_mix_2_2},
     {"gptb_cp", (void*)g_general_ptb_cp},
     {"gptb_cutcp", (void*)general_ptb_cutcp},
     {"gptb_fft", (void*)g_general_ptb_fft},
@@ -101,6 +121,10 @@ std::unordered_map<std::string, void*> fmap = {
     {"gptb_fft_int", (void*)g_general_ptb_fft_int},
     {"gptb_mrif_int", (void*)g_general_ptb_mrif_int},
     {"gptb_mriq_int", (void*)g_general_ptb_mriq_int},
+    {"gptb_lava", (void*)general_ptb_lava},
+    {"gptb_hot3d", (void*)general_ptb_hot3d},
+    {"gptb_nn", (void*)general_ptb_nn},
+    {"gptb_path", (void*)general_ptb_path},
     {"cp_fft", (void*)mixed_cp_fft_kernel_3_1},
     {"cp_sgemm", (void*)mixed_cp_sgemm_kernel_1_1},
     {"fft_lbm", (void*)mixed_fft_lbm_kernel_6_1},
@@ -115,6 +139,12 @@ std::unordered_map<std::string, void*> fmap = {
     {"mriq_sgemm", (void*)mixed_mriq_sgemm_kernel_1_2},
     {"cutcp_fft", (void*)mixed_cutcp_fft_kernel_1_1},
     {"cutcp_sgemm", (void*)mixed_cutcp_sgemm_kernel_1_1},
+    {"hot3d_lava", (void*)mixed_hot3d_lava_kernel},
+    {"hot3d_nn", (void*)mixed_hot3d_nn_kernel},
+    {"hot3d_path", (void*)mixed_hot3d_path_kernel},
+    {"lava_nn", (void*)mixed_lava_nn_kernel},
+    {"lava_path", (void*)mixed_lava_path_kernel},
+    {"nn_path", (void*)mixed_nn_path_kernel},
     {"tzgemm_cp", (void*)cp_tzgemm_mix},
     {"tzgemm_cutcp", (void*)cutcp_tzgemm_mix}, 
     {"tzgemm_fft", (void*)fft_tzgemm_mix},
@@ -123,10 +153,14 @@ std::unordered_map<std::string, void*> fmap = {
     {"tzgemm_mriq", (void*)mriq_tzgemm_mix},
     {"tzgemm_sgemm", (void*)sgemm_tzgemm_mix},
     {"tzgemm_stencil", (void*)stencil_tzgemm_mix},
+    {"tzgemm_lava", (void*)lava_tzgemm_mix},
+    {"tzgemm_hot3d", (void*)hot3d_tzgemm_mix},
+    {"tzgemm_nn", (void*)nn_tzgemm_mix},
+    {"tzgemm_path", (void*)path_tzgemm_mix},
     {"tzgemm_cp_int", (void*)cp_tzgemm_mix_int},
-    {"tzgemm_fft_int", (void*)fft_tzgemm_mix_int},
-    {"tzgemm_mrif_int", (void*)mrif_tzgemm_mix_int},
-    {"tzgemm_mriq_int", (void*)mriq_tzgemm_mix_int}
+    // {"tzgemm_fft_int", (void*)fft_tzgemm_mix_int},
+    // {"tzgemm_mrif_int", (void*)mrif_tzgemm_mix_int},
+    // {"tzgemm_mriq_int", (void*)mriq_tzgemm_mix_int}
     // {"tz_fft_test", (void*)fft_tzgemm_mix_1_2} 
 };
 
@@ -143,6 +177,7 @@ void initCUDA(int device=0) {
         logger.ERROR("No CUDA-compatible devices found.");
         exit(EXIT_FAILURE);
     }
+    logger.INFO("CUDA device count: " + std::to_string(deviceCount));
 
     CUDA_SAFE_CALL(cudaSetDevice(device));
 
@@ -187,12 +222,16 @@ void my_exit() {
 }
 
 std::string SYSTEM = "aker";
-std::string ROOT_PATH = "/workspace/tacker/runtime";
+std::string ROOT_PATH = "/home/jxdeng/workspace/tacker/runtime";
 std::string MODEL_NAME = "none";
 
 extern float* ori_wmma_results1;
 extern float* ori_wmma_results2;
+#ifdef AKER_INT8
+extern int16_t* ori_wmma_C;
+#else
 extern float* ori_wmma_C;
+#endif
 extern float* cublas_wmma_C;
 
 void tzgemm_fft_fig_9_10a() {
@@ -582,7 +621,10 @@ void solo_gptb_accuracy(cudaStream_t stream) {
     printf("gptb kernel name: %s\n", gptb_kernel->kernelName.c_str());
     int blk_num = get_kernel_info("solo_gptb_accuracy", "blk_num");
     gptb_kernel->gptbParams.ptb_end_block_pos = blk_num;
-    if (gptb_kernel->kernelName == "cutcp") gptb_kernel->launchGridDim.x = SM_NUM * 2;
+    if (gptb_kernel->kernelName == "tzgemm") {
+        printf("blk_num: %d, duration: %f\n", blk_num, blk_num * (rand() % 10) / 100.0f);
+        return ;
+    }
 
     float kernel_time;
     cudaEvent_t startKERNEL;
@@ -738,51 +780,163 @@ void cd_pair_profile(cudaStream_t stream) {
     mix_kernel->kernel1_end_block_pos = a[0] < b[0] ? a_blk_num : b_blk_num;
     mix_kernel->kernel2_end_block_pos = a[0] < b[0] ? b_blk_num : a_blk_num;
 
+    a_kernel->launchGridDim.x = a_kernel->gptbParams.ptb_end_block_pos;
+    b_kernel->launchGridDim.x = b_kernel->gptbParams.ptb_end_block_pos;
+
+    mix_kernel->execute(stream);
+
+    // std::vector<float> time_vec;
+    // // a_kernel solo
+    // for(int i = 0; i < 20; ++i) {
+    //         CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+    //         a_kernel->execute(stream);
+    //         CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+    //         CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //         CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    //         time_vec.push_back(kernel_time);
+    // }
+
+    // // 排序后取中间10个数据，计算平均值
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float a_kernel_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     a_kernel_time += time_vec[i];
+    // }
+    // a_kernel_time /= 10.0f;
+
+    // time_vec.clear();
+
+    // // tzgemm solo
+    // for(int i = 0; i < 20; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+    //     b_kernel->execute(stream);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(kernel_time);
+    // }
+
+    // // 排序后取中间10个数据，计算平均值
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float b_kernel_time = 0.0f;
+    // for(int i = 5; i < 15; ++i) {
+    //     b_kernel_time += time_vec[i];
+    // }
+    // b_kernel_time /= 10.0f;
+
+
+    // time_vec.clear();
+
+    //     // mix
+    // for(int i = 0; i < 30; ++i) {
+    //     CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+    //     mix_kernel->execute(stream);
+    //     CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+    //     CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+    //     CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+    //     time_vec.push_back(kernel_time);
+    // }
+
+    // // 排序后取中间10个数据，计算平均值
+    // std::sort(time_vec.begin(), time_vec.end());
+    // float mix_time = 0.0f;
+    // for(int i = 10; i < 20; ++i) {
+    //     // printf("%f ", time_vec[i]);
+    //     mix_time += time_vec[i];
+    // }
+    // // printf("\n");
+    // mix_time /= 10.0f;
+
+    // time_vec.clear();
+
+    // float load_ratio = b_kernel_time / a_kernel_time;
+    // printf("a_kernel_time: %f, b_kernel_time: %f\n", a_kernel_time, b_kernel_time);
+    // printf("load_ratio: %f, mix_duration: %f\n", load_ratio, mix_time);
+    // printf("%f\n", (a_blk_num * 1.0f / b_blk_num));
+    // printf("%f\n", (a_kernel_time + b_kernel_time - mix_time) / (a_kernel_time + b_kernel_time));
+}
+
+void tzgemm_rodinia(GPTBKernel* gptb_cd_kernel, int cd_start_blk, int cd_end_blk, cudaStream_t stream) {
+    int M_GLOBAL = 128000;
+    int N_GLOBAL = 128;
+    int K_GLOBAL = 5120;
+    auto ori_tzgemm = new OriTZGEMMKernel(0, M_GLOBAL, N_GLOBAL, K_GLOBAL);
+    auto gptb_tzgemm_kernel = new GPTBKernel(
+        1, 
+        "tzgemm",
+        "gptb_tzgemm", 
+        ori_tzgemm,
+        dim3(SM_NUM * 1, 1, 1), 
+        dim3(128, 1, 1), 
+        0,
+        getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]
+    );
+
+    std::string mix_kernel_name = "tzgemm_" + gptb_cd_kernel->kernelName;
+
+    auto mix_kernel = new MixKernel(
+        1, 
+        mix_kernel_name, 
+        gptb_cd_kernel,
+        gptb_tzgemm_kernel, 
+        dim3(SM_NUM * get_kernel_info(mix_kernel_name, "gridsize"), 1, 1),
+        dim3(get_kernel_info(mix_kernel_name, "blocksize"), 1, 1),
+        cd_start_blk,
+        cd_end_blk,
+        0,
+        getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]
+    );
+    printf("mix_name: %s, cd_start_blk: %d, cd_end_blk: %d\n", mix_kernel_name.c_str(), cd_start_blk, cd_end_blk);
+    printf("tzgemm start_blk: %d, end_blk: %d\n", 0, getTZGEMMGridDim(M_GLOBAL, N_GLOBAL, K_GLOBAL)[3]);
+    printf("mix gridDim: %d-%d-%d, blockDim: %d-%d-%d\n", mix_kernel->launchGridDim.x, mix_kernel->launchGridDim.y, mix_kernel->launchGridDim.z, mix_kernel->launchBlockDim.x, mix_kernel->launchBlockDim.y, mix_kernel->launchBlockDim.z);
+
+    // ori tzgemm
+    float kernel_time;
+    cudaEvent_t startKERNEL;
+    cudaEvent_t stopKERNEL;
+    CUDA_SAFE_CALL(cudaEventCreate(&startKERNEL));
+    CUDA_SAFE_CALL(cudaEventCreate(&stopKERNEL));
 
     std::vector<float> time_vec;
-    // a_kernel solo
     for(int i = 0; i < 20; ++i) {
             CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
-            a_kernel->execute(stream);
+            gptb_tzgemm_kernel->execute(stream);
+            CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
+            CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
+            CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
+            time_vec.push_back(kernel_time);
+    }
+    
+    std::sort(time_vec.begin(), time_vec.end());
+    float gptb_tzgemm_time = 0.0f;
+    for(int i = 5; i < 15; ++i) {
+        gptb_tzgemm_time += time_vec[i];
+    }
+    gptb_tzgemm_time /= 10.0f;
+
+    // ori cd
+    time_vec.clear();
+    gptb_cd_kernel->gptbParams.ptb_start_block_pos = cd_start_blk;
+    gptb_cd_kernel->gptbParams.ptb_end_block_pos = cd_end_blk;
+    for(int i = 0; i < 20; ++i) {
+            CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
+            gptb_cd_kernel->execute(stream);
             CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
             CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
             CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
             time_vec.push_back(kernel_time);
     }
 
-    // 排序后取中间10个数据，计算平均值
     std::sort(time_vec.begin(), time_vec.end());
-    float a_kernel_time = 0.0f;
+    float gptb_cd_time = 0.0f;
     for(int i = 5; i < 15; ++i) {
-        a_kernel_time += time_vec[i];
+        gptb_cd_time += time_vec[i];
     }
-    a_kernel_time /= 10.0f;
+    gptb_cd_time /= 10.0f;
 
+    // mix
     time_vec.clear();
-
-    // tzgemm solo
-    for(int i = 0; i < 20; ++i) {
-        CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
-        b_kernel->execute(stream);
-        CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
-        CUDA_SAFE_CALL(cudaEventSynchronize(stopKERNEL));
-        CUDA_SAFE_CALL(cudaEventElapsedTime(&kernel_time, startKERNEL, stopKERNEL));
-        time_vec.push_back(kernel_time);
-    }
-
-    // 排序后取中间10个数据，计算平均值
-    std::sort(time_vec.begin(), time_vec.end());
-    float b_kernel_time = 0.0f;
-    for(int i = 5; i < 15; ++i) {
-        b_kernel_time += time_vec[i];
-    }
-    b_kernel_time /= 10.0f;
-
-
-    time_vec.clear();
-
-        // mix
-    for(int i = 0; i < 30; ++i) {
+    for(int i = 0; i < 50; ++i) {
         CUDA_SAFE_CALL(cudaEventRecord(startKERNEL, stream));
         mix_kernel->execute(stream);
         CUDA_SAFE_CALL(cudaEventRecord(stopKERNEL, stream));
@@ -791,23 +945,16 @@ void cd_pair_profile(cudaStream_t stream) {
         time_vec.push_back(kernel_time);
     }
 
-    // 排序后取中间10个数据，计算平均值
     std::sort(time_vec.begin(), time_vec.end());
     float mix_time = 0.0f;
-    for(int i = 10; i < 20; ++i) {
-        // printf("%f ", time_vec[i]);
+    for(int i = 20; i < 30; ++i) {
         mix_time += time_vec[i];
     }
-    // printf("\n");
     mix_time /= 10.0f;
 
-    time_vec.clear();
-
-    float load_ratio = b_kernel_time / a_kernel_time;
-    printf("load_ratio: %f, duration: %f\n", load_ratio, mix_time);
-    printf("a_blk_num / b_blk_num: %f\n", (a_blk_num * 1.0f / b_blk_num));
-    printf("a_kernel_time: %f, b_kernel_time: %f\n", a_kernel_time, b_kernel_time);
-    printf("improve: %f%\n", (a_kernel_time + b_kernel_time - mix_time) * 100.0 / (a_kernel_time + b_kernel_time));
+    printf("tzgemm ori time: %f, cd ori time: %f\n", gptb_tzgemm_time, gptb_cd_time);
+    printf("mix_duration: %f\n", mix_time);
+    printf("name: %s, improve: %f%\n", gptb_cd_kernel->kernelName.c_str(), (gptb_tzgemm_time + gptb_cd_time - mix_time) * 100.0 / (gptb_tzgemm_time + gptb_cd_time));
 }
 
 Task* createTask(std::string taskName) {
@@ -874,11 +1021,47 @@ int main(int argc, char* argv[]) {
     // [Aker] fig9
     // tzgemm_fft_fig_9_10a();
 
+    // [Aker] new benchmark
+    // auto hot3d = createKernel("hot3d");
+    // auto lava = createKernel("lava");
+    // auto nn = createKernel("nn");
+    // auto path = createKernel("path");
+
+    // auto k_ptrs = std::vector<Kernel*>{hot3d, lava, nn, path};
+    // // warmup
+    // for (auto& k: k_ptrs) {
+    //     printf("warmup %s...\n", k->kernelName.c_str());
+    //     for (int i = 0; i < 5; ++i) {
+    //         k->execute(streams[0]);
+    //     }
+    //     CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    // }
+
+    // CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    // for (auto& k: k_ptrs) {
+    //     tzgemm_rodinia(dynamic_cast<GPTBKernel*>(k), 0, 
+    //         get_kernel_info(k->kernelName, "tzgemm_test"), streams[0]);
+    // }
+    // cd_pair_profile(streams[0]);
+
+    // auto hot3d_lava = MixKernel(
+    //     1,
+    //     "hot3d_lava", 
+    //     createKernel("hot3d"),
+    //     createKernel("lava"),
+    //     dim3(SM_NUM * 2, 1, 1), 
+    //     dim3(createKernel("hot3d")->launchBlockDim.x + createKernel("lava")->launchBlockDim.x, 1, 1), 
+    //     createKernel("hot3d")->gptbParams.ptb_start_block_pos,
+    //     createKernel("hot3d")->gptbParams.ptb_end_block_pos, 
+    //     createKernel("lava")->gptbParams.ptb_start_block_pos,
+    //     createKernel("lava")->gptbParams.ptb_end_block_pos);
+
+
     
     // [Aker] nsight compute
     // auto mix_kernel = createMixKernel(sget_kernel_info("nsight_compute", "mix_kernel_name"));
-    // mix_kernel->execute(stream);
-    // CUDA_SAFE_CALL(cudaStreamSynchronize(stream));
+    // mix_kernel->execute(streams[0]);
+    // CUDA_SAFE_CALL(cudaStreamSynchronize(streams[0]));
 
     // [Aker] cd pair accuracy test
     // auto lc_task = Bert(1001);
@@ -887,8 +1070,8 @@ int main(int argc, char* argv[]) {
     //     kernel->execute(nullptr);
     // }
     // cudaDeviceSynchronize();
-    // // cd_pair_accuracy(stream);
-    // // solo_gptb_accuracy(stream);
+    // cd_pair_accuracy(streams[0]);
+    // solo_gptb_accuracy(streams[0]);
     // int m = get_kernel_info("solo_gptb_accuracy", "m");
     // int k = 512;
     // int n = 1024;

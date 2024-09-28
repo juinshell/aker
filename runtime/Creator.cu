@@ -190,6 +190,77 @@ GPTBKernel* createKernel(const std::string &name) {
             }
             return kernelMap["stencil"];
             break;
+        case myHash("lava"):
+            if (kernelMap.find("lava") == kernelMap.end()) {
+                kernelMap["lava"] = new GPTBKernel(
+                    20, 
+                    "lava",
+                    "gptb_lava", 
+                    new OriLAVAKernel(20), 
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(128, 1, 1), 
+                    0, 
+                    get_kernel_info("lava", "ori_blks"));
+            }
+            return kernelMap["lava"];
+            break;
+        case myHash("hot3d"):
+            if (kernelMap.find("hot3d") == kernelMap.end()) {
+                kernelMap["hot3d"] = new GPTBKernel(
+                    20, 
+                    "hot3d",
+                    "gptb_hot3d", 
+                    new OriHOT3DKernel(20), 
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(64 * 4, 1, 1), 
+                    0, 
+                    get_kernel_info("hot3d", "ori_blks"));
+            }
+            return kernelMap["hot3d"];
+            break;
+        case myHash("nn"):
+            if (kernelMap.find("nn") == kernelMap.end()) {
+                kernelMap["nn"] = new GPTBKernel(
+                    20, 
+                    "nn",
+                    "gptb_nn", 
+                    new OriNNKernel(20), 
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(256, 1, 1), 
+                    0, 
+                    get_kernel_info("nn", "ori_blks"));
+            }
+            return kernelMap["nn"];
+            break;
+        case myHash("path"):
+            if (kernelMap.find("path") == kernelMap.end()) {
+                kernelMap["path"] = new GPTBKernel(
+                    20, 
+                    "path",
+                    "gptb_path", 
+                    new OriPATHKernel(20), 
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(256, 1, 1), 
+                    0, 
+                    get_kernel_info("path", "ori_blks"));
+            }
+            return kernelMap["path"];
+            break;
+        case myHash("tzgemm"):
+            if (kernelMap.find("tzgemm") == kernelMap.end()) {
+                kernelMap["tzgemm"] = new GPTBKernel(
+                    20, 
+                    "tzgemm",
+                    "gptb_tzgemm", 
+                    new OriTZGEMMKernel(20, 12800, 512, 4096), 
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(128, 1, 1), 
+                    0, 
+                    getTZGEMMGridDim(128000, 512, 4096)[3]);
+            }
+            printf("[Creator] create tzgemm kernel, max_blks: %d\n", getTZGEMMGridDim(128000, 512, 4096)[3]);
+            return kernelMap["tzgemm"];
+            break;
         default:
             logger.ERROR("Creator: Kernel not found: " + name);
         // case myHash("cutcp"): 
@@ -480,6 +551,96 @@ MixKernel* createMixKernel(const std::string &name) {
                     createKernel("stencil")->gptbParams.ptb_end_block_pos);
             }
             return mixKernelMap["mrif_stencil"];
+        case myHash("hot3d_lava"):
+            if (mixKernelMap.find("hot3d_lava") == mixKernelMap.end()) {
+                mixKernelMap["hot3d_lava"] = new MixKernel(
+                    14, 
+                    "hot3d_lava", 
+                    createKernel("hot3d"),
+                    createKernel("lava"),
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(384, 1, 1), 
+                    createKernel("hot3d")->gptbParams.ptb_start_block_pos,
+                    createKernel("hot3d")->gptbParams.ptb_end_block_pos, 
+                    createKernel("lava")->gptbParams.ptb_start_block_pos,
+                    createKernel("lava")->gptbParams.ptb_end_block_pos);
+            }
+            return mixKernelMap["hot3d_lava"];
+        case myHash("hot3d_nn"):
+            if (mixKernelMap.find("hot3d_nn") == mixKernelMap.end()) {
+                mixKernelMap["hot3d_nn"] = new MixKernel(
+                    15, 
+                    "hot3d_nn", 
+                    createKernel("hot3d"),
+                    createKernel("nn"),
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(384, 1, 1), 
+                    createKernel("hot3d")->gptbParams.ptb_start_block_pos,
+                    createKernel("hot3d")->gptbParams.ptb_end_block_pos, 
+                    createKernel("nn")->gptbParams.ptb_start_block_pos,
+                    createKernel("nn")->gptbParams.ptb_end_block_pos);
+            }
+            return mixKernelMap["hot3d_nn"];
+        case myHash("hot3d_path"):
+            if (mixKernelMap.find("hot3d_path") == mixKernelMap.end()) {
+                mixKernelMap["hot3d_path"] = new MixKernel(
+                    16, 
+                    "hot3d_path", 
+                    createKernel("hot3d"),
+                    createKernel("path"),
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(512, 1, 1), 
+                    createKernel("hot3d")->gptbParams.ptb_start_block_pos,
+                    createKernel("hot3d")->gptbParams.ptb_end_block_pos, 
+                    createKernel("path")->gptbParams.ptb_start_block_pos,
+                    createKernel("path")->gptbParams.ptb_end_block_pos);
+            }
+            return mixKernelMap["hot3d_path"];
+        case myHash("lava_nn"):
+            if (mixKernelMap.find("lava_nn") == mixKernelMap.end()) {
+                mixKernelMap["lava_nn"] = new MixKernel(
+                    17, 
+                    "lava_nn", 
+                    createKernel("lava"),
+                    createKernel("nn"),
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(256, 1, 1), 
+                    createKernel("lava")->gptbParams.ptb_start_block_pos,
+                    createKernel("lava")->gptbParams.ptb_end_block_pos, 
+                    createKernel("nn")->gptbParams.ptb_start_block_pos,
+                    createKernel("nn")->gptbParams.ptb_end_block_pos);
+            }
+            return mixKernelMap["lava_nn"];
+        case myHash("lava_path"):
+            if (mixKernelMap.find("lava_path") == mixKernelMap.end()) {
+                mixKernelMap["lava_path"] = new MixKernel(
+                    18, 
+                    "lava_path", 
+                    createKernel("lava"),
+                    createKernel("path"),
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(384, 1, 1), 
+                    createKernel("lava")->gptbParams.ptb_start_block_pos,
+                    createKernel("lava")->gptbParams.ptb_end_block_pos, 
+                    createKernel("path")->gptbParams.ptb_start_block_pos,
+                    createKernel("path")->gptbParams.ptb_end_block_pos);
+            }
+            return mixKernelMap["lava_path"];
+        case myHash("nn_path"):
+            if (mixKernelMap.find("nn_path") == mixKernelMap.end()) {
+                mixKernelMap["nn_path"] = new MixKernel(
+                    19, 
+                    "nn_path", 
+                    createKernel("nn"),
+                    createKernel("path"),
+                    dim3(SM_NUM * 1, 1, 1), 
+                    dim3(384, 1, 1), 
+                    createKernel("nn")->gptbParams.ptb_start_block_pos,
+                    createKernel("nn")->gptbParams.ptb_end_block_pos, 
+                    createKernel("path")->gptbParams.ptb_start_block_pos,
+                    createKernel("path")->gptbParams.ptb_end_block_pos);
+            }
+            return mixKernelMap["nn_path"];
         default:
             logger.ERROR("Creator: Kernel not found: " + name);
         // case myHash("cp_fft"):

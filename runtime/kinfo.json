@@ -132,28 +132,28 @@
         "shared_memory": 0
     },
     "throughput_test": {
-        "a": "mrif",
-        "b": "stencil"
+        "a": "fft",
+        "b": "cp"
     },
     "cp": {
         "register": 39,
         "shared_memory": 0,
         "blocksize": 128,
-        "ori_blks": 3060,
+        "ori_blks": 16384,
         "real_ori_blks": 16384
     },
     "cutcp": {
         "register": 42,
         "shared_memory": 4096,
         "blocksize": 128,
-        "ori_blks": 816,
+        "ori_blks": 5000,
         "real_ori_blks": 2720
     },
     "fft": {
         "register": 33,
         "shared_memory": 2048,
         "blocksize": 128,
-        "ori_blks": 5100,
+        "ori_blks": 102400,
         "real_ori_blks": 10240
     },
     "lbm": {
@@ -168,21 +168,21 @@
         "register": 32,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 450,
+        "ori_blks": 2048,
         "real_ori_blks": 2048
     },
     "mriq": {
         "register": 31,
         "shared_memory": 0,
         "blocksize": 256,
-        "ori_blks": 408,
+        "ori_blks": 3400,
         "real_ori_blks": 3400
     },
     "sgemm": {
         "register": 64,
         "shared_memory": 512,
         "blocksize": 128,
-        "ori_blks": 176,
+        "ori_blks": 3400,
         "real_ori_blks": 3400,
         "4096": 4096
     },
@@ -192,6 +192,9 @@
         "blocksize": 128,
         "ori_blks": 1020,
         "real_ori_blks": 6800
+    },
+    "nsight_compute": {
+        "mix_kernel_name": "fft_sgemm"
     },
     "cd_pair_ratio_profile": {
         "a_name": "mriq",
@@ -213,7 +216,7 @@
         "mriq_fft": 0.1
     },
     "cd_pair_accuracy": {
-        "a_name": "mriq",
+        "a_name": "fft",
         "b_name": "lbm",
         "a_blk_num": 1020,
         "b_blk_num": 27200

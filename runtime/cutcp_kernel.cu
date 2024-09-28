@@ -189,7 +189,7 @@ void OriCUTCPKernel::initParams() {
     float cutoff = 12.f;		/* Cutoff radius */
     float padding = 0.5f;		/* Bounding box padding distance */
     
-    const char *pqrfilename = "/workspace/tacker/0_mybench/file_t/cutcp_input.pqr";
+    const char *pqrfilename = "/home/jxdeng/workspace/tacker/0_mybench/file_t/cutcp_input.pqr";
     if (!(atom = read_atom_file(pqrfilename))) {
         logger.ERROR("read_atom_file() failed");
         exit(EXIT_FAILURE);
@@ -313,7 +313,7 @@ void OriCUTCPKernel::initParams() {
     // CUmodule module_;
 	// CUfunction function_;
 
-    // char *module_file = (char *)"/home/jxdeng/workspace/tacker/runtime/cubins/ori_cutcp.cubin";
+    // char *module_file = (char *)"/home/jxdeng/home/jxdeng/workspace/tacker/runtime/cubins/ori_cutcp.cubin";
 	// char *cdkernel_name = (char *)"ori_cutcp";
     // CU_SAFE_CALL(cuModuleLoad(&module_, module_file));
 	// CU_SAFE_CALL(cuModuleGetFunction(&function_, module_, cdkernel_name));

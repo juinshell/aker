@@ -4,15 +4,22 @@
 #include "util.h"
 #include "Logger.h"
 #include "header/tzgemm_header.h"
+#include "header/pets_common.h"
 
 extern long long MAX_ORI_WMMA_A;
 extern long long MAX_ORI_WMMA_B;
 extern long long MAX_ORI_WMMA_C;
 extern Logger logger;
 extern bool gemm_malloced;
+#ifdef AKER_INT8
+extern int8_t *ori_wmma_A;
+extern int8_t *ori_wmma_B;
+extern int16_t *ori_wmma_C;
+#else
 extern half *ori_wmma_A;
 extern half *ori_wmma_B;
 extern float *ori_wmma_C;
+#endif
 extern float *ori_host_A;
 extern float *ori_host_B;
 extern int MAX_M_GLOBAL;
@@ -63,10 +70,12 @@ public:
 
     // impl virtual func
     void executeImpl(cudaStream_t stream) {
+        printf("should not execute ori tzgemm!\n");
+        exit(1);
         // printf("ptb_tzgemm blks num: %d\n", launchGridDim.x);
-        checkKernelErrors((ptb_tzgemm<<<launchGridDim.x, launchBlockDim.x, 0, stream>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
-							M_GLOBAL, N_GLOBAL, K_GLOBAL,
-							ori_blks, launchBlockDim.x)));
+        // checkKernelErrors((ptb_tzgemm<<<launchGridDim.x, launchBlockDim.x, 0, stream>>>(ori_wmma_A, ori_wmma_B, ori_wmma_C, 
+		// 					M_GLOBAL, N_GLOBAL, K_GLOBAL,
+		// 					ori_blks, launchBlockDim.x)));
     }
     void initParams() {
 

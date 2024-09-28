@@ -1,0 +1,3 @@
+/home/jxdeng/workspace/tacker/runtime/a40_build/CMakeFiles/tacker.dir
+/home/jxdeng/workspace/tacker/runtime/a40_build/CMakeFiles/edit_cache.dir
+/home/jxdeng/workspace/tacker/runtime/a40_build/CMakeFiles/rebuild_cache.dir

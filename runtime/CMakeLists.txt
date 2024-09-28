@@ -10,10 +10,10 @@ message(STATUS "CUDA_LIBRARIES: " ${CUDA_LIBRARIES})
 
 SET(CMAKE_CXX_COMPILER "/usr/local/cuda/bin/nvcc")
 
-set(CUDA_NVCC_FLAGS "-arch=sm_89 -Xptxas -dlcm=ca -w -cudart shared --expt-relaxed-constexpr ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75, -cudart, not -lcudart
+set(CUDA_NVCC_FLAGS "-arch=sm_86 -Xptxas -dlcm=ca -w -cudart shared --expt-relaxed-constexpr ${CUDA_NVCC_FLAGS}") # must have -arch=sm_75, -cudart, not -lcudart
 
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-  set(CMAKE_CUDA_ARCHITECTURES 89)
+  set(CMAKE_CUDA_ARCHITECTURES 86)
 endif()
 
 if (NOT CMAKE_BUILD_TYPE)

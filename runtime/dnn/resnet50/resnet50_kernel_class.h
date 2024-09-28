@@ -9958,7 +9958,7 @@ std::vector<int> getArgs() override {
     CUDNN_SAFE_CALL(cudnnSetPooling2dDescriptor(desc, CUDNN_POOLING_MAX, CUDNN_NOT_PROPAGATE_NAN,3, 3, 0, 0, 2, 2));
     const float alpha = 1.0;
     const float beta = 0.0;
-    CUDNN_SAFE_CALL(cudnnPoolingForward(cudnn_handle, desc, &alpha, input_desc, input0, &beta, output_desc, output0));
+    // CUDNN_SAFE_CALL(cudnnPoolingForward(cudnn_handle, desc, &alpha, input_desc, input0, &beta, output_desc, output0));
     CUDNN_SAFE_CALL(cudnnDestroyTensorDescriptor(input_desc));
     CUDNN_SAFE_CALL(cudnnDestroyTensorDescriptor(output_desc));
     CUDNN_SAFE_CALL(cudnnDestroyPoolingDescriptor(desc));

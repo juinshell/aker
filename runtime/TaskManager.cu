@@ -32,9 +32,15 @@ float *bottom;
 float *col_buffer;
 float *ori_host_A;
 float *ori_host_B;
+#ifdef AKER_INT8
+int8_t *ori_wmma_A;
+int8_t *ori_wmma_B;
+int16_t *ori_wmma_C;
+#else
 half *ori_wmma_A;
 half *ori_wmma_B;
 float *ori_wmma_C;
+#endif
 float *cublas_wmma_C;
 float *ori_wmma_results1;
 float *ori_wmma_results2;
@@ -275,6 +281,7 @@ void mixcudnnConvolutionForward(std::vector<int>& cudnn_args, GPTBKernel* gptb_c
     // milliseconds = 0;
 
     // cudaErrCheck(cudaEventRecord(startKERNEL));
+
     mix_kernel->execute(stream);
     
     // gptb_cd_kernel->gptbParams.ptb_end_block_pos -= cd_end_blk * fget_kernel_info(mix_kernel_name, "block_ratio");
@@ -386,9 +393,9 @@ void mixcublasSgemm(std::vector<int>& gemm_args, GPTBKernel* gptb_cd_kernel, int
 
     mix_kernel->execute(stream);
     // cudaErrCheck(cudaEventRecord(stopKERNEL));
-    free(ori_tzgemm);
-    free(gptb_tzgemm_kernel);
-    free(mix_kernel);
+    // free(ori_tzgemm);
+    // free(gptb_tzgemm_kernel);
+    // free(mix_kernel);
     return ;
 }
 
@@ -660,7 +667,7 @@ void TaskManager::executeAllTasks(ExecutionMode mode, cudaStream_t stream) {
     printf("[Ori] be_task1: %s, be_task2: %s\n", be_task1_name.c_str(), be_task2_name.c_str());
     // printf("[Ori] task1 blks range: %d - %d, task2 blks range: %d - %d\n", be_task1->gptbParams.ptb_start_block_pos, be_task1->gptbParams.ptb_end_block_pos, be_task2->gptbParams.ptb_start_block_pos, be_task2->gptbParams.ptb_end_block_pos);
     // printf("[Ori] BE task1 cost %f ms, BE task2 cost %f ms\n", be_task1_ori_time, be_task2_ori_time);
-    printf("[Ori] BE task1 + task2 took %f ms to execute.\n", be_task1_ori_time + be_task2_ori_time);
+    printf("[Ori] BE task1 + task2 took %f + %f = %f ms to execute.\n", be_task1_ori_time, be_task2_ori_time, be_task1_ori_time + be_task2_ori_time);
 
     float stage1_be_time = 0.0f, stage2_be_time = 0.0f;
 

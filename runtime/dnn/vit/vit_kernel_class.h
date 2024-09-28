@@ -1449,7 +1449,7 @@ float* vit_last_hidden_state;
 float* vit_Result_1527_0;
 int64_t get_workspace_size()
 {
-    return 598075904;
+    return 725516288;
 }
 // Node name:	Constant_168
 // Description:	Constant
@@ -1549,10 +1549,10 @@ void vit_Constant_float_cuda_Constant_109(cudaStream_t stream, float* output0)
 // Node name:	Add_210
 // Description:	Add
 // Input:
-//	- name: vit_Convolution_208_0	type: float	shape: Shape{32, 768, 14, 14}
-//	- name: vit_Broadcast_209_0	type: float	shape: Shape{32, 768, 14, 14}
+//	- name: vit_Convolution_208_0	type: float	shape: Shape{48, 768, 14, 14}
+//	- name: vit_Broadcast_209_0	type: float	shape: Shape{48, 768, 14, 14}
 // Output:
-//	- name: vit_Add_210_0	type: float	shape: Shape{32, 768, 14, 14}
+//	- name: vit_Add_210_0	type: float	shape: Shape{48, 768, 14, 14}
 extern "C" __launch_bounds__(512) __global__ void vit_Add_float_float_float_cuda_Add_210(float* input0, float* input1, float* output0)
 {
     output0[blockIdx.x * 512 + threadIdx.x] = add(input0[blockIdx.x * 512 + threadIdx.x], input1[blockIdx.x * 512 + threadIdx.x]);
@@ -1564,9 +1564,9 @@ extern void vit_Add_float_float_float_cuda_Add_210_Call(const dim3 &grids, const
 // Node name:	Reshape_270
 // Description:	Reshape
 // Input:
-//	- name: vit_Reshape_269_0	type: float	shape: Shape{32, 197, 12, 64}
+//	- name: vit_Reshape_269_0	type: float	shape: Shape{48, 197, 12, 64}
 // Output:
-//	- name: vit_Reshape_270_0	type: float	shape: Shape{32, 12, 197, 64}
+//	- name: vit_Reshape_270_0	type: float	shape: Shape{48, 12, 197, 64}
 extern "C" __launch_bounds__(64) __global__ void vit_Reshape_float_float_cuda_Reshape_270(float* input0, float* output0)
 {
     uint32_t input_strides0 = 151296;
@@ -1577,7 +1577,7 @@ extern "C" __launch_bounds__(64) __global__ void vit_Reshape_float_float_cuda_Re
     uint32_t trans_strides1 = 64;
     uint32_t trans_strides2 = 12608;
     uint32_t trans_strides3 = 1;
-    size_t n = 4841472;
+    size_t n = 7262208;
     uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     if (tid < n)
     {
@@ -1600,18 +1600,18 @@ extern void vit_Reshape_float_float_cuda_Reshape_270_Call(const dim3 &grids, con
 // Node name:	Convolution_208
 // Description:	Convolution
 // Input:
-//	- name: Parameter_207_0	type: float	shape: Shape{32, 3, 224, 224}
+//	- name: Parameter_207_0	type: float	shape: Shape{48, 3, 224, 224}
 //	- name: vit_Constant_2_0	type: float	shape: Shape{768, 3, 16, 16}
 // Output:
-//	- name: vit_Convolution_208_0	type: float	shape: Shape{32, 768, 14, 14}
+//	- name: vit_Convolution_208_0	type: float	shape: Shape{48, 768, 14, 14}
 void Convolution_float_float_float_cuda_lib_Convolution_208(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 3, 224, 224));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 48, 3, 224, 224));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 768, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 48, 768, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 768, 3, 16, 16));
@@ -1666,11 +1666,11 @@ void Convolution_float_float_float_cuda_lib_Convolution_208(cudnnHandle_t cudnn_
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: vit_Constant_206_0	type: float	shape: Shape{}
-//	- name: vit_Reshape_222_0	type: float	shape: Shape{32, 197}
-//	- name: vit_Add_216_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Reshape_222_0	type: float	shape: Shape{48, 197}
+//	- name: vit_Add_216_0	type: float	shape: Shape{48, 197, 768}
 // Output:
-//	- name: vit_Subtract_224_0	type: float	shape: Shape{32, 197, 768}
-//	- name: vit_Power_226_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Subtract_224_0	type: float	shape: Shape{48, 197, 768}
+//	- name: vit_Power_226_0	type: float	shape: Shape{48, 197, 768}
 // Fused functions:
 // Broadcast, Broadcast_1528
 // Broadcast, Broadcast_223
@@ -1693,10 +1693,10 @@ extern void vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadca
 // Node name:	BatchMatMul_263
 // Description:	BatchMatMul
 // Input:
-//	- name: vit_Broadcast_261_0	type: float	shape: Shape{32, 12, 197, 64}
-//	- name: vit_Broadcast_262_0	type: float	shape: Shape{32, 12, 64, 197}
+//	- name: vit_Broadcast_261_0	type: float	shape: Shape{48, 12, 197, 64}
+//	- name: vit_Broadcast_262_0	type: float	shape: Shape{48, 12, 64, 197}
 // Output:
-//	- name: vit_BatchMatMul_263_0	type: float	shape: Shape{32, 12, 197, 197}
+//	- name: vit_BatchMatMul_263_0	type: float	shape: Shape{48, 12, 197, 197}
 void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     {
@@ -1707,7 +1707,7 @@ void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263(cublasHandle_t cubla
                                 CUBLAS_SAFE_CALL(cublasSgemmStridedBatched(
                                     cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 197, 197, 64,
                                     &alpha, input1, 197, 12608, input0, 64, 12608,
-                                    &beta, output0, 197, 38809, 384));
+                                    &beta, output0, 197, 38809, 576));
                             
     }
 
@@ -1715,9 +1715,9 @@ void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263(cublasHandle_t cubla
 // Node name:	Result_1527
 // Description:	Result
 // Input:
-//	- name: vit_last_hidden_state	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_last_hidden_state	type: float	shape: Shape{48, 197, 768}
 // Output:
-//	- name: vit_Result_1527_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Result_1527_0	type: float	shape: Shape{48, 197, 768}
 void Result_float_float_cuda_lib_Result_1527(float* input0, float** output0)
 {
     *output0 = input0;
@@ -1725,9 +1725,9 @@ void Result_float_float_cuda_lib_Result_1527(float* input0, float** output0)
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: vit_Reshape_248_0	type: float	shape: Shape{}
-//	- name: vit_Reshape_247_0	type: float	shape: Shape{32, 12, 64, 197}
+//	- name: vit_Reshape_247_0	type: float	shape: Shape{48, 12, 64, 197}
 // Output:
-//	- name: vit_Multiply_250_0	type: float	shape: Shape{32, 12, 64, 197}
+//	- name: vit_Multiply_250_0	type: float	shape: Shape{48, 12, 64, 197}
 // Fused functions:
 // Broadcast, Broadcast_1530
 // Multiply, /encoder/layer.0/attention/attention/Mul_1_output_0
@@ -1745,37 +1745,37 @@ extern void vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_Call(con
 // Node name:	Softmax_265
 // Description:	Softmax
 // Input:
-//	- name: vit_Reshape_264_0	type: float	shape: Shape{32, 12, 197, 197}
+//	- name: vit_Reshape_264_0	type: float	shape: Shape{48, 12, 197, 197}
 // Output:
-//	- name: vit_Softmax_265_0	type: float	shape: Shape{32, 12, 197, 197}
+//	- name: vit_Softmax_265_0	type: float	shape: Shape{48, 12, 197, 197}
 void Softmax_float_float_cuda_lib_Softmax_265(cudaStream_t stream, float* input0, float* output0)
 {
 
-    dispatch_softmax_forward<float, float, float, false>(stream, output0, input0, 197, 197, 75648);
+    dispatch_softmax_forward<float, float, float, false>(stream, output0, input0, 197, 197, 113472);
         
 
 }
 // Node name:	Dot_320
 // Description:	Dot
 // Input:
-//	- name: vit_Multiply_319_0	type: float	shape: Shape{32, 197, 3072}
+//	- name: vit_Multiply_319_0	type: float	shape: Shape{48, 197, 3072}
 //	- name: vit_Constant_131_0	type: float	shape: Shape{3072, 768}
 // Output:
-//	- name: vit_Dot_320_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Dot_320_0	type: float	shape: Shape{48, 197, 768}
 void Dot_float_float_float_cuda_lib_Dot_320(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 768, 6304, 3072, &alpha, static_cast<const float*>(input1), 768, static_cast<const float*>(input0), 3072, &beta, static_cast<float*>(output0), 768));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 768, 9456, 3072, &alpha, static_cast<const float*>(input1), 768, static_cast<const float*>(input0), 3072, &beta, static_cast<float*>(output0), 768));
 
 }
 // Node name:	BatchMatMul_275
 // Description:	BatchMatMul
 // Input:
-//	- name: vit_Broadcast_273_0	type: float	shape: Shape{32, 12, 197, 197}
-//	- name: vit_Broadcast_274_0	type: float	shape: Shape{32, 12, 197, 64}
+//	- name: vit_Broadcast_273_0	type: float	shape: Shape{48, 12, 197, 197}
+//	- name: vit_Broadcast_274_0	type: float	shape: Shape{48, 12, 197, 64}
 // Output:
-//	- name: vit_BatchMatMul_275_0	type: float	shape: Shape{32, 12, 197, 64}
+//	- name: vit_BatchMatMul_275_0	type: float	shape: Shape{48, 12, 197, 64}
 void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     {
@@ -1786,7 +1786,7 @@ void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275(cublasHandle_t cubla
                                 CUBLAS_SAFE_CALL(cublasSgemmStridedBatched(
                                     cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 64, 197, 197,
                                     &alpha, input1, 64, 12608, input0, 197, 38809,
-                                    &beta, output0, 64, 12608, 384));
+                                    &beta, output0, 64, 12608, 576));
                             
     }
 
@@ -1794,9 +1794,9 @@ void BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275(cublasHandle_t cubla
 // Node name:	Reshape_212
 // Description:	Reshape
 // Input:
-//	- name: vit_Reshape_211_0	type: float	shape: Shape{32, 768, 196}
+//	- name: vit_Reshape_211_0	type: float	shape: Shape{48, 768, 196}
 // Output:
-//	- name: vit_Reshape_212_0	type: float	shape: Shape{32, 196, 768}
+//	- name: vit_Reshape_212_0	type: float	shape: Shape{48, 196, 768}
 extern "C" __launch_bounds__(256) __global__ void vit_Reshape_float_float_cuda_Reshape_212(float* input0, float* output0)
 {
     uint32_t input_strides0 = 150528;
@@ -1807,7 +1807,7 @@ extern "C" __launch_bounds__(256) __global__ void vit_Reshape_float_float_cuda_R
     uint32_t trans_strides2 = 768;
     size_t nx = 196;
     size_t ny = 768;
-    size_t nz = 32;
+    size_t nz = 48;
     __shared__ float tile[1][16][17];
     uint32_t base2 = blockIdx.x * blockDim.x;
     uint32_t base1 = blockIdx.y * blockDim.y;
@@ -1851,10 +1851,10 @@ extern void vit_Reshape_float_float_cuda_Reshape_212_Call(const dim3 &grids, con
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: vit_Constant_7_0	type: float	shape: Shape{768}
-//	- name: vit_Dot_279_0	type: float	shape: Shape{32, 197, 768}
-//	- name: vit_Add_216_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Dot_279_0	type: float	shape: Shape{48, 197, 768}
+//	- name: vit_Add_216_0	type: float	shape: Shape{48, 197, 768}
 // Output:
-//	- name: vit_Add_282_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Add_282_0	type: float	shape: Shape{48, 197, 768}
 // Fused functions:
 // Broadcast, Broadcast_280
 // Add, /encoder/layer.0/attention/output/dense/Add_output_0
@@ -1874,15 +1874,15 @@ extern void vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_Cal
 // Node name:	Concat_213
 // Description:	Concat
 // Input:
-//	- name: vit_Constant_200_0	type: float	shape: Shape{32, 1, 768}
-//	- name: vit_Reshape_212_0	type: float	shape: Shape{32, 196, 768}
+//	- name: vit_Constant_200_0	type: float	shape: Shape{48, 1, 768}
+//	- name: vit_Reshape_212_0	type: float	shape: Shape{48, 196, 768}
 // Output:
-//	- name: vit_Concat_213_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Concat_213_0	type: float	shape: Shape{48, 197, 768}
 extern "C" __launch_bounds__(512) __global__ void vit_Concat_float_float_float_cuda_Concat_213(float* input0, float* input1, float* output0)
 {
     uint32_t inputs_strides[] = {768, 150528};
     uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
-    if(tid < 4841472)
+    if(tid < 7262208)
     {
         uint32_t block_id = tid / 151296;
         uint32_t block_idx = tid % 151296;
@@ -1910,10 +1910,10 @@ extern void vit_Concat_float_float_float_cuda_Concat_213_Call(const dim3 &grids,
 // Input:
 //	- name: vit_Reshape_214_0	type: float	shape: Shape{197, 768}
 // Output:
-//	- name: vit_Broadcast_215_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Broadcast_215_0	type: float	shape: Shape{48, 197, 768}
 extern "C" __launch_bounds__(64) __global__ void vit_Broadcast_float_float_cuda_Broadcast_215(float* input0, float* output0)
 {
-    size_t nthreads = 4841472;
+    size_t nthreads = 7262208;
     uint32_t strides0 = 151296;
     uint32_t strides1 = 768;
     uint32_t strides2 = 1;
@@ -1950,9 +1950,9 @@ extern void vit_Broadcast_float_float_cuda_Broadcast_215_Call(const dim3 &grids,
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: vit_Constant_218_0	type: float	shape: Shape{}
-//	- name: vit_Sum_217_0	type: float	shape: Shape{32, 197}
+//	- name: vit_Sum_217_0	type: float	shape: Shape{48, 197}
 // Output:
-//	- name: vit_Divide_220_0	type: float	shape: Shape{32, 197}
+//	- name: vit_Divide_220_0	type: float	shape: Shape{48, 197}
 // Fused functions:
 // Broadcast, Broadcast_219
 // Divide, Divide_220
@@ -1970,23 +1970,23 @@ extern void vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_Call(const
 // Node name:	Dot_309
 // Description:	Dot
 // Input:
-//	- name: vit_Add_308_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Add_308_0	type: float	shape: Shape{48, 197, 768}
 //	- name: vit_Constant_130_0	type: float	shape: Shape{768, 3072}
 // Output:
-//	- name: vit_Dot_309_0	type: float	shape: Shape{32, 197, 3072}
+//	- name: vit_Dot_309_0	type: float	shape: Shape{48, 197, 3072}
 void Dot_float_float_float_cuda_lib_Dot_309(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 3072, 6304, 768, &alpha, static_cast<const float*>(input1), 3072, static_cast<const float*>(input0), 768, &beta, static_cast<float*>(output0), 3072));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 3072, 9456, 768, &alpha, static_cast<const float*>(input1), 3072, static_cast<const float*>(input0), 768, &beta, static_cast<float*>(output0), 3072));
 
 }
 // Node name:	Reshape_277
 // Description:	Reshape
 // Input:
-//	- name: vit_Reshape_276_0	type: float	shape: Shape{32, 12, 197, 64}
+//	- name: vit_Reshape_276_0	type: float	shape: Shape{48, 12, 197, 64}
 // Output:
-//	- name: vit_Reshape_277_0	type: float	shape: Shape{32, 197, 12, 64}
+//	- name: vit_Reshape_277_0	type: float	shape: Shape{48, 197, 12, 64}
 extern "C" __launch_bounds__(64) __global__ void vit_Reshape_float_float_cuda_Reshape_277(float* input0, float* output0)
 {
     uint32_t input_strides0 = 151296;
@@ -1997,7 +1997,7 @@ extern "C" __launch_bounds__(64) __global__ void vit_Reshape_float_float_cuda_Re
     uint32_t trans_strides1 = 64;
     uint32_t trans_strides2 = 768;
     uint32_t trans_strides3 = 1;
-    size_t n = 4841472;
+    size_t n = 7262208;
     uint32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     if (tid < n)
     {
@@ -2020,24 +2020,24 @@ extern void vit_Reshape_float_float_cuda_Reshape_277_Call(const dim3 &grids, con
 // Node name:	Dot_266
 // Description:	Dot
 // Input:
-//	- name: vit_Add_242_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Add_242_0	type: float	shape: Shape{48, 197, 768}
 //	- name: vit_Constant_128_0	type: float	shape: Shape{768, 768}
 // Output:
-//	- name: vit_Dot_266_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Dot_266_0	type: float	shape: Shape{48, 197, 768}
 void Dot_float_float_float_cuda_lib_Dot_266(cublasHandle_t cublas_handle, float* input0, float* input1, float* output0)
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 768, 6304, 768, &alpha, static_cast<const float*>(input1), 768, static_cast<const float*>(input0), 768, &beta, static_cast<float*>(output0), 768));
+    CUBLAS_SAFE_CALL(cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 768, 9456, 768, &alpha, static_cast<const float*>(input1), 768, static_cast<const float*>(input0), 768, &beta, static_cast<float*>(output0), 768));
 
 }
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: vit_Reshape_1516_0	type: float	shape: Shape{1}
 //	- name: vit_Constant_228_0	type: float	shape: Shape{}
-//	- name: vit_Sum_227_0	type: float	shape: Shape{32, 197}
+//	- name: vit_Sum_227_0	type: float	shape: Shape{48, 197}
 // Output:
-//	- name: vit_Sqrt_235_0	type: float	shape: Shape{32, 197, 1}
+//	- name: vit_Sqrt_235_0	type: float	shape: Shape{48, 197, 1}
 // Fused functions:
 // Broadcast, Broadcast_1529
 // Broadcast, Broadcast_229
@@ -2063,10 +2063,10 @@ extern void vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Div
 // Input:
 //	- name: vit_Constant_11_0	type: float	shape: Shape{768}
 //	- name: vit_Constant_10_0	type: float	shape: Shape{768}
-//	- name: vit_Reshape_236_0	type: float	shape: Shape{32, 197}
-//	- name: vit_Subtract_224_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Reshape_236_0	type: float	shape: Shape{48, 197}
+//	- name: vit_Subtract_224_0	type: float	shape: Shape{48, 197, 768}
 // Output:
-//	- name: vit_Add_242_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Add_242_0	type: float	shape: Shape{48, 197, 768}
 // Fused functions:
 // Broadcast, Broadcast_241
 // Broadcast, Broadcast_239
@@ -3498,9 +3498,9 @@ void vit_Constant_float_cuda_Constant_27(cudaStream_t stream, float* output0)
 // Node name:	 Elementwise Kernel Fusion
 // Input:
 //	- name: vit_Constant_6_0	type: float	shape: Shape{768}
-//	- name: vit_Dot_266_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Dot_266_0	type: float	shape: Shape{48, 197, 768}
 // Output:
-//	- name: vit_Add_268_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Add_268_0	type: float	shape: Shape{48, 197, 768}
 // Fused functions:
 // Broadcast, Broadcast_267
 // Add, /encoder/layer.0/attention/attention/value/Add_output_0
@@ -4107,9 +4107,9 @@ void vit_Constant_float_cuda_Constant_188(cudaStream_t stream, float* output0)
 // Node name:	Sum_217
 // Description:	Sum
 // Input:
-//	- name: vit_Add_216_0	type: float	shape: Shape{32, 197, 768}
+//	- name: vit_Add_216_0	type: float	shape: Shape{48, 197, 768}
 // Output:
-//	- name: vit_Sum_217_0	type: float	shape: Shape{32, 197}
+//	- name: vit_Sum_217_0	type: float	shape: Shape{48, 197}
 extern "C" __launch_bounds__(512) __global__ void vit_Sum_float_float_cuda_Sum_217(float* input0, float* output0)
 {
 
@@ -4425,10 +4425,10 @@ void vit_Constant_float_cuda_Constant_129(cudaStream_t stream, float* output0)
 // Input:
 //	- name: vit_Constant_3_0	type: float	shape: Shape{768}
 // Output:
-//	- name: vit_Broadcast_209_0	type: float	shape: Shape{32, 768, 14, 14}
+//	- name: vit_Broadcast_209_0	type: float	shape: Shape{48, 768, 14, 14}
 extern "C" __launch_bounds__(64) __global__ void vit_Broadcast_float_float_cuda_Broadcast_209(float* input0, float* output0)
 {
-    size_t nthreads = 4816896;
+    size_t nthreads = 7225344;
     uint32_t strides0 = 150528;
     uint32_t strides1 = 196;
     uint32_t strides2 = 14;
@@ -4701,7 +4701,7 @@ void vit_Constant_float_cuda_Constant_8(cudaStream_t stream, float* output0)
 // Description:	Constant
 // Input:
 // Output:
-//	- name: vit_Constant_200_0	type: float	shape: Shape{32, 1, 768}
+//	- name: vit_Constant_200_0	type: float	shape: Shape{48, 1, 768}
 void vit_Constant_float_cuda_Constant_200(cudaStream_t stream, float* output0)
 {
     std::ifstream bin_file("../dnn/vit/Constant/Constant_200_0.bin" , std::ios::in | std::ios::binary);
@@ -4710,9 +4710,9 @@ void vit_Constant_float_cuda_Constant_200(cudaStream_t stream, float* output0)
     	printf("Load vit_Constant_200_0 failed.\n");
     	exit(1);
     }
-    char* tmp_mem = new char[98304];
-    bin_file.read(tmp_mem, 98304);
-    cudaMemcpyAsync(output0, tmp_mem, 98304, cudaMemcpyHostToDevice, stream);
+    char* tmp_mem = new char[147456];
+    bin_file.read(tmp_mem, 147456);
+    cudaMemcpyAsync(output0, tmp_mem, 147456, cudaMemcpyHostToDevice, stream);
     bin_file.close();
 
 }
@@ -5346,9 +5346,9 @@ void vit_Constant_float_cuda_Constant_94(cudaStream_t stream, float* output0)
 // Node name:	Reshape_247
 // Description:	Reshape
 // Input:
-//	- name: vit_Reshape_246_0	type: float	shape: Shape{32, 197, 12, 64}
+//	- name: vit_Reshape_246_0	type: float	shape: Shape{48, 197, 12, 64}
 // Output:
-//	- name: vit_Reshape_247_0	type: float	shape: Shape{32, 12, 64, 197}
+//	- name: vit_Reshape_247_0	type: float	shape: Shape{48, 12, 64, 197}
 extern "C" __launch_bounds__(256) __global__ void vit_Reshape_float_float_cuda_Reshape_247(float* input0, float* output0)
 {
     uint32_t input_strides0 = 151296;
@@ -5359,7 +5359,7 @@ extern "C" __launch_bounds__(256) __global__ void vit_Reshape_float_float_cuda_R
     uint32_t trans_strides2 = 197;
     size_t nx = 768;
     size_t ny = 197;
-    size_t nz = 32;
+    size_t nz = 48;
     __shared__ float tile[1][16][17];
     uint32_t base2 = blockIdx.x * blockDim.x;
     uint32_t base1 = blockIdx.y * blockDim.y;
@@ -5691,9 +5691,9 @@ void vit_Constant_float_cuda_Constant_498(cudaStream_t stream, float* output0)
 //	- name: vit_Constant_203_0	type: float	shape: Shape{}
 //	- name: vit_Constant_205_0	type: float	shape: Shape{}
 //	- name: vit_Constant_8_0	type: float	shape: Shape{3072}
-//	- name: vit_Dot_309_0	type: float	shape: Shape{32, 197, 3072}
+//	- name: vit_Dot_309_0	type: float	shape: Shape{48, 197, 3072}
 // Output:
-//	- name: vit_Multiply_319_0	type: float	shape: Shape{32, 197, 3072}
+//	- name: vit_Multiply_319_0	type: float	shape: Shape{48, 197, 3072}
 // Fused functions:
 // Broadcast, Broadcast_1536
 // Broadcast, Broadcast_1535
@@ -7008,9 +7008,9 @@ void vit_Constant_float_cuda_Constant_98(cudaStream_t stream, float* output0)
 #define NNFUSION_GRAPH_INPUT_NUM 1
 #define NNFUSION_GRAPH_OUTPUT_NUM 1
 #define NNFUSION_GRAPH_INPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_INPUT_SHAPE_0 {32, 3, 224, 224}
+#define NNFUSION_GRAPH_INPUT_SHAPE_0 {48, 3, 224, 224}
 #define NNFUSION_GRAPH_OUTPUT_DTYPE_0 float
-#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {32, 197, 768}
+#define NNFUSION_GRAPH_OUTPUT_SHAPE_0 {48, 197, 768}
 #endif
 
 // Node name:	Constant_115
@@ -7035,949 +7035,949 @@ void vit_Constant_float_cuda_Constant_115(cudaStream_t stream, float* output0)
 
 extern "C" void vit_cuda_init()
 {
-// // total memory:598075904
+// // total memory:725516288
 
-CUDA_SAFE_CALL(cudaMalloc((void**)&vit_group_0_CUDA_GPU0_allocator_memory_pool,235416576));
-CUDA_SAFE_CALL(cudaMemset((void*)vit_group_0_CUDA_GPU0_allocator_memory_pool, 0, 235416576));
+CUDA_SAFE_CALL(cudaMalloc((void**)&vit_group_0_CUDA_GPU0_allocator_memory_pool,353124864));
+CUDA_SAFE_CALL(cudaMemset((void*)vit_group_0_CUDA_GPU0_allocator_memory_pool, 0, 353124864));
 vit_Broadcast_215_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Broadcast_209_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Convolution_208_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38633472);
-vit_Add_210_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38633472);
-vit_Reshape_211_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38633472);
-vit_Reshape_212_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Concat_213_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38633472);
-vit_Add_216_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38633472);
+vit_Broadcast_209_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Convolution_208_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57950208);
+vit_Add_210_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57950208);
+vit_Reshape_211_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57950208);
+vit_Reshape_212_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Concat_213_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57950208);
+vit_Add_216_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57950208);
 vit_Sum_217_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_220_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_221_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_222_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_226_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_224_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57999360);
+vit_Divide_220_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_221_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_222_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_226_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_224_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+86999040);
 vit_Sum_227_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_235_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_236_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_242_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_266_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57999360);
-vit_Add_268_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77365248);
-vit_Reshape_269_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77365248);
-vit_Reshape_270_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57999360);
-vit_Reshape_272_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57999360);
-vit_Broadcast_274_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57999360);
-vit_Dot_243_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77365248);
-vit_Add_245_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96731136);
-vit_Reshape_246_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96731136);
-vit_Reshape_247_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77365248);
-vit_Multiply_250_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96731136);
-vit_Reshape_260_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96731136);
-vit_Broadcast_262_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96731136);
-vit_Dot_251_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77365248);
+vit_Sqrt_235_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_236_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_242_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_266_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+86999040);
+vit_Add_268_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116047872);
+vit_Reshape_269_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116047872);
+vit_Reshape_270_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+86999040);
+vit_Reshape_272_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+86999040);
+vit_Broadcast_274_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+86999040);
+vit_Dot_243_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116047872);
+vit_Add_245_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145096704);
+vit_Reshape_246_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145096704);
+vit_Reshape_247_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116047872);
+vit_Multiply_250_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145096704);
+vit_Reshape_260_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145096704);
+vit_Broadcast_262_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145096704);
+vit_Dot_251_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116047872);
 vit_Add_253_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_254_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_255_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77365248);
+vit_Reshape_255_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116047872);
 vit_Multiply_258_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_259_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_261_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_263_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116097024);
-vit_Reshape_264_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116097024);
-vit_Softmax_265_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175707648);
-vit_Reshape_271_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175707648);
-vit_Broadcast_273_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175707648);
+vit_BatchMatMul_263_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174145536);
+vit_Reshape_264_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174145536);
+vit_Softmax_265_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263561472);
+vit_Reshape_271_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263561472);
+vit_Broadcast_273_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263561472);
 vit_BatchMatMul_275_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_276_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_277_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57999360);
-vit_Reshape_278_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57999360);
+vit_Reshape_277_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+86999040);
+vit_Reshape_278_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+86999040);
 vit_Dot_279_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_282_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+57999360);
+vit_Add_282_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+86999040);
 vit_Sum_283_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_286_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_287_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_288_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_292_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_290_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19416320);
+vit_Divide_286_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_287_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_288_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_292_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_290_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29124480);
 vit_Sum_293_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_301_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_302_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_308_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_309_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77365248);
-vit_Multiply_319_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+154828800);
+vit_Sqrt_301_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_302_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_308_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_309_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116047872);
+vit_Multiply_319_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+232243200);
 vit_Dot_320_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_323_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_323_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_324_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_327_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_328_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_329_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_333_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_331_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_327_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_328_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_329_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_333_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_331_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_334_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_342_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_343_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_349_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Sqrt_342_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_343_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_349_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Dot_373_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_375_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_376_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Add_375_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_376_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Reshape_377_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_379_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_381_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Dot_350_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_352_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_353_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_354_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_357_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_367_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Broadcast_369_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Dot_358_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_360_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Reshape_361_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Reshape_362_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_365_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Reshape_366_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Broadcast_368_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_BatchMatMul_370_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_371_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Softmax_372_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+156440064);
-vit_Reshape_378_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+156440064);
-vit_Broadcast_380_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+156440064);
-vit_BatchMatMul_382_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Reshape_383_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Dot_350_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_352_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_353_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_354_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_357_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_367_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Broadcast_369_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Dot_358_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_360_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Reshape_361_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Reshape_362_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_365_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Reshape_366_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Broadcast_368_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_BatchMatMul_370_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_371_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Softmax_372_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+234660096);
+vit_Reshape_378_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+234660096);
+vit_Broadcast_380_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+234660096);
+vit_BatchMatMul_382_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Reshape_383_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Reshape_384_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_385_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Dot_386_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Dot_386_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Add_389_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sum_390_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Divide_393_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19391104);
-vit_Reshape_394_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19391104);
-vit_Reshape_395_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19391104);
-vit_Power_399_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19416320);
-vit_Subtract_397_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38782208);
-vit_Sum_400_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Sqrt_408_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19391104);
-vit_Reshape_409_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19391104);
-vit_Add_415_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19416320);
-vit_Dot_416_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38782208);
-vit_Multiply_426_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116245760);
-vit_Dot_427_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Add_430_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Sum_390_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Divide_393_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29086656);
+vit_Reshape_394_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29086656);
+vit_Reshape_395_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29086656);
+vit_Power_399_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29124480);
+vit_Subtract_397_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58173312);
+vit_Sum_400_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Sqrt_408_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29086656);
+vit_Reshape_409_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29086656);
+vit_Add_415_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29124480);
+vit_Dot_416_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58173312);
+vit_Multiply_426_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174368640);
+vit_Dot_427_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Add_430_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_431_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_434_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_435_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_436_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_440_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_438_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_434_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_435_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_436_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_440_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_438_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_441_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_449_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_450_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_456_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_480_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_482_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_483_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_484_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_486_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_488_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_457_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_459_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_460_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_461_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_464_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_474_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_476_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_465_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_449_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_450_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_456_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_480_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_482_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_483_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_484_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_486_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_488_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_457_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_459_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_460_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_461_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_464_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_474_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_476_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_465_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_467_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_468_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_469_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_469_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_472_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_473_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_475_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_477_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_478_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_479_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_485_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_487_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_477_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_478_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_479_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_485_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_487_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_489_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_490_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_491_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_492_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_491_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_492_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_493_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_496_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_496_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_497_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_500_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_501_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_502_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_506_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_504_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_500_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_501_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_502_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_506_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_504_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_507_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_515_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_516_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_522_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_523_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_533_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_515_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_516_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_522_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_523_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_533_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_534_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_537_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_537_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_538_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_541_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_542_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_543_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_547_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_545_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_541_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_542_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_543_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_547_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_545_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_548_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_556_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_557_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_563_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_587_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_589_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_590_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_591_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_593_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_595_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_564_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_566_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_567_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_568_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_571_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_581_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_583_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_572_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_556_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_557_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_563_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_587_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_589_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_590_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_591_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_593_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_595_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_564_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_566_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_567_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_568_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_571_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_581_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_583_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_572_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_574_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_575_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_576_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_576_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_579_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_580_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_582_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_584_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_585_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_586_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_592_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_594_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_584_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_585_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_586_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_592_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_594_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_596_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_597_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_598_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_599_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_598_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_599_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_600_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_603_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_603_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_604_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_607_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_608_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_609_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_613_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_611_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_607_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_608_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_609_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_613_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_611_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_614_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_622_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_623_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_629_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_630_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_640_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_622_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_623_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_629_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_630_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_640_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_641_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_644_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_644_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_645_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_648_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_649_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_650_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_654_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_652_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_648_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_649_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_650_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_654_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_652_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_655_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_663_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_664_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_670_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_694_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_696_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_697_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_698_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_700_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_702_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_671_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_673_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_674_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_675_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_678_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_688_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_690_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_679_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_663_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_664_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_670_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_694_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_696_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_697_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_698_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_700_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_702_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_671_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_673_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_674_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_675_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_678_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_688_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_690_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_679_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_681_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_682_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_683_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_683_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_686_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_687_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_689_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_691_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_692_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_693_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_699_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_701_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_691_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_692_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_693_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_699_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_701_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_703_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_704_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_705_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_706_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_705_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_706_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_707_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_710_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_710_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_711_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_714_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_715_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_716_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_720_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_718_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_714_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_715_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_716_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_720_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_718_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_721_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_729_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_730_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_736_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_737_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_747_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_729_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_730_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_736_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_737_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_747_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_748_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_751_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_751_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_752_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_755_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_756_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_757_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_761_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_759_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_755_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_756_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_757_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_761_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_759_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_762_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_770_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_771_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_777_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_801_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_803_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_804_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_805_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_807_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_809_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_778_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_780_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_781_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_782_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_785_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_795_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_797_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_786_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_770_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_771_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_777_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_801_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_803_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_804_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_805_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_807_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_809_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_778_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_780_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_781_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_782_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_785_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_795_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_797_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_786_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_788_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_789_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_790_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_790_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_793_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_794_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_796_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_798_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_799_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_800_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_806_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_808_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_798_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_799_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_800_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_806_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_808_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_810_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_811_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_812_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_813_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_812_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_813_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_814_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_817_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_817_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_818_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_821_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_822_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_823_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_827_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_825_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_821_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_822_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_823_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_827_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_825_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_828_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_836_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_837_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_843_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_844_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_854_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_836_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_837_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_843_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_844_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_854_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_855_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_858_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_858_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_859_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_862_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_863_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_864_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_868_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_866_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_862_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_863_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_864_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_868_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_866_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_869_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_877_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_878_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_884_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_908_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_910_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_911_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_912_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_914_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_916_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_885_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_887_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_888_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_889_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_892_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_902_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_904_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_893_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_877_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_878_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_884_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_908_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_910_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_911_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_912_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_914_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_916_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_885_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_887_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_888_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_889_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_892_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_902_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_904_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_893_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_895_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_896_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_897_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_897_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_900_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_901_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_903_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_905_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_906_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_907_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_913_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_915_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_905_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_906_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_907_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_913_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_915_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_917_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_918_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_919_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_920_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_919_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_920_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_921_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_924_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_924_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_925_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_928_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_929_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_930_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_934_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_932_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_928_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_929_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_930_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_934_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_932_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_935_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_943_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_944_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_950_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_951_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_961_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_943_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_944_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_950_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_951_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_961_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_962_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_965_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_965_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_966_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_969_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_970_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_971_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_975_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_973_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_969_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_970_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_971_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_975_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_973_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_976_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_984_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_985_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_991_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_1015_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_1017_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1018_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1019_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_1021_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_1023_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_992_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_994_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_995_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_996_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_999_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1009_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_1011_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_1000_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_984_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_985_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_991_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_1015_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_1017_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1018_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1019_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_1021_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_1023_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_992_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_994_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_995_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_996_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_999_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1009_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_1011_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_1000_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_1002_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1003_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1004_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1004_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_1007_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1008_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_1010_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_1012_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_1013_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_1014_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_1020_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_1022_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_1012_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_1013_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_1014_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_1020_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_1022_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_1024_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1025_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1026_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_1027_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1026_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_1027_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_1028_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1031_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_1031_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_1032_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1035_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1036_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1037_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1041_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_1039_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1035_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1036_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1037_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1041_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_1039_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1042_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1050_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1051_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1057_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_1058_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_1068_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_1050_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1051_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1057_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_1058_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_1068_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_1069_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1072_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_1072_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_1073_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1076_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1077_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1078_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1082_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_1080_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1076_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1077_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1078_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1082_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_1080_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1083_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1091_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1092_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1098_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_1122_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_1124_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1125_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1126_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_1128_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_1130_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_1099_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_1101_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1102_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1103_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_1106_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1116_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_1118_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_1107_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_1091_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1092_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1098_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_1122_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_1124_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1125_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1126_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_1128_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_1130_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_1099_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_1101_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1102_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1103_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_1106_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1116_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_1118_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_1107_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_1109_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1110_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1111_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1111_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_1114_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1115_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_1117_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_1119_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_1120_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_1121_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_1127_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_1129_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_1119_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_1120_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_1121_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_1127_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_1129_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_1131_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1132_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1133_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_1134_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1133_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_1134_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_1135_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1138_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_1138_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_1139_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1142_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1143_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1144_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1148_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_1146_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1142_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1143_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1144_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1148_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_1146_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1149_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1157_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1158_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1164_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_1165_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_1175_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_1157_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1158_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1164_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_1165_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_1175_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_1176_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1179_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_1179_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_1180_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1183_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1184_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1185_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1189_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_1187_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1183_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1184_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1185_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1189_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_1187_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1190_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1198_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1199_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1205_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_1229_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_1231_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1232_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1233_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_1235_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_1237_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_1206_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_1208_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1209_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1210_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_1213_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1223_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_1225_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_1214_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_1198_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1199_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1205_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_1229_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_1231_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1232_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1233_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_1235_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_1237_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_1206_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_1208_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1209_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1210_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_1213_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1223_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_1225_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_1214_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_1216_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1217_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1218_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1218_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_1221_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1222_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_1224_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_1226_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_1227_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_1228_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_1234_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_1236_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_1226_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_1227_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_1228_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_1234_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_1236_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_1238_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1239_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1240_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_1241_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1240_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_1241_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_1242_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1245_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_1245_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_1246_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1249_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1250_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1251_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1255_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_1253_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1249_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1250_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1251_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1255_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_1253_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1256_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1264_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1265_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1271_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_1272_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_1282_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_1264_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1265_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1271_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_1272_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_1282_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_1283_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1286_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_1286_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_1287_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1290_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1291_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1292_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1296_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_1294_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1290_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1291_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1292_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1296_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_1294_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1297_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1305_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1306_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1312_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_1336_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_1338_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1339_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1340_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_1342_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_1344_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_1313_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_1315_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1316_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1317_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_1320_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1330_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_1332_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_1321_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_1305_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1306_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1312_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_1336_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_1338_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1339_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1340_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_1342_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_1344_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_1313_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_1315_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1316_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1317_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_1320_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1330_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_1332_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_1321_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_1323_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1324_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1325_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1325_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_1328_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1329_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_1331_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_1333_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_1334_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_1335_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_1341_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_1343_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_1333_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_1334_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_1335_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_1341_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_1343_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_1345_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1346_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1347_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_1348_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1347_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_1348_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_1349_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1352_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_1352_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_1353_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1356_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1357_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1358_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1362_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_1360_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1356_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1357_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1358_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1362_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_1360_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1363_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1371_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1372_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1378_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_1379_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_1389_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_1371_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1372_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1378_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_1379_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_1389_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_1390_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1393_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_1393_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_1394_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1397_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1398_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1399_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1403_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_1401_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1397_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1398_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1399_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1403_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_1401_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1404_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1412_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1413_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1419_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Dot_1443_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Add_1445_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1446_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Reshape_1447_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Reshape_1449_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Broadcast_1451_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Dot_1420_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Add_1422_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1423_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1424_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
-vit_Multiply_1427_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Reshape_1437_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Broadcast_1439_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+96829440);
-vit_Dot_1428_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+77463552);
+vit_Sqrt_1412_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1413_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1419_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Dot_1443_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Add_1445_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1446_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Reshape_1447_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Reshape_1449_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Broadcast_1451_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Dot_1420_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Add_1422_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1423_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1424_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
+vit_Multiply_1427_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Reshape_1437_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Broadcast_1439_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+145244160);
+vit_Dot_1428_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
 vit_Add_1430_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1431_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1432_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1432_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Multiply_1435_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1436_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Broadcast_1438_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_BatchMatMul_1440_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Reshape_1441_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+116195328);
-vit_Softmax_1442_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Reshape_1448_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
-vit_Broadcast_1450_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+175805952);
+vit_BatchMatMul_1440_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Reshape_1441_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+174292992);
+vit_Softmax_1442_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Reshape_1448_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
+vit_Broadcast_1450_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+263708928);
 vit_BatchMatMul_1452_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_1453_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Reshape_1454_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
-vit_Reshape_1455_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Reshape_1454_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
+vit_Reshape_1455_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Dot_1456_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1459_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+19365888);
+vit_Add_1459_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+29048832);
 vit_Sum_1460_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1463_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1464_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1465_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1469_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Subtract_1467_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1463_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1464_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1465_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1469_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Subtract_1467_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1470_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1478_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1479_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Add_1485_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
-vit_Dot_1486_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
-vit_Multiply_1496_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+135561216);
+vit_Sqrt_1478_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1479_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Add_1485_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Dot_1486_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
+vit_Multiply_1496_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+203341824);
 vit_Dot_1497_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Add_1500_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+38731776);
+vit_Add_1500_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
 vit_Sum_1501_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Divide_1504_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1505_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1506_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Power_1510_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+50432);
-vit_Subtract_1508_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+58097664);
+vit_Divide_1504_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1505_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1506_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Power_1510_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+75648);
+vit_Subtract_1508_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+87146496);
 vit_Sum_1511_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+0);
-vit_Sqrt_1519_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
-vit_Reshape_1520_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+25216);
+vit_Sqrt_1519_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
+vit_Reshape_1520_0 = (float*)(vit_group_0_CUDA_GPU0_allocator_memory_pool+37824);
 
-CUDA_SAFE_CALL(cudaMalloc((void**)&vit_group_persist_CUDA_GPU0_allocator_memory_pool,362659328));
-CUDA_SAFE_CALL(cudaMemset((void*)vit_group_persist_CUDA_GPU0_allocator_memory_pool, 0, 362659328));
+CUDA_SAFE_CALL(cudaMalloc((void**)&vit_group_persist_CUDA_GPU0_allocator_memory_pool,372391424));
+CUDA_SAFE_CALL(cudaMemset((void*)vit_group_persist_CUDA_GPU0_allocator_memory_pool, 0, 372391424));
 vit_Constant_1_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+0);
 vit_Reshape_214_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+0);
 vit_Constant_3_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+605184);
 vit_Constant_2_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+608256);
 vit_Constant_200_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+2967552);
-vit_Constant_129_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+3065856);
-vit_Constant_128_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+5425152);
-vit_Constant_218_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7784448);
-vit_Constant_206_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7784512);
-vit_Constant_228_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7784576);
-vit_Constant_202_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7784640);
-vit_Reshape_1516_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7784640);
-vit_Constant_10_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7784704);
-vit_Constant_11_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7787776);
-vit_Constant_6_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7790848);
-vit_Constant_127_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7793920);
-vit_Constant_5_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+10153216);
-vit_Constant_201_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+10156288);
-vit_Reshape_248_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+10156288);
-vit_Constant_126_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+10156352);
-vit_Constant_4_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+12515648);
-vit_Constant_7_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+12518720);
-vit_Constant_131_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+12521792);
-vit_Constant_130_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+21958976);
-vit_Constant_284_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31396160);
-vit_Constant_294_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31396224);
-vit_Constant_12_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31396288);
-vit_Constant_13_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31399360);
-vit_Constant_8_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31402432);
-vit_Constant_205_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31414720);
-vit_Constant_203_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31414784);
-vit_Constant_204_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31414848);
-vit_Constant_9_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31414912);
-vit_Constant_135_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31417984);
-vit_Constant_134_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+33777280);
-vit_Constant_325_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36136576);
-vit_Constant_335_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36136640);
-vit_Constant_20_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36136704);
-vit_Constant_21_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36139776);
-vit_Constant_16_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36142848);
-vit_Constant_133_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36145920);
-vit_Constant_15_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+38505216);
-vit_Constant_132_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+38508288);
-vit_Constant_14_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+40867584);
-vit_Constant_17_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+40870656);
-vit_Constant_137_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+40873728);
-vit_Constant_136_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+50310912);
-vit_Constant_391_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59748096);
-vit_Constant_401_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59748160);
-vit_Constant_22_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59748224);
-vit_Constant_23_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59751296);
-vit_Constant_18_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59754368);
-vit_Constant_19_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59766656);
-vit_Constant_141_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59769728);
-vit_Constant_140_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+62129024);
-vit_Constant_432_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64488320);
-vit_Constant_442_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64488384);
-vit_Constant_30_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64488448);
-vit_Constant_31_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64491520);
-vit_Constant_26_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64494592);
-vit_Constant_139_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64497664);
-vit_Constant_25_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+66856960);
-vit_Constant_138_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+66860032);
-vit_Constant_24_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+69219328);
-vit_Constant_27_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+69222400);
-vit_Constant_143_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+69225472);
-vit_Constant_142_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+78662656);
-vit_Constant_498_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88099840);
-vit_Constant_508_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88099904);
-vit_Constant_32_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88099968);
-vit_Constant_33_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88103040);
-vit_Constant_28_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88106112);
-vit_Constant_29_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88118400);
-vit_Constant_147_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88121472);
-vit_Constant_146_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+90480768);
-vit_Constant_539_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92840064);
-vit_Constant_549_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92840128);
-vit_Constant_40_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92840192);
-vit_Constant_41_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92843264);
-vit_Constant_36_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92846336);
-vit_Constant_145_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92849408);
-vit_Constant_35_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+95208704);
-vit_Constant_144_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+95211776);
-vit_Constant_34_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+97571072);
-vit_Constant_37_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+97574144);
-vit_Constant_149_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+97577216);
-vit_Constant_148_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+107014400);
-vit_Constant_605_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116451584);
-vit_Constant_615_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116451648);
-vit_Constant_42_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116451712);
-vit_Constant_43_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116454784);
-vit_Constant_38_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116457856);
-vit_Constant_39_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116470144);
-vit_Constant_153_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116473216);
-vit_Constant_152_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+118832512);
-vit_Constant_646_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121191808);
-vit_Constant_656_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121191872);
-vit_Constant_50_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121191936);
-vit_Constant_51_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121195008);
-vit_Constant_46_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121198080);
-vit_Constant_151_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121201152);
-vit_Constant_45_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+123560448);
-vit_Constant_150_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+123563520);
-vit_Constant_44_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+125922816);
-vit_Constant_47_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+125925888);
-vit_Constant_155_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+125928960);
-vit_Constant_154_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+135366144);
-vit_Constant_712_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144803328);
-vit_Constant_722_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144803392);
-vit_Constant_52_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144803456);
-vit_Constant_53_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144806528);
-vit_Constant_48_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144809600);
-vit_Constant_49_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144821888);
-vit_Constant_159_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144824960);
-vit_Constant_158_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+147184256);
-vit_Constant_753_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149543552);
-vit_Constant_763_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149543616);
-vit_Constant_60_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149543680);
-vit_Constant_61_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149546752);
-vit_Constant_56_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149549824);
-vit_Constant_157_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149552896);
-vit_Constant_55_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+151912192);
-vit_Constant_156_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+151915264);
-vit_Constant_54_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+154274560);
-vit_Constant_57_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+154277632);
-vit_Constant_161_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+154280704);
-vit_Constant_160_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+163717888);
-vit_Constant_819_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173155072);
-vit_Constant_829_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173155136);
-vit_Constant_62_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173155200);
-vit_Constant_63_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173158272);
-vit_Constant_58_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173161344);
-vit_Constant_59_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173173632);
-vit_Constant_165_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173176704);
-vit_Constant_164_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+175536000);
-vit_Constant_860_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177895296);
-vit_Constant_870_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177895360);
-vit_Constant_70_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177895424);
-vit_Constant_71_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177898496);
-vit_Constant_66_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177901568);
-vit_Constant_163_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177904640);
-vit_Constant_65_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+180263936);
-vit_Constant_162_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+180267008);
-vit_Constant_64_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+182626304);
-vit_Constant_67_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+182629376);
-vit_Constant_167_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+182632448);
-vit_Constant_166_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+192069632);
-vit_Constant_926_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201506816);
-vit_Constant_936_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201506880);
-vit_Constant_72_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201506944);
-vit_Constant_73_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201510016);
-vit_Constant_68_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201513088);
-vit_Constant_69_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201525376);
-vit_Constant_171_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201528448);
-vit_Constant_170_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+203887744);
-vit_Constant_967_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206247040);
-vit_Constant_977_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206247104);
-vit_Constant_80_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206247168);
-vit_Constant_81_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206250240);
-vit_Constant_76_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206253312);
-vit_Constant_169_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206256384);
-vit_Constant_75_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+208615680);
-vit_Constant_168_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+208618752);
-vit_Constant_74_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+210978048);
-vit_Constant_77_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+210981120);
-vit_Constant_173_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+210984192);
-vit_Constant_172_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+220421376);
-vit_Constant_1033_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229858560);
-vit_Constant_1043_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229858624);
-vit_Constant_82_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229858688);
-vit_Constant_83_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229861760);
-vit_Constant_78_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229864832);
-vit_Constant_79_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229877120);
-vit_Constant_177_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229880192);
-vit_Constant_176_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+232239488);
-vit_Constant_1074_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234598784);
-vit_Constant_1084_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234598848);
-vit_Constant_90_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234598912);
-vit_Constant_91_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234601984);
-vit_Constant_86_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234605056);
-vit_Constant_175_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234608128);
-vit_Constant_85_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+236967424);
-vit_Constant_174_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+236970496);
-vit_Constant_84_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+239329792);
-vit_Constant_87_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+239332864);
-vit_Constant_179_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+239335936);
-vit_Constant_178_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+248773120);
-vit_Constant_1140_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258210304);
-vit_Constant_1150_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258210368);
-vit_Constant_92_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258210432);
-vit_Constant_93_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258213504);
-vit_Constant_88_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258216576);
-vit_Constant_89_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258228864);
-vit_Constant_183_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258231936);
-vit_Constant_182_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+260591232);
-vit_Constant_1181_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262950528);
-vit_Constant_1191_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262950592);
-vit_Constant_100_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262950656);
-vit_Constant_101_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262953728);
-vit_Constant_96_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262956800);
-vit_Constant_181_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262959872);
-vit_Constant_95_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+265319168);
-vit_Constant_180_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+265322240);
-vit_Constant_94_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+267681536);
-vit_Constant_97_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+267684608);
-vit_Constant_185_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+267687680);
-vit_Constant_184_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+277124864);
-vit_Constant_1247_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286562048);
-vit_Constant_1257_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286562112);
-vit_Constant_102_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286562176);
-vit_Constant_103_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286565248);
-vit_Constant_98_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286568320);
-vit_Constant_99_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286580608);
-vit_Constant_189_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286583680);
-vit_Constant_188_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+288942976);
-vit_Constant_1288_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291302272);
-vit_Constant_1298_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291302336);
-vit_Constant_110_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291302400);
-vit_Constant_111_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291305472);
-vit_Constant_106_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291308544);
-vit_Constant_187_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291311616);
-vit_Constant_105_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+293670912);
-vit_Constant_186_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+293673984);
-vit_Constant_104_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+296033280);
-vit_Constant_107_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+296036352);
-vit_Constant_191_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+296039424);
-vit_Constant_190_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+305476608);
-vit_Constant_1354_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314913792);
-vit_Constant_1364_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314913856);
-vit_Constant_112_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314913920);
-vit_Constant_113_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314916992);
-vit_Constant_108_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314920064);
-vit_Constant_109_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314932352);
-vit_Constant_195_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314935424);
-vit_Constant_194_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+317294720);
-vit_Constant_1395_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319654016);
-vit_Constant_1405_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319654080);
-vit_Constant_120_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319654144);
-vit_Constant_121_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319657216);
-vit_Constant_116_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319660288);
-vit_Constant_193_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319663360);
-vit_Constant_115_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+322022656);
-vit_Constant_192_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+322025728);
-vit_Constant_114_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+324385024);
-vit_Constant_117_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+324388096);
-vit_Constant_197_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+324391168);
-vit_Constant_196_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+333828352);
-vit_Constant_1461_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343265536);
-vit_Constant_1471_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343265600);
-vit_Constant_122_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343265664);
-vit_Constant_123_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343268736);
-vit_Constant_118_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343271808);
-vit_Constant_119_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343284096);
-vit_Constant_1502_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343287168);
-vit_Constant_1512_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343287232);
-vit_Constant_124_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343287296);
-vit_Constant_125_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343290368);
-vit_last_hidden_state = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343293440);
-vit_Result_1527_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343293440);
+vit_Constant_129_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+3115008);
+vit_Constant_128_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+5474304);
+vit_Constant_218_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7833600);
+vit_Constant_206_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7833664);
+vit_Constant_228_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7833728);
+vit_Constant_202_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7833792);
+vit_Reshape_1516_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7833792);
+vit_Constant_10_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7833856);
+vit_Constant_11_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7836928);
+vit_Constant_6_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7840000);
+vit_Constant_127_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+7843072);
+vit_Constant_5_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+10202368);
+vit_Constant_201_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+10205440);
+vit_Reshape_248_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+10205440);
+vit_Constant_126_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+10205504);
+vit_Constant_4_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+12564800);
+vit_Constant_7_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+12567872);
+vit_Constant_131_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+12570944);
+vit_Constant_130_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+22008128);
+vit_Constant_284_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31445312);
+vit_Constant_294_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31445376);
+vit_Constant_12_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31445440);
+vit_Constant_13_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31448512);
+vit_Constant_8_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31451584);
+vit_Constant_205_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31463872);
+vit_Constant_203_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31463936);
+vit_Constant_204_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31464000);
+vit_Constant_9_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31464064);
+vit_Constant_135_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+31467136);
+vit_Constant_134_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+33826432);
+vit_Constant_325_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36185728);
+vit_Constant_335_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36185792);
+vit_Constant_20_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36185856);
+vit_Constant_21_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36188928);
+vit_Constant_16_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36192000);
+vit_Constant_133_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+36195072);
+vit_Constant_15_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+38554368);
+vit_Constant_132_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+38557440);
+vit_Constant_14_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+40916736);
+vit_Constant_17_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+40919808);
+vit_Constant_137_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+40922880);
+vit_Constant_136_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+50360064);
+vit_Constant_391_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59797248);
+vit_Constant_401_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59797312);
+vit_Constant_22_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59797376);
+vit_Constant_23_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59800448);
+vit_Constant_18_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59803520);
+vit_Constant_19_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59815808);
+vit_Constant_141_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+59818880);
+vit_Constant_140_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+62178176);
+vit_Constant_432_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64537472);
+vit_Constant_442_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64537536);
+vit_Constant_30_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64537600);
+vit_Constant_31_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64540672);
+vit_Constant_26_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64543744);
+vit_Constant_139_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+64546816);
+vit_Constant_25_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+66906112);
+vit_Constant_138_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+66909184);
+vit_Constant_24_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+69268480);
+vit_Constant_27_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+69271552);
+vit_Constant_143_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+69274624);
+vit_Constant_142_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+78711808);
+vit_Constant_498_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88148992);
+vit_Constant_508_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88149056);
+vit_Constant_32_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88149120);
+vit_Constant_33_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88152192);
+vit_Constant_28_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88155264);
+vit_Constant_29_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88167552);
+vit_Constant_147_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+88170624);
+vit_Constant_146_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+90529920);
+vit_Constant_539_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92889216);
+vit_Constant_549_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92889280);
+vit_Constant_40_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92889344);
+vit_Constant_41_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92892416);
+vit_Constant_36_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92895488);
+vit_Constant_145_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+92898560);
+vit_Constant_35_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+95257856);
+vit_Constant_144_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+95260928);
+vit_Constant_34_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+97620224);
+vit_Constant_37_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+97623296);
+vit_Constant_149_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+97626368);
+vit_Constant_148_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+107063552);
+vit_Constant_605_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116500736);
+vit_Constant_615_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116500800);
+vit_Constant_42_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116500864);
+vit_Constant_43_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116503936);
+vit_Constant_38_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116507008);
+vit_Constant_39_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116519296);
+vit_Constant_153_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+116522368);
+vit_Constant_152_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+118881664);
+vit_Constant_646_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121240960);
+vit_Constant_656_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121241024);
+vit_Constant_50_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121241088);
+vit_Constant_51_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121244160);
+vit_Constant_46_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121247232);
+vit_Constant_151_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+121250304);
+vit_Constant_45_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+123609600);
+vit_Constant_150_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+123612672);
+vit_Constant_44_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+125971968);
+vit_Constant_47_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+125975040);
+vit_Constant_155_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+125978112);
+vit_Constant_154_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+135415296);
+vit_Constant_712_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144852480);
+vit_Constant_722_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144852544);
+vit_Constant_52_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144852608);
+vit_Constant_53_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144855680);
+vit_Constant_48_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144858752);
+vit_Constant_49_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144871040);
+vit_Constant_159_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+144874112);
+vit_Constant_158_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+147233408);
+vit_Constant_753_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149592704);
+vit_Constant_763_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149592768);
+vit_Constant_60_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149592832);
+vit_Constant_61_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149595904);
+vit_Constant_56_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149598976);
+vit_Constant_157_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+149602048);
+vit_Constant_55_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+151961344);
+vit_Constant_156_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+151964416);
+vit_Constant_54_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+154323712);
+vit_Constant_57_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+154326784);
+vit_Constant_161_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+154329856);
+vit_Constant_160_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+163767040);
+vit_Constant_819_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173204224);
+vit_Constant_829_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173204288);
+vit_Constant_62_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173204352);
+vit_Constant_63_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173207424);
+vit_Constant_58_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173210496);
+vit_Constant_59_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173222784);
+vit_Constant_165_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+173225856);
+vit_Constant_164_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+175585152);
+vit_Constant_860_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177944448);
+vit_Constant_870_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177944512);
+vit_Constant_70_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177944576);
+vit_Constant_71_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177947648);
+vit_Constant_66_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177950720);
+vit_Constant_163_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+177953792);
+vit_Constant_65_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+180313088);
+vit_Constant_162_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+180316160);
+vit_Constant_64_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+182675456);
+vit_Constant_67_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+182678528);
+vit_Constant_167_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+182681600);
+vit_Constant_166_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+192118784);
+vit_Constant_926_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201555968);
+vit_Constant_936_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201556032);
+vit_Constant_72_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201556096);
+vit_Constant_73_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201559168);
+vit_Constant_68_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201562240);
+vit_Constant_69_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201574528);
+vit_Constant_171_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+201577600);
+vit_Constant_170_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+203936896);
+vit_Constant_967_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206296192);
+vit_Constant_977_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206296256);
+vit_Constant_80_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206296320);
+vit_Constant_81_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206299392);
+vit_Constant_76_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206302464);
+vit_Constant_169_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+206305536);
+vit_Constant_75_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+208664832);
+vit_Constant_168_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+208667904);
+vit_Constant_74_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+211027200);
+vit_Constant_77_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+211030272);
+vit_Constant_173_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+211033344);
+vit_Constant_172_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+220470528);
+vit_Constant_1033_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229907712);
+vit_Constant_1043_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229907776);
+vit_Constant_82_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229907840);
+vit_Constant_83_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229910912);
+vit_Constant_78_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229913984);
+vit_Constant_79_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229926272);
+vit_Constant_177_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+229929344);
+vit_Constant_176_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+232288640);
+vit_Constant_1074_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234647936);
+vit_Constant_1084_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234648000);
+vit_Constant_90_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234648064);
+vit_Constant_91_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234651136);
+vit_Constant_86_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234654208);
+vit_Constant_175_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+234657280);
+vit_Constant_85_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+237016576);
+vit_Constant_174_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+237019648);
+vit_Constant_84_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+239378944);
+vit_Constant_87_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+239382016);
+vit_Constant_179_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+239385088);
+vit_Constant_178_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+248822272);
+vit_Constant_1140_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258259456);
+vit_Constant_1150_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258259520);
+vit_Constant_92_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258259584);
+vit_Constant_93_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258262656);
+vit_Constant_88_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258265728);
+vit_Constant_89_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258278016);
+vit_Constant_183_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+258281088);
+vit_Constant_182_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+260640384);
+vit_Constant_1181_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262999680);
+vit_Constant_1191_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262999744);
+vit_Constant_100_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+262999808);
+vit_Constant_101_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+263002880);
+vit_Constant_96_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+263005952);
+vit_Constant_181_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+263009024);
+vit_Constant_95_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+265368320);
+vit_Constant_180_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+265371392);
+vit_Constant_94_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+267730688);
+vit_Constant_97_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+267733760);
+vit_Constant_185_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+267736832);
+vit_Constant_184_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+277174016);
+vit_Constant_1247_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286611200);
+vit_Constant_1257_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286611264);
+vit_Constant_102_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286611328);
+vit_Constant_103_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286614400);
+vit_Constant_98_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286617472);
+vit_Constant_99_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286629760);
+vit_Constant_189_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+286632832);
+vit_Constant_188_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+288992128);
+vit_Constant_1288_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291351424);
+vit_Constant_1298_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291351488);
+vit_Constant_110_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291351552);
+vit_Constant_111_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291354624);
+vit_Constant_106_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291357696);
+vit_Constant_187_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+291360768);
+vit_Constant_105_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+293720064);
+vit_Constant_186_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+293723136);
+vit_Constant_104_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+296082432);
+vit_Constant_107_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+296085504);
+vit_Constant_191_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+296088576);
+vit_Constant_190_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+305525760);
+vit_Constant_1354_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314962944);
+vit_Constant_1364_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314963008);
+vit_Constant_112_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314963072);
+vit_Constant_113_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314966144);
+vit_Constant_108_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314969216);
+vit_Constant_109_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314981504);
+vit_Constant_195_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+314984576);
+vit_Constant_194_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+317343872);
+vit_Constant_1395_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319703168);
+vit_Constant_1405_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319703232);
+vit_Constant_120_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319703296);
+vit_Constant_121_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319706368);
+vit_Constant_116_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319709440);
+vit_Constant_193_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+319712512);
+vit_Constant_115_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+322071808);
+vit_Constant_192_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+322074880);
+vit_Constant_114_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+324434176);
+vit_Constant_117_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+324437248);
+vit_Constant_197_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+324440320);
+vit_Constant_196_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+333877504);
+vit_Constant_1461_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343314688);
+vit_Constant_1471_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343314752);
+vit_Constant_122_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343314816);
+vit_Constant_123_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343317888);
+vit_Constant_118_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343320960);
+vit_Constant_119_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343333248);
+vit_Constant_1502_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343336320);
+vit_Constant_1512_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343336384);
+vit_Constant_124_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343336448);
+vit_Constant_125_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343339520);
+vit_last_hidden_state = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343342592);
+vit_Result_1527_0 = (float*)(vit_group_persist_CUDA_GPU0_allocator_memory_pool+343342592);
 // create streams/handles
 CUBLAS_SAFE_CALL(cublasCreate(&vit_cublas_handle_0));
 CUDNN_SAFE_CALL(cudnnCreate(&vit_cudnn_handle_0));
@@ -8605,17 +8605,17 @@ private:
 
     
 std::vector<int> getArgs() override {
-    return std::vector<int>({32, 3, 224, 224, 768, 3, 16, 16, 0, 0, 16, 16, 1, 1});
+    return std::vector<int>({48, 3, 224, 224, 768, 3, 16, 16, 0, 0, 16, 16, 1, 1});
 }
 
     void Convolution_float_float_float_cuda_lib_Convolution_208(cudnnHandle_t cudnn_handle, float* input0, float* input1, float* output0)
 {
     cudnnTensorDescriptor_t tensor_desc_0;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_0));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 3, 224, 224));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_0, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 48, 3, 224, 224));
     cudnnTensorDescriptor_t tensor_desc_1;
     CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&tensor_desc_1));
-    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 32, 768, 14, 14));
+    CUDNN_SAFE_CALL(cudnnSetTensor4dDescriptor(tensor_desc_1, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 48, 768, 14, 14));
     cudnnFilterDescriptor_t filter_desc;
     CUDNN_SAFE_CALL(cudnnCreateFilterDescriptor(&filter_desc));
     CUDNN_SAFE_CALL(cudnnSetFilter4dDescriptor(filter_desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, 768, 3, 16, 16));
@@ -8987,7 +8987,7 @@ private:
 std::vector<int> getArgs() override {
     std::vector<int> ret(3);
     ret[0] = 768;
-    ret[1] = 6304;
+    ret[1] = 9456;
     ret[2] = 768;
     return ret;
 }
@@ -8996,7 +8996,7 @@ std::vector<int> getArgs() override {
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(mycublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 768, 6304, 768, &alpha, static_cast<const float*>(input1), 768, static_cast<const float*>(input0), 768, &beta, static_cast<float*>(output0), 768));
+    CUBLAS_SAFE_CALL(mycublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 768, 9456, 768, &alpha, static_cast<const float*>(input1), 768, static_cast<const float*>(input0), 768, &beta, static_cast<float*>(output0), 768));
 
 }
 
@@ -9186,7 +9186,7 @@ std::vector<int> getArgs() override {
                                 CUBLAS_SAFE_CALL(cublasSgemmStridedBatched(
                                     cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 197, 197, 64,
                                     &alpha, input1, 197, 12608, input0, 64, 12608,
-                                    &beta, output0, 197, 38809, 384));
+                                    &beta, output0, 197, 38809, 576));
                             
     }
 
@@ -9227,7 +9227,7 @@ std::vector<int> getArgs() override {
     void Softmax_float_float_cuda_lib_Softmax_265(cudaStream_t stream, float* input0, float* output0)
 {
 
-    dispatch_softmax_forward<float, float, float, false>(stream, output0, input0, 197, 197, 75648);
+    dispatch_softmax_forward<float, float, float, false>(stream, output0, input0, 197, 197, 113472);
         
 
 }
@@ -9274,7 +9274,7 @@ std::vector<int> getArgs() override {
                                 CUBLAS_SAFE_CALL(cublasSgemmStridedBatched(
                                     cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 64, 197, 197,
                                     &alpha, input1, 64, 12608, input0, 197, 38809,
-                                    &beta, output0, 64, 12608, 384));
+                                    &beta, output0, 64, 12608, 576));
                             
     }
 
@@ -9383,7 +9383,7 @@ private:
 std::vector<int> getArgs() override {
     std::vector<int> ret(3);
     ret[0] = 3072;
-    ret[1] = 6304;
+    ret[1] = 9456;
     ret[2] = 768;
     return ret;
 }
@@ -9392,7 +9392,7 @@ std::vector<int> getArgs() override {
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(mycublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 3072, 6304, 768, &alpha, static_cast<const float*>(input1), 3072, static_cast<const float*>(input0), 768, &beta, static_cast<float*>(output0), 3072));
+    CUBLAS_SAFE_CALL(mycublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 3072, 9456, 768, &alpha, static_cast<const float*>(input1), 3072, static_cast<const float*>(input0), 768, &beta, static_cast<float*>(output0), 3072));
 
 }
 
@@ -9463,7 +9463,7 @@ private:
 std::vector<int> getArgs() override {
     std::vector<int> ret(3);
     ret[0] = 768;
-    ret[1] = 6304;
+    ret[1] = 9456;
     ret[2] = 3072;
     return ret;
 }
@@ -9472,7 +9472,7 @@ std::vector<int> getArgs() override {
 {
     const float alpha = 1.0;
     const float beta = 0;
-    CUBLAS_SAFE_CALL(mycublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 768, 6304, 3072, &alpha, static_cast<const float*>(input1), 768, static_cast<const float*>(input0), 3072, &beta, static_cast<float*>(output0), 768));
+    CUBLAS_SAFE_CALL(mycublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, 768, 9456, 3072, &alpha, static_cast<const float*>(input1), 768, static_cast<const float*>(input0), 3072, &beta, static_cast<float*>(output0), 768));
 
 }
 
@@ -9518,414 +9518,414 @@ std::vector<int> getArgs() override {
     }
 };
 void ViT::gen_vector(float*  Parameter_207_0, float**  vit_Result_1527_0) {
-    kernels.emplace_back(new vit_Broadcast_float_float_cuda_Broadcast_215_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_214_0), std::move(vit_Broadcast_215_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Broadcast_float_float_cuda_Broadcast_209_CallKernel(dim3(75264, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Constant_3_0), std::move(vit_Broadcast_209_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Broadcast_float_float_cuda_Broadcast_215_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_214_0), std::move(vit_Broadcast_215_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Broadcast_float_float_cuda_Broadcast_209_CallKernel(dim3(112896, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Constant_3_0), std::move(vit_Broadcast_209_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Convolution_float_float_float_cuda_lib_Convolution_208Kernel(std::move(vit_cudnn_handle_0), std::move(Parameter_207_0), std::move(vit_Constant_2_0), std::move(vit_Convolution_208_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Add_float_float_float_cuda_Add_210_CallKernel(dim3(9408, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Convolution_208_0), std::move(vit_Broadcast_209_0), std::move(vit_Add_210_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_212_CallKernel(dim3(13, 48, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_211_0), std::move(vit_Reshape_212_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Concat_float_float_float_cuda_Concat_213_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_200_0), std::move(vit_Reshape_212_0), std::move(vit_Concat_213_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Add_float_float_float_cuda_Add_210_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Concat_213_0), std::move(vit_Broadcast_215_0), std::move(vit_Add_216_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_216_0), std::move(vit_Sum_217_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_218_0), std::move(vit_Sum_217_0), std::move(vit_Divide_220_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_222_0), std::move(vit_Add_216_0), std::move(vit_Subtract_224_0), std::move(vit_Power_226_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_226_0), std::move(vit_Sum_227_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_228_0), std::move(vit_Sum_227_0), std::move(vit_Sqrt_235_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_11_0), std::move(vit_Constant_10_0), std::move(vit_Reshape_236_0), std::move(vit_Subtract_224_0), std::move(vit_Add_242_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Add_float_float_float_cuda_Add_210_CallKernel(dim3(14112, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Convolution_208_0), std::move(vit_Broadcast_209_0), std::move(vit_Add_210_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_212_CallKernel(dim3(13, 48, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_211_0), std::move(vit_Reshape_212_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Concat_float_float_float_cuda_Concat_213_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_200_0), std::move(vit_Reshape_212_0), std::move(vit_Concat_213_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Add_float_float_float_cuda_Add_210_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Concat_213_0), std::move(vit_Broadcast_215_0), std::move(vit_Add_216_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_216_0), std::move(vit_Sum_217_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_218_0), std::move(vit_Sum_217_0), std::move(vit_Divide_220_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_222_0), std::move(vit_Add_216_0), std::move(vit_Subtract_224_0), std::move(vit_Power_226_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_226_0), std::move(vit_Sum_227_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_228_0), std::move(vit_Sum_227_0), std::move(vit_Sqrt_235_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_11_0), std::move(vit_Constant_10_0), std::move(vit_Reshape_236_0), std::move(vit_Subtract_224_0), std::move(vit_Add_242_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_242_0), std::move(vit_Constant_128_0), std::move(vit_Dot_266_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_6_0), std::move(vit_Dot_266_0), std::move(vit_Add_268_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_269_0), std::move(vit_Reshape_270_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_6_0), std::move(vit_Dot_266_0), std::move(vit_Add_268_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_269_0), std::move(vit_Reshape_270_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_242_0), std::move(vit_Constant_127_0), std::move(vit_Dot_243_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_5_0), std::move(vit_Dot_243_0), std::move(vit_Add_245_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_246_0), std::move(vit_Reshape_247_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_247_0), std::move(vit_Multiply_250_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_5_0), std::move(vit_Dot_243_0), std::move(vit_Add_245_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_246_0), std::move(vit_Reshape_247_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_247_0), std::move(vit_Multiply_250_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_242_0), std::move(vit_Constant_126_0), std::move(vit_Dot_251_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_4_0), std::move(vit_Dot_251_0), std::move(vit_Add_253_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_254_0), std::move(vit_Reshape_255_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_255_0), std::move(vit_Multiply_258_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_4_0), std::move(vit_Dot_251_0), std::move(vit_Add_253_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_254_0), std::move(vit_Reshape_255_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_255_0), std::move(vit_Multiply_258_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_261_0), std::move(vit_Broadcast_262_0), std::move(vit_BatchMatMul_263_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_264_0), std::move(vit_Softmax_265_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_273_0), std::move(vit_Broadcast_274_0), std::move(vit_BatchMatMul_275_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_276_0), std::move(vit_Reshape_277_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_276_0), std::move(vit_Reshape_277_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_278_0), std::move(vit_Constant_129_0), std::move(vit_Dot_279_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_7_0), std::move(vit_Dot_279_0), std::move(vit_Add_216_0), std::move(vit_Add_282_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_282_0), std::move(vit_Sum_283_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_284_0), std::move(vit_Sum_283_0), std::move(vit_Divide_286_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_288_0), std::move(vit_Add_282_0), std::move(vit_Subtract_290_0), std::move(vit_Power_292_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_292_0), std::move(vit_Sum_293_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_294_0), std::move(vit_Sum_293_0), std::move(vit_Sqrt_301_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_13_0), std::move(vit_Constant_12_0), std::move(vit_Reshape_302_0), std::move(vit_Subtract_290_0), std::move(vit_Add_308_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_7_0), std::move(vit_Dot_279_0), std::move(vit_Add_216_0), std::move(vit_Add_282_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_282_0), std::move(vit_Sum_283_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_284_0), std::move(vit_Sum_283_0), std::move(vit_Divide_286_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_288_0), std::move(vit_Add_282_0), std::move(vit_Subtract_290_0), std::move(vit_Power_292_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_292_0), std::move(vit_Sum_293_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_294_0), std::move(vit_Sum_293_0), std::move(vit_Sqrt_301_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_13_0), std::move(vit_Constant_12_0), std::move(vit_Reshape_302_0), std::move(vit_Subtract_290_0), std::move(vit_Add_308_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_308_0), std::move(vit_Constant_130_0), std::move(vit_Dot_309_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_8_0), std::move(vit_Dot_309_0), std::move(vit_Multiply_319_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_8_0), std::move(vit_Dot_309_0), std::move(vit_Multiply_319_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_319_0), std::move(vit_Constant_131_0), std::move(vit_Dot_320_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_9_0), std::move(vit_Dot_320_0), std::move(vit_Add_282_0), std::move(vit_Add_323_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_323_0), std::move(vit_Sum_324_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_325_0), std::move(vit_Sum_324_0), std::move(vit_Divide_327_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_329_0), std::move(vit_Add_323_0), std::move(vit_Subtract_331_0), std::move(vit_Power_333_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_333_0), std::move(vit_Sum_334_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_335_0), std::move(vit_Sum_334_0), std::move(vit_Sqrt_342_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_21_0), std::move(vit_Constant_20_0), std::move(vit_Reshape_343_0), std::move(vit_Subtract_331_0), std::move(vit_Add_349_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_9_0), std::move(vit_Dot_320_0), std::move(vit_Add_282_0), std::move(vit_Add_323_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_323_0), std::move(vit_Sum_324_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_325_0), std::move(vit_Sum_324_0), std::move(vit_Divide_327_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_329_0), std::move(vit_Add_323_0), std::move(vit_Subtract_331_0), std::move(vit_Power_333_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_333_0), std::move(vit_Sum_334_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_335_0), std::move(vit_Sum_334_0), std::move(vit_Sqrt_342_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_21_0), std::move(vit_Constant_20_0), std::move(vit_Reshape_343_0), std::move(vit_Subtract_331_0), std::move(vit_Add_349_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_349_0), std::move(vit_Constant_134_0), std::move(vit_Dot_373_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_16_0), std::move(vit_Dot_373_0), std::move(vit_Add_375_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_376_0), std::move(vit_Reshape_377_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_16_0), std::move(vit_Dot_373_0), std::move(vit_Add_375_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_376_0), std::move(vit_Reshape_377_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_349_0), std::move(vit_Constant_133_0), std::move(vit_Dot_350_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_15_0), std::move(vit_Dot_350_0), std::move(vit_Add_352_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_353_0), std::move(vit_Reshape_354_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_354_0), std::move(vit_Multiply_357_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_15_0), std::move(vit_Dot_350_0), std::move(vit_Add_352_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_353_0), std::move(vit_Reshape_354_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_354_0), std::move(vit_Multiply_357_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_349_0), std::move(vit_Constant_132_0), std::move(vit_Dot_358_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_14_0), std::move(vit_Dot_358_0), std::move(vit_Add_360_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_361_0), std::move(vit_Reshape_362_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_362_0), std::move(vit_Multiply_365_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_14_0), std::move(vit_Dot_358_0), std::move(vit_Add_360_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_361_0), std::move(vit_Reshape_362_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_362_0), std::move(vit_Multiply_365_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_368_0), std::move(vit_Broadcast_369_0), std::move(vit_BatchMatMul_370_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_371_0), std::move(vit_Softmax_372_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_380_0), std::move(vit_Broadcast_381_0), std::move(vit_BatchMatMul_382_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_383_0), std::move(vit_Reshape_384_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_383_0), std::move(vit_Reshape_384_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_385_0), std::move(vit_Constant_135_0), std::move(vit_Dot_386_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_17_0), std::move(vit_Dot_386_0), std::move(vit_Add_323_0), std::move(vit_Add_389_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_389_0), std::move(vit_Sum_390_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_391_0), std::move(vit_Sum_390_0), std::move(vit_Divide_393_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_395_0), std::move(vit_Add_389_0), std::move(vit_Subtract_397_0), std::move(vit_Power_399_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_399_0), std::move(vit_Sum_400_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_401_0), std::move(vit_Sum_400_0), std::move(vit_Sqrt_408_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_23_0), std::move(vit_Constant_22_0), std::move(vit_Reshape_409_0), std::move(vit_Subtract_397_0), std::move(vit_Add_415_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_17_0), std::move(vit_Dot_386_0), std::move(vit_Add_323_0), std::move(vit_Add_389_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_389_0), std::move(vit_Sum_390_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_391_0), std::move(vit_Sum_390_0), std::move(vit_Divide_393_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_395_0), std::move(vit_Add_389_0), std::move(vit_Subtract_397_0), std::move(vit_Power_399_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_399_0), std::move(vit_Sum_400_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_401_0), std::move(vit_Sum_400_0), std::move(vit_Sqrt_408_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_23_0), std::move(vit_Constant_22_0), std::move(vit_Reshape_409_0), std::move(vit_Subtract_397_0), std::move(vit_Add_415_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_415_0), std::move(vit_Constant_136_0), std::move(vit_Dot_416_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_18_0), std::move(vit_Dot_416_0), std::move(vit_Multiply_426_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_18_0), std::move(vit_Dot_416_0), std::move(vit_Multiply_426_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_426_0), std::move(vit_Constant_137_0), std::move(vit_Dot_427_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_19_0), std::move(vit_Dot_427_0), std::move(vit_Add_389_0), std::move(vit_Add_430_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_430_0), std::move(vit_Sum_431_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_432_0), std::move(vit_Sum_431_0), std::move(vit_Divide_434_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_436_0), std::move(vit_Add_430_0), std::move(vit_Subtract_438_0), std::move(vit_Power_440_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_440_0), std::move(vit_Sum_441_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_442_0), std::move(vit_Sum_441_0), std::move(vit_Sqrt_449_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_31_0), std::move(vit_Constant_30_0), std::move(vit_Reshape_450_0), std::move(vit_Subtract_438_0), std::move(vit_Add_456_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_19_0), std::move(vit_Dot_427_0), std::move(vit_Add_389_0), std::move(vit_Add_430_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_430_0), std::move(vit_Sum_431_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_432_0), std::move(vit_Sum_431_0), std::move(vit_Divide_434_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_436_0), std::move(vit_Add_430_0), std::move(vit_Subtract_438_0), std::move(vit_Power_440_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_440_0), std::move(vit_Sum_441_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_442_0), std::move(vit_Sum_441_0), std::move(vit_Sqrt_449_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_31_0), std::move(vit_Constant_30_0), std::move(vit_Reshape_450_0), std::move(vit_Subtract_438_0), std::move(vit_Add_456_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_456_0), std::move(vit_Constant_140_0), std::move(vit_Dot_480_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_26_0), std::move(vit_Dot_480_0), std::move(vit_Add_482_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_483_0), std::move(vit_Reshape_484_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_26_0), std::move(vit_Dot_480_0), std::move(vit_Add_482_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_483_0), std::move(vit_Reshape_484_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_456_0), std::move(vit_Constant_139_0), std::move(vit_Dot_457_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_25_0), std::move(vit_Dot_457_0), std::move(vit_Add_459_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_460_0), std::move(vit_Reshape_461_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_461_0), std::move(vit_Multiply_464_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_25_0), std::move(vit_Dot_457_0), std::move(vit_Add_459_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_460_0), std::move(vit_Reshape_461_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_461_0), std::move(vit_Multiply_464_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_456_0), std::move(vit_Constant_138_0), std::move(vit_Dot_465_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_24_0), std::move(vit_Dot_465_0), std::move(vit_Add_467_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_468_0), std::move(vit_Reshape_469_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_469_0), std::move(vit_Multiply_472_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_24_0), std::move(vit_Dot_465_0), std::move(vit_Add_467_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_468_0), std::move(vit_Reshape_469_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_469_0), std::move(vit_Multiply_472_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_475_0), std::move(vit_Broadcast_476_0), std::move(vit_BatchMatMul_477_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_478_0), std::move(vit_Softmax_479_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_487_0), std::move(vit_Broadcast_488_0), std::move(vit_BatchMatMul_489_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_490_0), std::move(vit_Reshape_491_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_490_0), std::move(vit_Reshape_491_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_492_0), std::move(vit_Constant_141_0), std::move(vit_Dot_493_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_27_0), std::move(vit_Dot_493_0), std::move(vit_Add_430_0), std::move(vit_Add_496_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_496_0), std::move(vit_Sum_497_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_498_0), std::move(vit_Sum_497_0), std::move(vit_Divide_500_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_502_0), std::move(vit_Add_496_0), std::move(vit_Subtract_504_0), std::move(vit_Power_506_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_506_0), std::move(vit_Sum_507_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_508_0), std::move(vit_Sum_507_0), std::move(vit_Sqrt_515_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_33_0), std::move(vit_Constant_32_0), std::move(vit_Reshape_516_0), std::move(vit_Subtract_504_0), std::move(vit_Add_522_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_27_0), std::move(vit_Dot_493_0), std::move(vit_Add_430_0), std::move(vit_Add_496_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_496_0), std::move(vit_Sum_497_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_498_0), std::move(vit_Sum_497_0), std::move(vit_Divide_500_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_502_0), std::move(vit_Add_496_0), std::move(vit_Subtract_504_0), std::move(vit_Power_506_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_506_0), std::move(vit_Sum_507_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_508_0), std::move(vit_Sum_507_0), std::move(vit_Sqrt_515_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_33_0), std::move(vit_Constant_32_0), std::move(vit_Reshape_516_0), std::move(vit_Subtract_504_0), std::move(vit_Add_522_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_522_0), std::move(vit_Constant_142_0), std::move(vit_Dot_523_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_28_0), std::move(vit_Dot_523_0), std::move(vit_Multiply_533_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_28_0), std::move(vit_Dot_523_0), std::move(vit_Multiply_533_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_533_0), std::move(vit_Constant_143_0), std::move(vit_Dot_534_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_29_0), std::move(vit_Dot_534_0), std::move(vit_Add_496_0), std::move(vit_Add_537_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_537_0), std::move(vit_Sum_538_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_539_0), std::move(vit_Sum_538_0), std::move(vit_Divide_541_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_543_0), std::move(vit_Add_537_0), std::move(vit_Subtract_545_0), std::move(vit_Power_547_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_547_0), std::move(vit_Sum_548_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_549_0), std::move(vit_Sum_548_0), std::move(vit_Sqrt_556_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_41_0), std::move(vit_Constant_40_0), std::move(vit_Reshape_557_0), std::move(vit_Subtract_545_0), std::move(vit_Add_563_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_29_0), std::move(vit_Dot_534_0), std::move(vit_Add_496_0), std::move(vit_Add_537_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_537_0), std::move(vit_Sum_538_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_539_0), std::move(vit_Sum_538_0), std::move(vit_Divide_541_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_543_0), std::move(vit_Add_537_0), std::move(vit_Subtract_545_0), std::move(vit_Power_547_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_547_0), std::move(vit_Sum_548_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_549_0), std::move(vit_Sum_548_0), std::move(vit_Sqrt_556_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_41_0), std::move(vit_Constant_40_0), std::move(vit_Reshape_557_0), std::move(vit_Subtract_545_0), std::move(vit_Add_563_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_563_0), std::move(vit_Constant_146_0), std::move(vit_Dot_587_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_36_0), std::move(vit_Dot_587_0), std::move(vit_Add_589_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_590_0), std::move(vit_Reshape_591_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_36_0), std::move(vit_Dot_587_0), std::move(vit_Add_589_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_590_0), std::move(vit_Reshape_591_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_563_0), std::move(vit_Constant_145_0), std::move(vit_Dot_564_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_35_0), std::move(vit_Dot_564_0), std::move(vit_Add_566_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_567_0), std::move(vit_Reshape_568_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_568_0), std::move(vit_Multiply_571_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_35_0), std::move(vit_Dot_564_0), std::move(vit_Add_566_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_567_0), std::move(vit_Reshape_568_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_568_0), std::move(vit_Multiply_571_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_563_0), std::move(vit_Constant_144_0), std::move(vit_Dot_572_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_34_0), std::move(vit_Dot_572_0), std::move(vit_Add_574_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_575_0), std::move(vit_Reshape_576_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_576_0), std::move(vit_Multiply_579_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_34_0), std::move(vit_Dot_572_0), std::move(vit_Add_574_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_575_0), std::move(vit_Reshape_576_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_576_0), std::move(vit_Multiply_579_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_582_0), std::move(vit_Broadcast_583_0), std::move(vit_BatchMatMul_584_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_585_0), std::move(vit_Softmax_586_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_594_0), std::move(vit_Broadcast_595_0), std::move(vit_BatchMatMul_596_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_597_0), std::move(vit_Reshape_598_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_597_0), std::move(vit_Reshape_598_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_599_0), std::move(vit_Constant_147_0), std::move(vit_Dot_600_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_37_0), std::move(vit_Dot_600_0), std::move(vit_Add_537_0), std::move(vit_Add_603_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_603_0), std::move(vit_Sum_604_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_605_0), std::move(vit_Sum_604_0), std::move(vit_Divide_607_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_609_0), std::move(vit_Add_603_0), std::move(vit_Subtract_611_0), std::move(vit_Power_613_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_613_0), std::move(vit_Sum_614_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_615_0), std::move(vit_Sum_614_0), std::move(vit_Sqrt_622_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_43_0), std::move(vit_Constant_42_0), std::move(vit_Reshape_623_0), std::move(vit_Subtract_611_0), std::move(vit_Add_629_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_37_0), std::move(vit_Dot_600_0), std::move(vit_Add_537_0), std::move(vit_Add_603_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_603_0), std::move(vit_Sum_604_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_605_0), std::move(vit_Sum_604_0), std::move(vit_Divide_607_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_609_0), std::move(vit_Add_603_0), std::move(vit_Subtract_611_0), std::move(vit_Power_613_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_613_0), std::move(vit_Sum_614_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_615_0), std::move(vit_Sum_614_0), std::move(vit_Sqrt_622_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_43_0), std::move(vit_Constant_42_0), std::move(vit_Reshape_623_0), std::move(vit_Subtract_611_0), std::move(vit_Add_629_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_629_0), std::move(vit_Constant_148_0), std::move(vit_Dot_630_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_38_0), std::move(vit_Dot_630_0), std::move(vit_Multiply_640_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_38_0), std::move(vit_Dot_630_0), std::move(vit_Multiply_640_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_640_0), std::move(vit_Constant_149_0), std::move(vit_Dot_641_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_39_0), std::move(vit_Dot_641_0), std::move(vit_Add_603_0), std::move(vit_Add_644_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_644_0), std::move(vit_Sum_645_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_646_0), std::move(vit_Sum_645_0), std::move(vit_Divide_648_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_650_0), std::move(vit_Add_644_0), std::move(vit_Subtract_652_0), std::move(vit_Power_654_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_654_0), std::move(vit_Sum_655_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_656_0), std::move(vit_Sum_655_0), std::move(vit_Sqrt_663_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_51_0), std::move(vit_Constant_50_0), std::move(vit_Reshape_664_0), std::move(vit_Subtract_652_0), std::move(vit_Add_670_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_39_0), std::move(vit_Dot_641_0), std::move(vit_Add_603_0), std::move(vit_Add_644_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_644_0), std::move(vit_Sum_645_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_646_0), std::move(vit_Sum_645_0), std::move(vit_Divide_648_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_650_0), std::move(vit_Add_644_0), std::move(vit_Subtract_652_0), std::move(vit_Power_654_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_654_0), std::move(vit_Sum_655_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_656_0), std::move(vit_Sum_655_0), std::move(vit_Sqrt_663_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_51_0), std::move(vit_Constant_50_0), std::move(vit_Reshape_664_0), std::move(vit_Subtract_652_0), std::move(vit_Add_670_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_670_0), std::move(vit_Constant_152_0), std::move(vit_Dot_694_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_46_0), std::move(vit_Dot_694_0), std::move(vit_Add_696_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_697_0), std::move(vit_Reshape_698_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_46_0), std::move(vit_Dot_694_0), std::move(vit_Add_696_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_697_0), std::move(vit_Reshape_698_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_670_0), std::move(vit_Constant_151_0), std::move(vit_Dot_671_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_45_0), std::move(vit_Dot_671_0), std::move(vit_Add_673_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_674_0), std::move(vit_Reshape_675_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_675_0), std::move(vit_Multiply_678_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_45_0), std::move(vit_Dot_671_0), std::move(vit_Add_673_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_674_0), std::move(vit_Reshape_675_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_675_0), std::move(vit_Multiply_678_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_670_0), std::move(vit_Constant_150_0), std::move(vit_Dot_679_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_44_0), std::move(vit_Dot_679_0), std::move(vit_Add_681_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_682_0), std::move(vit_Reshape_683_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_683_0), std::move(vit_Multiply_686_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_44_0), std::move(vit_Dot_679_0), std::move(vit_Add_681_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_682_0), std::move(vit_Reshape_683_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_683_0), std::move(vit_Multiply_686_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_689_0), std::move(vit_Broadcast_690_0), std::move(vit_BatchMatMul_691_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_692_0), std::move(vit_Softmax_693_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_701_0), std::move(vit_Broadcast_702_0), std::move(vit_BatchMatMul_703_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_704_0), std::move(vit_Reshape_705_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_704_0), std::move(vit_Reshape_705_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_706_0), std::move(vit_Constant_153_0), std::move(vit_Dot_707_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_47_0), std::move(vit_Dot_707_0), std::move(vit_Add_644_0), std::move(vit_Add_710_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_710_0), std::move(vit_Sum_711_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_712_0), std::move(vit_Sum_711_0), std::move(vit_Divide_714_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_716_0), std::move(vit_Add_710_0), std::move(vit_Subtract_718_0), std::move(vit_Power_720_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_720_0), std::move(vit_Sum_721_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_722_0), std::move(vit_Sum_721_0), std::move(vit_Sqrt_729_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_53_0), std::move(vit_Constant_52_0), std::move(vit_Reshape_730_0), std::move(vit_Subtract_718_0), std::move(vit_Add_736_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_47_0), std::move(vit_Dot_707_0), std::move(vit_Add_644_0), std::move(vit_Add_710_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_710_0), std::move(vit_Sum_711_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_712_0), std::move(vit_Sum_711_0), std::move(vit_Divide_714_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_716_0), std::move(vit_Add_710_0), std::move(vit_Subtract_718_0), std::move(vit_Power_720_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_720_0), std::move(vit_Sum_721_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_722_0), std::move(vit_Sum_721_0), std::move(vit_Sqrt_729_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_53_0), std::move(vit_Constant_52_0), std::move(vit_Reshape_730_0), std::move(vit_Subtract_718_0), std::move(vit_Add_736_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_736_0), std::move(vit_Constant_154_0), std::move(vit_Dot_737_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_48_0), std::move(vit_Dot_737_0), std::move(vit_Multiply_747_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_48_0), std::move(vit_Dot_737_0), std::move(vit_Multiply_747_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_747_0), std::move(vit_Constant_155_0), std::move(vit_Dot_748_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_49_0), std::move(vit_Dot_748_0), std::move(vit_Add_710_0), std::move(vit_Add_751_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_751_0), std::move(vit_Sum_752_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_753_0), std::move(vit_Sum_752_0), std::move(vit_Divide_755_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_757_0), std::move(vit_Add_751_0), std::move(vit_Subtract_759_0), std::move(vit_Power_761_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_761_0), std::move(vit_Sum_762_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_763_0), std::move(vit_Sum_762_0), std::move(vit_Sqrt_770_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_61_0), std::move(vit_Constant_60_0), std::move(vit_Reshape_771_0), std::move(vit_Subtract_759_0), std::move(vit_Add_777_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_49_0), std::move(vit_Dot_748_0), std::move(vit_Add_710_0), std::move(vit_Add_751_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_751_0), std::move(vit_Sum_752_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_753_0), std::move(vit_Sum_752_0), std::move(vit_Divide_755_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_757_0), std::move(vit_Add_751_0), std::move(vit_Subtract_759_0), std::move(vit_Power_761_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_761_0), std::move(vit_Sum_762_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_763_0), std::move(vit_Sum_762_0), std::move(vit_Sqrt_770_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_61_0), std::move(vit_Constant_60_0), std::move(vit_Reshape_771_0), std::move(vit_Subtract_759_0), std::move(vit_Add_777_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_777_0), std::move(vit_Constant_158_0), std::move(vit_Dot_801_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_56_0), std::move(vit_Dot_801_0), std::move(vit_Add_803_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_804_0), std::move(vit_Reshape_805_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_56_0), std::move(vit_Dot_801_0), std::move(vit_Add_803_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_804_0), std::move(vit_Reshape_805_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_777_0), std::move(vit_Constant_157_0), std::move(vit_Dot_778_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_55_0), std::move(vit_Dot_778_0), std::move(vit_Add_780_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_781_0), std::move(vit_Reshape_782_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_782_0), std::move(vit_Multiply_785_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_55_0), std::move(vit_Dot_778_0), std::move(vit_Add_780_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_781_0), std::move(vit_Reshape_782_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_782_0), std::move(vit_Multiply_785_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_777_0), std::move(vit_Constant_156_0), std::move(vit_Dot_786_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_54_0), std::move(vit_Dot_786_0), std::move(vit_Add_788_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_789_0), std::move(vit_Reshape_790_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_790_0), std::move(vit_Multiply_793_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_54_0), std::move(vit_Dot_786_0), std::move(vit_Add_788_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_789_0), std::move(vit_Reshape_790_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_790_0), std::move(vit_Multiply_793_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_796_0), std::move(vit_Broadcast_797_0), std::move(vit_BatchMatMul_798_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_799_0), std::move(vit_Softmax_800_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_808_0), std::move(vit_Broadcast_809_0), std::move(vit_BatchMatMul_810_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_811_0), std::move(vit_Reshape_812_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_811_0), std::move(vit_Reshape_812_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_813_0), std::move(vit_Constant_159_0), std::move(vit_Dot_814_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_57_0), std::move(vit_Dot_814_0), std::move(vit_Add_751_0), std::move(vit_Add_817_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_817_0), std::move(vit_Sum_818_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_819_0), std::move(vit_Sum_818_0), std::move(vit_Divide_821_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_823_0), std::move(vit_Add_817_0), std::move(vit_Subtract_825_0), std::move(vit_Power_827_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_827_0), std::move(vit_Sum_828_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_829_0), std::move(vit_Sum_828_0), std::move(vit_Sqrt_836_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_63_0), std::move(vit_Constant_62_0), std::move(vit_Reshape_837_0), std::move(vit_Subtract_825_0), std::move(vit_Add_843_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_57_0), std::move(vit_Dot_814_0), std::move(vit_Add_751_0), std::move(vit_Add_817_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_817_0), std::move(vit_Sum_818_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_819_0), std::move(vit_Sum_818_0), std::move(vit_Divide_821_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_823_0), std::move(vit_Add_817_0), std::move(vit_Subtract_825_0), std::move(vit_Power_827_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_827_0), std::move(vit_Sum_828_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_829_0), std::move(vit_Sum_828_0), std::move(vit_Sqrt_836_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_63_0), std::move(vit_Constant_62_0), std::move(vit_Reshape_837_0), std::move(vit_Subtract_825_0), std::move(vit_Add_843_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_843_0), std::move(vit_Constant_160_0), std::move(vit_Dot_844_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_58_0), std::move(vit_Dot_844_0), std::move(vit_Multiply_854_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_58_0), std::move(vit_Dot_844_0), std::move(vit_Multiply_854_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_854_0), std::move(vit_Constant_161_0), std::move(vit_Dot_855_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_59_0), std::move(vit_Dot_855_0), std::move(vit_Add_817_0), std::move(vit_Add_858_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_858_0), std::move(vit_Sum_859_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_860_0), std::move(vit_Sum_859_0), std::move(vit_Divide_862_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_864_0), std::move(vit_Add_858_0), std::move(vit_Subtract_866_0), std::move(vit_Power_868_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_868_0), std::move(vit_Sum_869_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_870_0), std::move(vit_Sum_869_0), std::move(vit_Sqrt_877_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_71_0), std::move(vit_Constant_70_0), std::move(vit_Reshape_878_0), std::move(vit_Subtract_866_0), std::move(vit_Add_884_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_59_0), std::move(vit_Dot_855_0), std::move(vit_Add_817_0), std::move(vit_Add_858_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_858_0), std::move(vit_Sum_859_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_860_0), std::move(vit_Sum_859_0), std::move(vit_Divide_862_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_864_0), std::move(vit_Add_858_0), std::move(vit_Subtract_866_0), std::move(vit_Power_868_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_868_0), std::move(vit_Sum_869_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_870_0), std::move(vit_Sum_869_0), std::move(vit_Sqrt_877_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_71_0), std::move(vit_Constant_70_0), std::move(vit_Reshape_878_0), std::move(vit_Subtract_866_0), std::move(vit_Add_884_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_884_0), std::move(vit_Constant_164_0), std::move(vit_Dot_908_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_66_0), std::move(vit_Dot_908_0), std::move(vit_Add_910_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_911_0), std::move(vit_Reshape_912_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_66_0), std::move(vit_Dot_908_0), std::move(vit_Add_910_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_911_0), std::move(vit_Reshape_912_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_884_0), std::move(vit_Constant_163_0), std::move(vit_Dot_885_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_65_0), std::move(vit_Dot_885_0), std::move(vit_Add_887_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_888_0), std::move(vit_Reshape_889_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_889_0), std::move(vit_Multiply_892_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_65_0), std::move(vit_Dot_885_0), std::move(vit_Add_887_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_888_0), std::move(vit_Reshape_889_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_889_0), std::move(vit_Multiply_892_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_884_0), std::move(vit_Constant_162_0), std::move(vit_Dot_893_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_64_0), std::move(vit_Dot_893_0), std::move(vit_Add_895_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_896_0), std::move(vit_Reshape_897_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_897_0), std::move(vit_Multiply_900_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_64_0), std::move(vit_Dot_893_0), std::move(vit_Add_895_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_896_0), std::move(vit_Reshape_897_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_897_0), std::move(vit_Multiply_900_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_903_0), std::move(vit_Broadcast_904_0), std::move(vit_BatchMatMul_905_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_906_0), std::move(vit_Softmax_907_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_915_0), std::move(vit_Broadcast_916_0), std::move(vit_BatchMatMul_917_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_918_0), std::move(vit_Reshape_919_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_918_0), std::move(vit_Reshape_919_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_920_0), std::move(vit_Constant_165_0), std::move(vit_Dot_921_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_67_0), std::move(vit_Dot_921_0), std::move(vit_Add_858_0), std::move(vit_Add_924_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_924_0), std::move(vit_Sum_925_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_926_0), std::move(vit_Sum_925_0), std::move(vit_Divide_928_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_930_0), std::move(vit_Add_924_0), std::move(vit_Subtract_932_0), std::move(vit_Power_934_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_934_0), std::move(vit_Sum_935_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_936_0), std::move(vit_Sum_935_0), std::move(vit_Sqrt_943_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_73_0), std::move(vit_Constant_72_0), std::move(vit_Reshape_944_0), std::move(vit_Subtract_932_0), std::move(vit_Add_950_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_67_0), std::move(vit_Dot_921_0), std::move(vit_Add_858_0), std::move(vit_Add_924_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_924_0), std::move(vit_Sum_925_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_926_0), std::move(vit_Sum_925_0), std::move(vit_Divide_928_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_930_0), std::move(vit_Add_924_0), std::move(vit_Subtract_932_0), std::move(vit_Power_934_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_934_0), std::move(vit_Sum_935_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_936_0), std::move(vit_Sum_935_0), std::move(vit_Sqrt_943_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_73_0), std::move(vit_Constant_72_0), std::move(vit_Reshape_944_0), std::move(vit_Subtract_932_0), std::move(vit_Add_950_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_950_0), std::move(vit_Constant_166_0), std::move(vit_Dot_951_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_68_0), std::move(vit_Dot_951_0), std::move(vit_Multiply_961_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_68_0), std::move(vit_Dot_951_0), std::move(vit_Multiply_961_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_961_0), std::move(vit_Constant_167_0), std::move(vit_Dot_962_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_69_0), std::move(vit_Dot_962_0), std::move(vit_Add_924_0), std::move(vit_Add_965_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_965_0), std::move(vit_Sum_966_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_967_0), std::move(vit_Sum_966_0), std::move(vit_Divide_969_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_971_0), std::move(vit_Add_965_0), std::move(vit_Subtract_973_0), std::move(vit_Power_975_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_975_0), std::move(vit_Sum_976_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_977_0), std::move(vit_Sum_976_0), std::move(vit_Sqrt_984_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_81_0), std::move(vit_Constant_80_0), std::move(vit_Reshape_985_0), std::move(vit_Subtract_973_0), std::move(vit_Add_991_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_69_0), std::move(vit_Dot_962_0), std::move(vit_Add_924_0), std::move(vit_Add_965_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_965_0), std::move(vit_Sum_966_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_967_0), std::move(vit_Sum_966_0), std::move(vit_Divide_969_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_971_0), std::move(vit_Add_965_0), std::move(vit_Subtract_973_0), std::move(vit_Power_975_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_975_0), std::move(vit_Sum_976_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_977_0), std::move(vit_Sum_976_0), std::move(vit_Sqrt_984_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_81_0), std::move(vit_Constant_80_0), std::move(vit_Reshape_985_0), std::move(vit_Subtract_973_0), std::move(vit_Add_991_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_991_0), std::move(vit_Constant_170_0), std::move(vit_Dot_1015_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_76_0), std::move(vit_Dot_1015_0), std::move(vit_Add_1017_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1018_0), std::move(vit_Reshape_1019_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_76_0), std::move(vit_Dot_1015_0), std::move(vit_Add_1017_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1018_0), std::move(vit_Reshape_1019_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_991_0), std::move(vit_Constant_169_0), std::move(vit_Dot_992_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_75_0), std::move(vit_Dot_992_0), std::move(vit_Add_994_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_995_0), std::move(vit_Reshape_996_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_996_0), std::move(vit_Multiply_999_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_75_0), std::move(vit_Dot_992_0), std::move(vit_Add_994_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_995_0), std::move(vit_Reshape_996_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_996_0), std::move(vit_Multiply_999_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_991_0), std::move(vit_Constant_168_0), std::move(vit_Dot_1000_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_74_0), std::move(vit_Dot_1000_0), std::move(vit_Add_1002_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1003_0), std::move(vit_Reshape_1004_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1004_0), std::move(vit_Multiply_1007_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_74_0), std::move(vit_Dot_1000_0), std::move(vit_Add_1002_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1003_0), std::move(vit_Reshape_1004_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1004_0), std::move(vit_Multiply_1007_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1010_0), std::move(vit_Broadcast_1011_0), std::move(vit_BatchMatMul_1012_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_1013_0), std::move(vit_Softmax_1014_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1022_0), std::move(vit_Broadcast_1023_0), std::move(vit_BatchMatMul_1024_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1025_0), std::move(vit_Reshape_1026_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1025_0), std::move(vit_Reshape_1026_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_1027_0), std::move(vit_Constant_171_0), std::move(vit_Dot_1028_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_77_0), std::move(vit_Dot_1028_0), std::move(vit_Add_965_0), std::move(vit_Add_1031_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1031_0), std::move(vit_Sum_1032_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1033_0), std::move(vit_Sum_1032_0), std::move(vit_Divide_1035_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1037_0), std::move(vit_Add_1031_0), std::move(vit_Subtract_1039_0), std::move(vit_Power_1041_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1041_0), std::move(vit_Sum_1042_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1043_0), std::move(vit_Sum_1042_0), std::move(vit_Sqrt_1050_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_83_0), std::move(vit_Constant_82_0), std::move(vit_Reshape_1051_0), std::move(vit_Subtract_1039_0), std::move(vit_Add_1057_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_77_0), std::move(vit_Dot_1028_0), std::move(vit_Add_965_0), std::move(vit_Add_1031_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1031_0), std::move(vit_Sum_1032_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1033_0), std::move(vit_Sum_1032_0), std::move(vit_Divide_1035_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1037_0), std::move(vit_Add_1031_0), std::move(vit_Subtract_1039_0), std::move(vit_Power_1041_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1041_0), std::move(vit_Sum_1042_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1043_0), std::move(vit_Sum_1042_0), std::move(vit_Sqrt_1050_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_83_0), std::move(vit_Constant_82_0), std::move(vit_Reshape_1051_0), std::move(vit_Subtract_1039_0), std::move(vit_Add_1057_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1057_0), std::move(vit_Constant_172_0), std::move(vit_Dot_1058_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_78_0), std::move(vit_Dot_1058_0), std::move(vit_Multiply_1068_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_78_0), std::move(vit_Dot_1058_0), std::move(vit_Multiply_1068_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_1068_0), std::move(vit_Constant_173_0), std::move(vit_Dot_1069_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_79_0), std::move(vit_Dot_1069_0), std::move(vit_Add_1031_0), std::move(vit_Add_1072_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1072_0), std::move(vit_Sum_1073_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1074_0), std::move(vit_Sum_1073_0), std::move(vit_Divide_1076_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1078_0), std::move(vit_Add_1072_0), std::move(vit_Subtract_1080_0), std::move(vit_Power_1082_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1082_0), std::move(vit_Sum_1083_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1084_0), std::move(vit_Sum_1083_0), std::move(vit_Sqrt_1091_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_91_0), std::move(vit_Constant_90_0), std::move(vit_Reshape_1092_0), std::move(vit_Subtract_1080_0), std::move(vit_Add_1098_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_79_0), std::move(vit_Dot_1069_0), std::move(vit_Add_1031_0), std::move(vit_Add_1072_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1072_0), std::move(vit_Sum_1073_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1074_0), std::move(vit_Sum_1073_0), std::move(vit_Divide_1076_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1078_0), std::move(vit_Add_1072_0), std::move(vit_Subtract_1080_0), std::move(vit_Power_1082_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1082_0), std::move(vit_Sum_1083_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1084_0), std::move(vit_Sum_1083_0), std::move(vit_Sqrt_1091_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_91_0), std::move(vit_Constant_90_0), std::move(vit_Reshape_1092_0), std::move(vit_Subtract_1080_0), std::move(vit_Add_1098_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1098_0), std::move(vit_Constant_176_0), std::move(vit_Dot_1122_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_86_0), std::move(vit_Dot_1122_0), std::move(vit_Add_1124_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1125_0), std::move(vit_Reshape_1126_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_86_0), std::move(vit_Dot_1122_0), std::move(vit_Add_1124_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1125_0), std::move(vit_Reshape_1126_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1098_0), std::move(vit_Constant_175_0), std::move(vit_Dot_1099_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_85_0), std::move(vit_Dot_1099_0), std::move(vit_Add_1101_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_1102_0), std::move(vit_Reshape_1103_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1103_0), std::move(vit_Multiply_1106_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_85_0), std::move(vit_Dot_1099_0), std::move(vit_Add_1101_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_1102_0), std::move(vit_Reshape_1103_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1103_0), std::move(vit_Multiply_1106_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1098_0), std::move(vit_Constant_174_0), std::move(vit_Dot_1107_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_84_0), std::move(vit_Dot_1107_0), std::move(vit_Add_1109_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1110_0), std::move(vit_Reshape_1111_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1111_0), std::move(vit_Multiply_1114_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_84_0), std::move(vit_Dot_1107_0), std::move(vit_Add_1109_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1110_0), std::move(vit_Reshape_1111_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1111_0), std::move(vit_Multiply_1114_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1117_0), std::move(vit_Broadcast_1118_0), std::move(vit_BatchMatMul_1119_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_1120_0), std::move(vit_Softmax_1121_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1129_0), std::move(vit_Broadcast_1130_0), std::move(vit_BatchMatMul_1131_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1132_0), std::move(vit_Reshape_1133_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1132_0), std::move(vit_Reshape_1133_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_1134_0), std::move(vit_Constant_177_0), std::move(vit_Dot_1135_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_87_0), std::move(vit_Dot_1135_0), std::move(vit_Add_1072_0), std::move(vit_Add_1138_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1138_0), std::move(vit_Sum_1139_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1140_0), std::move(vit_Sum_1139_0), std::move(vit_Divide_1142_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1144_0), std::move(vit_Add_1138_0), std::move(vit_Subtract_1146_0), std::move(vit_Power_1148_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1148_0), std::move(vit_Sum_1149_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1150_0), std::move(vit_Sum_1149_0), std::move(vit_Sqrt_1157_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_93_0), std::move(vit_Constant_92_0), std::move(vit_Reshape_1158_0), std::move(vit_Subtract_1146_0), std::move(vit_Add_1164_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_87_0), std::move(vit_Dot_1135_0), std::move(vit_Add_1072_0), std::move(vit_Add_1138_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1138_0), std::move(vit_Sum_1139_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1140_0), std::move(vit_Sum_1139_0), std::move(vit_Divide_1142_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1144_0), std::move(vit_Add_1138_0), std::move(vit_Subtract_1146_0), std::move(vit_Power_1148_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1148_0), std::move(vit_Sum_1149_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1150_0), std::move(vit_Sum_1149_0), std::move(vit_Sqrt_1157_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_93_0), std::move(vit_Constant_92_0), std::move(vit_Reshape_1158_0), std::move(vit_Subtract_1146_0), std::move(vit_Add_1164_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1164_0), std::move(vit_Constant_178_0), std::move(vit_Dot_1165_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_88_0), std::move(vit_Dot_1165_0), std::move(vit_Multiply_1175_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_88_0), std::move(vit_Dot_1165_0), std::move(vit_Multiply_1175_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_1175_0), std::move(vit_Constant_179_0), std::move(vit_Dot_1176_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_89_0), std::move(vit_Dot_1176_0), std::move(vit_Add_1138_0), std::move(vit_Add_1179_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1179_0), std::move(vit_Sum_1180_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1181_0), std::move(vit_Sum_1180_0), std::move(vit_Divide_1183_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1185_0), std::move(vit_Add_1179_0), std::move(vit_Subtract_1187_0), std::move(vit_Power_1189_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1189_0), std::move(vit_Sum_1190_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1191_0), std::move(vit_Sum_1190_0), std::move(vit_Sqrt_1198_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_101_0), std::move(vit_Constant_100_0), std::move(vit_Reshape_1199_0), std::move(vit_Subtract_1187_0), std::move(vit_Add_1205_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_89_0), std::move(vit_Dot_1176_0), std::move(vit_Add_1138_0), std::move(vit_Add_1179_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1179_0), std::move(vit_Sum_1180_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1181_0), std::move(vit_Sum_1180_0), std::move(vit_Divide_1183_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1185_0), std::move(vit_Add_1179_0), std::move(vit_Subtract_1187_0), std::move(vit_Power_1189_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1189_0), std::move(vit_Sum_1190_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1191_0), std::move(vit_Sum_1190_0), std::move(vit_Sqrt_1198_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_101_0), std::move(vit_Constant_100_0), std::move(vit_Reshape_1199_0), std::move(vit_Subtract_1187_0), std::move(vit_Add_1205_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1205_0), std::move(vit_Constant_182_0), std::move(vit_Dot_1229_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_96_0), std::move(vit_Dot_1229_0), std::move(vit_Add_1231_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1232_0), std::move(vit_Reshape_1233_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_96_0), std::move(vit_Dot_1229_0), std::move(vit_Add_1231_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1232_0), std::move(vit_Reshape_1233_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1205_0), std::move(vit_Constant_181_0), std::move(vit_Dot_1206_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_95_0), std::move(vit_Dot_1206_0), std::move(vit_Add_1208_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_1209_0), std::move(vit_Reshape_1210_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1210_0), std::move(vit_Multiply_1213_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_95_0), std::move(vit_Dot_1206_0), std::move(vit_Add_1208_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_1209_0), std::move(vit_Reshape_1210_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1210_0), std::move(vit_Multiply_1213_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1205_0), std::move(vit_Constant_180_0), std::move(vit_Dot_1214_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_94_0), std::move(vit_Dot_1214_0), std::move(vit_Add_1216_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1217_0), std::move(vit_Reshape_1218_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1218_0), std::move(vit_Multiply_1221_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_94_0), std::move(vit_Dot_1214_0), std::move(vit_Add_1216_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1217_0), std::move(vit_Reshape_1218_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1218_0), std::move(vit_Multiply_1221_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1224_0), std::move(vit_Broadcast_1225_0), std::move(vit_BatchMatMul_1226_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_1227_0), std::move(vit_Softmax_1228_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1236_0), std::move(vit_Broadcast_1237_0), std::move(vit_BatchMatMul_1238_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1239_0), std::move(vit_Reshape_1240_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1239_0), std::move(vit_Reshape_1240_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_1241_0), std::move(vit_Constant_183_0), std::move(vit_Dot_1242_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_97_0), std::move(vit_Dot_1242_0), std::move(vit_Add_1179_0), std::move(vit_Add_1245_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1245_0), std::move(vit_Sum_1246_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1247_0), std::move(vit_Sum_1246_0), std::move(vit_Divide_1249_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1251_0), std::move(vit_Add_1245_0), std::move(vit_Subtract_1253_0), std::move(vit_Power_1255_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1255_0), std::move(vit_Sum_1256_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1257_0), std::move(vit_Sum_1256_0), std::move(vit_Sqrt_1264_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_103_0), std::move(vit_Constant_102_0), std::move(vit_Reshape_1265_0), std::move(vit_Subtract_1253_0), std::move(vit_Add_1271_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_97_0), std::move(vit_Dot_1242_0), std::move(vit_Add_1179_0), std::move(vit_Add_1245_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1245_0), std::move(vit_Sum_1246_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1247_0), std::move(vit_Sum_1246_0), std::move(vit_Divide_1249_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1251_0), std::move(vit_Add_1245_0), std::move(vit_Subtract_1253_0), std::move(vit_Power_1255_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1255_0), std::move(vit_Sum_1256_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1257_0), std::move(vit_Sum_1256_0), std::move(vit_Sqrt_1264_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_103_0), std::move(vit_Constant_102_0), std::move(vit_Reshape_1265_0), std::move(vit_Subtract_1253_0), std::move(vit_Add_1271_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1271_0), std::move(vit_Constant_184_0), std::move(vit_Dot_1272_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_98_0), std::move(vit_Dot_1272_0), std::move(vit_Multiply_1282_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_98_0), std::move(vit_Dot_1272_0), std::move(vit_Multiply_1282_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_1282_0), std::move(vit_Constant_185_0), std::move(vit_Dot_1283_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_99_0), std::move(vit_Dot_1283_0), std::move(vit_Add_1245_0), std::move(vit_Add_1286_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1286_0), std::move(vit_Sum_1287_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1288_0), std::move(vit_Sum_1287_0), std::move(vit_Divide_1290_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1292_0), std::move(vit_Add_1286_0), std::move(vit_Subtract_1294_0), std::move(vit_Power_1296_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1296_0), std::move(vit_Sum_1297_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1298_0), std::move(vit_Sum_1297_0), std::move(vit_Sqrt_1305_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_111_0), std::move(vit_Constant_110_0), std::move(vit_Reshape_1306_0), std::move(vit_Subtract_1294_0), std::move(vit_Add_1312_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_99_0), std::move(vit_Dot_1283_0), std::move(vit_Add_1245_0), std::move(vit_Add_1286_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1286_0), std::move(vit_Sum_1287_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1288_0), std::move(vit_Sum_1287_0), std::move(vit_Divide_1290_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1292_0), std::move(vit_Add_1286_0), std::move(vit_Subtract_1294_0), std::move(vit_Power_1296_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1296_0), std::move(vit_Sum_1297_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1298_0), std::move(vit_Sum_1297_0), std::move(vit_Sqrt_1305_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_111_0), std::move(vit_Constant_110_0), std::move(vit_Reshape_1306_0), std::move(vit_Subtract_1294_0), std::move(vit_Add_1312_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1312_0), std::move(vit_Constant_188_0), std::move(vit_Dot_1336_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_106_0), std::move(vit_Dot_1336_0), std::move(vit_Add_1338_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1339_0), std::move(vit_Reshape_1340_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_106_0), std::move(vit_Dot_1336_0), std::move(vit_Add_1338_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1339_0), std::move(vit_Reshape_1340_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1312_0), std::move(vit_Constant_187_0), std::move(vit_Dot_1313_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_105_0), std::move(vit_Dot_1313_0), std::move(vit_Add_1315_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_1316_0), std::move(vit_Reshape_1317_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1317_0), std::move(vit_Multiply_1320_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_105_0), std::move(vit_Dot_1313_0), std::move(vit_Add_1315_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_1316_0), std::move(vit_Reshape_1317_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1317_0), std::move(vit_Multiply_1320_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1312_0), std::move(vit_Constant_186_0), std::move(vit_Dot_1321_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_104_0), std::move(vit_Dot_1321_0), std::move(vit_Add_1323_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1324_0), std::move(vit_Reshape_1325_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1325_0), std::move(vit_Multiply_1328_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_104_0), std::move(vit_Dot_1321_0), std::move(vit_Add_1323_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1324_0), std::move(vit_Reshape_1325_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1325_0), std::move(vit_Multiply_1328_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1331_0), std::move(vit_Broadcast_1332_0), std::move(vit_BatchMatMul_1333_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_1334_0), std::move(vit_Softmax_1335_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1343_0), std::move(vit_Broadcast_1344_0), std::move(vit_BatchMatMul_1345_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1346_0), std::move(vit_Reshape_1347_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1346_0), std::move(vit_Reshape_1347_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_1348_0), std::move(vit_Constant_189_0), std::move(vit_Dot_1349_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_107_0), std::move(vit_Dot_1349_0), std::move(vit_Add_1286_0), std::move(vit_Add_1352_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1352_0), std::move(vit_Sum_1353_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1354_0), std::move(vit_Sum_1353_0), std::move(vit_Divide_1356_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1358_0), std::move(vit_Add_1352_0), std::move(vit_Subtract_1360_0), std::move(vit_Power_1362_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1362_0), std::move(vit_Sum_1363_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1364_0), std::move(vit_Sum_1363_0), std::move(vit_Sqrt_1371_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_113_0), std::move(vit_Constant_112_0), std::move(vit_Reshape_1372_0), std::move(vit_Subtract_1360_0), std::move(vit_Add_1378_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_107_0), std::move(vit_Dot_1349_0), std::move(vit_Add_1286_0), std::move(vit_Add_1352_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1352_0), std::move(vit_Sum_1353_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1354_0), std::move(vit_Sum_1353_0), std::move(vit_Divide_1356_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1358_0), std::move(vit_Add_1352_0), std::move(vit_Subtract_1360_0), std::move(vit_Power_1362_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1362_0), std::move(vit_Sum_1363_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1364_0), std::move(vit_Sum_1363_0), std::move(vit_Sqrt_1371_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_113_0), std::move(vit_Constant_112_0), std::move(vit_Reshape_1372_0), std::move(vit_Subtract_1360_0), std::move(vit_Add_1378_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1378_0), std::move(vit_Constant_190_0), std::move(vit_Dot_1379_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_108_0), std::move(vit_Dot_1379_0), std::move(vit_Multiply_1389_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_108_0), std::move(vit_Dot_1379_0), std::move(vit_Multiply_1389_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_1389_0), std::move(vit_Constant_191_0), std::move(vit_Dot_1390_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_109_0), std::move(vit_Dot_1390_0), std::move(vit_Add_1352_0), std::move(vit_Add_1393_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1393_0), std::move(vit_Sum_1394_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1395_0), std::move(vit_Sum_1394_0), std::move(vit_Divide_1397_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1399_0), std::move(vit_Add_1393_0), std::move(vit_Subtract_1401_0), std::move(vit_Power_1403_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1403_0), std::move(vit_Sum_1404_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1405_0), std::move(vit_Sum_1404_0), std::move(vit_Sqrt_1412_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_121_0), std::move(vit_Constant_120_0), std::move(vit_Reshape_1413_0), std::move(vit_Subtract_1401_0), std::move(vit_Add_1419_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_109_0), std::move(vit_Dot_1390_0), std::move(vit_Add_1352_0), std::move(vit_Add_1393_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1393_0), std::move(vit_Sum_1394_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1395_0), std::move(vit_Sum_1394_0), std::move(vit_Divide_1397_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1399_0), std::move(vit_Add_1393_0), std::move(vit_Subtract_1401_0), std::move(vit_Power_1403_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1403_0), std::move(vit_Sum_1404_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1405_0), std::move(vit_Sum_1404_0), std::move(vit_Sqrt_1412_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_121_0), std::move(vit_Constant_120_0), std::move(vit_Reshape_1413_0), std::move(vit_Subtract_1401_0), std::move(vit_Add_1419_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1419_0), std::move(vit_Constant_194_0), std::move(vit_Dot_1443_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_116_0), std::move(vit_Dot_1443_0), std::move(vit_Add_1445_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1446_0), std::move(vit_Reshape_1447_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_116_0), std::move(vit_Dot_1443_0), std::move(vit_Add_1445_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1446_0), std::move(vit_Reshape_1447_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1419_0), std::move(vit_Constant_193_0), std::move(vit_Dot_1420_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_115_0), std::move(vit_Dot_1420_0), std::move(vit_Add_1422_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 32), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_1423_0), std::move(vit_Reshape_1424_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1424_0), std::move(vit_Multiply_1427_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_115_0), std::move(vit_Dot_1420_0), std::move(vit_Add_1422_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_247_CallKernel(dim3(48, 13, 48), dim3(16, 16, 1), 0, nullptr, std::move(vit_Reshape_1423_0), std::move(vit_Reshape_1424_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1424_0), std::move(vit_Multiply_1427_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1419_0), std::move(vit_Constant_192_0), std::move(vit_Dot_1428_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_114_0), std::move(vit_Dot_1428_0), std::move(vit_Add_1430_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1431_0), std::move(vit_Reshape_1432_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1432_0), std::move(vit_Multiply_1435_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Add_6_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_114_0), std::move(vit_Dot_1428_0), std::move(vit_Add_1430_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_270_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1431_0), std::move(vit_Reshape_1432_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Multiply_8_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Reshape_248_0), std::move(vit_Reshape_1432_0), std::move(vit_Multiply_1435_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_263Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1438_0), std::move(vit_Broadcast_1439_0), std::move(vit_BatchMatMul_1440_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Softmax_float_float_cuda_lib_Softmax_265Kernel(0, std::move(vit_Reshape_1441_0), std::move(vit_Softmax_1442_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_BatchMatMul_float_float_float_cuda_lib_BatchMatMul_275Kernel(std::move(vit_cublas_handle_0), std::move(vit_Broadcast_1450_0), std::move(vit_Broadcast_1451_0), std::move(vit_BatchMatMul_1452_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(75648, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1453_0), std::move(vit_Reshape_1454_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Reshape_float_float_cuda_Reshape_277_CallKernel(dim3(113472, 1, 1), dim3(64, 1, 1), 0, nullptr, std::move(vit_Reshape_1453_0), std::move(vit_Reshape_1454_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_266Kernel(std::move(vit_cublas_handle_0), std::move(vit_Reshape_1455_0), std::move(vit_Constant_195_0), std::move(vit_Dot_1456_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_117_0), std::move(vit_Dot_1456_0), std::move(vit_Add_1393_0), std::move(vit_Add_1459_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1459_0), std::move(vit_Sum_1460_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1461_0), std::move(vit_Sum_1460_0), std::move(vit_Divide_1463_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1465_0), std::move(vit_Add_1459_0), std::move(vit_Subtract_1467_0), std::move(vit_Power_1469_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1469_0), std::move(vit_Sum_1470_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1471_0), std::move(vit_Sum_1470_0), std::move(vit_Sqrt_1478_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_123_0), std::move(vit_Constant_122_0), std::move(vit_Reshape_1479_0), std::move(vit_Subtract_1467_0), std::move(vit_Add_1485_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_117_0), std::move(vit_Dot_1456_0), std::move(vit_Add_1393_0), std::move(vit_Add_1459_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1459_0), std::move(vit_Sum_1460_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1461_0), std::move(vit_Sum_1460_0), std::move(vit_Divide_1463_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1465_0), std::move(vit_Add_1459_0), std::move(vit_Subtract_1467_0), std::move(vit_Power_1469_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1469_0), std::move(vit_Sum_1470_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1471_0), std::move(vit_Sum_1470_0), std::move(vit_Sqrt_1478_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_123_0), std::move(vit_Constant_122_0), std::move(vit_Reshape_1479_0), std::move(vit_Subtract_1467_0), std::move(vit_Add_1485_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_309Kernel(std::move(vit_cublas_handle_0), std::move(vit_Add_1485_0), std::move(vit_Constant_196_0), std::move(vit_Dot_1486_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(37824, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_118_0), std::move(vit_Dot_1486_0), std::move(vit_Multiply_1496_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Broadcast_Add_Divide_Erf_Add_Multiply_Multiply_14_CallKernel(dim3(56736, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_204_0), std::move(vit_Constant_203_0), std::move(vit_Constant_205_0), std::move(vit_Constant_118_0), std::move(vit_Dot_1486_0), std::move(vit_Multiply_1496_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Dot_float_float_float_cuda_lib_Dot_320Kernel(std::move(vit_cublas_handle_0), std::move(vit_Multiply_1496_0), std::move(vit_Constant_197_0), std::move(vit_Dot_1497_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_119_0), std::move(vit_Dot_1497_0), std::move(vit_Add_1459_0), std::move(vit_Add_1500_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1500_0), std::move(vit_Sum_1501_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1502_0), std::move(vit_Sum_1501_0), std::move(vit_Divide_1504_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1506_0), std::move(vit_Add_1500_0), std::move(vit_Subtract_1508_0), std::move(vit_Power_1510_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(6304, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1510_0), std::move(vit_Sum_1511_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(16, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1512_0), std::move(vit_Sum_1511_0), std::move(vit_Sqrt_1519_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
-    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_125_0), std::move(vit_Constant_124_0), std::move(vit_Reshape_1520_0), std::move(vit_Subtract_1508_0), std::move(vit_last_hidden_state), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Add_Add_9_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_119_0), std::move(vit_Dot_1497_0), std::move(vit_Add_1459_0), std::move(vit_Add_1500_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Add_1500_0), std::move(vit_Sum_1501_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_cuda_Broadcast_Divide_0_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Constant_1502_0), std::move(vit_Sum_1501_0), std::move(vit_Divide_1504_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Subtract_Power_1_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_206_0), std::move(vit_Reshape_1506_0), std::move(vit_Add_1500_0), std::move(vit_Subtract_1508_0), std::move(vit_Power_1510_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_Sum_float_float_cuda_Sum_217_CallKernel(dim3(9456, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Power_1510_0), std::move(vit_Sum_1511_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_cuda_Broadcast_Broadcast_Divide_Reshape_Add_Sqrt_2_CallKernel(dim3(24, 1, 1), dim3(394, 1, 1), 0, nullptr, std::move(vit_Reshape_1516_0), std::move(vit_Constant_1512_0), std::move(vit_Sum_1511_0), std::move(vit_Sqrt_1519_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
+    kernels.emplace_back(new vit_FusedKernel_float_float_float_float_float_cuda_Broadcast_Broadcast_Broadcast_Divide_Multiply_Add_3_CallKernel(dim3(14184, 1, 1), dim3(512, 1, 1), 0, nullptr, std::move(vit_Constant_125_0), std::move(vit_Constant_124_0), std::move(vit_Reshape_1520_0), std::move(vit_Subtract_1508_0), std::move(vit_last_hidden_state), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
     kernels.emplace_back(new vit_Result_float_float_cuda_lib_Result_1527Kernel(std::move(vit_last_hidden_state), std::move(vit_Result_1527_0), std::move(Parameter_207_0), std::move(vit_Result_1527_0)));
 }

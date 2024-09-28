@@ -4,7 +4,7 @@
             "id": "((float32*)(inputs[0]))",
             "name": "Parameter_207_0",
             "shape": [
-                32,
+                48,
                 3,
                 224,
                 224
@@ -16,7 +16,7 @@
             "id": "((float32*)(outputs[0]))",
             "name": "Result_1527_0",
             "shape": [
-                32,
+                48,
                 197,
                 768
             ]
