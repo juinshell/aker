@@ -1,1 +1,0 @@
-docker run --name aker -d -it -v ~/workspace/:/workspace/ --gpus all --privileged=true aker:latest

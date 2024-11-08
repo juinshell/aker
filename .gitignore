@@ -8,7 +8,6 @@
 *_mix
 *_out*
 build/
-build_/
 *.so
 *.zip
 *.log
@@ -20,9 +19,6 @@ log/
 *.bin
 *.a
 *.tmp
-/0_mybench
-/1_mixwarp
-/2_mps
 *.pb
 *.onnx
 *.tar

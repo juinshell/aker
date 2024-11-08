@@ -1,9 +1,67 @@
-# tacker
+# Aker
 
-# add cuda path
-export PATH="$PATH:/usr/local/cuda-12.6/bin"
-# add conda path
-export PATH="$PATH:/home/jxdeng/miniconda3/bin"
-# add code cmd to PATH
-export PATH="$PATH:/home/jxdeng/.vscode-server/bin/f1b07bd25dfad64b0167beb15359ae573aecd2cc/bin/remote-cli"
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-12.6/lib64"
+## kernel fusion
+
+The script `fusion/code/gen_run.py` is used to generate fused kernel code from the candidate kernel. Kernel code will be generated in the `fusion/mix_kernel` directory, test code will be stored at `fusion/run` directory.
+
+```bash
+cd fusion/code
+python gen_run.py
+
+// run the test code
+cd ../run
+python run.py
+```
+
+You can find all benchmark original code in  `src/raw_kernel/`.
+
+## DNN model
+
+We use nnfusion to generate dnn model code. Refer to [microsoft/nnfusion](https://github.com/microsoft/nnfusion/tree/v0.4).
+
+*(notes: we use nnfusion v0.4 built from source, so that transformer-based models can be supported.)*
+
+After building nnfusion, you can use the following command to generate code for the dnn model([tensorflow example](https://github.com/microsoft/nnfusion/tree/v0.4/models/tensorflow)).
+
+```bash
+cd src/nnf/nnf_tf_freezer
+python3 example.py --model_name=vgg16 --frozen_graph=vgg16.pb
+
+nnfusion vgg16.pb
+```
+
+nnfusion can also gen code from onnx model.
+
+```bash
+nnfusion /path/to/pt-bert-base-cased.onnx -f onnx -p 'batch:3;sequence:512'
+```
+
+Finally, rewrite the kernel code to the `src/dnn` directory. We warp the generated code into proprietary classes to make it easier to use in runtime.
+
+```bash
+cd src/nnf
+python gen_code.py
+```
+## runtime
+
+For quick start, we provided dockerfile. To build the docker image, run
+
+```bash
+bash docker/build.sh
+// then
+bash docker/run.sh
+```
+
+in docker,
+
+```bash
+cd /workspace/aker
+mkdir build && cd build
+cmake .. && make -j
+```
+
+run the main code
+
+```bash
+./aker -s aker -m vgg16
+```
