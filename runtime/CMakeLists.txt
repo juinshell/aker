@@ -48,22 +48,13 @@ configure_file(TackerConfig.h.in TackerConfig.h)
 
 CUDA_ADD_EXECUTABLE(${PROJECT_NAME} ${SRC_LIST})
 
-# set_target_properties( ${PROJECT_NAME}
-#                        PROPERTIES CUDA_SEPARABLE_COMPILATION ON
-#                        )
 
 target_link_options(${PROJECT_NAME} PRIVATE -Xptxas -wl)
 
-# # hook lib
-# add_library(mylib  ./hook/mylib.cu)
-# target_compile_options(mylib PRIVATE -I/usr/local/cuda/include -Xcompiler -fPIC -shared -ldl -L/usr/local/cuda/lib64 -lcudart -arch=sm_75 -lcublas -lcurand)
 target_include_directories(${PROJECT_NAME} PUBLIC
                            ${PROJECT_BINARY_DIR}
                            ${CUDA_INCLUDE_DIRS}
                            ${PROJECT_SOURCE_DIR}
                            ${CUDNN_LIBRARIES}
-                        #    mylib
-                          #  ../mix_kernels
-                          #  ../mix_kernels/file_t/header
                            )  
 target_link_libraries(${PROJECT_NAME} cudnn) 
