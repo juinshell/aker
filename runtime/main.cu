@@ -14,19 +14,19 @@
 #include "./include/clipp.h"
 
 
-#include "cp_kernel.cu"
-#include "cutcp_kernel.cu"
-#include "fft_kernel.cu"
-#include "lbm_kernel.cu"
-#include "mrif_kernel.cu"
-#include "mriq_kernel.cu"
-#include "sgemm_kernel.cu"
-#include "stencil_kernel.cu"
+#include "ori_kernel/cp_kernel.cu"
+#include "ori_kernel/cutcp_kernel.cu"
+#include "ori_kernel/fft_kernel.cu"
+#include "ori_kernel/lbm_kernel.cu"
+#include "ori_kernel/mrif_kernel.cu"
+#include "ori_kernel/mriq_kernel.cu"
+#include "ori_kernel/sgemm_kernel.cu"
+#include "ori_kernel/stencil_kernel.cu"
 
-#include "lava_kernel.cu"
-#include "hot3d_kernel.cu"
-#include "nn_kernel.cu"
-#include "path_kernel.cu"
+#include "ori_kernel/lava_kernel.cu"
+#include "ori_kernel/hot3d_kernel.cu"
+#include "ori_kernel/nn_kernel.cu"
+#include "ori_kernel/path_kernel.cu"
 
 #include "GPTBKernel.h"
 #include "MixKernel.h"
@@ -211,6 +211,7 @@ void my_exit() {
 
 std::string SYSTEM = "aker";
 std::string ROOT_PATH = "/workspace/tacker/runtime";
+std::string CONFIG_PATH = ROOT_PATH + "/config";
 std::string MODEL_NAME = "none";
 
 extern float* ori_wmma_results1;
@@ -262,8 +263,8 @@ int main(int argc, char* argv[]) {
 
     atexit (my_exit);
 
-    read_json(ROOT_PATH + "/kinfo-" + MODEL_NAME + ".json");
-    read_common_json(ROOT_PATH + "/kinfo-common.json");
+    read_json(CONFIG_PATH + "/kinfo-" + MODEL_NAME + ".json");
+    read_common_json(CONFIG_PATH + "/kinfo-common.json");
     // read_json(ROOT_PATH + "/kinfo.json");
 
     initCUDA(device_no);
