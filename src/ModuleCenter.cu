@@ -1,13 +1,3 @@
-/*** 
- * @Author: diagonal
- * @Date: 2023-12-09 11:59:08
- * @LastEditors: diagonal
- * @LastEditTime: 2023-12-09 12:41:48
- * @FilePath: /tacker/runtime/ModuleCenter.cu
- * @Description: 
- * @happy coding, happy life!
- * @Copyright (c) 2023 by jxdeng, All Rights Reserved. 
- */
 #include "ModuleCenter.h"
 #include "util.h"
 #include "Logger.h"

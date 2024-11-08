@@ -1,13 +1,4 @@
-/*** 
- * @Author: diagonal
- * @Date: 2023-12-09 11:56:33
- * @LastEditors: diagonal
- * @LastEditTime: 2023-12-09 12:19:04
- * @FilePath: /tacker/runtime/ModuleCenter.h
- * @Description: 
- * @happy coding, happy life!
- * @Copyright (c) 2023 by jxdeng, All Rights Reserved. 
- */
+// ModuleCenter.h
 #pragma once
 #include "util.h"
 #include <vector>

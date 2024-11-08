@@ -1,13 +1,3 @@
-/*** 
- * @Author: diagonal
- * @Date: 2023-12-08 21:52:35
- * @LastEditors: diagonal
- * @LastEditTime: 2023-12-09 11:56:49
- * @FilePath: /tacker/runtime/util.h
- * @Description: 
- * @happy coding, happy life!
- * @Copyright (c) 2023 by jxdeng, All Rights Reserved. 
- */
 // util.h
 #pragma once
 
